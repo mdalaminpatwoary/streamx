@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>StreamX – Netflix, Spotify, YouTube Premium Price in Bangladesh</title>
+<meta name="description" content="Buy Netflix, Spotify Premium, Prime Video, YouTube Premium in Bangladesh at the best price. Pay with bKash, Nagad, Rocket. Fast delivery.">
+<meta property="og:title" content="StreamX – Premium Subscriptions in Bangladesh">
+<meta property="og:description" content="Netflix, Spotify, Prime Video, YouTube Premium and more at local prices.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="rail" id="rail" aria-hidden="true"><i class="rl-fill"></i><i class="rl-dot"></i><b class="rl-pct" id="pct">0%</b></div>
+
+<header class="nav" id="nav">
+  <div class="navbar">
+    <a href="#home" class="logo"><img src="logo.png" alt="StreamX" onerror="this.replaceWith(Object.assign(document.createElement('b'),{textContent:'StreamX'}))"></a>
+    <nav id="menu">
+      <span id="ind"></span>
+      <a href="#home" data-bn="হোম">Home</a>
+      <a href="#products" data-bn="প্রোডাক্ট">Products</a>
+      <a href="#pricing" data-bn="প্রাইস">Pricing</a>
+      <a href="#how" data-bn="কীভাবে কিনবেন">How It Works</a>
+      <a href="#reviews" data-bn="রিভিউ">Reviews</a>
+      <a href="#faq">FAQ</a>
+      <a href="#contact" data-bn="যোগাযোগ">Contact</a>
+    </nav>
+    <div class="nr">
+      <button id="lang" class="lang">বাংলা</button>
+      <button id="cartBtn" class="cartbtn" aria-label="Open cart"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg><span id="cartCount">0</span></button>
+      <button id="burger" aria-label="Menu">☰</button>
+    </div>
+  </div>
+</header>
+
+<main>
+<section id="home" class="hero wrap">
+  <div class="hero-text">
+    <span class="eyebrow">Your digital life, locally priced</span>
+    <h1 data-bn="বাংলাদেশে সেরা দামে <span class='grad'>প্রিমিয়াম</span> সাবস্ক্রিপশন">Premium Subscriptions at the <span class="grad">Best Price</span> in Bangladesh</h1>
+    <p>Netflix nights, Spotify on repeat, Prime Video, YouTube Premium and more—ordered simply with bKash, Nagad or Rocket. Message us and get your subscription delivered fast.</p>
+    <div class="cta">
+      <a href="#products" class="btn grad-bg" data-bn="প্রোডাক্ট দেখুন">View Products ↓</a>
+      <a href="#" class="btn ghost" data-wa="Hi StreamX! I want to order a subscription." data-bn="হোয়াটসঅ্যাপে অর্ডার করুন">Order on WhatsApp ↗</a>
+    </div>
+    <ul class="badges"><li>✓ Instant Delivery</li><li>✓ bKash / Nagad Accepted</li><li>✓ 24/7 Support</li></ul>
+  </div>
+  <div class="hero-art">
+    <div class="orb"></div>
+    <div class="fc f1"><i data-logo="netflix">N</i><b>NETFLIX</b><small>Watch your way</small></div>
+    <div class="fc f2"><i data-logo="spotify">♪</i><b>SPOTIFY</b><small>Listen without limits</small></div>
+    <div class="fc f3"><i data-logo="youtube">▶</i><b>YOUTUBE</b><small>Premium, made easy</small></div>
+    <div class="fc f4"><i style="background:#4F6BFF">৳</i><b>LOCAL PAYMENTS</b><small>bKash · Nagad · Rocket</small></div>
+  </div>
+</section>
+
+<section class="marq" aria-label="Subscriptions we provide"><p class="marq-t">Premium services we provide</p><div class="mq"><div class="mt" id="mqTrack"></div></div></section>
+
+<section id="products" class="wrap sec">
+  <div class="hhead rv"><div><span class="eyebrow">Our products</span><h2>Everything you <span class="grad">stream.</span></h2></div><p>Premium streaming, AI, VPN and learning subscriptions at local prices. Pick a service to see every plan.</p></div>
+  <div class="tools">
+    <div class="trow"><label class="sbox" id="sbox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="sico"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input id="search" type="search" aria-label="Search products" autocomplete="off"><span class="typed" aria-hidden="true"><span id="typedTxt">Search Netflix, ChatGPT, Canva...</span><i class="caret"></i></span></label>
+    <div class="sort"><span>Sort by</span><select id="sortBy" aria-label="Sort products">
+      <option value="rec">Recommended</option><option value="pa">Price: low to high</option><option value="pd">Price: high to low</option><option value="az">Name: A to Z</option><option value="za">Name: Z to A</option><option value="new">Newest first</option><option value="cat">Category</option>
+    </select></div></div>
+    <div id="chips" class="tabs"></div>
+  </div>
+  <div id="productGrid" class="grid"></div>
+  <p id="count" class="note"></p>
+  <p class="center"><button id="loadMore" class="btn lm"></button></p>
+</section>
+
+<section id="bundles" class="wrap sec">
+  <div class="hhead rv"><div><span class="eyebrow">Premium bundles</span><h2>Save more, <span class="grad">together.</span></h2></div><p>Popular services packed into one plan, at a lower price per month.</p></div>
+  <div id="bundleGrid" class="grid"></div>
+</section>
+
+<section id="pricing" class="wrap sec">
+  <div class="hhead rv">
+    <div><span class="eyebrow grad">Pricing &amp; validity</span><h2>Pick your <span class="grad">plan.</span></h2></div>
+    <p>Choose a product, pick the plan type, then choose how long you want it. Longer plans cost less per month.</p>
+  </div>
+  <div class="pbar rv"><span id="pLogo"></span><div class="pinfo"><b id="pName"></b><small id="pDesc"></small></div><select id="pickProduct" aria-label="Choose product"></select></div>
+  <div id="planTable"></div>
+  <p class="try-link">Want to try first? <a href="#trial">Ask about delivery before payment →</a></p>
+  <p class="note">* Prices are examples. Message us on WhatsApp for today's latest price.</p>
+</section>
+
+<section id="trial" class="wrap sec">
+  <div class="trywrap">
+    <div class="try-left">
+      <div class="try-copy rv">
+        <span class="eyebrow">Try before you pay</span>
+        <h2>Want to try our service <span class="grad">before paying?</span></h2>
+        <p>StreamX offers delivery before payment on select subscriptions. Message us on WhatsApp and we'll let you know if your chosen plan is eligible.</p>
+      </div>
+      <div class="try-side rv">
+        <ol class="try-flow" id="tryFlow">
+          <li style="--k:0"><span class="try-n"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg></span><div><b>Delivery first</b><small>We deliver your subscription before payment.</small></div></li>
+          <li style="--k:1"><span class="try-n"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m10 8 6 4-6 4Z"/></svg></span><div><b>Try it yourself</b><small>Use the service and see how it works for you.</small></div></li>
+          <li style="--k:2"><span class="try-n"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></svg></span><div><b>Pay after delivery</b><small>Complete your payment with bKash, Nagad or another method.</small></div></li>
+        </ol>
+      </div>
+    </div>
+    <div class="try-pick rv" id="tryPick">
+      <div class="tp-head"><b>Choose your first trial</b><span class="try-tag">Select subscriptions</span></div>
+      <div class="tp-label">1 · Service</div>
+      <div class="tp-grid" id="tpGrid"></div>
+      <select id="tpSel" aria-label="Choose another service"></select>
+      <div class="tp-label">2 · Plan</div>
+      <div class="tp-plans" id="tpPlans"></div>
+      <div class="tp-sum" id="tpSum"></div>
+      <a class="btn grad-bg tp-go" id="tpGo" href="#" target="_blank" rel="noopener"><svg class="try-wa" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>Request this trial on WhatsApp</a>
+      <small class="tp-fine">We'll confirm on WhatsApp whether this plan is eligible. Available on select subscriptions only.</small>
+    </div>
+  </div>
+</section>
+
+<section id="why" class="wrap sec">
+  <div class="hhead rv">
+    <div><span class="eyebrow grad">The StreamX difference</span><h2>Premium should feel <span class="grad">simple.</span></h2></div>
+    <p>Less back-and-forth. More time enjoying the things you came for.</p>
+  </div>
+  <div class="why">
+    <div class="wp rv" id="whyPanel">
+      <span class="wc" id="wc">01—06</span>
+      <div class="wring">
+        <svg class="wtxt" viewBox="0 0 300 300"><defs><path id="circ" d="M150,150 m-140,0 a140,140 0 1,1 280,0 a140,140 0 1,1 -280,0"/></defs><text><textPath href="#circ" textLength="872" lengthAdjust="spacing">MADE FOR BANGLADESH · MADE FOR YOU · MADE FOR BANGLADESH · MADE FOR YOU · MADE FOR BANGLADESH · MADE FOR YOU ·</textPath></text></svg>
+        <div class="orbit"><i></i></div>
+        <div class="wcore"><b id="wg">ϟ</b></div>
+      </div>
+      <h3 id="wh"></h3><p id="wd"></p>
+    </div>
+    <div class="wl rv" id="whyList"></div>
+  </div>
+</section>
+
+<section id="stats" class="wrap sec">
+  <div class="hhead rv">
+    <div><span class="eyebrow">Why people trust us</span><h2>Numbers that <span class="grad">speak.</span></h2></div>
+    <p>A growing community of customers across Bangladesh.</p>
+  </div>
+  <!-- EDIT the numbers below (data-to). "Services" is counted automatically. -->
+  <div class="nums">
+    <div class="num stat rv" style="--k:0">
+      <span class="nl">Happy customers</span>
+      <b data-to="5000" data-suf="+">0</b>
+      <p class="nd">People across Bangladesh trust StreamX for movies, music, AI tools and more.</p>
+      <div class="nv faces" id="faces"></div>
+    </div>
+    <div class="num stat rv" style="--k:1">
+      <span class="nl">Services we provide</span>
+      <b data-svc data-to="56" data-suf="+">0</b>
+      <p class="nd">Streaming, music, AI tools, VPN, learning and more.</p>
+      <div class="nv slogos" id="slogos"></div>
+    </div>
+    <div class="num stat rv" style="--k:2">
+      <span class="nl">Customer satisfaction</span>
+      <b data-to="98" data-suf="%">0</b>
+      <p class="nd">Customers happy with their order and support.</p>
+      <div class="nv meter"><i style="--w:98%"><u></u></i><div class="mk"><span>0</span><span>50</span><span>100</span></div></div>
+    </div>
+    <div class="num stat yr rv" style="--k:3">
+      <span class="nl">Running since</span>
+      <b data-to="2023" data-plain="1">0</b>
+      <p class="nd" id="yrs">Serving Bangladesh with local payment options.</p>
+      <div class="nv tline"><i style="--w:100%"><u></u></i><div class="mk"><span>2023</span><span>Today</span></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="how" class="wrap sec">
+  <div class="hhead rv">
+    <div><span class="eyebrow">No complicated checkout</span><h2>Four steps. <span class="grad">That's it.</span></h2></div>
+    <p>From browsing to your first episode or playlist, keep it simple.</p>
+  </div>
+  <div class="journey" id="steps">
+    <svg class="jwave" viewBox="0 0 1000 120" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="jg" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#4F6BFF"/><stop offset="1" stop-color="#ED3124"/></linearGradient></defs><path class="jbase" d="M0,80 L125,80 C250,80 250,40 375,40 C500,40 500,80 625,80 C750,80 750,40 875,40 L1000,40"/><path class="jdraw" d="M0,80 L125,80 C250,80 250,40 375,40 C500,40 500,80 625,80 C750,80 750,40 875,40 L1000,40" pathLength="1"/></svg>
+    <div class="jn" style="--k:0;--y:80px"><span class="gn" aria-hidden="true">01</span><span class="jc"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/></svg><b class="jb">1</b></span><div class="jt"><h3>Choose a plan</h3><p>Pick a service and the validity that works for you.</p></div></div>
+    <div class="jn" style="--k:1;--y:40px"><span class="gn" aria-hidden="true">02</span><span class="jc"><svg class="fillv" viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg><b class="jb">2</b></span><div class="jt"><h3>Message on WhatsApp</h3><p>Tap Order and your product and plan details are ready to send.</p></div></div>
+    <div class="jn" style="--k:2;--y:80px"><span class="gn" aria-hidden="true">03</span><span class="jc"><svg viewBox="0 0 24 24" aria-hidden="true"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg><b class="jb">3</b></span><div class="jt"><h3>Pay locally</h3><p>Send payment via bKash, Nagad, Rocket or another listed method.</p></div></div>
+    <div class="jn" style="--k:3;--y:40px"><span class="gn" aria-hidden="true">04</span><span class="jc"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m10 8 6 4-6 4Z"/></svg><b class="jb">4</b></span><div class="jt"><h3>Receive your subscription</h3><p>Share the Transaction ID on WhatsApp and get delivery details.</p></div></div>
+  </div>
+</section>
+
+<section id="payments" class="wrap sec">
+  <div class="payg">
+    <div class="payl rv">
+      <span class="eyebrow">Pay your way</span>
+      <h2>Familiar payments.<br><span class="grad">Easy ordering.</span></h2>
+      <p>Choose the payment method that suits you. We'll help you through the next step on WhatsApp.</p>
+    </div>
+    <div class="payr">
+      <!-- Put your logo files in images/pay/ (bkash.png, nagad.png, rocket.png, upay.png). Without a file, a text name shows. -->
+      <div class="paym">
+        <span class="pb rv" style="--c:#e2136e"><span class="plg"><img src="images/pay/bkash.png" alt="bKash" onerror="this.remove()"><b>bKash</b></span><small>Mobile banking</small></span>
+        <span class="pb rv" style="--c:#f6602b"><span class="plg"><img src="images/pay/nagad.png" alt="Nagad" onerror="this.remove()"><b>Nagad</b></span><small>Mobile banking</small></span>
+        <span class="pb rv" style="--c:#8c3494"><span class="plg"><img src="images/pay/rocket.png" alt="Rocket" onerror="this.remove()"><b>Rocket</b></span><small>Mobile banking</small></span>
+        <span class="pb rv" style="--c:#FFC21A"><span class="plg"><img src="images/pay/upay.png" alt="Upay" onerror="this.remove()"><b>upay</b></span><small>Mobile banking</small></span>
+        <span class="pb rv" style="--c:#F0B90B"><span class="plg"><svg viewBox="0 0 24 24" fill="#F0B90B" aria-hidden="true"><path d="M16.624 13.9202l2.7175 2.7154-7.353 7.353-7.353-7.352 2.7175-2.7164 4.6355 4.6595 4.6356-4.6595zm4.6366-4.6366L24 12l-2.7154 2.7164L18.5682 12l2.6924-2.7164zm-9.272.001l2.7163 2.6914-2.7164 2.7174v-.001L9.2721 12l2.7164-2.7154zm-9.2722-.001L5.4088 12l-2.6914 2.6924L0 12l2.7164-2.7164zM11.9885.0115l7.353 7.329-2.7174 2.7154-4.6356-4.6356-4.6355 4.6595-2.7174-2.7154 7.353-7.353z"/></svg><b>Binance</b></span><small>Crypto</small></span>
+        <span class="pb rv" style="--c:#FF4800"><span class="plg"><svg viewBox="0 0 24 24" fill="#FF4800" aria-hidden="true"><path d="M1.474 3.31c.234 1.802 1.035 5.642 1.398 7.263.095.459.201.853.298 1.013.501.865.907-.287.907-.287C5.644 6.616 3.17 3.597 2.38 2.787c-.139-.15-.384-.332-.608-.396-.32-.095-.374.086-.374.236.01.148.065.565.075.682zm21.835-1.463c.31.224 1.386 1.355 0 1.526-1.984.234-5.76.373-12.022 5.61C8.92 10.968 3.607 16.311.76 22.957a.181.181 0 01-.216.106c-.255-.074-.714-.352-.48-1.418.32-1.44 3.201-8.938 10.817-15.552 2.485-2.155 8.416-7.232 12.426-4.245z"/></svg><b>Payoneer</b></span><small>International</small></span>
+        <span class="pb rv" style="--c:#B4BCD6"><span class="plg"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 22h18M6 18v-7M10 18v-7M14 18v-7M18 18v-7M12 2l8 5H4z"/></svg><b>Bank Transfer</b></span><small>Direct deposit</small></span>
+      </div>
+      <div class="pnote rv"><span class="pa">↳</span><div><b>One thing to remember</b><p>Send payment, then share the Transaction ID on WhatsApp.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="reviews" class="wrap sec">
+  <div class="hhead rv">
+    <div><span class="eyebrow">Customer reviews</span><h2>Loved by <span class="grad">customers.</span></h2></div>
+    <div class="rbtns"><button class="fdk-open" type="button" data-fdk>Give feedback</button><a class="fb" href="https://www.facebook.com/streamx.com.bd/reviews" target="_blank" rel="noopener"><i><svg viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M9.101 23.691v-7.98H6.627v-3.667h2.474v-1.58c0-4.085 1.848-5.978 5.858-5.978.401 0 .955.042 1.468.103a8.68 8.68 0 0 1 1.141.195v3.325a8.623 8.623 0 0 0-.653-.036 26.805 26.805 0 0 0-.733-.009c-.707 0-1.259.096-1.675.309a1.686 1.686 0 0 0-.679.622c-.258.42-.374.995-.374 1.752v1.297h3.919l-.386 2.103-.287 1.564h-3.246v8.245C19.396 23.238 24 18.179 24 12.044c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.628 3.874 10.35 9.101 11.647Z"/></svg></i>Share your reviews on Facebook ↗</a></div>
+  </div>
+  <div class="pop rv" id="pop" aria-live="polite"></div>
+  <p class="rlabel rv">More from our customers <span>· click a card to see the full story</span></p>
+  <div class="rwall rv"><div class="rtrack" id="rrow1"></div><div class="rtrack back" id="rrow2"></div></div>
+</section>
+
+<section id="faq" class="wrap sec">
+  <div class="hhead rv">
+    <div><span class="eyebrow grad">Questions, answered</span><h2><span class="grad">FAQ</span></h2></div>
+    <p>Quick answers about delivery, payments, warranty and renewals.</p>
+  </div>
+  <div class="faq">
+    <div class="fq-side rv">
+      <div class="bub"><i></i><i></i><i></i></div>
+      <h3>Still have a question?</h3>
+      <p>Message us on WhatsApp. A real person will help with plans, payment or delivery.</p>
+      <a class="btn wa" data-wa="Hi StreamX! I have a question." href="#">Ask on WhatsApp ↗</a>
+    </div>
+    <div class="fq-list rv" id="faqList"></div>
+  </div>
+</section>
+
+<section id="cta" class="wrap sec">
+  <div class="cta2 zoom">
+    <i class="o o1"></i><i class="o o2"></i>
+    <span class="ch c1"><i style="background:#e50914"></i>Netflix</span>
+    <span class="ch c2"><i style="background:#1db954"></i>Spotify</span>
+    <span class="ch c3"><i style="background:#ff0000"></i>YouTube</span>
+    <span class="ch c4"><i style="background:#10a37f"></i>ChatGPT</span>
+    <span class="eyebrow grad">Ready when you are</span>
+    <h2>Ready to start <span class="grad">watching?</span></h2>
+    <p>Message us now, pick your plan and get your subscription today.</p>
+    <div class="ctab">
+      <a href="#" class="btn grad-bg" data-wa="Hi StreamX! I want to buy a subscription.">Chat on WhatsApp ↗</a>
+      <a href="#products" class="btn ghost">Browse products ↓</a>
+    </div>
+    <ul class="badges"><li>✓ Instant Delivery</li><li>✓ bKash / Nagad Accepted</li><li>✓ 24/7 Support</li></ul>
+  </div>
+</section>
+</main>
+
+<footer id="contact">
+  <div class="wrap ftrust"><div class="ftr rv" style="--k:0"><span class="ftri"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg></span><div><b>Instant delivery</b><small>After payment confirmation</small></div></div><div class="ftr rv" style="--k:1"><span class="ftri"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="14" x="2" y="5" rx="2"/><path d="M2 10h20"/></svg></span><div><b>Local payments</b><small>bKash, Nagad, Rocket, Upay</small></div></div><div class="ftr rv" style="--k:2"><span class="ftri"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg></span><div><b>Replacement warranty</b><small>For eligible subscriptions</small></div></div><div class="ftr rv" style="--k:3"><span class="ftri"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg></span><div><b>24/7 support</b><small>Real people on WhatsApp</small></div></div></div>
+  <div class="wrap fgrid">
+    <div class="fbrand rv">
+      <img src="logo.png" alt="StreamX" onerror="this.replaceWith(Object.assign(document.createElement('b'),{textContent:'StreamX'}))">
+      <p>Digital subscriptions, made easier for Bangladesh. Straightforward ordering, local payments and support when you need it.</p>
+      <!-- Edit your social links here -->
+      <div class="socs"><a class="soc2" style="--c:#E4405F" href="https://instagram.com/streamx.com.bd" target="_blank" rel="noopener" aria-label="Instagram" title="Instagram"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7.0301.084c-1.2768.0602-2.1487.264-2.911.5634-.7888.3075-1.4575.72-2.1228 1.3877-.6652.6677-1.075 1.3368-1.3802 2.127-.2954.7638-.4956 1.6365-.552 2.914-.0564 1.2775-.0689 1.6882-.0626 4.947.0062 3.2586.0206 3.6671.0825 4.9473.061 1.2765.264 2.1482.5635 2.9107.308.7889.72 1.4573 1.388 2.1228.6679.6655 1.3365 1.0743 2.1285 1.38.7632.295 1.6361.4961 2.9134.552 1.2773.056 1.6884.069 4.9462.0627 3.2578-.0062 3.668-.0207 4.9478-.0814 1.28-.0607 2.147-.2652 2.9098-.5633.7889-.3086 1.4578-.72 2.1228-1.3881.665-.6682 1.0745-1.3378 1.3795-2.1284.2957-.7632.4966-1.636.552-2.9124.056-1.2809.0692-1.6898.063-4.948-.0063-3.2583-.021-3.6668-.0817-4.9465-.0607-1.2797-.264-2.1487-.5633-2.9117-.3084-.7889-.72-1.4568-1.3876-2.1228C21.2982 1.33 20.628.9208 19.8378.6165 19.074.321 18.2017.1197 16.9244.0645 15.6471.0093 15.236-.005 11.977.0014 8.718.0076 8.31.0215 7.0301.0839m.1402 21.6932c-1.17-.0509-1.8053-.2453-2.2287-.408-.5606-.216-.96-.4771-1.3819-.895-.422-.4178-.6811-.8186-.9-1.378-.1644-.4234-.3624-1.058-.4171-2.228-.0595-1.2645-.072-1.6442-.079-4.848-.007-3.2037.0053-3.583.0607-4.848.05-1.169.2456-1.805.408-2.2282.216-.5613.4762-.96.895-1.3816.4188-.4217.8184-.6814 1.3783-.9003.423-.1651 1.0575-.3614 2.227-.4171 1.2655-.06 1.6447-.072 4.848-.079 3.2033-.007 3.5835.005 4.8495.0608 1.169.0508 1.8053.2445 2.228.408.5608.216.96.4754 1.3816.895.4217.4194.6816.8176.9005 1.3787.1653.4217.3617 1.056.4169 2.2263.0602 1.2655.0739 1.645.0796 4.848.0058 3.203-.0055 3.5834-.061 4.848-.051 1.17-.245 1.8055-.408 2.2294-.216.5604-.4763.96-.8954 1.3814-.419.4215-.8181.6811-1.3783.9-.4224.1649-1.0577.3617-2.2262.4174-1.2656.0595-1.6448.072-4.8493.079-3.2045.007-3.5825-.006-4.848-.0608M16.953 5.5864A1.44 1.44 0 1 0 18.39 4.144a1.44 1.44 0 0 0-1.437 1.4424M5.8385 12.012c.0067 3.4032 2.7706 6.1557 6.173 6.1493 3.4026-.0065 6.157-2.7701 6.1506-6.1733-.0065-3.4032-2.771-6.1565-6.174-6.1498-3.403.0067-6.156 2.771-6.1496 6.1738M8 12.0077a4 4 0 1 1 4.008 3.9921A3.9996 3.9996 0 0 1 8 12.0077"/></svg></a><a class="soc2" style="--c:#25D366" href="https://wa.me/8801312850241" target="_blank" rel="noopener" aria-label="WhatsApp" title="WhatsApp"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg></a><a class="soc2" style="--c:#1877F2" href="https://facebook.com/streamx.com.bd" target="_blank" rel="noopener" aria-label="Facebook" title="Facebook"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9.101 23.691v-7.98H6.627v-3.667h2.474v-1.58c0-4.085 1.848-5.978 5.858-5.978.401 0 .955.042 1.468.103a8.68 8.68 0 0 1 1.141.195v3.325a8.623 8.623 0 0 0-.653-.036 26.805 26.805 0 0 0-.733-.009c-.707 0-1.259.096-1.675.309a1.686 1.686 0 0 0-.679.622c-.258.42-.374.995-.374 1.752v1.297h3.919l-.386 2.103-.287 1.564h-3.246v8.245C19.396 23.238 24 18.179 24 12.044c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.628 3.874 10.35 9.101 11.647Z"/></svg></a><a class="soc2" style="--c:#26A5E4" href="https://t.me/+8801312850241" target="_blank" rel="noopener" aria-label="Telegram" title="Telegram"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg></a><a class="soc2" style="--c:#FFFFFF" href="https://x.com/streamx_bd" target="_blank" rel="noopener" aria-label="X" title="X"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M14.234 10.162 22.977 0h-2.072l-7.591 8.824L7.251 0H.258l9.168 13.343L.258 24H2.33l8.016-9.318L16.749 24h6.993zm-2.837 3.299-.929-1.329L3.076 1.56h3.182l5.965 8.532.929 1.329 7.754 11.09h-3.182z"/></svg></a></div>
+    </div>
+    <div class="fcol rv"><h4>Shop</h4><a href="#products">All products</a><a href="#bundles">Bundles</a><a href="#pricing">Pricing</a><a href="#how">How it works</a><a href="#reviews">Reviews</a></div>
+    <div class="fcol rv"><h4>Popular</h4><a href="#pricing" data-plan="Netflix">Netflix</a><a href="#pricing" data-plan="Amazon Prime Video">Prime Video</a><a href="#pricing" data-plan="Spotify">Spotify</a><a href="#pricing" data-plan="YouTube Premium">YouTube Premium</a><a href="#pricing" data-plan="ChatGPT">ChatGPT Plus</a><a href="#pricing" data-plan="Canva">Canva Pro</a></div>
+    <div class="fcol rv"><h4>Company</h4><a href="#" data-pol="about">About</a><a href="#faq">FAQ</a><a href="#" data-wa="Hi StreamX! I have a question.">Contact us</a><a href="#" data-pol="terms">Terms &amp; Condition</a><a href="#" data-pol="return">Return Policy</a></div>
+    <div class="fcol fct rv"><h4>Contact</h4>
+      <a class="ctile" data-wa="Hi StreamX!" href="#"><span class="ci2 wa-i"><svg viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg></span><span class="ct"><small>Chat on WhatsApp</small><b>+880 1312-850241</b></span></a>
+      <a class="ctile" href="https://www.google.com/maps/search/?api=1&amp;query=Dogair%2C%20Demra%2C%20Dhaka%201361" target="_blank" rel="noopener"><span class="ci2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s7-6.2 7-11.2A7 7 0 0 0 5 9.8C5 14.8 12 21 12 21z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="ct"><small>Address</small><b>Dogair, Demra, Dhaka - 1361</b></span></a>
+      <a class="ctile" href="#" data-fdk><span class="ci2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><path d="M9 9h.01M15 9h.01"/></svg></span><span class="ct"><small>Feedback</small><b>Tell us how we're doing</b></span></a>
+      <p class="fhrs"><span class="live"></span>Support available 24/7 on WhatsApp</p>
+    </div>
+  </div>
+  <div class="wrap fbar"><span>© 2026 StreamX. All rights reserved.</span><span>Independent reseller. Not affiliated with any brand shown.</span><a class="totop" href="#home" aria-label="Back to top"><span>Back to top</span><i>↑</i></a></div>
+</footer>
+
+<div id="overlay"></div>
+<aside id="drawer" aria-label="Cart">
+  <div class="dh"><h3><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg> Your Cart <span id="cartSub" class="csub"></span></h3><button id="closeCart" aria-label="Close">✕</button></div>
+  <div id="cartItems"></div>
+  <div class="df">
+    <div class="tip">
+      <div class="tip-h"><span>Add a tip <em>(optional)</em></span><small>Leave at ৳0 to skip</small></div>
+      <div class="tip-chips" id="tipChips"></div>
+      <input class="tip-in" id="tipIn" type="number" min="0" max="5000" inputmode="numeric" placeholder="Enter amount (৳)" aria-label="Custom tip amount">
+    </div>
+    <button class="cm-t" id="cmT" type="button" aria-expanded="false"><span>+</span> Add a comment <em>(optional)</em></button>
+    <div class="cm-box" id="cmBox"><div><textarea class="cm-in" id="cmIn" rows="2" maxlength="300" placeholder="Any note for your order? e.g. preferred profile name"></textarea></div></div>
+    <div class="srow"><span>Items</span><b id="cartItemsN">0</b></div>
+    <div class="srow tiprow" id="tipRow"><span>Tip</span><b id="tipVal">৳0</b></div>
+    <div class="tot"><span>Total</span><b id="cartTotal">৳0</b></div>
+    <a id="checkout" class="btn grad-bg" target="_blank" href="#">Checkout on WhatsApp ↗</a>
+    <p class="payhint">Pay with bKash · Nagad · Rocket · Upay</p>
+    <button id="clearCart" class="link">Clear cart</button>
+  </div>
+</aside>
+<div id="mdl" class="mdl" role="dialog" aria-modal="true"><div class="mdlb"><button class="mdlx" aria-label="Close">✕</button><h3 id="mdlt"></h3><div id="mdlc"></div></div></div>
+<div id="rmodal" class="rmd" role="dialog" aria-modal="true" aria-label="Customer story"><div class="rmb" id="rmb"></div></div>
+<div id="fdk" class="fdk" role="dialog" aria-modal="true" aria-labelledby="fdkT">
+  <div class="fdk-box">
+    <button class="fdk-x" type="button" aria-label="Close">✕</button>
+    <form id="fdkForm" novalidate>
+      <span class="eyebrow">Feedback</span>
+      <h3 id="fdkT">How are we doing?</h3>
+      <p class="fdk-sub">Your feedback helps us improve StreamX. It takes less than a minute.</p>
+      <div class="fdk-lbl">Your experience</div>
+      <div class="fdk-faces" id="fdkFaces"></div>
+      <div class="fdk-lbl">Topic</div>
+      <div class="fdk-chips" id="fdkChips"></div>
+      <div class="fdk-row">
+        <label><span class="fdk-lbl">Service used</span><select id="fdkSvc"></select></label>
+        <label><span class="fdk-lbl">Your name (optional)</span><input id="fdkName" type="text" placeholder="e.g. Rafiq" autocomplete="name"></label>
+      </div>
+      <label class="fdk-msgl"><span class="fdk-lbl">Your message</span><textarea id="fdkMsg" rows="4" placeholder="Tell us what went well, or what we can improve..."></textarea></label>
+      <p class="fdk-hint" id="fdkHint" role="alert"></p>
+      <button class="btn grad-bg fdk-send" type="submit"><svg class="fdk-wa" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>Send feedback on WhatsApp</button>
+      <small class="fdk-fine">Your message opens in WhatsApp, so you can read it before you send.</small>
+    </form>
+    <div class="fdk-done">
+      <svg class="fdk-check" viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="24"/><path d="M15 27l8 8 14-16"/></svg>
+      <h3>Thank you!</h3>
+      <p>Your feedback is ready in WhatsApp. Just press Send to deliver it to us.</p>
+      <div class="fdk-acts"><button class="btn ghost fdk-close" type="button">Close</button><a class="fb" href="https://www.facebook.com/streamx.com.bd/reviews" target="_blank" rel="noopener">Leave a public review on Facebook ↗</a></div>
+    </div>
+  </div>
+</div>
+<div id="agate" class="mdl" role="dialog" aria-modal="true" aria-labelledby="agT"><div class="mdlb"><h3 id="agT">Adults only (18+)</h3><p>This category contains services for adults only. Please confirm that you are 18 years or older to continue.</p><div class="ag-acts"><button class="btn grad-bg" id="agYes" type="button">I am 18 or older</button><button class="btn ghost" id="agNo" type="button">Go back</button></div></div></div>
+<div id="toast"></div>
+
+<a class="float wa" data-wa="Hi StreamX!" href="#" aria-label="Chat with us on WhatsApp"><span class="fi"><svg viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg><i></i></span><span class="ft"><b>Chat with us</b><small>WhatsApp support</small></span></a>
+<script src="logos.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
