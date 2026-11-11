@@ -8,6 +8,7 @@ Keep this file in your repo. When you start a new chat with Claude, upload the s
 - `script.js`: product data and all behavior (cart, filters, reviews, forms)
 - `logos.js`: brand logo icons (generated, rarely edited)
 - `logo.png`: your logo (used in the header and footer)
+- `favicon.ico`, `favicon-16x16.png`, `favicon-32x32.png`, `apple-touch-icon.png`, `icon-192.png`, `icon-512.png`: the browser tab icon (the X logo). The icon links are in the `<head>` of `index.html`.
 
 ## Where to change things (all in `script.js` unless noted)
 - **Products, plan types, prices:** the `CATALOG` list. Each plan type looks like `V("Share Profile","badge","summary",[features],[notes],{1:180,6:1000,12:1800})`. The numbers are months and prices in BDT.

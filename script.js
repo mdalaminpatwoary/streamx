@@ -55,6 +55,8 @@ const CATALOG=[
  V("OTP Login","","Bangla originals with simple, secure OTP-based login.",["Single-device access","Secure OTP-based login"],[],{1:80,6:360,12:580})]],
 ["Chorki","Streaming","#0ea5e9","Bangla series, films and originals on a PIN-protected profile.",[
  V("Profile & PIN","","Bangla originals on a PIN-protected profile.",["Single-device access","Profile and PIN protected"],[],{1:80,6:360,12:580})]],
+["IPTV","Streaming","#2563eb","Live TV streaming on iOS, Android and TV, with single-device login.",[
+ V("Standard","","Live TV streaming across your phone, tablet and TV.",["Supported on iOS, Android and TV","Single-device login"],[],{1:250,6:1200,12:1900})]],
 ["NordVPN","VPN","#4687ff","A fast, secure VPN for private browsing, with OTP-based login.",[
  V("Standard","","A fast, secure VPN for private browsing.",["Single-device access","Secure OTP-based login"],[],{1:200,6:1000,12:1500})]],
 ["Surfshark","VPN","#1ebfbf","A secure VPN for everyday privacy, with simple code-based login.",[
