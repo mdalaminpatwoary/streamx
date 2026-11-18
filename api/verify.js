@@ -64,6 +64,7 @@ module.exports = async (req, res) => {
     });
   } catch (e) {
     console.error("verify error", e && e.message);
-    return res.status(502).json({ error: "Could not check the payment right now." });
+    // 424 (not 5xx) so Cloudflare does not replace our JSON with its own error page.
+    return res.status(424).json({ error: "Could not check the payment right now." });
   }
 };

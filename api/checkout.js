@@ -91,12 +91,12 @@ module.exports = async (req, res) => {
     if (!(r.json && r.json.RedirectURL)) r = await send(c.txnType === 1 ? 10 : 1);
     if (!(r.json && r.json.RedirectURL)) {
       console.error("EPS initialize failed", r.status, r.text && r.text.slice(0, 400));
-      return res.status(502).json({ error: "The payment page could not be opened. Please try again or order on WhatsApp." });
+      return res.status(424).json({ error: "The payment page could not be opened. Please try again or order on WhatsApp." });
     }
     return res.status(200).json({ redirectUrl: r.json.RedirectURL });
   } catch (e) {
     console.error("checkout error", e && e.message);
     const safe = /Your cart|no longer available|not configured/.test(e && e.message) ? e.message : "Something went wrong. Please try again or order on WhatsApp.";
-    return res.status(/not configured/.test(e && e.message) ? 503 : 400).json({ error: safe });
+    return res.status(/not configured/.test(e && e.message) ? 424 : 400).json({ error: safe });
   }
 };
