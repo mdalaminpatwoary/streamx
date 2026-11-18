@@ -9,7 +9,7 @@
 
   function open() {
     if (!cart.length) return;
-    try { const b = JSON.parse(localStorage.getItem(KEY) || "{}"); $("#payName").value = b.n || ""; $("#payPhone").value = b.p || ""; $("#payEmail").value = b.e || ""; $("#payWaNo").value = b.w || ""; } catch (e) {}
+    try { const b = JSON.parse(localStorage.getItem(KEY) || "{}"); $("#payName").value = b.n || ""; $("#payPhone").value = b.p || ""; $("#payEmail").value = b.e || ""; } catch (e) {}
     $("#paySum").innerHTML = cart.map((c) => `<div><span>${c.name}${c.vr ? " · " + c.vr : ""} · ${c.v} <em>×${c.q}</em></span><b>${taka(c.p * c.q)}</b></div>`).join("") + (tip ? `<div><span>Tip</span><b>${taka(tip)}</b></div>` : "") + `<div class="pay-tot"><span>Total</span><b>${taka(total())}</b></div>`;
     $("#payGo").textContent = "Pay " + taka(total()) + " securely";
     const wl = $("#checkout"); if (wl) $("#payWa").href = wl.href;
@@ -25,17 +25,16 @@
 
   f.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const wano = $("#payWaNo").value.replace(/[\s-]/g, ""), note = $("#payNote").value.trim(), name = $("#payName").value.trim(), phone = $("#payPhone").value.replace(/[\s-]/g, ""), email = $("#payEmail").value.trim();
+    const note = $("#payNote").value.trim(), name = $("#payName").value.trim(), phone = $("#payPhone").value.replace(/[\s-]/g, ""), email = $("#payEmail").value.trim();
     if (name.length < 2) return (err.textContent = "Please enter your name.");
     if (!PHONE.test(phone)) return (err.textContent = "Enter a valid mobile number, e.g. 01712345678.");
-    if (wano && !PHONE.test(wano)) return (err.textContent = "Enter a valid WhatsApp number, e.g. 01712345678, or leave it empty.");
     if (!EMAIL.test(email)) return (err.textContent = "Enter a valid email address.");
     err.textContent = ""; go.disabled = true; go.classList.add("busy"); go.textContent = "Opening secure payment…";
-    try { localStorage.setItem(KEY, JSON.stringify({ n: name, p: phone, e: email, w: wano })); } catch (x) {}
+    try { localStorage.setItem(KEY, JSON.stringify({ n: name, p: phone, e: email })); } catch (x) {}
     try {
       const r = await fetch("/api/checkout", {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, phone, email, whatsapp: wano, tip, comment: [note, $("#cmIn").value.trim()].filter(Boolean).join(" | ").slice(0, 300), items: cart.map((c) => ({ name: c.name, vr: c.vr, v: c.v, q: c.q })) }),
+        body: JSON.stringify({ name, phone, email, tip, comment: [note, $("#cmIn").value.trim()].filter(Boolean).join(" | ").slice(0, 300), items: cart.map((c) => ({ name: c.name, vr: c.vr, v: c.v, q: c.q })) }),
       });
       const j = await r.json().catch(() => ({}));
       if (!r.ok || !j.redirectUrl) throw new Error(j.error || "Online payment is unavailable right now. Please order on WhatsApp.");

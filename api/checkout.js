@@ -15,9 +15,6 @@ module.exports = async (req, res) => {
     if (!EMAIL.test(email)) return res.status(400).json({ error: "Please enter a valid email address." });
     if (!PHONE.test(phone)) return res.status(400).json({ error: "Please enter a valid Bangladeshi mobile number (01XXXXXXXXX)." });
 
-    const wa = clean(b.whatsapp, 20).replace(/[\s-]/g, "");
-    if (wa && !PHONE.test(wa)) return res.status(400).json({ error: "Please enter a valid WhatsApp number or leave it empty." });
-
     const lines = priceCart(b.items);
     const tip = Math.max(0, Math.min(5000, Math.floor(Number(b.tip) || 0)));
     const comment = clean(b.comment, 300);
@@ -67,7 +64,7 @@ module.exports = async (req, res) => {
       valueA: comment,
       valueB: tip ? "Tip " + tip : "",
       valueC: summary.slice(0, 250),
-      valueD: wa ? "WhatsApp " + wa : "",
+      valueD: "",
       shippingMethod: "NO",
       noOfItem: String(lines.reduce((s, l) => s + l.q, 0)),
       productName: clean(lines.map((l) => l.name).join(", "), 100),
