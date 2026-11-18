@@ -1,0 +1,109 @@
+.wa {
+  background: #168a52;
+  color: #fff;
+}
+.float {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 60;
+  padding: 12px 20px;
+  border-radius: 40px;
+  font-weight: 600;
+  font-size: 13px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+  animation: pulse 2s infinite;
+}
+.float {
+  font-size: 14px;
+}
+.float.wa {
+  display: flex;
+  align-items: center;
+  padding: 7px;
+  border-radius: 60px;
+  background: rgba(10, 13, 28, 0.72);
+  -webkit-backdrop-filter: blur(16px) saturate(1.5);
+  backdrop-filter: blur(16px) saturate(1.5);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 14px 40px -10px rgba(0, 0, 0, 0.65);
+  animation: bob 4s ease-in-out infinite;
+  color: #fff;
+}
+.fi {
+  position: relative;
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #25d366, #128c7e);
+}
+.fi svg {
+  width: 25px;
+  height: 25px;
+  position: relative;
+  z-index: 1;
+}
+.fi::before,
+.fi::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid #25d366;
+  animation: ring 2.4s ease-out infinite;
+}
+.fi::after {
+  animation-delay: 1.2s;
+}
+.fi i {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  right: 0;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #4ade80;
+  border: 2px solid #0e1226;
+}
+.ft {
+  display: grid;
+  max-width: 180px;
+  overflow: hidden;
+  white-space: nowrap;
+  padding: 0 18px 0 12px;
+  opacity: 1;
+  transition:
+    max-width 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+    padding 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 0.4s;
+}
+.ft b {
+  font-size: 14px;
+  line-height: 1.25;
+}
+.ft small {
+  font-size: 12px;
+  color: var(--mut);
+}
+.float.min .ft {
+  max-width: 0;
+  padding: 0;
+  opacity: 0;
+}
+.float.min:hover .ft {
+  max-width: 180px;
+  padding: 0 18px 0 12px;
+  opacity: 1;
+}
+.float.wa:hover {
+  border-color: rgba(37, 211, 102, 0.6);
+  box-shadow: 0 14px 40px -10px rgba(37, 211, 102, 0.45);
+}
+.wa-i {
+  background: #25d366;
+  color: #fff;
+}

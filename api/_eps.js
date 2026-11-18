@@ -1,0 +1,84 @@
+/* EPS payment gateway helpers (server side only).
+   Secrets come from environment variables. They are NEVER sent to the browser. */
+const crypto = require("crypto");
+const fs = require("fs");
+const path = require("path");
+const vm = require("vm");
+
+const BASES = {
+  live: "https://pgapi.eps.com.bd/v1",
+  sandbox: "https://sandboxpgapi.eps.com.bd/v1",
+};
+
+function config() {
+  const env = (process.env.EPS_ENV || "sandbox").toLowerCase() === "live" ? "live" : "sandbox";
+  const c = {
+    env,
+    base: BASES[env],
+    merchantId: process.env.EPS_MERCHANT_ID,
+    storeId: process.env.EPS_STORE_ID,
+    userName: process.env.EPS_USERNAME,
+    password: process.env.EPS_PASSWORD,
+    hashKey: process.env.EPS_HASH_KEY,
+    txnType: Number(process.env.EPS_TXN_TYPE || 1),
+  };
+  const missing = ["merchantId", "storeId", "userName", "password", "hashKey"].filter((k) => !c[k]);
+  if (missing.length) throw new Error("Payment is not configured on the server (" + missing.join(", ") + ")");
+  return c;
+}
+
+// Mechanism from the EPS guide: HMAC-SHA512 (key = UTF-8 hash key), Base64 result.
+const xhash = (hashKey, data) =>
+  crypto.createHmac("sha512", Buffer.from(hashKey, "utf8")).update(data, "utf8").digest("base64");
+
+async function epsFetch(url, opts) {
+  const ctl = new AbortController();
+  const t = setTimeout(() => ctl.abort(), 20000);
+  try {
+    const r = await fetch(url, { ...opts, signal: ctl.signal });
+    const text = await r.text();
+    let json = null;
+    try { json = JSON.parse(text); } catch (e) {}
+    return { ok: r.ok, status: r.status, json, text };
+  } finally {
+    clearTimeout(t);
+  }
+}
+
+async function getToken(c) {
+  const r = await epsFetch(c.base + "/Auth/GetToken", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "x-hash": xhash(c.hashKey, c.userName) },
+    body: JSON.stringify({ userName: c.userName, password: c.password }),
+  });
+  if (!r.json || !r.json.token) throw new Error("EPS login failed" + (r.json && r.json.errorMessage ? ": " + r.json.errorMessage : ""));
+  return r.json.token;
+}
+
+// Load the SAME catalog the website uses, so prices are always taken from the server, never from the browser.
+let _products;
+function products() {
+  if (_products) return _products;
+  const file = path.join(process.cwd(), "assets", "js", "data", "catalog.js");
+  const code = fs.readFileSync(file, "utf8");
+  _products = vm.runInNewContext(code + "\n;PRODUCTS;", {}, { timeout: 2000 });
+  return _products;
+}
+
+const clean = (s, n) => String(s == null ? "" : s).replace(/[\u0000-\u001f<>]/g, " ").trim().slice(0, n);
+
+// Turn the cart sent by the browser into trusted lines (name, plan, price from the catalog).
+function priceCart(items) {
+  if (!Array.isArray(items) || !items.length || items.length > 30) throw new Error("Your cart is empty.");
+  const P = products();
+  return items.map((it) => {
+    const p = P.find((x) => x.name === it.name);
+    const vr = p && (it.vr ? p.variants.find((v) => v.n === it.vr) : p.variants[0]);
+    const pl = vr && vr.plans.find((x) => x.v === it.v);
+    const q = Math.floor(Number(it.q));
+    if (!pl || !(q >= 1 && q <= 20)) throw new Error("An item in your cart is no longer available. Please re-add it.");
+    return { name: p.name, plan: (p.variants.length > 1 ? vr.n + " · " : "") + pl.v, price: pl.p, q };
+  });
+}
+
+module.exports = { config, xhash, epsFetch, getToken, priceCart, clean };

@@ -1,0 +1,25 @@
+/* Online checkout modal + EPS banners */
+.pay-m .mdlb { max-width: 520px; max-height: 90vh; padding: 30px 28px; }
+.pay-m h3 { font-size: 24px; margin: 6px 0 14px; }
+.pay-sum { display: grid; gap: 8px; padding: 14px 16px; margin-bottom: 18px; background: rgba(255,255,255,.04); border: 1px solid var(--line); border-radius: 14px; font-size: 14px; color: var(--mut); }
+.pay-sum div { display: flex; justify-content: space-between; gap: 14px; }
+.pay-sum b { color: #fff; font-weight: 600; white-space: nowrap; }
+.pay-sum em { font-style: normal; color: #fff; opacity: .7; }
+.pay-sum .pay-tot { margin-top: 4px; padding-top: 10px; border-top: 1px solid var(--line); font-size: 16px; color: #fff; }
+.pay-m label { display: block; margin-bottom: 12px; }
+.pay-l { display: block; margin-bottom: 6px; font-size: 13px; font-weight: 600; color: var(--mut); }
+.pay-l em { font-weight: 400; font-style: normal; opacity: .75; }
+.pay-m input { width: 100%; padding: 13px 14px; font: inherit; font-size: 15px; color: #fff; background: rgba(255,255,255,.04); border: 1px solid var(--line); border-radius: 12px; outline: 0; transition: border-color .2s, box-shadow .2s; }
+.pay-m input:focus { border-color: var(--ac); box-shadow: 0 0 0 3px rgba(237,49,36,.18); }
+.pay-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.pay-err { min-height: 20px; margin: 2px 0 10px; font-size: 14px; color: #ff7a70; }
+.pay-go { width: 100%; text-align: center; }
+.pay-go:disabled { opacity: .6; cursor: progress; }
+.pay-eps { display: block; width: 100%; height: auto; margin: 16px 0 8px; border-radius: 12px; }
+.pay-fine { display: block; text-align: center; font-size: 12.5px; color: var(--mut); }
+@media (max-width: 560px) { .pay-row { grid-template-columns: 1fr; } .pay-m .mdlb { padding: 26px 20px; } }
+.df .btn.alt { margin-top: 10px; background: transparent; border: 1px solid var(--line); color: #fff; box-shadow: none; }
+.df .btn.alt:hover { border-color: rgba(255,255,255,.35); }
+.df .btn.alt::after { display: none; }
+.eps-strip { display: block; margin: 18px 0; border-radius: 16px; overflow: hidden; }
+.eps-strip img { display: block; width: 100%; height: auto; }

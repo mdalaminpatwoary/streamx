@@ -1,0 +1,95 @@
+.btn {
+  display: inline-block;
+  padding: 13px 24px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 14px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: 0.25s;
+}
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(79, 107, 255, 0.35);
+}
+.ghost {
+  border-color: #303860;
+  background: transparent;
+  color: #fff;
+}
+.btn:active {
+  transform: scale(0.96);
+}
+.lm {
+  padding: 14px 38px;
+  border-radius: 40px;
+  background: transparent;
+  border: 1px solid #303860;
+  color: #fff;
+  font-family: Manrope, sans-serif;
+  letter-spacing: 0.3px;
+  position: relative;
+}
+.lm:hover {
+  border-color: #ed3124;
+  background: linear-gradient(
+    90deg,
+    rgba(79, 107, 255, 0.18),
+    rgba(237, 49, 36, 0.18)
+  );
+}
+.btn {
+  position: relative;
+  overflow: hidden;
+}
+.btn::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -120%;
+  width: 55%;
+  height: 100%;
+  background: linear-gradient(
+    100deg,
+    transparent,
+    rgba(255, 255, 255, 0.28),
+    transparent
+  );
+  transform: skewX(-20deg);
+  pointer-events: none;
+}
+.btn:hover::after {
+  animation: sweep 0.8s ease;
+}
+.pf {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+  padding-top: 20px;
+}
+.go {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid #303860;
+  display: grid;
+  place-items: center;
+  background: none;
+  color: #fff;
+  font-size: 18px;
+  cursor: pointer;
+  transition: 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.btn {
+  font-size: 15px;
+}
+.btn.grad-bg {
+  transition:
+    translate 0.25s ease-out,
+    transform 0.25s,
+    box-shadow 0.3s;
+}
+.btn {
+  border-radius: 10px;
+}

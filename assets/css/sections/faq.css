@@ -1,0 +1,155 @@
+.faq {
+  display: grid;
+  grid-template-columns: 0.8fr 1.5fr;
+  gap: 64px;
+  margin-top: 56px;
+  align-items: start;
+}
+.fq-side {
+  position: sticky;
+  top: 100px;
+  background: #111631;
+  border-radius: 6px;
+  padding: 34px 30px;
+}
+.fq-side h3 {
+  font-size: 24px;
+  letter-spacing: -0.4px;
+  margin-bottom: 10px;
+}
+.fq-side p {
+  color: #b4bcd6;
+  font-size: 14px;
+  margin-bottom: 24px;
+}
+.fq-list {
+  border-top: 1px solid var(--line);
+}
+.fq {
+  position: relative;
+  border-bottom: 1px solid var(--line);
+  transition: background 0.3s;
+}
+.fqb {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  padding: 24px 18px;
+  background: none;
+  border: 0;
+  color: #fff;
+  font:
+    600 16px Manrope,
+    sans-serif;
+  text-align: left;
+  cursor: pointer;
+}
+.fn {
+  font-size: 11px;
+  color: #7f89b0;
+  font-weight: 500;
+}
+.fqq {
+  flex: 1;
+}
+.fq:hover,
+.fq.on {
+  background: linear-gradient(90deg, rgba(79, 107, 255, 0.12), transparent);
+}
+.fq.on .fpl {
+  transform: rotate(135deg);
+  border-color: #ed3124;
+  color: #ffb1aa;
+  box-shadow: 0 0 18px rgba(237, 49, 36, 0.4);
+}
+.fq::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 20px;
+  bottom: 20px;
+  width: 3px;
+  border-radius: 3px;
+  background: var(--g);
+  transform: scaleY(0);
+  transition: 0.35s;
+}
+.fq.on::before {
+  transform: scaleY(1);
+}
+.fqa {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.4s ease;
+}
+.fq.on .fqa {
+  grid-template-rows: 1fr;
+}
+.fqa > div {
+  overflow: hidden;
+}
+.fqa p {
+  padding: 0 72px 26px 58px;
+  color: #b4bcd6;
+  font-size: 14px;
+  line-height: 1.8;
+}
+.fq-list.in .fq {
+  animation: rowIn 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+  animation-delay: calc(var(--k) * 80ms + 150ms);
+}
+@media (max-width: 900px) {
+  .faq {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  .fq-side {
+    position: static;
+  }
+  .fqa p {
+    padding: 0 20px 24px 18px;
+  }
+}
+.fn {
+  font-size: 12px;
+}
+.fq-side p {
+  font-size: 15px;
+}
+.fqa p {
+  font-size: 15.5px;
+}
+.fqb {
+  font-size: 17px;
+}
+@media (max-width: 600px) {
+  .fqb {
+    font-size: 16px;
+  }
+  .fqa p {
+    font-size: 15px;
+  }
+}
+.fq-side {
+  border-radius: 16px;
+}
+.fn2 {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  margin: 0 auto 26px;
+  border: 2px solid var(--line);
+  border-radius: 50%;
+  background: var(--bg);
+  font-weight: 800;
+  color: var(--mut);
+}
+@media (max-width: 860px) {
+  .fn2 {
+    margin: 0;
+  }
+}

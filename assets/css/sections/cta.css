@@ -1,0 +1,108 @@
+.cta {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 28px 0;
+}
+.final {
+  background: linear-gradient(135deg, #1a2350, #4a1f1f);
+  border-radius: 20px;
+  padding: 50px 20px;
+  text-align: center;
+}
+.final h2 {
+  margin-bottom: 10px;
+}
+.final p {
+  color: #ddd;
+  margin-bottom: 22px;
+}
+.cta2 {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-radius: 28px;
+  padding: 96px 24px 84px;
+  text-align: center;
+  background: #0e1226;
+}
+.cta2::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: conic-gradient(
+    from var(--a),
+    #4f6bff,
+    transparent 30%,
+    #ed3124 55%,
+    transparent 80%,
+    #4f6bff
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box exclude,
+    linear-gradient(#000 0 0);
+  animation: ang 6s linear infinite;
+  pointer-events: none;
+}
+.cta2 > * {
+  position: relative;
+  z-index: 1;
+}
+.cta2 .o {
+  position: absolute;
+  z-index: -1;
+  border-radius: 50%;
+  filter: blur(80px);
+  animation: orbf 9s ease-in-out infinite alternate;
+}
+.cta2 h2 {
+  font-size: clamp(34px, 6vw, 66px);
+  font-weight: 800;
+  letter-spacing: -2px;
+  line-height: 1.1;
+  padding: 0;
+  margin: 14px 0 16px;
+}
+.cta2 h2::after {
+  display: none;
+}
+.cta2 > p {
+  max-width: 520px;
+  margin: 0 auto 32px;
+  color: #c5cce2;
+}
+.cta2 .btn {
+  padding: 15px 30px;
+}
+.cta2 .badges {
+  justify-content: center;
+  margin-top: 34px;
+}
+.cta2::before {
+  animation: none;
+  background: linear-gradient(
+    135deg,
+    rgba(237, 49, 36, 0.7),
+    rgba(79, 107, 255, 0.35)
+  );
+}
+.cta2 .o {
+  animation: none;
+  opacity: 0.5;
+}
+.cta2 {
+  border-radius: 22px;
+}
+#cta {
+  --band: linear-gradient(
+    180deg,
+    rgba(237, 49, 36, 0.07),
+    rgba(237, 49, 36, 0.02)
+  );
+}

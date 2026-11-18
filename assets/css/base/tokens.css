@@ -1,0 +1,11 @@
+:root {
+  --bg: #0a0d1a;
+  --card: #10142a;
+  --line: #1f2542;
+  --tx: #f4f6fb;
+  --mut: #98a1bc;
+  --g: linear-gradient(90deg, #ed3124, #ff4f3f);
+}
+:root {
+  --ac: #ed3124;
+}

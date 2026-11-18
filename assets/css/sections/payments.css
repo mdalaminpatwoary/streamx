@@ -1,0 +1,8 @@
+#payments {
+  padding-top: 120px;
+  --band: linear-gradient(
+    180deg,
+    rgba(237, 49, 36, 0.055),
+    rgba(237, 49, 36, 0.015)
+  );
+}

@@ -1,0 +1,25 @@
+.why {
+  display: grid;
+  grid-template-columns: 0.9fr 1.3fr;
+  gap: 72px;
+  margin-top: 56px;
+  align-items: start;
+}
+.why:hover .wi.on::after {
+  animation-play-state: paused;
+}
+@media (max-width: 900px) {
+  .why {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+}
+#whyPanel.wp {
+  position: sticky;
+  top: 100px;
+}
+@media (max-width: 900px) {
+  #whyPanel.wp {
+    position: static;
+  }
+}
