@@ -24,9 +24,9 @@ const CATALOG=[
 ["Spotify","Music & Audio","#1db954","Ad-free music on your own email, with a Bangladesh or Global region plan.",[
  V("Bangladesh Region","Instant","Ad-free music for listeners in Bangladesh.",["Works in Bangladesh only","Activated on your own email","Instant delivery"],[],{1:135,6:780,12:1440}),
  V("Global Region","Any country","Ad-free music that works in any country.",["Works in any country","Activated on your own email"],[SLOW],{1:200,6:1000,12:1650})]],
-["YouTube Premium","Streaming","#ff0000","Ad-free videos and background play on your own email, for Android, web or Apple.",[
- V("Android & Web","Auto renewal","Ad-free YouTube with background play, for Android and web.",["Works on Android and web","Activated on your own email","Automatic renewal","Instant delivery"],[],{1:185,6:1000,12:1900}),
- V("Apple Users","iPhone & iPad","Ad-free YouTube for Apple users, activated on your own email.",["Designed for Apple users","Activated on your own email"],["Invitation must be accepted every month",STOCK],{1:200,6:1100,12:2000})]],
+["YouTube Premium","Streaming","#ff0000","Ad-free videos, background play and YouTube Music Premium included, on your own email, for Android, web or Apple.",[
+ V("Android & Web","Auto renewal","Ad-free YouTube with background play and YouTube Music Premium, for Android and web.",["Includes YouTube Music Premium","Works on Android and web","Activated on your own email","Automatic renewal","Instant delivery"],[],{1:185,6:1000,12:1900}),
+ V("Apple Users","iPhone & iPad","Ad-free YouTube with YouTube Music Premium for Apple users, activated on your own email.",["Includes YouTube Music Premium","Designed for Apple users","Activated on your own email"],["Invitation must be accepted every month",STOCK],{1:200,6:1100,12:2000})]],
 ["ChatGPT","AI Tools","#10a37f","Your everyday AI assistant, as a shared or personal account, renewable or ready-made.",[
  V("Share · Non-renewable","Lowest price","A shared account at the lowest price.",["Shared account","Single-device access"],["Non-renewable"],{1:250,6:1200,12:2000}),
  V("Share · Renewable","Renewable","A shared account that you can renew.",["Shared account","Single-device access","Renewable"],[],{1:350,6:1800,12:3000}),
