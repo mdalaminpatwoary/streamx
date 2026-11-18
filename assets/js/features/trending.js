@@ -141,13 +141,12 @@
     tin.innerHTML=`<div class="tt-hero" style="${d.bd?`--bd:url(https://image.tmdb.org/t/p/w780${esc(d.bd)})`:""}">
       <div class="tt-media" id="ttMedia">${d.yt?`<button class="tt-play" type="button" id="ttPlay" aria-label="Play trailer"><span><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span><b>Play trailer</b></button>`:`<div class="tt-nt">No trailer available</div>`}</div></div>
       <div class="tt-body">
-        <h3>${esc(d.t)}</h3>${d.tag?`<p class="tt-tag">${esc(d.tag)}</p>`:""}
+        <div class="tt-head"><div class="tt-ttl"><h3>${esc(d.t)}</h3>${d.tag?`<p class="tt-tag">${esc(d.tag)}</p>`:""}</div>${buyCard()}</div>
         <div class="tt-meta">${meta}${d.v?`<span class="tt-rate">★ ${d.v}<small>/10 TMDB${d.vc?` · ${d.vc.toLocaleString()} votes`:""}</small></span>`:""}</div>
         ${d.g.length?`<div class="tt-gen">${d.g.map(g=>`<i>${esc(g)}</i>`).join("")}</div>`:""}
         ${d.o?`<p class="tt-ov">${esc(d.o)}</p>`:""}
         ${d.dir?`<p class="tt-dir"><small>${d.k==="tv"?"Created by":"Director"}</small> ${esc(d.dir)}</p>`:""}
         ${d.cast.length?`<div class="tt-cast">${d.cast.slice(0,6).map(c=>`<div>${c.p?`<img src="https://image.tmdb.org/t/p/w185${esc(c.p)}" alt="" loading="lazy">`:`<span class="tt-ph">${esc(c.n[0]||"")}</span>`}<b>${esc(c.n)}</b><small>${esc(c.c)}</small></div>`).join("")}</div>`:""}
-        ${buyCard()}
         <div class="tt-act">${d.imdb?`<a class="btn imdb" href="https://www.imdb.com/title/${esc(d.imdb)}/" target="_blank" rel="noopener"><b>IMDb</b> View ratings &amp; reviews ↗</a>`:`<a class="btn ghost" href="https://www.imdb.com/find/?q=${encodeURIComponent(d.t)}" target="_blank" rel="noopener">Search on IMDb ↗</a>`}
           ${d.yt?`<a class="btn ghost" href="https://www.youtube.com/watch?v=${esc(d.yt)}" target="_blank" rel="noopener">Open on YouTube ↗</a>`:""}</div>
       </div>`;
