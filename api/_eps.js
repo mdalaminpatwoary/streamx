@@ -12,14 +12,15 @@ const BASES = {
 
 function config() {
   const env = (process.env.EPS_ENV || "sandbox").toLowerCase() === "live" ? "live" : "sandbox";
+  const t = (v) => (v == null ? v : String(v).trim());
   const c = {
     env,
     base: BASES[env],
-    merchantId: process.env.EPS_MERCHANT_ID,
-    storeId: process.env.EPS_STORE_ID,
-    userName: process.env.EPS_USERNAME,
-    password: process.env.EPS_PASSWORD,
-    hashKey: process.env.EPS_HASH_KEY,
+    merchantId: t(process.env.EPS_MERCHANT_ID),
+    storeId: t(process.env.EPS_STORE_ID),
+    userName: t(process.env.EPS_USERNAME),
+    password: t(process.env.EPS_PASSWORD),
+    hashKey: t(process.env.EPS_HASH_KEY),
     txnType: Number(process.env.EPS_TXN_TYPE || 1),
   };
   const missing = ["merchantId", "storeId", "userName", "password", "hashKey"].filter((k) => !c[k]);
@@ -53,7 +54,11 @@ async function getToken(c) {
     headers: { "Content-Type": "application/json", "x-hash": xhash(c.hashKey, c.userName) },
     body: JSON.stringify({ userName: c.userName, password: c.password }),
   });
-  if (!r.json || !r.json.token) throw stage("LOGIN", "EPS login failed (HTTP " + r.status + ")" + (r.json && r.json.errorMessage ? ": " + r.json.errorMessage : r.text ? ": " + r.text.slice(0, 120) : ""));
+  if (!r.json || !r.json.token) {
+    // Safe diagnostics (lengths only, never the values) so a bad copy/paste of a credential can be spotted.
+    const diag = ` | env=${c.env} user.len=${c.userName.length} pass.len=${c.password.length} key.len=${c.hashKey.length} key.endsWith(=)=${c.hashKey.endsWith("=")} trimmed=${c.userName === c.userName.trim() && c.hashKey === c.hashKey.trim()}`;
+    throw stage("LOGIN", "EPS login failed (HTTP " + r.status + ")" + (r.json && r.json.errorMessage ? ": " + r.json.errorMessage : r.text ? ": " + r.text.slice(0, 120) : "") + diag);
+  }
   return r.json.token;
 }
 
