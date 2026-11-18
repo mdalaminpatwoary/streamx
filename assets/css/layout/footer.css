@@ -958,3 +958,11 @@ footer {
 
 .fcol a.fdk-link{display:inline-flex;align-items:center;gap:8px}
 .fdk-link .fdk-ic{flex:none;color:#ff8a7c}
+
+/* Vertical feedback tab on the footer's right edge */
+#contact{position:relative}
+.fdk-tab{position:absolute;right:0;top:50%;transform:translateY(-50%);z-index:5;display:flex;flex-direction:column;align-items:center;gap:12px;padding:12px 8px 16px;border:1px solid rgba(255,255,255,.12);border-right:0;border-radius:14px 0 0 14px;background:linear-gradient(180deg,rgba(20,25,53,.9),rgba(10,13,28,.95));color:#fff;font:700 13px Manrope,sans-serif;letter-spacing:.08em;cursor:pointer;transition:background .25s,border-color .25s,padding .25s}
+.fdk-sq{display:grid;place-items:center;width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#ff5a45,#ed3124);box-shadow:0 8px 20px -8px rgba(237,49,36,.8)}
+.fdk-tx{writing-mode:vertical-rl;text-orientation:mixed;transform:rotate(180deg)}
+.fdk-tab:hover{border-color:rgba(237,49,36,.55);background:linear-gradient(180deg,rgba(40,20,36,.95),rgba(14,12,28,.97));padding-right:12px}
+@media(max-width:600px){.fdk-tab{padding:10px 6px 12px}.fdk-tx{font-size:12px}}
