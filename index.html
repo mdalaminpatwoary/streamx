@@ -27,8 +27,10 @@
 <link rel="stylesheet" href="assets/css/components/cart.css">
 <link rel="stylesheet" href="assets/css/components/checkout.css">
 <link rel="stylesheet" href="assets/css/sections/hero.css">
+<link rel="stylesheet" href="assets/css/sections/hero-modern.css">
 <link rel="stylesheet" href="assets/css/sections/marquee.css">
 <link rel="stylesheet" href="assets/css/sections/products.css">
+<link rel="stylesheet" href="assets/css/sections/trending.css">
 <link rel="stylesheet" href="assets/css/sections/bundles.css">
 <link rel="stylesheet" href="assets/css/sections/pricing.css">
 <link rel="stylesheet" href="assets/css/sections/why.css">
@@ -40,6 +42,7 @@
 <link rel="stylesheet" href="assets/css/sections/faq.css">
 <link rel="stylesheet" href="assets/css/sections/cta.css">
 <link rel="stylesheet" href="assets/css/layout/footer.css">
+<link rel="stylesheet" href="assets/css/base/premium-motion.css">
 </head>
 <body>
 <div class="rail" id="rail" aria-hidden="true"><i class="rl-fill"></i><i class="rl-dot"></i><b class="rl-pct" id="pct">0%</b></div>
@@ -51,6 +54,7 @@
       <span id="ind"></span>
       <a href="#home" data-bn="হোম">Home</a>
       <a href="#products" data-bn="প্রোডাক্ট">Products</a>
+      <a href="#trending" id="trNav" hidden>Trending</a>
       <a href="#pricing" data-bn="প্রাইস">Pricing</a>
       <a href="#how" data-bn="কীভাবে কিনবেন">How It Works</a>
       <a href="#reviews" data-bn="রিভিউ">Reviews</a>
@@ -67,26 +71,59 @@
 
 <main>
 <section id="home" class="hero wrap">
+  <div class="hx-bg" aria-hidden="true"><i class="hx-blob b1"></i><i class="hx-blob b2"></i><i class="hx-blob b3"></i><span class="hx-grid"></span></div>
   <div class="hero-text">
-    <span class="eyebrow">Your digital life, locally priced</span>
-    <h1 data-bn="বাংলাদেশে সেরা দামে <span class='grad'>প্রিমিয়াম</span> সাবস্ক্রিপশন">Premium Subscriptions at the <span class="grad">Best Price</span> in Bangladesh</h1>
-    <p>Netflix nights, Spotify on repeat, Prime Video, YouTube Premium and more—ordered simply with bKash, Nagad or Rocket. Message us and get your subscription delivered fast.</p>
+    <span class="hx-tag"><i class="hx-dot"></i><span data-bn="বাংলাদেশের বিশ্বস্ত ডিজিটাল সাবস্ক্রিপশন স্টোর">Bangladesh's trusted digital subscription store</span></span>
+    <h1 class="hx-title" data-bn="প্রিমিয়াম সাবস্ক্রিপশন, <span class='grad'>বাংলাদেশের উপযোগী দামে।</span>">Premium subscriptions, <span class="grad">priced for Bangladesh.</span></h1>
+    <p class="hx-lead" data-bn="Netflix, Spotify, Prime Video, YouTube Premium, ChatGPT এবং আরও অনেক কিছু—স্থানীয় দামে, কয়েক মিনিটেই চালু। bKash, Nagad, Rocket, Upay, কার্ডসহ প্রায় সব পেমেন্ট মাধ্যমে নিরাপদে অনলাইনে পেমেন্ট করুন, অথবা হোয়াটসঅ্যাপে অর্ডার করুন।">Netflix, Spotify, Prime Video, YouTube Premium, ChatGPT and more, at local prices and activated within minutes. Pay securely online with bKash, Nagad, Rocket, Upay, cards and most other methods, or order through WhatsApp.</p>
     <div class="cta">
-      <a href="#products" class="btn grad-bg" data-bn="প্রোডাক্ট দেখুন">View Products ↓</a>
+      <a href="#products" class="btn grad-bg hx-btn"><span data-bn="সাবস্ক্রিপশন দেখুন">Browse subscriptions</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
       <a href="#" class="btn ghost" data-wa="Hi StreamX! I want to order a subscription." data-bn="হোয়াটসঅ্যাপে অর্ডার করুন">Order on WhatsApp ↗</a>
     </div>
-    <ul class="badges"><li>✓ Instant Delivery</li><li>✓ bKash / Nagad Accepted</li><li>✓ 24/7 Support</li></ul>
+    <div class="hx-pay"><span class="hx-pay-l" data-bn="যেভাবে খুশি পেমেন্ট করুন">Pay your way</span><ul><li>bKash</li><li>Nagad</li><li>Rocket</li><li>Upay</li><li>Visa</li><li>Mastercard</li><li data-bn="আরও">+ more</li></ul></div>
+    <ul class="hx-trust">
+      <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><span data-bn="দ্রুত অ্যাক্টিভেশন">Fast activation</span></li>
+      <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 6v6c0 4.5 3.2 8 8 9 4.8-1 8-4.5 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg><span data-bn="নিরাপদ চেকআউট">Secure checkout</span></li>
+      <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13v-1a8 8 0 0 1 16 0v1"/><rect x="3" y="13" width="4" height="6" rx="1.5"/><rect x="17" y="13" width="4" height="6" rx="1.5"/></svg><span data-bn="২৪/৭ সাপোর্ট">24/7 support</span></li>
+    </ul>
   </div>
-  <div class="hero-art">
-    <div class="orb"></div>
-    <div class="fc f1"><i data-logo="netflix">N</i><b>NETFLIX</b><small>Watch your way</small></div>
-    <div class="fc f2"><i data-logo="spotify">♪</i><b>SPOTIFY</b><small>Listen without limits</small></div>
-    <div class="fc f3"><i data-logo="youtube">▶</i><b>YOUTUBE</b><small>Premium, made easy</small></div>
-    <div class="fc f4"><i style="background:#4F6BFF">৳</i><b>LOCAL PAYMENTS</b><small>bKash · Nagad · Rocket</small></div>
+  <div class="hero-art hx-stage" aria-hidden="true">
+    <div class="hx-ring r1"><i></i></div><div class="hx-ring r2"><i></i></div>
+    <div class="hx-card" id="hxCard">
+      <div class="hx-ch"><b>Order <em>#SX-2841</em></b><span class="hx-live"><i></i><span data-bn="লাইভ">Live</span></span></div>
+      <div class="hx-item"><i data-logo="netflix"></i><div><b>Netflix</b><small>Share Profile · 1 Month</small></div><span class="hx-state"><span class="a" data-bn="প্রক্রিয়াধীন">Processing</span><span class="b" data-bn="ডেলিভারি হয়েছে">Delivered</span></span></div>
+      <ol class="hx-steps">
+        <li><i><svg viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></i><div><b data-bn="অর্ডার গৃহীত">Order received</b><small data-bn="আপনার অর্ডার নিশ্চিত হয়েছে">Your order is confirmed</small></div></li>
+        <li><i><svg viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></i><div><b data-bn="পেমেন্ট নিশ্চিত">Payment confirmed</b><small data-bn="নিরাপদ পেমেন্ট সম্পন্ন">Secure payment verified</small></div></li>
+        <li><i><svg viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></i><div><b data-bn="অ্যাকাউন্ট ডেলিভারি">Account delivered</b><small data-bn="লগইন তথ্য আপনার কাছে পাঠানো হয়েছে">Login details sent to you</small></div></li>
+      </ol>
+      <div class="hx-bar"><i></i></div>
+    </div>
+    <div class="hx-tile t1"><i data-logo="spotify"></i><span>Spotify</span></div>
+    <div class="hx-tile t2"><i data-logo="youtube"></i><span>YouTube</span></div>
+    <div class="hx-tile t3"><i data-logo="openai"></i><span>ChatGPT</span></div>
+    <div class="hx-tile t4"><i data-logo="primevideo"></i><span>Prime Video</span></div>
   </div>
 </section>
 
 <section class="marq" aria-label="Subscriptions we provide"><p class="marq-t">Premium services we provide</p><div class="mq"><div class="mt" id="mqTrack"></div></div></section>
+
+<section id="trending" class="wrap sec" hidden>
+  <div class="hhead rv"><div><span class="eyebrow">Now streaming</span><h2>What's <span class="grad">trending.</span></h2></div><p>The top 10 movies and series on your favourite platforms. Pick a region to see what people there are watching.</p></div>
+  <div class="tr-bar rv">
+    <div class="tr-tabs" id="trTabs" role="tablist" aria-label="Streaming platform"><span class="tr-ink" aria-hidden="true"></span></div>
+    <div class="tr-ctl">
+      <div class="tr-seg" id="trType" role="group" aria-label="Show"><span class="tr-thumb" aria-hidden="true"></span><button type="button" data-k="all" class="on">All</button><button type="button" data-k="movie">Movies</button><button type="button" data-k="tv">Series</button></div>
+      <div class="tr-reg" id="trReg">
+        <button type="button" class="tr-regbtn" id="trRegBtn" aria-haspopup="listbox" aria-expanded="false"><img id="trFlag" alt="" width="22" height="16"><span id="trRegName">Bangladesh</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+        <div class="tr-pop" id="trPop" hidden><input type="search" id="trRegQ" placeholder="Search country" aria-label="Search country" autocomplete="off"><ul id="trRegList" role="listbox" aria-label="Region"></ul></div>
+      </div>
+    </div>
+  </div>
+  <div class="tr-stage" id="trStage" aria-live="polite"><div class="tr-rail" id="trRail"></div></div>
+  <div class="tr-cta rv" id="trCta"></div>
+  <p class="note tr-credit">Ranked by popularity on each platform in the selected region and refreshed hourly. This product uses the TMDB API but is not endorsed or certified by TMDB.</p>
+</section>
 
 <section id="products" class="wrap sec">
   <div class="hhead rv"><div><span class="eyebrow">Our products</span><h2>Everything you <span class="grad">stream.</span></h2></div><p>Premium streaming, AI, VPN and learning subscriptions at local prices. Pick a service to see every plan.</p></div>
@@ -115,7 +152,7 @@
   <div class="pbar rv"><span id="pLogo"></span><div class="pinfo"><b id="pName"></b><small id="pDesc"></small></div><select id="pickProduct" aria-label="Choose product"></select></div>
   <div id="planTable"></div>
   <p class="try-link">Want to try first? <a href="#trial">Ask about delivery before payment →</a></p>
-  <p class="note">* Prices are examples. Message us on WhatsApp for today's latest price.</p>
+  <p class="note">* Prices are in BDT and shown again at checkout. Questions about a plan? Message us on WhatsApp.</p>
 </section>
 
 <section id="trial" class="wrap sec">
@@ -209,9 +246,9 @@
   <div class="journey" id="steps">
     <svg class="jwave" viewBox="0 0 1000 120" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="jg" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#4F6BFF"/><stop offset="1" stop-color="#ED3124"/></linearGradient></defs><path class="jbase" d="M0,80 L125,80 C250,80 250,40 375,40 C500,40 500,80 625,80 C750,80 750,40 875,40 L1000,40"/><path class="jdraw" d="M0,80 L125,80 C250,80 250,40 375,40 C500,40 500,80 625,80 C750,80 750,40 875,40 L1000,40" pathLength="1"/></svg>
     <div class="jn" style="--k:0;--y:80px"><span class="gn" aria-hidden="true">01</span><span class="jc"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/></svg><b class="jb">1</b></span><div class="jt"><h3>Choose a plan</h3><p>Pick a service and the validity that works for you.</p></div></div>
-    <div class="jn" style="--k:1;--y:40px"><span class="gn" aria-hidden="true">02</span><span class="jc"><svg class="fillv" viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg><b class="jb">2</b></span><div class="jt"><h3>Message on WhatsApp</h3><p>Tap Order and your product and plan details are ready to send.</p></div></div>
-    <div class="jn" style="--k:2;--y:80px"><span class="gn" aria-hidden="true">03</span><span class="jc"><svg viewBox="0 0 24 24" aria-hidden="true"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg><b class="jb">3</b></span><div class="jt"><h3>Pay locally</h3><p>Send payment via bKash, Nagad, Rocket or another listed method.</p></div></div>
-    <div class="jn" style="--k:3;--y:40px"><span class="gn" aria-hidden="true">04</span><span class="jc"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m10 8 6 4-6 4Z"/></svg><b class="jb">4</b></span><div class="jt"><h3>Receive your subscription</h3><p>Share the Transaction ID on WhatsApp and get delivery details.</p></div></div>
+    <div class="jn" style="--k:1;--y:40px"><span class="gn" aria-hidden="true">02</span><span class="jc"><svg class="fillv" viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg><b class="jb">2</b></span><div class="jt"><h3>Order your way</h3><p>Add to cart and pay online, or tap Order to chat with us on WhatsApp.</p></div></div>
+    <div class="jn" style="--k:2;--y:80px"><span class="gn" aria-hidden="true">03</span><span class="jc"><svg viewBox="0 0 24 24" aria-hidden="true"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg><b class="jb">3</b></span><div class="jt"><h3>Pay securely</h3><p>Use bKash, Nagad, Rocket, Upay or a card on EPS's secure page, or send the payment yourself.</p></div></div>
+    <div class="jn" style="--k:3;--y:40px"><span class="gn" aria-hidden="true">04</span><span class="jc"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m10 8 6 4-6 4Z"/></svg><b class="jb">4</b></span><div class="jt"><h3>Receive your subscription</h3><p>Online payments are confirmed automatically. We then send your delivery details.</p></div></div>
   </div>
 </section>
 
@@ -277,10 +314,10 @@
     <span class="ch c4"><i style="background:#10a37f"></i>ChatGPT</span>
     <span class="eyebrow grad">Ready when you are</span>
     <h2>Ready to start <span class="grad">watching?</span></h2>
-    <p>Message us now, pick your plan and get your subscription today.</p>
+    <p>Pick your plan, pay online in seconds or order on WhatsApp, and start streaming today.</p>
     <div class="ctab">
-      <a href="#" class="btn grad-bg" data-wa="Hi StreamX! I want to buy a subscription.">Chat on WhatsApp ↗</a>
-      <a href="#products" class="btn ghost">Browse products ↓</a>
+      <a href="#products" class="btn grad-bg">Choose your plan</a>
+      <a href="#" class="btn ghost" data-wa="Hi StreamX! I want to buy a subscription.">Chat on WhatsApp ↗</a>
     </div>
     <ul class="badges"><li>✓ Instant Delivery</li><li>✓ bKash / Nagad Accepted</li><li>✓ 24/7 Support</li></ul>
   </div>
@@ -392,6 +429,7 @@
 <script src="assets/js/data/why.js"></script>
 <script src="assets/js/utils/helpers.js"></script>
 <script src="assets/js/utils/icons.js"></script>
+<script src="assets/js/utils/split-words.js"></script>
 <script src="assets/js/components/logo-tile.js"></script>
 <script src="assets/js/features/products.js"></script>
 <script src="assets/js/features/pricing.js"></script>
@@ -407,6 +445,9 @@
 <script src="assets/js/features/search-typing.js"></script>
 <script src="assets/js/layout/page-effects.js"></script>
 <script src="assets/js/features/front-logos.js"></script>
+<script src="assets/js/features/hero-motion.js"></script>
+<script src="assets/js/features/trending.js"></script>
+<script src="assets/js/layout/premium-motion.js"></script>
 <script src="assets/js/features/stats.js"></script>
 <script src="assets/js/features/steps.js"></script>
 <script src="assets/js/features/trial.js"></script>

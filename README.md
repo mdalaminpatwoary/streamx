@@ -38,6 +38,10 @@ assets/
 | About / Terms / Return Policy text | `assets/js/data/policies.js` |
 | "Why StreamX" items | `assets/js/data/why.js` |
 | "Try before you pay" quick list | `assets/js/features/trial.js` (`TRY_LIST`) |
+| Home hero text and order-card steps | `<section id="home">` in `index.html` (English text plus `data-bn` for Bangla) |
+| Home hero look and animation | `assets/css/sections/hero-modern.css` and `assets/js/features/hero-motion.js` |
+| Trending platforms and regions | `PLATFORMS` / `REGIONS` in `assets/js/features/trending.js` (and `api/trending.js`) |
+| Site-wide motion (progress bar, glow, tilt) | `assets/js/layout/premium-motion.js` and `assets/css/base/premium-motion.css` |
 | Colors (accent `--ac`, gradient `--g`) | `assets/css/base/tokens.css` |
 | Numbers section values | `data-to` attributes in `index.html` |
 | Social links | footer in `index.html` |
@@ -64,6 +68,7 @@ The site pays through EPS. Secrets stay on the server in `api/`, never in the we
 api/_eps.js       EPS login, hash (HMAC-SHA512), prices the cart from assets/js/data/catalog.js
 api/checkout.js   POST: creates the EPS payment and returns the payment page link
 api/verify.js     GET: asks EPS if a payment succeeded (used by payment-result.html)
+api/trending.js   GET: top 10 movies and series per platform and region (TMDB), cached for an hour
 payment-result.html   Page customers land on after paying, cancelling or failing
 vercel.json       Makes sure the catalog file is available to the API
 ```
@@ -82,3 +87,13 @@ Vercel > your project > Settings > Environment Variables (add to Production, Pre
 Order e-mails: after a **confirmed** payment a copy of the order (customer, phone, email, items, amount, transaction ID) is e-mailed to `streamx.com.bd@gmail.com`. Create a free account at resend.com **with that same Gmail address**, make an API key and add it as `RESEND_API_KEY`. Optional: `ORDER_EMAIL_TO` to change the address.
 
 Mark the password, hash key and API key as Sensitive. Test a sandbox payment first, then switch to the live values and `EPS_ENV=live`. Prices are always taken from `catalog.js` on the server, so changing a price there changes what is charged.
+
+## Trending section (TMDB)
+
+The "What's trending" section shows the top 10 movies and series per streaming platform and region. It stays hidden until data loads, so nothing looks broken without a key.
+
+1. Create a free account at themoviedb.org, then Settings > API, and copy the **API Key** (or the **API Read Access Token**).
+2. In Vercel add `TMDB_API_KEY` (mark it Sensitive) for all environments, then redeploy.
+3. Reload the site. The section and its menu link appear.
+
+Platforms and regions are listed at the top of `assets/js/features/trending.js` and `api/trending.js`. Rankings are TMDB popularity on each platform per region (not official viewing charts). TMDB asks for the attribution line, which is already shown under the section.

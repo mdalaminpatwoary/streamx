@@ -1,0 +1,145 @@
+/* Site-wide motion layer (see assets/js/layout/premium-motion.js). */
+.sx-progress {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 200;
+  height: 3px;
+  background: linear-gradient(90deg, #4f6bff, #ed3124 70%, #ff8a5c);
+  box-shadow: 0 0 14px rgba(237, 49, 36, 0.6);
+  transform: scaleX(var(--sp, 0));
+  transform-origin: 0 50%;
+  pointer-events: none;
+}
+
+/* Ambient glow behind the whole page, drifting with scroll */
+.sx-ambient {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+.sx-ambient i {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(110px);
+  will-change: transform;
+}
+.sx-ambient i:nth-child(1) {
+  top: -10%;
+  left: -8%;
+  width: 46vw;
+  height: 46vw;
+  background: radial-gradient(circle, rgba(79, 107, 255, 0.22), transparent 65%);
+  translate: calc(var(--sp, 0) * 55vw) calc(var(--sp, 0) * 70vh);
+}
+.sx-ambient i:nth-child(2) {
+  right: -12%;
+  bottom: -14%;
+  width: 52vw;
+  height: 52vw;
+  background: radial-gradient(circle, rgba(237, 49, 36, 0.16), transparent 65%);
+  translate: calc(var(--sp, 0) * -50vw) calc(var(--sp, 0) * -60vh);
+}
+.sx-ambient i:nth-child(3) {
+  top: 40%;
+  left: 38%;
+  width: 30vw;
+  height: 30vw;
+  background: radial-gradient(circle, rgba(122, 77, 255, 0.12), transparent 65%);
+  translate: calc(var(--sp, 0) * -25vw) calc(var(--sp, 0) * 30vh);
+}
+
+/* Cursor light */
+.sx-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  width: 520px;
+  height: 520px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.055), transparent 62%);
+  mix-blend-mode: screen;
+  opacity: 0;
+  transition: opacity 0.6s;
+  pointer-events: none;
+}
+.sx-cursor.on {
+  opacity: 1;
+}
+
+/* Section headings: words rise in one by one */
+.sx-h .w {
+  display: inline-block;
+  opacity: 0;
+  filter: blur(12px);
+  transform: translateY(0.5em) rotateX(-35deg);
+  transform-origin: 50% 100%;
+}
+.sx-h.in .w {
+  animation: sx-word 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-delay: calc(var(--i) * 80ms);
+}
+.sx-h .grad {
+  background: none;
+  color: inherit;
+}
+.sx-h .grad .w {
+  background: var(--g);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.sx-h.in .grad .w {
+  animation:
+    sx-word 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards,
+    hx-shimmer 6s ease-in-out infinite;
+  animation-delay: calc(var(--i) * 80ms), 0s;
+}
+
+/* Card glare that follows the pointer */
+.sx-gl {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  border-radius: inherit;
+  background: radial-gradient(
+    240px circle at var(--gx, 50%) var(--gy, 50%),
+    rgba(255, 255, 255, 0.14),
+    transparent 62%
+  );
+  opacity: 0;
+  transition: opacity 0.4s;
+  pointer-events: none;
+}
+:hover > .sx-gl {
+  opacity: 1;
+}
+.grid,
+.tr-rail {
+  perspective: 1200px;
+}
+
+/* Magnetic buttons ease back smoothly */
+.btn.sx-mag {
+  transition:
+    all 0.25s,
+    translate 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes sx-word {
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sx-progress,
+  .sx-ambient,
+  .sx-cursor {
+    display: none;
+  }
+}
