@@ -128,6 +128,14 @@
   function closeT(){dlg.hidden=true;tin.innerHTML="";document.documentElement.classList.remove("tt-open");if(lastFocus)lastFocus.focus()}
   dlg.addEventListener("click",e=>{if(e.target.closest("[data-x]"))closeT()});
   document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!dlg.hidden)closeT()});
+  function buyCard(){
+    const P=pl(),i=PRODUCTS.findIndex(x=>x.name===P.shop),prod=PRODUCTS[i];
+    const logo=prod?ptile(prod):`<span class="lg" style="background:${P.bg||"#1d2347"}">${esc(P.mono||P.name[0])}</span>`;
+    if(prod){const from=Math.min(...prod.variants.flatMap(v=>v.plans.map(x=>x.p)));
+      return `<div class="tt-buy">${logo}<div class="tt-buy-t"><b>Wanna watch it now? Grab yours.</b><span>${esc(P.name)} plans from <strong>${taka(from)}</strong></span></div><button class="btn grad-bg" type="button" data-buy="${i}">Buy now</button></div>`}
+    return `<div class="tt-buy">${logo}<div class="tt-buy-t"><b>Wanna watch it now? Grab yours.</b><span>Ask us for today's ${esc(P.name)} price</span></div><a class="btn grad-bg" target="_blank" rel="noopener" href="${wa("Hi StreamX! I want a "+P.name+" subscription.")}">Order on WhatsApp ↗</a></div>`;
+  }
+  tin.addEventListener("click",e=>{const b=e.target.closest("[data-buy]");if(!b)return;const i=+b.dataset.buy;closeT();showPlans(i,true)});
   function paintT(d){
     const meta=[d.y,d.k==="tv"?(d.seasons?d.seasons+" season"+(d.seasons>1?"s":""):"Series"):mins(d.rt),d.lang].filter(Boolean).map(x=>`<span>${esc(x)}</span>`).join("");
     tin.innerHTML=`<div class="tt-hero" style="${d.bd?`--bd:url(https://image.tmdb.org/t/p/w780${esc(d.bd)})`:""}">
@@ -139,6 +147,7 @@
         ${d.o?`<p class="tt-ov">${esc(d.o)}</p>`:""}
         ${d.dir?`<p class="tt-dir"><small>${d.k==="tv"?"Created by":"Director"}</small> ${esc(d.dir)}</p>`:""}
         ${d.cast.length?`<div class="tt-cast">${d.cast.slice(0,6).map(c=>`<div>${c.p?`<img src="https://image.tmdb.org/t/p/w185${esc(c.p)}" alt="" loading="lazy">`:`<span class="tt-ph">${esc(c.n[0]||"")}</span>`}<b>${esc(c.n)}</b><small>${esc(c.c)}</small></div>`).join("")}</div>`:""}
+        ${buyCard()}
         <div class="tt-act">${d.imdb?`<a class="btn imdb" href="https://www.imdb.com/title/${esc(d.imdb)}/" target="_blank" rel="noopener"><b>IMDb</b> View ratings &amp; reviews ↗</a>`:`<a class="btn ghost" href="https://www.imdb.com/find/?q=${encodeURIComponent(d.t)}" target="_blank" rel="noopener">Search on IMDb ↗</a>`}
           ${d.yt?`<a class="btn ghost" href="https://www.youtube.com/watch?v=${esc(d.yt)}" target="_blank" rel="noopener">Open on YouTube ↗</a>`:""}</div>
       </div>`;

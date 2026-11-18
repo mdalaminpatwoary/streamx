@@ -7,7 +7,9 @@
 }
 .tr-bar {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: stretch;
+  flex-wrap: nowrap;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
@@ -84,8 +86,9 @@
 
 /* Type switch and region picker */
 .tr-ctl {
-  margin-left: auto;
+  width: 100%;
   display: flex;
+  justify-content: space-between;
   flex-wrap: wrap;
   align-items: center;
   gap: 12px;
@@ -568,3 +571,13 @@ html.tt-open{overflow:hidden}
 @keyframes ttSpin{to{transform:rotate(360deg)}}
 @media(max-width:600px){.tt{padding:0;align-items:end}.tt-box{border-radius:22px 22px 0 0;max-height:94vh}.tt-body{padding:4px 20px 26px}}
 @media(prefers-reduced-motion:reduce){.tt-box,.tt-bg,.tt-play span{animation:none}}
+
+/* "Grab yours" card inside the title dialog */
+.tt-buy{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-top:24px;padding:16px 18px;border-radius:18px;border:1px solid rgba(255,255,255,.12);background:linear-gradient(135deg,rgba(237,49,36,.16),rgba(79,107,255,.12))}
+.tt-buy .lg{flex:none;width:46px;height:46px;border-radius:13px}
+.tt-buy-t{flex:1 1 180px;min-width:0}
+.tt-buy-t b{display:block;font-size:16px}
+.tt-buy-t span{display:block;margin-top:2px;font-size:13px;color:var(--mut)}
+.tt-buy-t span strong{color:#fff}
+.tt-buy .btn{flex:none}
+@media(max-width:600px){.tt-buy .btn{width:100%}}
