@@ -10,7 +10,13 @@
     {id:"crunchyroll",name:"Crunchyroll",logo:"crunchyroll",shop:"Crunchyroll"},
     {id:"hotstar",name:"JioHotstar",mono:"JH",bg:"#1F2A6B",shop:"JioHotstar"},
     {id:"paramount",name:"Paramount+",logo:"paramountplus",shop:"Paramount+"},
-    {id:"hulu",name:"Hulu",logo:"hulu",shop:"Hulu"}
+    {id:"hulu",name:"Hulu",logo:"hulu",shop:"Hulu"},
+    {id:"appletv",name:"Apple TV+",mono:"tv+",bg:"#1d1d1f",shop:"Apple TV+"},
+    {id:"peacock",name:"Peacock",mono:"P",bg:"#111",shop:"Peacock"},
+    {id:"zee5",name:"ZEE5",mono:"Z5",bg:"#6a1b9a",shop:"ZEE5"},
+    {id:"sonyliv",name:"SonyLIV",mono:"SL",bg:"#1b2a49",shop:"SonyLIV"},
+    {id:"viki",name:"Rakuten Viki",mono:"V",bg:"#0b8fe0",shop:"Viki"},
+    {id:"mubi",name:"MUBI",mono:"M",bg:"#0a0a0a",shop:"MUBI"}
   ];
   const REGIONS=[["BD","Bangladesh"],["IN","India"],["PK","Pakistan"],["LK","Sri Lanka"],["NP","Nepal"],["US","United States"],["GB","United Kingdom"],["CA","Canada"],["AU","Australia"],["AE","United Arab Emirates"],["SA","Saudi Arabia"],["SG","Singapore"],["MY","Malaysia"],["JP","Japan"],["KR","South Korea"],["DE","Germany"],["FR","France"],["BR","Brazil"]];
   const esc=t=>String(t).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -18,7 +24,7 @@
   const ok=(v,list)=>list.includes(v);
 
   // Defaults: movies, United States (India for JioHotstar). A region the visitor picks themselves is remembered.
-  const homeRegion=p=>p==="hotstar"?"IN":"US";
+  const homeRegion=p=>["hotstar","zee5","sonyliv"].includes(p)?"IN":"US";
   let st={p:"netflix",r:"US",k:"movie",manual:false};
   try{const s=JSON.parse(localStorage.getItem("sx_trend2")||"{}");
     if(ok(s.p,PLATFORMS.map(x=>x.id)))st.p=s.p;

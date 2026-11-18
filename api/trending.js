@@ -11,11 +11,17 @@ const PLATFORMS = {
   hotstar: { re: /hotstar/i, id: 122 },
   paramount: { re: /^paramount (plus|\+)$/i, id: 531 },
   hulu: { re: /^hulu$/i, id: 15 },
+  appletv: { re: /^apple tv(\+| plus)?$/i, id: 350 },
+  peacock: { re: /^peacock( premium)?$/i, id: 386 },
+  zee5: { re: /^zee5$/i, id: 232 },
+  sonyliv: { re: /^sony ?liv$/i, id: 237 },
+  viki: { re: /viki/i, id: 344 },
+  mubi: { re: /^mubi$/i, id: 11 },
 };
 const REGIONS = new Set(["BD", "IN", "PK", "LK", "NP", "US", "GB", "CA", "AU", "AE", "SA", "SG", "MY", "JP", "KR", "DE", "FR", "BR"]);
 
 // Region used when the requested one has no data for that platform (default: US).
-const FALLBACK = { hotstar: "IN" };
+const FALLBACK = { hotstar: "IN", zee5: "IN", sonyliv: "IN" };
 
 const providerCache = new Map(); // region -> { at, list }
 const HOUR = 3600 * 1000;
