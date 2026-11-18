@@ -10,7 +10,7 @@
   const vp=$("#vp"),its=[...vp.children],PITCH=64,H=300,TOT=its.length*PITCH;
   vp.style.height=H+"px";
   vp.addEventListener("click",e=>{const b=e.target.closest(".vp-i");if(b)showPlans(+b.dataset.i,true)});
-  let off=0,spd=calm?0:.45,tgt=spd,vis=false,last=0;
+  let off=0,spd=calm?0:.27,tgt=spd,vis=false,last=0;
   function wheel(now){
     requestAnimationFrame(wheel);
     if(!vis||document.hidden)return;
@@ -30,7 +30,7 @@
   if(calm){vp.classList.add("still");its.forEach((el,k)=>{el.style.transform=`translateY(${k*PITCH}px)`;el.style.opacity=1});vp.style.overflowY="auto"}
   else{
     new IntersectionObserver(e=>vis=e[0].isIntersecting).observe(vp);
-    vp.addEventListener("pointerenter",()=>tgt=0);vp.addEventListener("pointerleave",()=>tgt=.45);
+    vp.addEventListener("pointerenter",()=>tgt=0);vp.addEventListener("pointerleave",()=>tgt=.27);
     requestAnimationFrame(wheel);
   }
   const cards=[...grid.querySelectorAll(".bw")];
