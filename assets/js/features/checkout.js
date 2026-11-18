@@ -13,7 +13,7 @@
     $("#paySum").innerHTML = cart.map((c) => `<div><span>${c.name}${c.vr ? " · " + c.vr : ""} · ${c.v} <em>×${c.q}</em></span><b>${taka(c.p * c.q)}</b></div>`).join("") + (tip ? `<div><span>Tip</span><b>${taka(tip)}</b></div>` : "") + `<div class="pay-tot"><span>Total</span><b>${taka(total())}</b></div>`;
     $("#payGo").textContent = "Pay " + taka(total()) + " securely";
     const wl = $("#checkout"); if (wl) $("#payWa").href = wl.href;
-    $("#payNote").value = $("#cmIn").value.trim();
+    $("#payNote").value = "";
     err.textContent = ""; go.disabled = false;
     m.classList.add("show"); openCart(false); setTimeout(() => $("#payName").focus(), 300);
   }
@@ -34,7 +34,7 @@
     try {
       const r = await fetch("/api/checkout", {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, phone, email, tip, comment: [note, $("#cmIn").value.trim()].filter(Boolean).join(" | ").slice(0, 300), items: cart.map((c) => ({ name: c.name, vr: c.vr, v: c.v, q: c.q })) }),
+        body: JSON.stringify({ name, phone, email, tip, comment: note.slice(0, 300), items: cart.map((c) => ({ name: c.name, vr: c.vr, v: c.v, q: c.q })) }),
       });
       const j = await r.json().catch(() => ({}));
       if (!r.ok || !j.redirectUrl) throw new Error(j.error || "Online payment is unavailable right now. Please order on WhatsApp.");
