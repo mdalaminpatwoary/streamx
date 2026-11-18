@@ -96,6 +96,9 @@ const CATALOG=[
 ["CapCut","Productivity","#111827","Pro video editing, as a ready-made account or on your own email.",[
  V("Ready-made Account","Instant","A ready-to-use Pro account, delivered instantly.",["Pro plan","Instant delivery"],[],{1:450}),
  V("On Your Email","Pro","The Pro plan activated on your own email.",["Pro plan","Activated on your own email"],[SLOW],{1:800,6:2500,12:4500})]],
+["Grammarly","Productivity","#15c39a","Write clearly and confidently with Grammarly Premium: advanced grammar, tone and style suggestions and a plagiarism detector.",[
+ V("Share Account","Most affordable","Grammarly Premium on a shared account, at the lowest price.",["Shared account",...["Spelling, grammar and punctuation checks","Tone detector and conciseness suggestions","Suggestions to restructure long sentences","Tone, delivery, engagement and fluency suggestions","Plagiarism detector (web and academic databases)","Works in browsers, desktop apps, Google Docs, Microsoft Word and mobile keyboards"]],[],{1:100,6:400,12:600}),
+ V("Personal · Your Email","Your own email","Grammarly Premium for a full year, activated on your own email.",["Activated on your own email","1 year of Premium",...["Spelling, grammar and punctuation checks","Tone detector and conciseness suggestions","Suggestions to restructure long sentences","Tone, delivery, engagement and fluency suggestions","Plagiarism detector (web and academic databases)","Works in browsers, desktop apps, Google Docs, Microsoft Word and mobile keyboards"]],["Features follow Grammarly's current Premium plan and may change"],{12:1700})]],
 ["Quetext","Productivity","#0ea5e9","A plagiarism checker and writing tool, activated on your own email.",[
  V("Essential Plan","","Essential plan activated on your own email.",["Activated on your own email"],[SLOW],{1:750}),
  V("Professional Plan","","Professional plan activated on your own email.",["Activated on your own email"],[SLOW],{1:1550})]],
