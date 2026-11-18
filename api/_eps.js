@@ -56,7 +56,7 @@ async function getToken(c) {
   });
   if (!r.json || !r.json.token) {
     // Safe diagnostics (lengths only, never the values) so a bad copy/paste of a credential can be spotted.
-    const diag = ` | env=${c.env} user.len=${c.userName.length} pass.len=${c.password.length} key.len=${c.hashKey.length} key.endsWith(=)=${c.hashKey.endsWith("=")} trimmed=${c.userName === c.userName.trim() && c.hashKey === c.hashKey.trim()}`;
+    const diag = ` | env=${c.env} user.len=${c.userName.length} pass.len=${c.password.length} key.len=${c.hashKey.length} key.shape=${c.hashKey.replace(/[A-Za-z]/g,"a").replace(/[0-9]/g,"9").slice(0,12)} key.chars=${c.hashKey.slice(9,13)} user.head=${c.userName.slice(0,3)} trimmed=${c.userName === c.userName.trim() && c.hashKey === c.hashKey.trim()}`;
     throw stage("LOGIN", "EPS login failed (HTTP " + r.status + ")" + (r.json && r.json.errorMessage ? ": " + r.json.errorMessage : r.text ? ": " + r.text.slice(0, 120) : "") + diag);
   }
   return r.json.token;
