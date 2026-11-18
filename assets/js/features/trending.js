@@ -115,7 +115,7 @@
       rail.innerHTML=`<div class="tr-msg"><b>Nothing to show for ${esc(P.name)} in ${esc(regionName())}</b>${esc(P.name)} may not be available in this region. Try another region or platform.</div>`;
       return;
     }
-    rail.innerHTML=list.map((m,i)=>`<article class="tr-card" style="--i:${i}" tabindex="0" role="button" aria-label="${esc(m.t)}: details and trailer" data-id="${m.id}" data-k="${m.k}"><span class="tr-rank" aria-hidden="true">${i+1}</span><div class="tr-poster"><img src="https://image.tmdb.org/t/p/w342${esc(m.p)}" alt="${esc(m.t)} poster" loading="lazy"><span class="tr-kind">${m.k==="tv"?"Series":"Movie"}</span>${m.o?`<div class="tr-ov">${esc(m.o)}</div>`:""}</div><div class="tr-info"><h3>${esc(m.t)}</h3><div class="tr-meta">${m.y?`<span>${esc(m.y)}</span>`:""}${m.v?`<span class="tr-star">★ ${m.v}</span>`:""}</div></div></article>`).join("");
+    rail.innerHTML=list.map((m,i)=>`<article class="tr-card" style="--i:${i}" tabindex="0" role="button" aria-label="${esc(m.t)}: details and trailer" data-id="${m.id}" data-k="${m.k}"><span class="tr-rank" aria-hidden="true">${i+1}</span><div class="tr-poster"><img src="https://image.tmdb.org/t/p/w342${esc(m.p)}" alt="${esc(m.t)} poster" loading="lazy"><span class="tr-kind">${m.k==="tv"?"Series":"Movie"}</span><div class="tr-ov" aria-hidden="true"><span class="tr-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span><b>Watch trailer</b></div></div><div class="tr-info"><h3>${esc(m.t)}</h3><div class="tr-meta">${m.y?`<span>${esc(m.y)}</span>`:""}${m.v?`<span class="tr-star">★ ${m.v}</span>`:""}</div></div></article>`).join("");
     rail.scrollTo({left:0});
   }
 
@@ -132,8 +132,8 @@
     const P=pl(),i=PRODUCTS.findIndex(x=>x.name===P.shop),prod=PRODUCTS[i];
     const logo=prod?ptile(prod):`<span class="lg" style="background:${P.bg||"#1d2347"}">${esc(P.mono||P.name[0])}</span>`;
     if(prod){const from=Math.min(...prod.variants.flatMap(v=>v.plans.map(x=>x.p)));
-      return `<div class="tt-buy">${logo}<div class="tt-buy-t"><b>Wanna watch it now? Grab yours.</b><span>${esc(P.name)} plans from <strong>${taka(from)}</strong></span></div><button class="btn grad-bg" type="button" data-buy="${i}">Buy now</button></div>`}
-    return `<div class="tt-buy">${logo}<div class="tt-buy-t"><b>Wanna watch it now? Grab yours.</b><span>Ask us for today's ${esc(P.name)} price</span></div><a class="btn grad-bg" target="_blank" rel="noopener" href="${wa("Hi StreamX! I want a "+P.name+" subscription.")}">Order on WhatsApp ↗</a></div>`;
+      return `<div class="tt-buy">${logo}<div class="tt-buy-t"><small>Wanna watch it now?</small><b>Grab yours · ${esc(P.name)}</b><span>Plans from <strong>${taka(from)}</strong></span></div><button class="btn grad-bg" type="button" data-buy="${i}">Buy now <i aria-hidden="true">→</i></button></div>`}
+    return `<div class="tt-buy">${logo}<div class="tt-buy-t"><small>Wanna watch it now?</small><b>Grab yours · ${esc(P.name)}</b><span>Ask us for today's price</span></div><a class="btn grad-bg" target="_blank" rel="noopener" href="${wa("Hi StreamX! I want a "+P.name+" subscription.")}">Order <i aria-hidden="true">↗</i></a></div>`;
   }
   tin.addEventListener("click",e=>{const b=e.target.closest("[data-buy]");if(!b)return;const i=+b.dataset.buy;closeT();showPlans(i,true)});
   function paintT(d){
