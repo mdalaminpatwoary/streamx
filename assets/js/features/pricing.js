@@ -42,16 +42,37 @@ function showPlans(i,scroll,v=0){
     const tabs=multi?`<div class="vtabs" role="tablist">${p.variants.map((x,n)=>`<button class="vtab${n===v?" on":""}" role="tab" aria-selected="${n===v}" onclick="showPlans(${i},false,${n})">${x.n}</button>`).join("")}</div>`:"";
     const info=`<div class="vinfo">${vr.tag?`<span class="vtag">${vr.tag}</span>`:""}<h3>${multi?vr.n:"Plan details"}</h3><p>${vr.line}</p><ul class="vf">${vr.f.map(x=>`<li>${x}</li>`).join("")}</ul>${vr.notes.length?`<ul class="vn">${vr.notes.map(x=>`<li>${x}</li>`).join("")}</ul>`:""}</div>`;
     const cards=vr.plans.map((pl,k)=>{
-      const pct=base&&pl.m>1?Math.round((1-pl.p/(base.p*pl.m))*100):0,best=many&&k===vr.plans.length-1;
+      const pct=base&&pl.m>1?Math.round((1-pl.p/(base.p*pl.m))*100):0,best=many&&!pl.u&&k===vr.plans.length-1;
       return `<div class="pcard${best?" best":""}" style="animation-delay:${k*90}ms"><button class="pshare" onclick="sharePlan(${i},${v},${k})" aria-label="Share ${label} ${pl.v}" title="Share this plan">${SHARE}</button>${best?'<span class="tag">Best value</span>':""}
       <span class="dur">${pl.v}</span><div class="amt"><span class="cur">৳</span><b data-to="${pl.p}">0</b></div>
-      <small class="pm">${pl.m>1?taka(Math.round(pl.p/pl.m))+" / month":"per month"}</small>
-      <span class="save${pct>0?"":" mute"}">${pct>0?`Save ${pct}%`:(pl.m===1?"Monthly plan":"Fixed-term plan")}</span>
+      <small class="pm">${pl.u?"US region · redeem code":pl.m>1?taka(Math.round(pl.p/pl.m))+" / month":"per month"}</small>
+      <span class="save${pct>0||pl.u?"":" mute"}">${pl.u?`${taka(GIFT.rate(pl.gc))} per $1`:pct>0?`Save ${pct}%`:(pl.m===1?"Monthly plan":"Fixed-term plan")}</span>
       <div class="actions"><button class="btn ghost" onclick="addToCart(${i},${v},${k})">${BAG} Add to Cart</button>
       <button type="button" class="btn grad-bg" onclick="buyNow(${i},${v},${k})">Buy Now</button></div></div>`}).join("");
-    T.innerHTML=tabs+`<div class="vbody">${info}<div class="vplans">${cards}</div></div>`;
+    const custom=p.gift?`<div class="pcard gcc"><span class="dur">Other amount</span><label class="gc-in"><span>$</span><input id="gcAmt" type="number" min="1" max="${GIFT.max}" step="1" inputmode="numeric" placeholder="e.g. 35" aria-label="Gift card amount in US dollars"></label><div class="amt"><span class="cur">৳</span><b id="gcPrice">0</b></div><small class="pm" id="gcNote">Enter $1 to $9, or $10 and up in steps of $5</small><div class="actions"><button class="btn ghost" id="gcAdd" disabled onclick="gcGo(false)">${BAG} Add to Cart</button><button type="button" class="btn grad-bg" id="gcBuy" disabled onclick="gcGo(true)">Buy Now</button></div></div>`:"";
+    T.innerHTML=tabs+`<div class="vbody">${info}<div class="vplans">${cards}${custom}</div></div>`;
+    if(p.gift)gcInit();
   }
-  document.querySelectorAll("#planTable .amt b").forEach((b,k)=>setTimeout(()=>tween(b,0,+b.dataset.to,900),k*110));
+  document.querySelectorAll("#planTable .amt b[data-to]").forEach((b,k)=>setTimeout(()=>tween(b,0,+b.dataset.to,900),k*110));
   if(scroll)$("#pricing").scrollIntoView();
 }
 showPlans(0);
+
+// Apple Gift Card: custom amount (price is re-checked on the server)
+function gcInit(){
+  const inp=$("#gcAmt");if(!inp)return;
+  const note=$("#gcNote"),price=$("#gcPrice"),add=$("#gcAdd"),buy=$("#gcBuy");
+  inp.oninput=()=>{
+    const a=Math.floor(+inp.value),ok=inp.value!==""&&GIFT.ok(a);
+    add.disabled=buy.disabled=!ok;
+    price.textContent=ok?(a*GIFT.rate(a)).toLocaleString("en-US"):"0";
+    note.textContent=inp.value===""?"Enter $1 to $9, or $10 and up in steps of $5":ok?`${taka(GIFT.rate(a))} per $1 · US region`:a>GIFT.max?`Maximum is $${GIFT.max}`:"From $10, use steps of $5 (10, 15, 20, 25…)";
+  };
+}
+function gcGo(now){
+  const a=Math.floor(+$("#gcAmt").value);if(!GIFT.ok(a))return;
+  const vr=PRODUCTS[cur.i].variants[cur.v];let k=vr.plans.findIndex(x=>x.gc===a),tmp=false;
+  if(k<0){vr.plans.push(GC(a));k=vr.plans.length-1;tmp=true}
+  now?buyNow(cur.i,cur.v,k):addToCart(cur.i,cur.v,k);
+  if(tmp)vr.plans.pop();
+}

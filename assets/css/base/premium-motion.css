@@ -54,7 +54,7 @@
 .sx-h .w {
   display: inline-block;
   opacity: 0;
-  filter: blur(12px);
+  filter: blur(2px);
   transform: translateY(0.5em) rotateX(-35deg);
   transform-origin: 50% 100%;
 }

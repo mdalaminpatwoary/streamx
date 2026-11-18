@@ -1,11 +1,14 @@
 /* Product catalog: categories, durations, plan types, prices and combo packs. */
 // ===== PRODUCT CATALOG (edit names, text and prices here) =====
 // Popular products come first (the first 8 show on the page, 4 on phone).
-const CATS=["Streaming","Music & Audio","AI Tools","Productivity","Learning","VPN","18+"];
+const CATS=["Streaming","Music & Audio","AI Tools","Productivity","Learning","Gift Cards","VPN","18+"];
 const DUR={1:"1 Month",6:"6 Months",12:"1 Year",18:"18 Months"},UNIT={1:"month",6:"6 months",12:"year",18:"18 months"};
 // V(plan type, badge, one-line summary, [features], [notes], {months: price in BDT})
 const V=(n,tag,line,f,notes,pr)=>({n,tag,line,f,notes,plans:Object.entries(pr).map(([m,p])=>({m:+m,v:DUR[m],p}))});
 const VPNN="VPN required for access",SHN="Shared profile, no customization",SLOW="Delivery takes some time",STOCK="Delivery depends on stock availability",ADULT="Adults only (18+)";
+// Apple Gift Card (US region): price = dollars x rate. Under $10: ৳133 per $1. $10 and above, in steps of $5: ৳130 per $1.
+const GIFT={min:1,max:500,rate:a=>a<10?133:130,ok:a=>Number.isInteger(a)&&a>=1&&a<=500&&(a<10||a%5===0)};
+const GC=a=>({m:1,v:"$"+a,p:a*GIFT.rate(a),u:"card",gc:a});
 const PRIVF=["Profile name and PIN protected","Customizable profile","Instant delivery"];
 const SH={1:180,6:800,12:1200},PR={1:250,6:1100,12:1900};
 const GEMF=["5 TB Google storage","Activated on your own email"];
@@ -37,6 +40,12 @@ const CATALOG=[
 ["Disney+","Streaming","#113ccf","Disney, Pixar, Marvel and Star Wars favorites, on a shared or private profile.",[
  V("Share Profile","Most affordable","A shared profile for everyday viewing.",["Single-device access","Instant delivery"],[SHN,VPNN],SH),
  V("Private Profile","Private","Your own profile, name and PIN.",PRIVF,[VPNN],PR)]],
+["Apple Music","Music & Audio","#fa243c","Over 100 million songs, ad-free, with lossless audio and Spatial Audio, activated on your own email.",[
+ V("On Your Email","Your own email","Apple Music activated on your own email, for 6 months or a full year.",["Over 100 million songs, ad-free","Lossless audio and Spatial Audio with Dolby Atmos","Real-time lyrics and Apple Music Sing","Offline downloads","Works on iPhone, iPad, Mac, Android and PC","Activated on your own email"],[],{6:1000,12:1800})]],
+["Adobe Express","Productivity","#eb1000","Design social posts, videos, flyers and more with premium templates, fonts and AI tools, activated on your own email.",[
+ V("Premium · 1 Year","Your own email","A full year of Adobe Express Premium on your own email.",["All premium templates for posts, video and print","Adobe Stock photos, music and design elements","30,000+ Adobe Fonts","Generative AI credits with Adobe Firefly","Brand kits, one-click Resize and video tools","Works in your browser and on mobile","Activated on your own email"],[],{12:650})]],
+["Apple Gift Card","Gift Cards","#1d1d1f","Add US-region credit to your Apple Account for apps, games, Apple Music, iCloud+ and more. Redeem code provided.",[
+ (()=>{const v=V("US Region","Redeem code","An Apple Gift Card for a US-region Apple Account. Pick an amount below, or enter your own.",["US region Apple Gift Card","Redeem code provided after payment","Use it for App Store apps and games, in-app purchases, Apple Music, Apple TV+, iCloud+ and more","Credit goes straight to your Apple Account balance"],["Works only on an Apple Account set to the US region","Each code can be redeemed once; it can't be turned into cash","Under $10: ৳133 per $1. $10 and above, in steps of $5: ৳130 per $1"],{});v.plans=[5,10,15,20,25,30,40,50,75,100].map(GC);return v})()]],
 ["Paramount+","Streaming","#0064ff","Hit series and movies from Paramount, on a shared or private profile.",[
  V("Share Profile","Most affordable","A shared profile for everyday viewing.",["Single-device access","Instant delivery"],[SHN,VPNN],SH),
  V("Private Profile","Private","Your own profile, name and PIN.",PRIVF,[VPNN],PR)]],
@@ -107,4 +116,4 @@ const PACKS=[
  {n:"Pack 3",sub:"Netflix on your TV, with multi-device access.",p:400,old:450,tag:"Best for TV",hot:true,f:["Netflix: single slot, PIN-protected, customizable","Prime Video: private PIN-protected profile","Watch on mobile, tablet, web and TV","Netflix login by password","Delivery depends on stock availability"]},
  {n:"Pack 4",sub:"Private profile on TV, with instant delivery and priority service.",p:450,old:500,tag:"Premium",f:["Netflix: Signature private profile, customizable","Prime Video: private PIN-protected profile","Watch on mobile, tablet, web and TV","Netflix login by secure OTP","Instant delivery and priority service"]}
 ];
-PRODUCTS.forEach(p=>{if(p.name==="Entertainment Combo"){p.packs=PACKS;p.variants[0].plans=PACKS.map(k=>({m:1,v:k.n,p:k.p}))}});
+PRODUCTS.forEach(p=>{if(p.name==="Apple Gift Card")p.gift=true;if(p.name==="Entertainment Combo"){p.packs=PACKS;p.variants[0].plans=PACKS.map(k=>({m:1,v:k.n,p:k.p}))}});

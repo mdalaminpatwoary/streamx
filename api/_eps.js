@@ -63,14 +63,16 @@ async function getToken(c) {
 }
 
 // Load the SAME catalog the website uses, so prices are always taken from the server, never from the browser.
-let _products;
+let _products, _gift;
 function products() {
   if (_products) return _products;
   const rel = path.join("assets", "js", "data", "catalog.js");
   const file = [path.join(process.cwd(), rel), path.join(__dirname, "..", rel), path.join("/var/task", rel)].find((f) => fs.existsSync(f));
   if (!file) throw stage("CATALOG", "catalog.js was not found on the server (is vercel.json uploaded?)");
   const code = fs.readFileSync(file, "utf8");
-  _products = vm.runInNewContext(code + "\n;PRODUCTS;", {}, { timeout: 2000 });
+  const out = vm.runInNewContext(code + "\n;[PRODUCTS, GIFT];", {}, { timeout: 2000 });
+  _products = out[0];
+  _gift = out[1];
   return _products;
 }
 
@@ -83,7 +85,12 @@ function priceCart(items) {
   return items.map((it) => {
     const p = P.find((x) => x.name === it.name);
     const vr = p && (it.vr ? p.variants.find((v) => v.n === it.vr) : p.variants[0]);
-    const pl = vr && vr.plans.find((x) => x.v === it.v);
+    let pl = vr && vr.plans.find((x) => x.v === it.v);
+    if (!pl && vr && p.gift && _gift) {
+      // Apple Gift Card: any whole-dollar amount; under $10 any, from $10 only in steps of $5. Price is computed here, never taken from the browser.
+      const m = /^\$(\d{1,3})$/.exec(String(it.v || "")), a = m ? Number(m[1]) : 0;
+      if (a && _gift.ok(a)) pl = { v: "$" + a, p: a * _gift.rate(a) };
+    }
     const q = Math.floor(Number(it.q));
     if (!pl || !(q >= 1 && q <= 20)) throw new Error("An item in your cart is no longer available. Please re-add it.");
     return { name: p.name, plan: (p.variants.length > 1 ? vr.n + " · " : "") + pl.v, price: pl.p, q };
