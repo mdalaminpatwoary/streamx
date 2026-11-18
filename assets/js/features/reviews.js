@@ -35,7 +35,7 @@ function setPop(n,instant){
       <blockquote>${r.t.split(" ").map((w,k)=>`<span class="rw" style="--k:${k}">${w}</span>`).join(" ")}</blockquote>
       <div class="rs-by"><b>${r.n}</b><span>${[subLine(r),r.loc].filter(Boolean).join(" · ")}</span></div>
       <div class="rs-svcs" aria-label="Services bought">${popTile(r)}</div>
-      <div class="rs-act"><button class="btn grad-bg" onclick="openReview(${i})">View full story →</button><span class="rs-hint">Next review in <b id="rsLeft">${POP_MS/1000}</b>s</span></div></div>
+      <div class="rs-act"><button class="btn grad-bg" onclick="openReview(${i})">View full story →</button></div></div>
     <div class="rs-nav" role="tablist">${POP.map((j,x)=>`<button type="button" role="tab" aria-selected="${x===pk}" class="${x===pk?"on":""}" onclick="setPop(${x})" style="${grad(j)}"><span class="rs-mini"><i>${initials(REVIEWS[j].n)}</i>${ph(REVIEWS[j])}</span><span class="rs-nm"><b>${REVIEWS[j].n}</b><small>${REVIEWS[j].role||"Customer"}</small></span><span class="rs-bar"><i></i></span></button>`).join("")}</div></div>`;
     pBusy=false;
   };
