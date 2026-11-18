@@ -1145,6 +1145,3 @@
   gap: 8px;
 }
 
-/* Feedback row at the end of the reviews section */
-.rfdk{display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;margin-top:34px;padding:18px 22px;border-radius:18px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04)}
-.rfdk span{color:var(--mut);font-size:14.5px}
