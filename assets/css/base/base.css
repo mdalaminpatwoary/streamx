@@ -626,3 +626,18 @@ html {
 .limg {
   padding: 14%;
 }
+
+/* No fixed/drifting page glows; each section gets its own soft tint instead */
+.sx-ambient,.amb{display:none!important}
+html #products{--band:linear-gradient(180deg,rgba(79,107,255,.085),rgba(79,107,255,.02))}
+html #trending{--band:linear-gradient(180deg,rgba(122,77,255,.09),rgba(122,77,255,.02))}
+html #pricing{--band:linear-gradient(180deg,rgba(255,255,255,.035),rgba(79,107,255,.05))}
+html #bundles{--band:linear-gradient(180deg,rgba(237,49,36,.075),rgba(255,138,92,.02))}
+html #how{--band:linear-gradient(180deg,rgba(40,170,200,.075),rgba(79,107,255,.03))}
+html #payments{--band:linear-gradient(180deg,rgba(255,255,255,.03),rgba(237,49,36,.045))}
+html #trial{--band:linear-gradient(180deg,rgba(237,49,36,.08),rgba(122,77,255,.03))}
+html #stats{--band:linear-gradient(180deg,rgba(79,107,255,.08),rgba(122,77,255,.035))}
+html #why{--band:linear-gradient(180deg,rgba(255,255,255,.03),rgba(237,49,36,.05))}
+html #reviews{--band:linear-gradient(180deg,rgba(122,77,255,.08),rgba(79,107,255,.03))}
+html #faq{--band:linear-gradient(180deg,rgba(255,255,255,.03),rgba(40,170,200,.045))}
+html #cta{--band:linear-gradient(180deg,rgba(237,49,36,.09),rgba(255,138,92,.03))}
