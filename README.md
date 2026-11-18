@@ -71,6 +71,7 @@ The site pays through EPS. Secrets stay on the server in `api/`, never in the we
 api/_eps.js       EPS login, hash (HMAC-SHA512), prices the cart from assets/js/data/catalog.js
 api/checkout.js   POST: creates the EPS payment and returns the payment page link
 api/verify.js     GET: asks EPS if a payment succeeded (used by payment-result.html)
+api/title.js      GET: details, cast, IMDb link and YouTube trailer for one title (TMDB), cached for a day
 api/trending.js   GET: top 10 movies and series per platform and region (TMDB), cached for an hour
 payment-result.html   Page customers land on after paying, cancelling or failing
 vercel.json       Makes sure the catalog file is available to the API

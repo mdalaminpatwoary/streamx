@@ -109,9 +109,47 @@
       rail.innerHTML=`<div class="tr-msg"><b>Nothing to show for ${esc(P.name)} in ${esc(regionName())}</b>${esc(P.name)} may not be available in this region. Try another region or platform.</div>`;
       return;
     }
-    rail.innerHTML=list.map((m,i)=>`<article class="tr-card" style="--i:${i}" tabindex="0"><span class="tr-rank" aria-hidden="true">${i+1}</span><div class="tr-poster"><img src="https://image.tmdb.org/t/p/w342${esc(m.p)}" alt="${esc(m.t)} poster" loading="lazy"><span class="tr-kind">${m.k==="tv"?"Series":"Movie"}</span>${m.o?`<div class="tr-ov">${esc(m.o)}</div>`:""}</div><div class="tr-info"><h3>${esc(m.t)}</h3><div class="tr-meta">${m.y?`<span>${esc(m.y)}</span>`:""}${m.v?`<span class="tr-star">★ ${m.v}</span>`:""}</div></div></article>`).join("");
+    rail.innerHTML=list.map((m,i)=>`<article class="tr-card" style="--i:${i}" tabindex="0" role="button" aria-label="${esc(m.t)}: details and trailer" data-id="${m.id}" data-k="${m.k}"><span class="tr-rank" aria-hidden="true">${i+1}</span><div class="tr-poster"><img src="https://image.tmdb.org/t/p/w342${esc(m.p)}" alt="${esc(m.t)} poster" loading="lazy"><span class="tr-kind">${m.k==="tv"?"Series":"Movie"}</span>${m.o?`<div class="tr-ov">${esc(m.o)}</div>`:""}</div><div class="tr-info"><h3>${esc(m.t)}</h3><div class="tr-meta">${m.y?`<span>${esc(m.y)}</span>`:""}${m.v?`<span class="tr-star">★ ${m.v}</span>`:""}</div></div></article>`).join("");
     rail.scrollTo({left:0});
   }
+
+  // ---------- Title details (IMDb link + trailer) ----------
+  const dlg=document.createElement("div");dlg.className="tt";dlg.hidden=true;dlg.setAttribute("role","dialog");dlg.setAttribute("aria-modal","true");
+  dlg.innerHTML=`<div class="tt-bg" data-x></div><div class="tt-box" tabindex="-1"><button class="tt-x" type="button" data-x aria-label="Close">×</button><div class="tt-in"></div></div>`;
+  document.body.appendChild(dlg);
+  const tin=dlg.querySelector(".tt-in"),tbox=dlg.querySelector(".tt-box");let lastFocus=null,tTok=0;const tcache=new Map();
+  const mins=n=>n?(n>=60?Math.floor(n/60)+"h "+(n%60?n%60+"m":""):n+"m"):"";
+  function closeT(){dlg.hidden=true;tin.innerHTML="";document.documentElement.classList.remove("tt-open");if(lastFocus)lastFocus.focus()}
+  dlg.addEventListener("click",e=>{if(e.target.closest("[data-x]"))closeT()});
+  document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!dlg.hidden)closeT()});
+  function paintT(d){
+    const meta=[d.y,d.k==="tv"?(d.seasons?d.seasons+" season"+(d.seasons>1?"s":""):"Series"):mins(d.rt),d.lang].filter(Boolean).map(x=>`<span>${esc(x)}</span>`).join("");
+    tin.innerHTML=`<div class="tt-hero" style="${d.bd?`--bd:url(https://image.tmdb.org/t/p/w780${esc(d.bd)})`:""}">
+      <div class="tt-media" id="ttMedia">${d.yt?`<button class="tt-play" type="button" id="ttPlay" aria-label="Play trailer"><span><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span><b>Play trailer</b></button>`:`<div class="tt-nt">No trailer available</div>`}</div></div>
+      <div class="tt-body">
+        <h3>${esc(d.t)}</h3>${d.tag?`<p class="tt-tag">${esc(d.tag)}</p>`:""}
+        <div class="tt-meta">${meta}${d.v?`<span class="tt-rate">★ ${d.v}<small>/10 TMDB${d.vc?` · ${d.vc.toLocaleString()} votes`:""}</small></span>`:""}</div>
+        ${d.g.length?`<div class="tt-gen">${d.g.map(g=>`<i>${esc(g)}</i>`).join("")}</div>`:""}
+        ${d.o?`<p class="tt-ov">${esc(d.o)}</p>`:""}
+        ${d.dir?`<p class="tt-dir"><small>${d.k==="tv"?"Created by":"Director"}</small> ${esc(d.dir)}</p>`:""}
+        ${d.cast.length?`<div class="tt-cast">${d.cast.slice(0,6).map(c=>`<div>${c.p?`<img src="https://image.tmdb.org/t/p/w185${esc(c.p)}" alt="" loading="lazy">`:`<span class="tt-ph">${esc(c.n[0]||"")}</span>`}<b>${esc(c.n)}</b><small>${esc(c.c)}</small></div>`).join("")}</div>`:""}
+        <div class="tt-act">${d.imdb?`<a class="btn imdb" href="https://www.imdb.com/title/${esc(d.imdb)}/" target="_blank" rel="noopener"><b>IMDb</b> View ratings &amp; reviews ↗</a>`:`<a class="btn ghost" href="https://www.imdb.com/find/?q=${encodeURIComponent(d.t)}" target="_blank" rel="noopener">Search on IMDb ↗</a>`}
+          ${d.yt?`<a class="btn ghost" href="https://www.youtube.com/watch?v=${esc(d.yt)}" target="_blank" rel="noopener">Open on YouTube ↗</a>`:""}</div>
+      </div>`;
+    const pb=$("#ttPlay");
+    if(pb)pb.onclick=()=>{$("#ttMedia").innerHTML=`<iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(d.yt)}?autoplay=1&rel=0&modestbranding=1" title="${esc(d.t)} trailer" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`};
+  }
+  async function openT(id,k,from){
+    lastFocus=from;const my=++tTok;dlg.hidden=false;document.documentElement.classList.add("tt-open");
+    tin.innerHTML=`<div class="tt-load"><i></i><span>Loading details…</span></div>`;tbox.focus();
+    try{
+      const key=k+id;let d=tcache.get(key);
+      if(!d){const r=await fetch(`/api/title?id=${id}&k=${k}`);if(!r.ok)throw new Error("HTTP "+r.status);d=await r.json();tcache.set(key,d)}
+      if(my===tTok&&!dlg.hidden)paintT(d);
+    }catch(e){if(my===tTok)tin.innerHTML=`<div class="tt-load"><span>Couldn't load details right now. Please try again.</span><button class="btn ghost" type="button" data-x>Close</button></div>`}
+  }
+  rail.addEventListener("click",e=>{const c=e.target.closest(".tr-card[data-id]");if(c)openT(c.dataset.id,c.dataset.k,c)});
+  rail.addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&e.target.matches(".tr-card[data-id]")){e.preventDefault();openT(e.target.dataset.id,e.target.dataset.k,e.target)}});
 
   // ---------- Link to the shop ----------
   function cta(){
