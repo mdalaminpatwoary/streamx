@@ -238,3 +238,16 @@ nav a:hover {
 .navbar {
   padding-left: 22px;
 }
+
+/* Nav matched to the site's glass + red/blue accent language */
+.navbar{background:linear-gradient(180deg,rgba(20,25,53,.78),rgba(10,13,28,.8));border:0;box-shadow:0 14px 40px -18px rgba(0,0,0,.75),inset 0 1px 0 rgba(255,255,255,.06)}
+.navbar::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;pointer-events:none;background:linear-gradient(120deg,rgba(255,255,255,.16),rgba(79,107,255,.28) 40%,rgba(237,49,36,.38) 100%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
+.nav.scrolled .navbar{background:linear-gradient(180deg,rgba(18,22,48,.94),rgba(8,11,24,.95))}
+.navbar nav a{font-weight:600;letter-spacing:.01em}
+#ind{height:38px;margin-top:-19px;background:linear-gradient(135deg,rgba(79,107,255,.22),rgba(237,49,36,.2));border:1px solid rgba(255,255,255,.12);box-shadow:0 8px 22px -10px rgba(237,49,36,.55),inset 0 1px 0 rgba(255,255,255,.1)}
+.navbar nav a.on{text-shadow:0 0 18px rgba(255,255,255,.25)}
+.nr .lang,.nr .cartbtn,#burger{height:42px;border-radius:99px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);color:#fff;transition:background .25s,border-color .25s,transform .25s}
+.nr .lang{padding:0 16px;font-weight:700}
+.nr .cartbtn{width:42px;display:grid;place-items:center}
+.nr .lang:hover,.nr .cartbtn:hover,#burger:hover{background:rgba(237,49,36,.14);border-color:rgba(237,49,36,.5);transform:translateY(-1px)}
+.logo img{box-shadow:0 6px 18px -6px rgba(237,49,36,.55)}
