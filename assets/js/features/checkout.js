@@ -12,6 +12,7 @@
     try { const b = JSON.parse(localStorage.getItem(KEY) || "{}"); $("#payName").value = b.n || ""; $("#payPhone").value = b.p || ""; $("#payEmail").value = b.e || ""; } catch (e) {}
     $("#paySum").innerHTML = cart.map((c) => `<div><span>${c.name}${c.vr ? " · " + c.vr : ""} · ${c.v} <em>×${c.q}</em></span><b>${taka(c.p * c.q)}</b></div>`).join("") + (tip ? `<div><span>Tip</span><b>${taka(tip)}</b></div>` : "") + `<div class="pay-tot"><span>Total</span><b>${taka(total())}</b></div>`;
     $("#payGo").textContent = "Pay " + taka(total()) + " securely";
+    const wl = $("#checkout"); if (wl) $("#payWa").href = wl.href;
     err.textContent = ""; go.disabled = false;
     m.classList.add("show"); openCart(false); setTimeout(() => $("#payName").focus(), 300);
   }

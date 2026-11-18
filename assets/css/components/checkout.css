@@ -23,3 +23,4 @@
 .df .btn.alt::after { display: none; }
 .eps-strip { display: block; margin: 18px 0; border-radius: 16px; overflow: hidden; }
 .eps-strip img { display: block; width: 100%; height: auto; }
+.pay-wa{display:block;margin-top:8px;text-align:center}.pay-wa a{color:#fff;font-weight:700;text-decoration:underline}

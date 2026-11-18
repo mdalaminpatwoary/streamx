@@ -10,6 +10,12 @@ function addToCart(i,v,k){
   renderCart();toast(`✓ ${p.name}${vn?" – "+vn:""} (${pl.v}) added to cart`);
   const b=$("#cartBtn");b.classList.remove("bump");void b.offsetWidth;b.classList.add("bump");
 }
+// "Buy Now": put the plan in the cart (once) and go straight to the secure payment form.
+function buyNow(i,v,k){
+  const p=PRODUCTS[i],vr=p.variants[v],pl=vr.plans[k],id=[p.name,vr.n,pl.v].join("|");
+  if(!cart.find(c=>c.id===id))addToCart(i,v,k);
+  $("#payBtn").click();
+}
 function changeQty(j,d){cart[j].bump=true;cart[j].q+=d;if(cart[j].q<1)cart.splice(j,1);renderCart()}
 function removeItem(j){const el=$("#cartItems").children[j];if(!el||el.classList.contains("out"))return;el.classList.add("out");setTimeout(()=>{cart.splice(j,1);renderCart()},380)}
 function renderCart(){

@@ -36,7 +36,7 @@ function showPlans(i,scroll,v=0){
     <small class="pm">per month · regular <s>${taka(k.old)}</s></small><span class="save">Save ${taka(k.old-k.p)}</span>
     <ul>${k.f.map(f=>`<li>${f}</li>`).join("")}</ul>
     <div class="actions"><button class="btn ghost" onclick="addToCart(${i},0,${n})">${BAG} Add to Cart</button>
-    <a class="btn grad-bg" target="_blank" href="${wa(`Hi StreamX! I want to buy ${p.name} (${k.n}) - ${taka(k.p)} / month.`)}">Buy Now</a></div></div>`).join("");
+    <button type="button" class="btn grad-bg" onclick="buyNow(${i},0,${n})">Buy Now</button></div></div>`).join("");
   }else{
     const base=vr.plans.find(x=>x.m===1),many=vr.plans.length>1,label=p.name+(multi?" – "+vr.n:"");
     const tabs=multi?`<div class="vtabs" role="tablist">${p.variants.map((x,n)=>`<button class="vtab${n===v?" on":""}" role="tab" aria-selected="${n===v}" onclick="showPlans(${i},false,${n})">${x.n}</button>`).join("")}</div>`:"";
@@ -48,7 +48,7 @@ function showPlans(i,scroll,v=0){
       <small class="pm">${pl.m>1?taka(Math.round(pl.p/pl.m))+" / month":"per month"}</small>
       <span class="save${pct>0?"":" mute"}">${pct>0?`Save ${pct}%`:(pl.m===1?"Monthly plan":"Fixed-term plan")}</span>
       <div class="actions"><button class="btn ghost" onclick="addToCart(${i},${v},${k})">${BAG} Add to Cart</button>
-      <a class="btn grad-bg" target="_blank" href="${wa(`Hi StreamX! I want to buy ${label} (${pl.v}) - ${taka(pl.p)}.`)}">Buy Now</a></div></div>`}).join("");
+      <button type="button" class="btn grad-bg" onclick="buyNow(${i},${v},${k})">Buy Now</button></div></div>`}).join("");
     T.innerHTML=tabs+`<div class="vbody">${info}<div class="vplans">${cards}</div></div>`;
   }
   document.querySelectorAll("#planTable .amt b").forEach((b,k)=>setTimeout(()=>tween(b,0,+b.dataset.to,900),k*110));
