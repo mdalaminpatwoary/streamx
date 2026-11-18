@@ -6,3 +6,23 @@
     rgba(237, 49, 36, 0.015)
   );
 }
+
+/* Payment method logos sit on white chips so every brand stays readable on the dark page */
+.plg img {
+  height: 52px;
+  max-width: 150px;
+  padding: 8px 14px;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 8px 22px rgba(2, 4, 16, 0.35);
+  transition:
+    transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.4s;
+}
+.plg:has(img) {
+  min-height: 52px;
+}
+.pb:hover .plg img {
+  transform: translateY(-4px) scale(1.04);
+  box-shadow: 0 16px 34px rgba(2, 4, 16, 0.5), 0 0 0 2px var(--c);
+}

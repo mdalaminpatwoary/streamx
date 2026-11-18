@@ -33,13 +33,16 @@ assets/
 | --- | --- |
 | WhatsApp number | `assets/js/data/config.js` (also in footer and a few links in `index.html`) |
 | Products, plan types, prices, combo packs | `assets/js/data/catalog.js` |
-| Customer reviews | `assets/js/data/reviews.js` |
+| Customer reviews | `assets/js/data/reviews.js` (set `popular:true` for the rotating spotlight; add `photo` for a real portrait) |
+| Review spotlight look and 10 s timer | `assets/css/sections/reviews-spotlight.css` and `POP_MS` in `assets/js/features/reviews.js` |
+| WhatsApp avatar widget (names, messages) | `assets/js/features/chat-avatar.js` and `assets/css/components/chat-widget.css` |
+| Payment logos | `assets/img/pay/*.png` |
 | FAQ | `assets/js/data/faq.js` |
 | About / Terms / Return Policy text | `assets/js/data/policies.js` |
 | "Why StreamX" items | `assets/js/data/why.js` |
 | "Try before you pay" quick list | `assets/js/features/trial.js` (`TRY_LIST`) |
 | Home hero text and order-card steps | `<section id="home">` in `index.html` (English text plus `data-bn` for Bangla) |
-| Home hero look and animation | `assets/css/sections/hero-modern.css` and `assets/js/features/hero-motion.js` |
+| Home hero (3D service carousel, rolling brand, dot-grid canvas) | `assets/css/sections/hero-modern.css` and `assets/js/features/hero-motion.js` (services: `SV` list) |
 | Trending platforms and regions | `PLATFORMS` / `REGIONS` in `assets/js/features/trending.js` (and `api/trending.js`) |
 | Site-wide motion (progress bar, glow, tilt) | `assets/js/layout/premium-motion.js` and `assets/css/base/premium-motion.css` |
 | Colors (accent `--ac`, gradient `--g`) | `assets/css/base/tokens.css` |

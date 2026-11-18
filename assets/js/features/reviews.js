@@ -9,27 +9,55 @@ const grad=i=>`--c1:${GR[i%GR.length][0]};--c2:${GR[i%GR.length][1]}`;
 const subLine=r=>[r.role,r.company].filter(Boolean).join(" · ");
 const svcOf=r=>r.services&&r.services.length?r.services:[r.p];
 const svcTiles=(r,cls)=>svcOf(r).map(n=>{const p=PRODUCTS.find(x=>x.name===n);return `<span class="${cls}">${p?ptile(p):""}<em>${n}</em></span>`}).join("");
-const rcard=(r,dup)=>{const i=REVIEWS.indexOf(r),p=PRODUCTS.find(x=>x.name===r.p);return `<figure class="rk2${dup?" dup":""}" data-r="${i}" tabindex="${dup?-1:0}" role="button" aria-label="Open ${r.n}'s story"${dup?' aria-hidden="true"':""}><div class="rk2-top"><span class="av4"><i>${initials(r.n)}${ph(r)}</i></span><div class="who2"><b>${r.n}</b><small>${r.role||"Customer"}</small></div><span class="rec">${THUMB}Recommends</span></div>
+const rcard=(r,dup)=>{const i=REVIEWS.indexOf(r),p=PRODUCTS.find(x=>x.name===r.p);return `<figure class="rk2${dup?" dup":""}" style="${grad(i)}" data-r="${i}" tabindex="${dup?-1:0}" role="button" aria-label="Open ${r.n}'s story"${dup?' aria-hidden="true"':""}><div class="rk2-top"><span class="av4"><i>${initials(r.n)}${ph(r)}</i></span><div class="who2"><b>${r.n}</b><small>${r.role||"Customer"}</small></div><span class="rec">${THUMB}Recommends</span></div>
   <blockquote>${r.t}</blockquote><figcaption>${p?ptile(p):""}<span>${r.p}</span><span class="rk2-more">Details ↗</span></figcaption></figure>`};
 (function(){
   const half=Math.ceil(REVIEWS.length/2),rows=[REVIEWS.slice(0,half),REVIEWS.slice(half)];
   rows.forEach((row,x)=>{if(!row.length)return;$("#rrow"+(x+1)).innerHTML=[0,1,2,3].map(c=>row.map(r=>rcard(r,c>0)).join("")).join("")});
 })();
-// popular spotlight: highlights one review after another
+// Popular review spotlight: big portrait, one review after another every 10 seconds (pauses on hover, off-screen and in background tabs)
 const POP=(()=>{const a=REVIEWS.map((r,i)=>i).filter(i=>REVIEWS[i].popular);return a.length?a:REVIEWS.slice(0,4).map((r,i)=>i)})();
-let pk=0,pt,pPause=false;
-function setPop(n){
-  pk=(n+POP.length)%POP.length;const i=POP[pk],r=REVIEWS[i];
-  $("#pop").innerHTML=`<div class="pstage" style="${grad(i)}" onclick="openReview(${i})"><div class="pimg"><span>${initials(r.n)}</span>${ph(r)}</div>${svcOf(r).slice(0,2).map((s,x)=>{const p=PRODUCTS.find(y=>y.name===s);return p?`<span class="pchip p${x}">${ptile(p)}<em>${s}</em></span>`:""}).join("")}</div>
-  <div class="ptxt"><span class="eyebrow">Popular review</span>
-  <blockquote>${r.t.split(" ").map((w,k)=>`<span class="w" style="animation-delay:${k*55+250}ms">${w}</span>`).join(" ")}</blockquote>
-  <div class="pby"><b>${r.n}</b><span>${subLine(r)}</span></div><div class="psvc">${svcTiles(r,"sv")}</div>
-  <button class="btn grad-bg" onclick="openReview(${i})">View full story →</button></div>
-  <div class="ptabs">${POP.map((j,x)=>`<button class="ptab${x===pk?" on":""}" onclick="setPop(${x})"><b>${REVIEWS[j].n}</b><small>${REVIEWS[j].role}</small></button>`).join("")}</div>`;
-  clearTimeout(pt);pt=setTimeout(function t(){pPause?pt=setTimeout(t,1000):setPop(pk+1)},7500);
+const QUOTE='<svg class="rs-q" viewBox="0 0 48 36" aria-hidden="true"><path d="M0 36V20C0 8 6 1.5 18 0v7c-6 1.2-8.600 4.400-8.800 9H18v20zm27 0V20C27 8 33 1.500 45 0v7c-6 1.200-8.600 4.400-8.800 9H45v20z"/></svg>';
+const POP_MS=10000;
+let pk=0,pEl=0,pHover=false,pSeen=true,pBusy=false;
+const popTile=(r)=>svcOf(r).slice(0,3).map((s,x)=>{const p=PRODUCTS.find(y=>y.name===s);return p?`<span class="rs-chip c${x}">${ptile(p)}<em>${s}</em></span>`:""}).join("");
+function setPop(n,instant){
+  if(pBusy)return;
+  const box=$("#pop"),prev=box.querySelector(".rs");
+  const paint=()=>{
+    pk=(n+POP.length)%POP.length;pEl=0;const i=POP[pk],r=REVIEWS[i];
+    box.innerHTML=`<div class="rs" style="${grad(i)}">
+    <div class="rs-bg" aria-hidden="true"><i></i><i></i></div>
+    <div class="rs-portrait"><span class="rs-pring"></span><span class="rs-ring r1"></span><span class="rs-ring r2"></span>
+      <div class="rs-frame" onclick="openReview(${i})"><span class="rs-init">${initials(r.n)}</span>${ph(r)}<span class="rs-shine"></span></div>
+      <span class="rs-badge"><span class="rs-stars">${"★".repeat(r.s||5)}</span><b>${(r.s||5).toFixed(1)}</b></span>${popTile(r)}</div>
+    <div class="rs-body"><span class="eyebrow">Popular review</span>${QUOTE}
+      <blockquote>${r.t.split(" ").map((w,k)=>`<span class="rw" style="--k:${k}">${w}</span>`).join(" ")}</blockquote>
+      <div class="rs-by"><b>${r.n}</b><span>${[subLine(r),r.loc].filter(Boolean).join(" · ")}</span></div>
+      <div class="rs-act"><button class="btn grad-bg" onclick="openReview(${i})">View full story →</button><span class="rs-hint">Next review in <b id="rsLeft">${POP_MS/1000}</b>s</span></div></div>
+    <div class="rs-nav" role="tablist">${POP.map((j,x)=>`<button type="button" role="tab" aria-selected="${x===pk}" class="${x===pk?"on":""}" onclick="setPop(${x})" style="${grad(j)}"><span class="rs-mini"><i>${initials(REVIEWS[j].n)}</i>${ph(REVIEWS[j])}</span><span class="rs-nm"><b>${REVIEWS[j].n}</b><small>${REVIEWS[j].role||"Customer"}</small></span><span class="rs-bar"><i></i></span></button>`).join("")}</div></div>`;
+    pBusy=false;
+  };
+  if(prev&&!instant){pBusy=true;prev.classList.add("out");setTimeout(paint,480)}else paint();
 }
-$("#pop").onmouseenter=()=>pPause=true;$("#pop").onmouseleave=()=>pPause=false;
-setPop(0);
+setInterval(()=>{
+  const el=$("#pop .rs");if(!el||pBusy)return;
+  if(pHover||!pSeen||document.hidden)return;
+  pEl+=100;const f=Math.min(1,pEl/POP_MS);
+  el.style.setProperty("--p",f.toFixed(3));
+  const l=$("#rsLeft");if(l)l.textContent=Math.max(0,Math.ceil((POP_MS-pEl)/1000));
+  if(pEl>=POP_MS)setPop(pk+1);
+},100);
+$("#pop").addEventListener("pointerenter",()=>pHover=true);$("#pop").addEventListener("pointerleave",()=>pHover=false);
+$("#pop").addEventListener("focusin",()=>pHover=true);$("#pop").addEventListener("focusout",()=>pHover=false);
+new IntersectionObserver(es=>{pSeen=es[0].isIntersecting},{threshold:.25}).observe($("#pop"));
+// pointer parallax on the portrait
+$("#pop").addEventListener("pointermove",e=>{
+  const t=e.target.closest&&e.target.closest(".rs-portrait");if(!t)return;
+  const r=t.getBoundingClientRect();
+  t.style.setProperty("--mx",((e.clientX-r.left)/r.width-.5).toFixed(3));t.style.setProperty("--my",((e.clientY-r.top)/r.height-.5).toFixed(3));
+});
+setPop(0,true);
 // full story card
 function openReview(i){
   const r=REVIEWS[i],info=[["Designation",r.role],["Company",r.company],["Location",r.loc]].filter(x=>x[1]);

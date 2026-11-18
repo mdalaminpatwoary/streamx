@@ -1,4 +1,4 @@
-/* Site-wide motion layer: scroll progress, ambient glow, cursor light, heading reveals, card tilt, magnetic buttons. */
+/* Site-wide motion layer: scroll progress, ambient glow, heading reveals, card tilt, magnetic buttons. */
 // ===== Premium motion =====
 (function(){
   if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;
@@ -17,13 +17,7 @@
 
   if(!fine)return;
 
-  // 3. Soft light that follows the cursor
-  const glow=make("sx-cursor");let gx=innerWidth/2,gy=innerHeight/2,tx=gx,ty=gy,run=0;
-  const move=()=>{gx+=(tx-gx)*.12;gy+=(ty-gy)*.12;glow.style.transform=`translate3d(${gx-260}px,${gy-260}px,0)`;run=(Math.abs(tx-gx)+Math.abs(ty-gy)>.5)?requestAnimationFrame(move):0};
-  addEventListener("pointermove",e=>{tx=e.clientX;ty=e.clientY;glow.classList.add("on");if(!run)run=requestAnimationFrame(move)},{passive:true});
-  document.addEventListener("pointerleave",()=>glow.classList.remove("on"));
-
-  // 4. Card tilt with a moving glare (eased so it never snaps)
+  // 3. Card tilt with a moving glare (eased so it never snaps)
   const TILT=".pc,.rc,.pcard,.tr-poster";
   const live=new Map();let raf=0;
   function loop(){
@@ -54,7 +48,7 @@
   },{passive:true});
   document.addEventListener("pointerleave",()=>{if(cur){const s=live.get(cur);if(s){s.tx=0;s.ty=0}cur=null;if(!raf)raf=requestAnimationFrame(loop)}});
 
-  // 5. Magnetic buttons
+  // 4. Magnetic buttons
   document.addEventListener("pointermove",e=>{
     const b=e.target.closest&&e.target.closest(".btn:not(.hx-btn):not(.lm)");
     if(!b)return;

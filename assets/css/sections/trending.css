@@ -485,3 +485,37 @@
     transition: none;
   }
 }
+
+.tr-note {
+  display: inline-block;
+  margin-bottom: 4px;
+  padding: 9px 16px;
+  border: 1px solid rgba(255, 191, 94, 0.3);
+  border-radius: 12px;
+  background: rgba(255, 191, 94, 0.08);
+  color: #ffd592;
+  font-size: 13px;
+  font-weight: 600;
+  animation: tr-pop 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.tr-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-right: 6px;
+  color: #52e09a;
+  font-weight: 700;
+}
+.tr-live i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #35d07f;
+  animation: hx-blink 1.4s ease-in-out infinite;
+}
+.tr-credit small {
+  display: block;
+  margin-top: 6px;
+  opacity: 0.8;
+}

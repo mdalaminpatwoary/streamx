@@ -14,6 +14,9 @@ const PLATFORMS = {
 };
 const REGIONS = new Set(["BD", "IN", "PK", "LK", "NP", "US", "GB", "CA", "AU", "AE", "SA", "SG", "MY", "JP", "KR", "DE", "FR", "BR"]);
 
+// Region used when the requested one has no data for that platform (default: US).
+const FALLBACK = { hotstar: "IN" };
+
 const providerCache = new Map(); // region -> { at, list }
 const HOUR = 3600 * 1000;
 
@@ -69,21 +72,34 @@ module.exports = async (req, res) => {
     const r = String(req.query.r || "BD").toUpperCase();
     if (!PLATFORMS[p] || !REGIONS.has(r)) return res.status(400).json({ error: "Unknown platform or region" });
 
-    const id = await providerId(p, r);
-    const base = {
-      watch_region: r,
-      with_watch_providers: id,
-      with_watch_monetization_types: "flatrate",
-      sort_by: "popularity.desc",
-      include_adult: "false",
-      language: "en-US",
-      page: 1,
+    // Some regions (e.g. Bangladesh) have no availability data in TMDB: fall back to a region that does.
+    const lists = async (region) => {
+      const id = await providerId(p, region);
+      const base = {
+        watch_region: region,
+        with_watch_providers: id,
+        with_watch_monetization_types: "flatrate",
+        sort_by: "popularity.desc",
+        include_adult: "false",
+        language: "en-US",
+        page: 1,
+      };
+      const [mv, tv] = await Promise.all([tmdb("/discover/movie", base), tmdb("/discover/tv", base)]);
+      const take = (j, kind) => (j.results || []).filter((x) => x.poster_path).slice(0, 10).map(shape(kind));
+      return { movies: take(mv, "movie"), tv: take(tv, "tv") };
     };
-    const [mv, tv] = await Promise.all([tmdb("/discover/movie", base), tmdb("/discover/tv", base)]);
-    const take = (j, kind) => (j.results || []).filter((x) => x.poster_path).slice(0, 10).map(shape(kind));
+    let out = await lists(r);
+    let fallback = "";
+    if (!out.movies.length && !out.tv.length) {
+      const fb = FALLBACK[p] && FALLBACK[p] !== r ? FALLBACK[p] : r === "US" ? "" : "US";
+      if (fb) {
+        out = await lists(fb);
+        if (out.movies.length || out.tv.length) fallback = fb;
+      }
+    }
 
     res.setHeader("Cache-Control", "public, s-maxage=3600, stale-while-revalidate=86400");
-    return res.status(200).json({ platform: p, region: r, movies: take(mv, "movie"), tv: take(tv, "tv"), at: new Date().toISOString() });
+    return res.status(200).json({ platform: p, region: r, fallback, movies: out.movies, tv: out.tv, at: new Date().toISOString() });
   } catch (e) {
     // 424 instead of 5xx: Cloudflare replaces 5xx bodies with its own error page.
     return res.status(424).json({ error: e.config ? "Trending is not configured" : "Trending is unavailable right now" });

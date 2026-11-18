@@ -39,6 +39,7 @@
 <link rel="stylesheet" href="assets/css/sections/trial.css">
 <link rel="stylesheet" href="assets/css/sections/payments.css">
 <link rel="stylesheet" href="assets/css/sections/reviews.css">
+<link rel="stylesheet" href="assets/css/sections/reviews-spotlight.css">
 <link rel="stylesheet" href="assets/css/sections/faq.css">
 <link rel="stylesheet" href="assets/css/sections/cta.css">
 <link rel="stylesheet" href="assets/css/layout/footer.css">
@@ -71,38 +72,26 @@
 
 <main>
 <section id="home" class="hero wrap">
-  <div class="hx-bg" aria-hidden="true"><i class="hx-blob b1"></i><i class="hx-blob b2"></i><i class="hx-blob b3"></i><span class="hx-grid"></span></div>
+  <div class="hx-bg" aria-hidden="true"><canvas id="hxCanvas"></canvas></div>
   <div class="hero-text">
     <span class="hx-tag"><i class="hx-dot"></i><span data-bn="বাংলাদেশের বিশ্বস্ত ডিজিটাল সাবস্ক্রিপশন স্টোর">Bangladesh's trusted digital subscription store</span></span>
     <h1 class="hx-title" data-bn="প্রিমিয়াম সাবস্ক্রিপশন, <span class='grad'>বাংলাদেশের উপযোগী দামে।</span>">Premium subscriptions, <span class="grad">priced for Bangladesh.</span></h1>
+    <div class="hx-roll" aria-hidden="true"><span data-bn="এখনই পান">Get</span><span class="rl-win"><span class="rl-list" id="rlList"></span></span><span class="rl-from"><span data-bn="মাত্র">from</span> <b id="rlPrice">৳</b></span></div>
     <p class="hx-lead" data-bn="Netflix, Spotify, Prime Video, YouTube Premium, ChatGPT এবং আরও অনেক কিছু—স্থানীয় দামে, কয়েক মিনিটেই চালু। bKash, Nagad, Rocket, Upay, কার্ডসহ প্রায় সব পেমেন্ট মাধ্যমে নিরাপদে অনলাইনে পেমেন্ট করুন, অথবা হোয়াটসঅ্যাপে অর্ডার করুন।">Netflix, Spotify, Prime Video, YouTube Premium, ChatGPT and more, at local prices and activated within minutes. Pay securely online with bKash, Nagad, Rocket, Upay, cards and most other methods, or order through WhatsApp.</p>
     <div class="cta">
       <a href="#products" class="btn grad-bg hx-btn"><span data-bn="সাবস্ক্রিপশন দেখুন">Browse subscriptions</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
       <a href="#" class="btn ghost" data-wa="Hi StreamX! I want to order a subscription." data-bn="হোয়াটসঅ্যাপে অর্ডার করুন">Order on WhatsApp ↗</a>
     </div>
-    <div class="hx-pay"><span class="hx-pay-l" data-bn="যেভাবে খুশি পেমেন্ট করুন">Pay your way</span><ul><li>bKash</li><li>Nagad</li><li>Rocket</li><li>Upay</li><li>Visa</li><li>Mastercard</li><li data-bn="আরও">+ more</li></ul></div>
+    <div class="hx-pay"><span class="hx-pay-l" data-bn="যেভাবে খুশি পেমেন্ট করুন">Pay your way</span><ul><li><img src="assets/img/pay/bkash.png" alt="bKash" onerror="this.replaceWith(document.createTextNode('bKash'))"></li><li><img src="assets/img/pay/nagad.png" alt="Nagad" onerror="this.replaceWith(document.createTextNode('Nagad'))"></li><li><img src="assets/img/pay/rocket.png" alt="Rocket" onerror="this.replaceWith(document.createTextNode('Rocket'))"></li><li><img src="assets/img/pay/upay.png" alt="Upay" onerror="this.replaceWith(document.createTextNode('Upay'))"></li><li>Visa</li><li>Mastercard</li><li data-bn="আরও">+ more</li></ul></div>
     <ul class="hx-trust">
       <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><span data-bn="দ্রুত অ্যাক্টিভেশন">Fast activation</span></li>
       <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 6v6c0 4.5 3.2 8 8 9 4.8-1 8-4.5 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg><span data-bn="নিরাপদ চেকআউট">Secure checkout</span></li>
       <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13v-1a8 8 0 0 1 16 0v1"/><rect x="3" y="13" width="4" height="6" rx="1.5"/><rect x="17" y="13" width="4" height="6" rx="1.5"/></svg><span data-bn="২৪/৭ সাপোর্ট">24/7 support</span></li>
     </ul>
   </div>
-  <div class="hero-art hx-stage" aria-hidden="true">
-    <div class="hx-ring r1"><i></i></div><div class="hx-ring r2"><i></i></div>
-    <div class="hx-card" id="hxCard">
-      <div class="hx-ch"><b>Order <em>#SX-2841</em></b><span class="hx-live"><i></i><span data-bn="লাইভ">Live</span></span></div>
-      <div class="hx-item"><i data-logo="netflix"></i><div><b>Netflix</b><small>Share Profile · 1 Month</small></div><span class="hx-state"><span class="a" data-bn="প্রক্রিয়াধীন">Processing</span><span class="b" data-bn="ডেলিভারি হয়েছে">Delivered</span></span></div>
-      <ol class="hx-steps">
-        <li><i><svg viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></i><div><b data-bn="অর্ডার গৃহীত">Order received</b><small data-bn="আপনার অর্ডার নিশ্চিত হয়েছে">Your order is confirmed</small></div></li>
-        <li><i><svg viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></i><div><b data-bn="পেমেন্ট নিশ্চিত">Payment confirmed</b><small data-bn="নিরাপদ পেমেন্ট সম্পন্ন">Secure payment verified</small></div></li>
-        <li><i><svg viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></i><div><b data-bn="অ্যাকাউন্ট ডেলিভারি">Account delivered</b><small data-bn="লগইন তথ্য আপনার কাছে পাঠানো হয়েছে">Login details sent to you</small></div></li>
-      </ol>
-      <div class="hx-bar"><i></i></div>
-    </div>
-    <div class="hx-tile t1"><i data-logo="spotify"></i><span>Spotify</span></div>
-    <div class="hx-tile t2"><i data-logo="youtube"></i><span>YouTube</span></div>
-    <div class="hx-tile t3"><i data-logo="openai"></i><span>ChatGPT</span></div>
-    <div class="hx-tile t4"><i data-logo="primevideo"></i><span>Prime Video</span></div>
+  <div class="hero-art hx-stage" id="hxStage" aria-hidden="true">
+    <div class="hx-orbit" id="hxOrbit"></div>
+    <div class="hx-info" id="hxInfo"><i class="hx-pulse"></i><b id="hxName">Netflix</b><span id="hxFrom"></span></div>
   </div>
 </section>
 
@@ -113,16 +102,17 @@
   <div class="tr-bar rv">
     <div class="tr-tabs" id="trTabs" role="tablist" aria-label="Streaming platform"><span class="tr-ink" aria-hidden="true"></span></div>
     <div class="tr-ctl">
-      <div class="tr-seg" id="trType" role="group" aria-label="Show"><span class="tr-thumb" aria-hidden="true"></span><button type="button" data-k="all" class="on">All</button><button type="button" data-k="movie">Movies</button><button type="button" data-k="tv">Series</button></div>
+      <div class="tr-seg" id="trType" role="group" aria-label="Show"><span class="tr-thumb" aria-hidden="true"></span><button type="button" data-k="movie" class="on">Movies</button><button type="button" data-k="tv">Series</button></div>
       <div class="tr-reg" id="trReg">
         <button type="button" class="tr-regbtn" id="trRegBtn" aria-haspopup="listbox" aria-expanded="false"><img id="trFlag" alt="" width="22" height="16"><span id="trRegName">Bangladesh</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
         <div class="tr-pop" id="trPop" hidden><input type="search" id="trRegQ" placeholder="Search country" aria-label="Search country" autocomplete="off"><ul id="trRegList" role="listbox" aria-label="Region"></ul></div>
       </div>
     </div>
   </div>
+  <p class="tr-note" id="trNote" hidden></p>
   <div class="tr-stage" id="trStage" aria-live="polite"><div class="tr-rail" id="trRail"></div></div>
   <div class="tr-cta rv" id="trCta"></div>
-  <p class="note tr-credit">Ranked by popularity on each platform in the selected region and refreshed hourly. This product uses the TMDB API but is not endorsed or certified by TMDB.</p>
+  <p class="note tr-credit"><span class="tr-live"><i></i><span id="trLive">Live</span></span> Rankings update automatically throughout the day, so this list is always fresh.<br><small>This product uses the TMDB API but is not endorsed or certified by TMDB.</small></p>
 </section>
 
 <section id="products" class="wrap sec">
@@ -284,7 +274,7 @@
     <div><span class="eyebrow">Customer reviews</span><h2>Loved by <span class="grad">customers.</span></h2></div>
     <div class="rbtns"><button class="fdk-open" type="button" data-fdk>Give feedback</button><a class="fb" href="https://www.facebook.com/streamx.com.bd/reviews" target="_blank" rel="noopener"><i><svg viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M9.101 23.691v-7.98H6.627v-3.667h2.474v-1.58c0-4.085 1.848-5.978 5.858-5.978.401 0 .955.042 1.468.103a8.68 8.68 0 0 1 1.141.195v3.325a8.623 8.623 0 0 0-.653-.036 26.805 26.805 0 0 0-.733-.009c-.707 0-1.259.096-1.675.309a1.686 1.686 0 0 0-.679.622c-.258.42-.374.995-.374 1.752v1.297h3.919l-.386 2.103-.287 1.564h-3.246v8.245C19.396 23.238 24 18.179 24 12.044c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.628 3.874 10.35 9.101 11.647Z"/></svg></i>Share your reviews on Facebook ↗</a></div>
   </div>
-  <div class="pop rv" id="pop" aria-live="polite"></div>
+  <div class="rs-wrap rv" id="pop" aria-live="off"></div>
   <p class="rlabel rv">More from our customers <span>· click a card to see the full story</span></p>
   <div class="rwall rv"><div class="rtrack" id="rrow1"></div><div class="rtrack back" id="rrow2"></div></div>
 </section>
@@ -419,7 +409,18 @@
 <div id="agate" class="mdl" role="dialog" aria-modal="true" aria-labelledby="agT"><div class="mdlb"><h3 id="agT">Adults only (18+)</h3><p>This category contains services for adults only. Please confirm that you are 18 years or older to continue.</p><div class="ag-acts"><button class="btn grad-bg" id="agYes" type="button">I am 18 or older</button><button class="btn ghost" id="agNo" type="button">Go back</button></div></div></div>
 <div id="toast"></div>
 
-<a class="float wa" data-wa="Hi StreamX!" href="#" aria-label="Chat with us on WhatsApp"><span class="fi"><svg viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg><i></i></span><span class="ft"><b>Chat with us</b><small>WhatsApp support</small></span></a>
+<div class="cw" id="cw">
+  <div class="cw-bubble" id="cwBubble" role="status" aria-live="polite">
+    <button class="cw-x" id="cwX" type="button" aria-label="Close message">×</button>
+    <b><i></i><em id="cwName">Ayesha</em><small>· StreamX support</small></b>
+    <span class="cw-msg" id="cwMsg"></span><span class="dots"><i></i><i></i><i></i></span>
+    <a class="cw-go" data-wa="Hi StreamX! I need some help." href="#">Chat on WhatsApp →</a>
+  </div>
+  <a class="cw-btn" id="cwBtn" data-wa="Hi StreamX!" href="#" aria-label="Chat with us on WhatsApp">
+    <span class="cw-ring"></span><span class="cw-av" id="cwAv"></span><span class="cw-on"></span>
+    <span class="cw-wa"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg></span>
+  </a>
+</div>
 <script src="assets/js/data/logos.js"></script>
 <script src="assets/js/data/config.js"></script>
 <script src="assets/js/data/catalog.js"></script>
@@ -447,6 +448,7 @@
 <script src="assets/js/features/front-logos.js"></script>
 <script src="assets/js/features/hero-motion.js"></script>
 <script src="assets/js/features/trending.js"></script>
+<script src="assets/js/features/chat-avatar.js"></script>
 <script src="assets/js/layout/premium-motion.js"></script>
 <script src="assets/js/features/stats.js"></script>
 <script src="assets/js/features/steps.js"></script>

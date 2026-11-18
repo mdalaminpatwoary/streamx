@@ -1,5 +1,5 @@
 /* Products grid: search, sort, category filter, load more, 18+ age check. */
-const mq=matchMedia("(max-width:600px)");let PAGE=mq.matches?4:8; // phone shows 4 first
+const mq=matchMedia("(max-width:600px)");let PAGE=mq.matches?4:8,MORE=8; // phone shows 4 first; every "Load more" adds 8
 let cat="All",q="",limit=PAGE,view=[],sortKey="rec";
 // Sort factors: popularity (list order), price, name, newest (added last), category
 const SORTS={rec:(a,b)=>a[1]-b[1],pa:(a,b)=>entry(a[0]).p-entry(b[0]).p||a[1]-b[1],pd:(a,b)=>entry(b[0]).p-entry(a[0]).p||a[1]-b[1],az:(a,b)=>a[0].name.localeCompare(b[0].name),za:(a,b)=>b[0].name.localeCompare(a[0].name),new:(a,b)=>b[1]-a[1],cat:(a,b)=>a[0].cat.localeCompare(b[0].cat)||a[1]-b[1]};
@@ -10,7 +10,7 @@ const card=(p,i,d=0)=>`<div class="card pc" style="animation-delay:${d}ms" oncli
 const bcard=(p,i)=>`<div class="card bd" onclick="showPlans(${i},true)">
   <div class="bl2"><span class="sv">Save up to ${taka(Math.max(...p.packs.map(k=>k.old-k.p)))} / month</span>
   <div class="stk">${PARTS[p.name].map(s=>tile(s,`<span class="lg" style="background:#1E2545">${s[0].toUpperCase()}</span>`)).join("")}</div>
-  <h3>${p.name}</h3><ul class="inc">${p.desc.split(" + ").map(x=>`<li>${x}</li>`).join("")}<li>${p.packs.length} packs: shared or private profiles</li><li>Phone, web and TV access options</li></ul></div>
+  <h3>${p.name}</h3><ul class="inc">${p.desc.split(" + ").map(x=>`<li>${x}</li>`).join("")}<li>${p.packs.length} packs: shared or private Netflix profile</li><li>Packs 3 and 4 add TV access</li></ul></div>
   <div class="br"><div class="pr"><small>From</small> <b>${taka(entry(p).p)}</b> <small>/ month</small> <s>${taka(p.packs[0].old)}</s></div>
   <div class="pks">${p.packs.map(k=>`<span class="pk">${k.n} <b>${taka(k.p)}</b></span>`).join("")}</div>
   <button class="btn grad-bg">View ${p.packs.length} packs →</button></div></div>`;
@@ -22,12 +22,12 @@ function renderProducts(){
 function syncMore(){
   $("#count").innerHTML=`Showing ${Math.min(limit,view.length)} of ${view.length} products<div class="prog"><i style="width:${Math.min(100,limit/Math.max(view.length,1)*100)}%"></i></div>`;
   const b=$("#loadMore");b.style.display=view.length>PAGE?"":"none";
-  b.textContent=limit>=view.length?"Show less ↑":`Load more · ${view.length-limit} more ↓`;
+  b.textContent=limit>=view.length?"Show less ↑":`Load ${Math.min(MORE,view.length-limit)} more · ${view.length-limit} left ↓`;
 }
 $("#loadMore").onclick=()=>{
   if(limit>=view.length){limit=PAGE;renderProducts();$("#products").scrollIntoView();return}
-  const from=limit;limit=view.length;
-  $("#productGrid").insertAdjacentHTML("beforeend",view.slice(from).map(([p,i],n)=>card(p,i,n%8*60)).join(""));syncMore();
+  const from=limit;limit=Math.min(view.length,limit+MORE);
+  $("#productGrid").insertAdjacentHTML("beforeend",view.slice(from,limit).map(([p,i],n)=>card(p,i,n%8*60)).join(""));syncMore();
 };
 // 18+ category: adults-only confirmation (remembered for this visit)
 let ageOK=false,agCb=null;try{ageOK=sessionStorage.getItem("sx_18")==="1"}catch(e){}

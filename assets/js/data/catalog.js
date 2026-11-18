@@ -102,9 +102,9 @@ const PRODUCTS=CATALOG.map(([name,cat,color,desc,variants])=>({name,cat,color,de
 const entry=p=>p.variants.flatMap(v=>v.plans).reduce((a,b)=>b.p<a.p?b:a); // starting (cheapest) plan
 // Entertainment Combo packs: shown when a customer opens the combo (monthly price, "old" = regular price)
 const PACKS=[
- {n:"Pack 1",sub:"Entry pack with a shared Netflix profile",p:230,old:280,f:["Netflix: shared profile","Prime Video: private profile","Phone and web access"]},
- {n:"Pack 2",sub:"Private profiles with full control",p:350,old:400,f:["Netflix: private profile","Prime Video: private profile","Phone and web access","Custom profile name and PIN"]},
- {n:"Pack 3",sub:"Built for the big screen",p:400,old:450,tag:"Popular for TV",hot:true,f:["Netflix: private profile","Prime Video: private profile","Phone, web and TV access","Dedicated TV pack","Custom profile name and PIN"]},
- {n:"Pack 4",sub:"The complete, worry-free experience",p:450,old:500,tag:"Signature",f:["Netflix: private profile","Prime Video: private profile","Phone, web and TV access","Custom profile name and PIN","Reliable, hassle-free service"]}
+ {n:"Pack 1",sub:"Best value. Shared Netflix profile, for phone and web.",p:230,old:280,tag:"Most affordable",f:["Netflix: shared profile, no customization","Prime Video: private PIN-protected profile","Watch on mobile, tablet and web (no TV)","Netflix login by secure OTP","Instant delivery"]},
+ {n:"Pack 2",sub:"Your own private Netflix profile, for phone and web.",p:350,old:400,tag:"Private",f:["Netflix: private PIN-protected profile, customizable","Prime Video: private PIN-protected profile","Watch on mobile, tablet and web (no TV)","Netflix login by secure OTP","Instant delivery"]},
+ {n:"Pack 3",sub:"Netflix on your TV, with multi-device access.",p:400,old:450,tag:"Best for TV",hot:true,f:["Netflix: single slot, PIN-protected, customizable","Prime Video: private PIN-protected profile","Watch on mobile, tablet, web and TV","Netflix login by password","Delivery depends on stock availability"]},
+ {n:"Pack 4",sub:"Private profile on TV, with instant delivery and priority service.",p:450,old:500,tag:"Premium",f:["Netflix: Signature private profile, customizable","Prime Video: private PIN-protected profile","Watch on mobile, tablet, web and TV","Netflix login by secure OTP","Instant delivery and priority service"]}
 ];
 PRODUCTS.forEach(p=>{if(p.name==="Entertainment Combo"){p.packs=PACKS;p.variants[0].plans=PACKS.map(k=>({m:1,v:k.n,p:k.p}))}});

@@ -1,109 +1,248 @@
+/* Brand-green helpers used by WhatsApp buttons. */
 .wa {
   background: #168a52;
   color: #fff;
 }
-.float {
-  position: fixed;
-  right: 18px;
-  bottom: 18px;
-  z-index: 60;
-  padding: 12px 20px;
-  border-radius: 40px;
-  font-weight: 600;
-  font-size: 13px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
-  animation: pulse 2s infinite;
-}
-.float {
-  font-size: 14px;
-}
-.float.wa {
-  display: flex;
-  align-items: center;
-  padding: 7px;
-  border-radius: 60px;
-  background: rgba(10, 13, 28, 0.72);
-  -webkit-backdrop-filter: blur(16px) saturate(1.5);
-  backdrop-filter: blur(16px) saturate(1.5);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: 0 14px 40px -10px rgba(0, 0, 0, 0.65);
-  animation: bob 4s ease-in-out infinite;
-  color: #fff;
-}
-.fi {
-  position: relative;
-  flex: none;
-  display: grid;
-  place-items: center;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #25d366, #128c7e);
-}
-.fi svg {
-  width: 25px;
-  height: 25px;
-  position: relative;
-  z-index: 1;
-}
-.fi::before,
-.fi::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  border: 2px solid #25d366;
-  animation: ring 2.4s ease-out infinite;
-}
-.fi::after {
-  animation-delay: 1.2s;
-}
-.fi i {
-  position: absolute;
-  z-index: 2;
-  top: 0;
-  right: 0;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: #4ade80;
-  border: 2px solid #0e1226;
-}
-.ft {
-  display: grid;
-  max-width: 180px;
-  overflow: hidden;
-  white-space: nowrap;
-  padding: 0 18px 0 12px;
-  opacity: 1;
-  transition:
-    max-width 0.6s cubic-bezier(0.16, 1, 0.3, 1),
-    padding 0.6s cubic-bezier(0.16, 1, 0.3, 1),
-    opacity 0.4s;
-}
-.ft b {
-  font-size: 14px;
-  line-height: 1.25;
-}
-.ft small {
-  font-size: 12px;
-  color: var(--mut);
-}
-.float.min .ft {
-  max-width: 0;
-  padding: 0;
-  opacity: 0;
-}
-.float.min:hover .ft {
-  max-width: 180px;
-  padding: 0 18px 0 12px;
-  opacity: 1;
-}
-.float.wa:hover {
-  border-color: rgba(37, 211, 102, 0.6);
-  box-shadow: 0 14px 40px -10px rgba(37, 211, 102, 0.45);
-}
 .wa-i {
   background: #25d366;
   color: #fff;
+}
+
+/* Floating support avatar: a friendly face that swaps and pops up short helpful messages (see assets/js/features/chat-avatar.js). */
+.cw {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+  pointer-events: none;
+}
+.cw > * {
+  pointer-events: auto;
+}
+.cw-btn {
+  position: relative;
+  display: block;
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  animation: cw-bob 5s ease-in-out infinite;
+}
+.cw-ring {
+  position: absolute;
+  inset: -5px;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, #25d366, #4f6bff, #ed3124, #25d366);
+  animation: hx-spin 6s linear infinite;
+  -webkit-mask: radial-gradient(circle, transparent 62%, #000 64%);
+  mask: radial-gradient(circle, transparent 62%, #000 64%);
+  opacity: 0.9;
+}
+.cw-av {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border: 3px solid #0a0d1a;
+  border-radius: 50%;
+  background: #141935;
+  box-shadow: 0 16px 36px rgba(2, 4, 16, 0.6);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.cw-btn:hover .cw-av {
+  transform: scale(1.06);
+}
+.cw-av svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transform: scale(0.6) rotate(-14deg);
+  transition:
+    opacity 0.45s,
+    transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.cw-av svg.on {
+  opacity: 1;
+  transform: none;
+}
+.cw-av svg.off {
+  opacity: 0;
+  transform: scale(1.3) rotate(14deg);
+}
+.cw-on {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  z-index: 2;
+  width: 15px;
+  height: 15px;
+  border: 3px solid #0a0d1a;
+  border-radius: 50%;
+  background: #35d07f;
+}
+.cw-on::after {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border: 1px solid #35d07f;
+  border-radius: 50%;
+  animation: hx-ping 2s ease-out infinite;
+}
+.cw-wa {
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border: 3px solid #0a0d1a;
+  border-radius: 50%;
+  background: #25d366;
+}
+.cw-wa svg {
+  width: 13px;
+  height: 13px;
+  fill: #fff;
+}
+
+/* Pop-up message */
+.cw-bubble {
+  position: relative;
+  max-width: 250px;
+  padding: 13px 34px 13px 15px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 18px 18px 4px 18px;
+  background: rgba(16, 20, 42, 0.92);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 20px 50px rgba(2, 4, 16, 0.6);
+  transform-origin: bottom right;
+  opacity: 0;
+  transform: translateY(14px) scale(0.85);
+  pointer-events: none;
+  transition:
+    opacity 0.35s,
+    transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.cw-bubble.show {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+.cw-bubble b {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 3px;
+  font-size: 13px;
+}
+.cw-bubble b i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #35d07f;
+}
+.cw-bubble small {
+  color: var(--mut);
+  font-size: 11.5px;
+  font-weight: 600;
+}
+.cw-msg {
+  display: block;
+  color: #cfd6ea;
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+.cw-bubble .dots {
+  display: none;
+}
+.cw-bubble b em {
+  font-style: normal;
+}
+.cw-typing .cw-msg {
+  display: none;
+}
+.cw-typing .dots {
+  display: flex;
+  gap: 4px;
+  padding: 6px 0;
+}
+.dots i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #8e99bb;
+  animation: cw-dot 1s ease-in-out infinite;
+}
+.dots i:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.dots i:nth-child(3) {
+  animation-delay: 0.3s;
+}
+.cw-x {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 22px;
+  height: 22px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  color: #cfd6ea;
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.cw-x:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+.cw-go {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: #168a52;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+@keyframes cw-bob {
+  50% {
+    transform: translateY(-6px);
+  }
+}
+@keyframes cw-dot {
+  50% {
+    opacity: 0.3;
+    transform: translateY(-3px);
+  }
+}
+@media (max-width: 600px) {
+  .cw {
+    right: 14px;
+    bottom: 14px;
+  }
+  .cw-btn {
+    width: 60px;
+    height: 60px;
+  }
+  .cw-bubble {
+    max-width: 215px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cw-btn,
+  .cw-ring,
+  .cw-on::after {
+    animation: none;
+  }
 }
