@@ -9,8 +9,8 @@
 .pay-m label { display: block; margin-bottom: 12px; }
 .pay-l { display: block; margin-bottom: 6px; font-size: 13px; font-weight: 600; color: var(--mut); }
 .pay-l em { font-weight: 400; font-style: normal; opacity: .75; }
-.pay-m input { width: 100%; padding: 13px 14px; font: inherit; font-size: 15px; color: #fff; background: rgba(255,255,255,.04); border: 1px solid var(--line); border-radius: 12px; outline: 0; transition: border-color .2s, box-shadow .2s; }
-.pay-m input:focus { border-color: var(--ac); box-shadow: 0 0 0 3px rgba(237,49,36,.18); }
+.pay-m input, .pay-m textarea { width: 100%; padding: 13px 14px; font: inherit; font-size: 15px; color: #fff; background: rgba(255,255,255,.04); border: 1px solid var(--line); border-radius: 12px; outline: 0; transition: border-color .2s, box-shadow .2s; }
+.pay-m input:focus, .pay-m textarea:focus { border-color: var(--ac); box-shadow: 0 0 0 3px rgba(237,49,36,.18); }
 .pay-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .pay-err { min-height: 20px; margin: 2px 0 10px; font-size: 14px; color: #ff7a70; }
 .pay-go { width: 100%; text-align: center; }
@@ -24,3 +24,4 @@
 .eps-strip { display: block; margin: 18px 0; border-radius: 16px; overflow: hidden; }
 .eps-strip img { display: block; width: 100%; height: auto; }
 .pay-wa{display:block;margin-top:8px;text-align:center}.pay-wa a{color:#fff;font-weight:700;text-decoration:underline}
+.pay-m textarea{resize:vertical;min-height:64px;line-height:1.5}.pay-m form>label{display:block;margin-top:14px}.pay-m .pay-row{margin-top:14px}.pay-m form>label.pay-wa-f{margin-top:14px}

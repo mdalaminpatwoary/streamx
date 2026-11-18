@@ -15,7 +15,7 @@ async function mailOrder(j, mtid, env) {
     ["Order reference", mtid], ["Status", j.Status], ["Amount", "৳" + j.TotalAmount], ["Paid with", j.FinancialEntity],
     ["EPS transaction ID", j.EpsTransactionId], ["Date", j.TransactionDate], ["Environment", env],
     ["Customer", j.CustomerName], ["Phone", j.CustomerPhone], ["Email", j.CustomerEmail],
-    ["Items", j.ValueC || j.ProductName], ["Customer note", j.ValueA], ["Tip", j.ValueB],
+    ["Items", j.ValueC || j.ProductName], ["Customer note", j.ValueA], ["WhatsApp (if different)", (j.ValueD || "").replace(/^WhatsApp\s*/, "")], ["Tip", j.ValueB],
   ].filter((r) => r[1]);
   const html = `<div style="font-family:Arial,sans-serif;max-width:560px"><h2 style="color:#ED3124">New paid order · StreamX</h2><table cellpadding="8" style="border-collapse:collapse;width:100%">${rows
     .map((r) => `<tr><td style="border-bottom:1px solid #eee;color:#666">${esc(r[0])}</td><td style="border-bottom:1px solid #eee"><b>${esc(r[1])}</b></td></tr>`)
