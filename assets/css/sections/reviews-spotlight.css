@@ -26,11 +26,10 @@
 .rs-stars{color:#ffc247;letter-spacing:2px;font-size:14px}
 .rs-badge b{font-size:15px}
 @keyframes rsPop{from{opacity:0;scale:.6}to{opacity:1;scale:1}}
-.rs-chip{position:absolute;display:flex;align-items:center;gap:8px;padding:6px 12px 6px 6px;border-radius:14px;background:rgba(12,16,34,.88);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.14);box-shadow:0 14px 30px rgba(0,0,0,.45);font-size:12.5px;font-weight:600;animation:rsPop .7s cubic-bezier(.34,1.56,.64,1) both,rsBob 5s ease-in-out infinite}
+.rs-svcs{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 2px}
+.rs-chip{display:inline-flex;align-items:center;gap:8px;padding:5px 12px 5px 5px;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);font-size:12.5px;font-weight:600;animation:rsUp .6s .5s both}
 .rs-chip em{font-style:normal}
-.rs-chip.c0{right:-18px;top:12%;animation-delay:.7s,.7s}
-.rs-chip.c1{left:-22px;top:44%;animation-delay:.9s,1.4s}
-.rs-chip.c2{right:-10px;top:70%;animation-delay:1.1s,2.1s}
+.rs-chip.c1{animation-delay:.6s}.rs-chip.c2{animation-delay:.7s}
 @keyframes rsBob{50%{translate:0 -9px}}
 .rs-body{grid-area:body;position:relative;min-width:0}
 .rs-body .eyebrow{display:inline-block;animation:rsUp .7s .2s both}
@@ -61,7 +60,6 @@
 @media(max-width:860px){
   .rs{grid-template-columns:1fr;grid-template-areas:"pt" "body" "nav";padding:28px 20px 20px;gap:28px;border-radius:22px}
   .rs-portrait{max-width:300px}
-  .rs-chip.c0{right:-6px}.rs-chip.c1{left:-6px}.rs-chip.c2{right:-4px}
   .rs-nav{grid-template-columns:repeat(2,1fr)}
 }
 @media(prefers-reduced-motion:reduce){.rs *,.rs{animation:none!important}.rw{opacity:1;filter:none;transform:none}}

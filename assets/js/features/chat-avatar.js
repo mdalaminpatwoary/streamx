@@ -4,35 +4,47 @@
   const root=$("#cw");if(!root)return;
   const calm=matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  // Four original illustrated agents (flat style). skin/hair/shirt/bg colours, hair style, headset.
+  // Four original illustrated agents (soft-shaded, semi-realistic flat style).
   const PEOPLE=[
-    {name:"Ayesha",bg:["#ff8a5c","#ed3124"],skin:"#e8b98f",hair:"#2a1a14",shirt:"#4f6bff",style:"long",
-     msgs:["Hi! 👋 Not sure which plan to pick? Ask me.","Want Netflix and Prime together? Our combo packs save you money."]},
-    {name:"Rafi",bg:["#6f86ff","#4f6bff"],skin:"#c98f64",hair:"#15110f",shirt:"#ed3124",style:"short",
-     msgs:["Pay with bKash, Nagad, Rocket or a card. I'll help you check out.","Prefer to chat? Tap me and we reply in minutes."]},
-    {name:"Nusrat",bg:["#b58bff","#7a4dff"],skin:"#d9a67d",hair:"#3b2218",shirt:"#25d366",style:"bun",
-     msgs:["Need Spotify, YouTube Premium or ChatGPT today?","Got a question about delivery or warranty? I'm here."]},
-    {name:"Tanvir",bg:["#35d07f","#168a52"],skin:"#b97b54",hair:"#0f0d0c",shirt:"#ffbf5e",style:"cap",
-     msgs:["Looking for a lower price? Longer plans cost less per month.","We're online 24/7. Say hi on WhatsApp! 💬"]}
+    {name:"Ayesha",bg:["#ffb28f","#ed3124"],skin:["#f1c7a3","#d9a07a"],hair:["#3a2218","#1b100b"],suit:["#2a3366","#171c3d"],top:"#f4f6ff",style:"long",lip:"#c2475a",
+     msgs:["Not sure which plan? Ask me. 👋","Netflix + Prime combos save you money."]},
+    {name:"Rafi",bg:["#8fa2ff","#4f6bff"],skin:["#d9a47c","#b8825a"],hair:["#1b1511","#0b0908"],suit:["#1f2a44","#0f1626"],top:"#ffffff",style:"short",lip:"#a8604c",
+     msgs:["Pay with bKash, Nagad or card.","Tap me, we reply in minutes."]},
+    {name:"Nusrat",bg:["#c9a8ff","#7a4dff"],skin:["#e6b48e","#c98e68"],hair:["#4a2a1c","#22110a"],suit:["#3b2a63","#1e1438"],top:"#fdf1ff",style:"bun",lip:"#b8455f",
+     msgs:["Need Spotify or ChatGPT today?","Questions on delivery? I'm here."]},
+    {name:"Tanvir",bg:["#6fe3a5","#168a52"],skin:["#c98f64","#a56e48"],hair:["#16110e","#080605"],suit:["#2b2f3a","#14161d"],top:"#eaf2ff",style:"crop",lip:"#98563f",
+     msgs:["Longer plans cost less per month.","Online 24/7. Say hi! 💬"]}
   ];
-  const hair={
-    long:(c)=>`<path d="M14 40c-2-18 6-30 18-30s20 12 18 30c-2 6-6 8-8 8V30H22v18c-2 0-6-2-8-8z" fill="${c}"/>`,
-    short:(c)=>`<path d="M17 28c0-11 7-17 15-17s15 6 15 17c-4-5-9-7-15-7s-11 2-15 7z" fill="${c}"/>`,
-    bun:(c)=>`<circle cx="32" cy="9" r="6.5" fill="${c}"/><path d="M16 30c0-12 6-18 16-18s16 6 16 18c-4-6-9-8-16-8s-12 2-16 8z" fill="${c}"/>`,
-    cap:(c)=>`<path d="M16 26c0-12 7-17 16-17s16 5 16 17z" fill="#1d2347"/><path d="M14 27h30c0 3-4 4-8 4H16z" fill="#1d2347"/><path d="M32 9v5" stroke="${c}" stroke-width="2"/>`
-  };
-  const face=(p,id)=>`<svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="g${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${p.bg[0]}"/><stop offset="1" stop-color="${p.bg[1]}"/></linearGradient></defs>
+  const hairBack=(s,id)=>s==="long"?`<path d="M13 52c-3-22 3-42 19-42s22 20 19 42c-4 3-9 3-11 1V30H24v23c-2 2-7 2-11-1z" fill="url(#h${id})"/>`:s==="bun"?`<circle cx="32" cy="8.5" r="6.5" fill="url(#h${id})"/>`:"";
+  const hairFront=(s,id)=>({
+    long:`<path d="M19 31c1-10 7-15 14-15 8 0 12 6 13 15-4-4-8-6-13-6-6 0-10 2-14 6z" fill="url(#h${id})"/>`,
+    short:`<path d="M18 29c-1-12 6-18 15-18 9 0 14 6 13 18-3-5-7-8-13-8s-11 3-15 8z" fill="url(#h${id})"/><path d="M24 15c4-2 9-2 13 0" stroke="#fff" stroke-opacity=".18" stroke-width="1.4" fill="none" stroke-linecap="round"/>`,
+    bun:`<path d="M18 31c0-11 6-17 15-17 8 0 14 6 14 17-4-5-8-8-14-8s-11 3-15 8z" fill="url(#h${id})"/>`,
+    crop:`<path d="M19 28c0-10 5-16 14-16s14 6 14 16c-3-4-7-6-14-6s-11 2-14 6z" fill="url(#h${id})"/><path d="M24 29c2.5-1.5 4.5-2 8-2" stroke="#000" stroke-opacity=".25" stroke-width="1" fill="none"/>`}[s]);
+  const face=(p,id)=>`<svg viewBox="0 0 64 64" aria-hidden="true"><defs>
+    <linearGradient id="g${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${p.bg[0]}"/><stop offset="1" stop-color="${p.bg[1]}"/></linearGradient>
+    <linearGradient id="s${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${p.skin[0]}"/><stop offset="1" stop-color="${p.skin[1]}"/></linearGradient>
+    <linearGradient id="h${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${p.hair[0]}"/><stop offset="1" stop-color="${p.hair[1]}"/></linearGradient>
+    <linearGradient id="b${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${p.suit[0]}"/><stop offset="1" stop-color="${p.suit[1]}"/></linearGradient>
+    <radialGradient id="l${id}" cx=".3" cy=".1" r=".9"><stop offset="0" stop-color="#fff" stop-opacity=".38"/><stop offset=".6" stop-color="#fff" stop-opacity="0"/></radialGradient></defs>
     <rect width="64" height="64" fill="url(#g${id})"/>
-    ${p.style==="long"?hair.long(p.hair):""}
-    <path d="M8 68c0-12 10-18 24-18s24 6 24 18z" fill="${p.shirt}"/>
-    <path d="M26 46h12v8c0 3-12 3-12 0z" fill="${p.skin}"/>
-    <ellipse cx="32" cy="32" rx="12.5" ry="14" fill="${p.skin}"/>
-    ${p.style!=="long"?hair[p.style](p.hair):`<path d="M19 30c3-9 9-12 14-12 6 0 11 4 12 12-4-3-8-5-13-5s-10 2-13 5z" fill="${p.hair}"/>`}
-    <circle cx="27" cy="33" r="1.7" fill="#1a1230"/><circle cx="37" cy="33" r="1.7" fill="#1a1230"/>
-    <path d="M27 39c2 2.6 8 2.6 10 0" fill="none" stroke="#1a1230" stroke-width="1.6" stroke-linecap="round"/>
-    <path d="M18 31a14 14 0 0 1 28 0" fill="none" stroke="#10142a" stroke-width="2.2" stroke-linecap="round"/>
-    <rect x="15.5" y="30" width="4.5" height="8" rx="2.2" fill="#10142a"/><rect x="44" y="30" width="4.5" height="8" rx="2.2" fill="#10142a"/>
-    <path d="M46 37c0 6-5 9-10 9" fill="none" stroke="#10142a" stroke-width="1.6" stroke-linecap="round"/><circle cx="35.5" cy="46" r="1.8" fill="#10142a"/></svg>`;
+    ${hairBack(p.style,id)}
+    <path d="M6 70c0-13 11-19 26-19s26 6 26 19z" fill="url(#b${id})"/>
+    <path d="M25 51l7 9 7-9-3-1-4 5-4-5z" fill="${p.top}"/>
+    <path d="M26 44h12v8c0 3.5-12 3.5-12 0z" fill="url(#s${id})"/><path d="M26 49c3 2.5 9 2.5 12 0v-3H26z" fill="#000" opacity=".14"/>
+    <ellipse cx="32" cy="32" rx="12" ry="13.6" fill="url(#s${id})"/>
+    <ellipse cx="20.2" cy="33" rx="1.8" ry="3" fill="${p.skin[1]}"/><ellipse cx="43.8" cy="33" rx="1.8" ry="3" fill="${p.skin[1]}"/>
+    ${hairFront(p.style,id)}
+    <path d="M25 29.2c1.3-1 3.2-1.2 4.6-.5M34.4 28.7c1.4-.7 3.3-.5 4.6.5" stroke="${p.hair[1]}" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+    <ellipse cx="27.2" cy="32.4" rx="1.9" ry="2.2" fill="#fff"/><ellipse cx="36.8" cy="32.4" rx="1.9" ry="2.2" fill="#fff"/>
+    <circle cx="27.4" cy="32.6" r="1.35" fill="#2a1a12"/><circle cx="36.6" cy="32.6" r="1.35" fill="#2a1a12"/><circle cx="27.9" cy="32.1" r=".45" fill="#fff"/><circle cx="37.1" cy="32.1" r=".45" fill="#fff"/>
+    <path d="M31 33.5c-.6 2.2-1 3 .3 3.4" stroke="#000" stroke-opacity=".2" stroke-width="1" fill="none" stroke-linecap="round"/>
+    <path d="M27.6 39.4c2.6 2.2 6.2 2.2 8.8 0" fill="${p.lip}" stroke="${p.lip}" stroke-width="1" stroke-linecap="round"/>
+    <circle cx="24.5" cy="37" r="2.4" fill="#ff6b6b" opacity=".12"/><circle cx="39.5" cy="37" r="2.4" fill="#ff6b6b" opacity=".12"/>
+    <path d="M19 31a13 13 0 0 1 26 0" fill="none" stroke="#e9ecf8" stroke-width="1.6" stroke-linecap="round" opacity=".9"/>
+    <rect x="16.8" y="30.5" width="4" height="7.5" rx="2" fill="#e9ecf8"/><rect x="43.2" y="30.5" width="4" height="7.5" rx="2" fill="#e9ecf8"/>
+    <path d="M45 37c0 5.5-4.5 8.5-9.5 8.5" fill="none" stroke="#e9ecf8" stroke-width="1.3" stroke-linecap="round"/><circle cx="35" cy="45.5" r="1.5" fill="#e9ecf8"/>
+    <rect width="64" height="64" fill="url(#l${id})"/></svg>`;
 
   const av=$("#cwAv"),bubble=$("#cwBubble"),nameEl=$("#cwName"),msgEl=$("#cwMsg");
   av.innerHTML=PEOPLE.map((p,i)=>face(p,i)).join("");

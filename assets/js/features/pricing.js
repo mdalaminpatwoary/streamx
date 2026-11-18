@@ -28,7 +28,7 @@ function showPlans(i,scroll,v=0){
   const pk=!!p.packs,multi=p.variants.length>1,vr=p.variants[v]||p.variants[0];cur={i,v};$("#pickProduct").value=i;if(window.markRail)markRail(i);
   $("#pLogo").innerHTML=pk?`<span class="stk">${PARTS[p.name].map(s=>tile(s,"")).join("")}</span>`:ptile(p);$("#pName").textContent=p.name;
   $("#pDesc").textContent=pk?"Netflix and Prime Video. Choose the pack that fits how you watch.":p.desc;
-  document.querySelector("#pricing .note").textContent=pk?"* Prices are per month. Profile type and device access differ by pack. Please confirm availability on WhatsApp before you pay.":"* Prices are in BDT and may change. Please confirm your plan and availability on WhatsApp before you pay.";
+  document.querySelector("#pricing .note").textContent=pk?"* Every price is fixed in BDT, per month. Profile type and device access differ by pack.":"* Every price is fixed in BDT. What you see here is exactly what you pay, with no hidden charges.";
   const T=$("#planTable");T.className=pk?"packs":"vlay";
   if(pk){
     T.innerHTML=p.packs.map((k,n)=>`<div class="pcard${k.hot?" best":""}" style="animation-delay:${n*90}ms"><button class="pshare" onclick="sharePlan(${i},0,${n})" aria-label="Share ${p.name} ${k.n}" title="Share this plan">${SHARE}</button>${k.tag?`<span class="tag">${k.tag}</span>`:""}
@@ -49,7 +49,7 @@ function showPlans(i,scroll,v=0){
       <span class="save${pct>0||pl.u?"":" mute"}">${pl.u?`${taka(GIFT.rate(pl.gc))} per $1`:pct>0?`Save ${pct}%`:(pl.m===1?"Monthly plan":"Fixed-term plan")}</span>
       <div class="actions"><button class="btn ghost" onclick="addToCart(${i},${v},${k})">${BAG} Add to Cart</button>
       <button type="button" class="btn grad-bg" onclick="buyNow(${i},${v},${k})">Buy Now</button></div></div>`}).join("");
-    const custom=p.gift?`<div class="pcard gcc"><span class="dur">Other amount</span><label class="gc-in"><span>$</span><input id="gcAmt" type="number" min="1" max="${GIFT.max}" step="1" inputmode="numeric" placeholder="e.g. 35" aria-label="Gift card amount in US dollars"></label><div class="amt"><span class="cur">৳</span><b id="gcPrice">0</b></div><small class="pm" id="gcNote">Enter $1 to $9, or $10 and up in steps of $5</small><div class="actions"><button class="btn ghost" id="gcAdd" disabled onclick="gcGo(false)">${BAG} Add to Cart</button><button type="button" class="btn grad-bg" id="gcBuy" disabled onclick="gcGo(true)">Buy Now</button></div></div>`:"";
+    const custom=p.gift?`<div class="pcard gcc"><span class="dur">Any amount</span><div class="gc-step"><button type="button" id="gcMinus" aria-label="Decrease by $5">−</button><div class="gc-val"><span>$</span><b id="gcVal">25</b></div><button type="button" id="gcPlus" aria-label="Increase by $5">+</button></div><input id="gcAmt" class="gc-range" type="range" min="${GIFT.min}" max="${GIFT.max}" step="${GIFT.step}" value="25" aria-label="Gift card amount in US dollars"><div class="gc-ends"><span>$${GIFT.min}</span><span>$${GIFT.max}</span></div><div class="amt"><span class="cur">৳</span><b id="gcPrice">0</b></div><small class="pm" id="gcNote"></small><div class="actions"><button class="btn ghost" id="gcAdd" onclick="gcGo(false)">${BAG} Add to Cart</button><button type="button" class="btn grad-bg" id="gcBuy" onclick="gcGo(true)">Buy Now</button></div></div>`:"";
     T.innerHTML=tabs+`<div class="vbody">${info}<div class="vplans">${cards}${custom}</div></div>`;
     if(p.gift)gcInit();
   }
@@ -61,13 +61,11 @@ showPlans(0);
 // Apple Gift Card: custom amount (price is re-checked on the server)
 function gcInit(){
   const inp=$("#gcAmt");if(!inp)return;
-  const note=$("#gcNote"),price=$("#gcPrice"),add=$("#gcAdd"),buy=$("#gcBuy");
-  inp.oninput=()=>{
-    const a=Math.floor(+inp.value),ok=inp.value!==""&&GIFT.ok(a);
-    add.disabled=buy.disabled=!ok;
-    price.textContent=ok?(a*GIFT.rate(a)).toLocaleString("en-US"):"0";
-    note.textContent=inp.value===""?"Enter $1 to $9, or $10 and up in steps of $5":ok?`${taka(GIFT.rate(a))} per $1 · US region`:a>GIFT.max?`Maximum is $${GIFT.max}`:"From $10, use steps of $5 (10, 15, 20, 25…)";
-  };
+  const val=$("#gcVal"),note=$("#gcNote"),price=$("#gcPrice");
+  const set=a=>{a=Math.min(GIFT.max,Math.max(GIFT.min,Math.round(a/GIFT.step)*GIFT.step));inp.value=a;val.textContent=a;price.textContent=(a*GIFT.rate(a)).toLocaleString("en-US");note.textContent=`${taka(GIFT.rate(a))} per $1 · US region`;inp.style.setProperty("--f",((a-GIFT.min)/(GIFT.max-GIFT.min)*100)+"%")};
+  inp.oninput=()=>set(+inp.value);
+  $("#gcMinus").onclick=()=>set(+inp.value-GIFT.step);$("#gcPlus").onclick=()=>set(+inp.value+GIFT.step);
+  set(25);
 }
 function gcGo(now){
   const a=Math.floor(+$("#gcAmt").value);if(!GIFT.ok(a))return;

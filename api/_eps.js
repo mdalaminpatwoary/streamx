@@ -87,7 +87,7 @@ function priceCart(items) {
     const vr = p && (it.vr ? p.variants.find((v) => v.n === it.vr) : p.variants[0]);
     let pl = vr && vr.plans.find((x) => x.v === it.v);
     if (!pl && vr && p.gift && _gift) {
-      // Apple Gift Card: any whole-dollar amount; under $10 any, from $10 only in steps of $5. Price is computed here, never taken from the browser.
+      // Apple Gift Card: $5 to $500 in steps of $5, at 130 BDT per $1. Price is computed here, never taken from the browser.
       const m = /^\$(\d{1,3})$/.exec(String(it.v || "")), a = m ? Number(m[1]) : 0;
       if (a && _gift.ok(a)) pl = { v: "$" + a, p: a * _gift.rate(a) };
     }

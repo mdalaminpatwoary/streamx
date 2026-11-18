@@ -1,13 +1,13 @@
 /* Product catalog: categories, durations, plan types, prices and combo packs. */
 // ===== PRODUCT CATALOG (edit names, text and prices here) =====
 // Popular products come first (the first 8 show on the page, 4 on phone).
-const CATS=["Streaming","Music & Audio","AI Tools","Productivity","Learning","Gift Cards","VPN","18+"];
-const DUR={1:"1 Month",6:"6 Months",12:"1 Year",18:"18 Months"},UNIT={1:"month",6:"6 months",12:"year",18:"18 months"};
+const CATS=["Streaming","Music & Audio","AI Tools","Productivity","Learning","Gift Cards","Virtual Cards","VPN","18+"];
+const DUR={1:"1 Month",6:"6 Months",12:"1 Year",18:"18 Months",36:"3 Years"},UNIT={1:"month",6:"6 months",12:"year",18:"18 months",36:"3 years"};
 // V(plan type, badge, one-line summary, [features], [notes], {months: price in BDT})
 const V=(n,tag,line,f,notes,pr)=>({n,tag,line,f,notes,plans:Object.entries(pr).map(([m,p])=>({m:+m,v:DUR[m],p}))});
 const VPNN="VPN required for access",SHN="Shared profile, no customization",SLOW="Delivery takes some time",STOCK="Delivery depends on stock availability",ADULT="Adults only (18+)";
-// Apple Gift Card (US region): price = dollars x rate. Under $10: ৳133 per $1. $10 and above, in steps of $5: ৳130 per $1.
-const GIFT={min:1,max:500,rate:a=>a<10?133:130,ok:a=>Number.isInteger(a)&&a>=1&&a<=500&&(a<10||a%5===0)};
+// Apple Gift Card (US region): price = dollars x ৳130, in steps of $5 from $5 to $500.
+const GIFT={min:5,max:500,step:5,rate:()=>130,ok:a=>Number.isInteger(a)&&a>=5&&a<=500&&a%5===0};
 const GC=a=>({m:1,v:"$"+a,p:a*GIFT.rate(a),u:"card",gc:a});
 const PRIVF=["Profile name and PIN protected","Customizable profile","Instant delivery"];
 const SH={1:180,6:800,12:1200},PR={1:250,6:1100,12:1900};
@@ -45,7 +45,17 @@ const CATALOG=[
 ["Adobe Express","Productivity","#eb1000","Design social posts, videos, flyers and more with premium templates, fonts and AI tools, activated on your own email.",[
  V("Premium · 1 Year","Your own email","A full year of Adobe Express Premium on your own email.",["All premium templates for posts, video and print","Adobe Stock photos, music and design elements","30,000+ Adobe Fonts","Generative AI credits with Adobe Firefly","Brand kits, one-click Resize and video tools","Works in your browser and on mobile","Activated on your own email"],[],{12:650})]],
 ["Apple Gift Card","Gift Cards","#1d1d1f","Add US-region credit to your Apple Account for apps, games, Apple Music, iCloud+ and more. Redeem code provided.",[
- (()=>{const v=V("US Region","Redeem code","An Apple Gift Card for a US-region Apple Account. Pick an amount below, or enter your own.",["US region Apple Gift Card","Redeem code provided after payment","Use it for App Store apps and games, in-app purchases, Apple Music, Apple TV+, iCloud+ and more","Credit goes straight to your Apple Account balance"],["Works only on an Apple Account set to the US region","Each code can be redeemed once; it can't be turned into cash","Under $10: ৳133 per $1. $10 and above, in steps of $5: ৳130 per $1"],{});v.plans=[5,10,15,20,25,30,40,50,75,100].map(GC);return v})()]],
+ (()=>{const v=V("US Region","Redeem code","An Apple Gift Card for a US-region Apple Account. Choose $5 or $10, or slide to any amount in steps of $5.",["US region Apple Gift Card","Redeem code provided after payment","Use it for App Store apps and games, in-app purchases, Apple Music, Apple TV+, iCloud+ and more","Credit goes straight to your Apple Account balance"],["Works only on an Apple Account set to the US region","Each code can be redeemed once; it can't be turned into cash","Every $1 is ৳130. Choose any amount in steps of $5"],{});v.plans=[5,10].map(GC);return v})()]],
+["Gamma AI","AI Tools","#6d5efc","Create presentations, documents and web pages with AI in minutes. Gamma Pro, activated on your own email.",[
+ V("Pro · Your Email","Your own email","Gamma Pro activated on your own email, for one month or a full year.",["Gamma Pro plan, activated on your own email","Generate decks, documents and web pages from a prompt","Remove Gamma branding from your work","Export to PDF and PowerPoint","Brand kit with your own colors, logo and fonts","Viewer analytics for shared content","Priority support from Gamma"],["Features follow Gamma's current Pro plan and may change"],{1:1500,12:3500})]],
+["Udemy","Learning","#a435f0","Thousands of top courses with certificates of completion, on a private ready-made account.",[
+ V("Personal Plan · Ready-made","Private account","A private, ready-made Udemy account with the Personal Plan.",["Private ready-made account","Thousands of top courses across hundreds of topics","Certificates of completion on finished courses","Skill assessments and hands-on practice","Learn on desktop, mobile browser or the Udemy app"],["Not every Udemy course is part of the plan","Courses are mainly taught in English"],{1:300})]],
+["Bybit Card","Virtual Cards","#f7a600","A ready-made virtual Visa card that spends your crypto balance online, valid for 3 years.",[
+ V("Ready-made Virtual Visa","3 years","A ready-made Bybit virtual Visa card with 3 years of validity.",["Ready-made virtual Visa card","Valid for 3 years","Spend your crypto balance anywhere Visa is accepted online","Works with Apple Pay and Google Pay where supported","Top up from your own crypto balance"],["Spending limits, fees and supported regions are set by the card issuer","Please follow the issuer's terms and your local rules"],{36:1000})]],
+["PokePay","Virtual Cards","#ff5a36","A ready-made virtual card for online payments and subscriptions, valid for 3 years.",[
+ V("Ready-made Virtual Card","3 years","A ready-made PokePay virtual card with 3 years of validity.",["Ready-made virtual card","Valid for 3 years","Visa network, accepted by online merchants worldwide","Fund it with crypto such as USDT and USDC","Use it for online shopping, apps and subscriptions"],["Some merchants may restrict this card","Fees, limits and supported regions are set by the issuer; please follow its terms and your local rules"],{36:900})]],
+["RedotPay","Virtual Cards","#e5322d","A ready-made Visa card for global online spending with your crypto balance, valid for 3 years.",[
+ V("Ready-made Visa Card","3 years","A ready-made RedotPay Visa card with 3 years of validity.",["Ready-made Visa card","Valid for 3 years","Top up with stablecoins and major crypto","Online spending, plus Apple Pay and Google Pay where supported","Fast in-app setup and top-up"],["Hotels, fuel stations and car rentals that place holds may decline the card","Fees, limits and supported regions are set by the issuer; please follow its terms and your local rules"],{36:1000})]],
 ["Paramount+","Streaming","#0064ff","Hit series and movies from Paramount, on a shared or private profile.",[
  V("Share Profile","Most affordable","A shared profile for everyday viewing.",["Single-device access","Instant delivery"],[SHN,VPNN],SH),
  V("Private Profile","Private","Your own profile, name and PIN.",PRIVF,[VPNN],PR)]],
@@ -97,6 +107,8 @@ const CATALOG=[
  V("Standard","","Unlimited reading on your own email.",["Activated on your own email"],[SLOW],{1:200})]],
 ["Skillshare","Learning","#0f766e","A full year of creative classes, activated on your own email.",[
  V("Annual","","A full year of creative classes.",["Activated on your own email"],[SLOW],{12:2000})]],
+["Brazzers","18+","#374151","An adults-only (18+) premium video service, on a 1-device share account.",[
+ V("Share Account · 1 Device","1 device","A shared account for one device at an affordable price.",["Share account","1-device access"],[ADULT],{1:300})]],
 ["Ullu","18+","#374151","An adults-only (18+) streaming service on an affordable plan.",[
  V("Standard","","An adults-only streaming service.",["Single-device access","Instant delivery"],[ADULT],{1:100,6:400,12:600})]],
 ["ALTT","18+","#374151","An adults-only (18+) streaming service on an affordable plan.",[

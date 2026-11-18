@@ -26,8 +26,8 @@
 .cw-btn {
   position: relative;
   display: block;
-  width: 68px;
-  height: 68px;
+  width: 54px;
+  height: 54px;
   border-radius: 50%;
   animation: cw-bob 5s ease-in-out infinite;
 }
@@ -78,9 +78,9 @@
   top: 2px;
   right: 2px;
   z-index: 2;
-  width: 15px;
-  height: 15px;
-  border: 3px solid #0a0d1a;
+  width: 12px;
+  height: 12px;
+  border: 2px solid #0a0d1a;
   border-radius: 50%;
   background: #35d07f;
 }
@@ -99,23 +99,23 @@
   z-index: 2;
   display: grid;
   place-items: center;
-  width: 26px;
-  height: 26px;
-  border: 3px solid #0a0d1a;
+  width: 21px;
+  height: 21px;
+  border: 2px solid #0a0d1a;
   border-radius: 50%;
   background: #25d366;
 }
 .cw-wa svg {
-  width: 13px;
-  height: 13px;
+  width: 11px;
+  height: 11px;
   fill: #fff;
 }
 
 /* Pop-up message */
 .cw-bubble {
   position: relative;
-  max-width: 250px;
-  padding: 13px 34px 13px 15px;
+  max-width: 190px;
+  padding: 10px 30px 10px 12px;
   border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 18px 18px 4px 18px;
   background: rgba(16, 20, 42, 0.92);
@@ -156,8 +156,8 @@
 .cw-msg {
   display: block;
   color: #cfd6ea;
-  font-size: 13.5px;
-  line-height: 1.5;
+  font-size: 12.5px;
+  line-height: 1.4;
 }
 .cw-bubble .dots {
   display: none;
@@ -232,11 +232,11 @@
     bottom: 14px;
   }
   .cw-btn {
-    width: 60px;
-    height: 60px;
+    width: 50px;
+    height: 50px;
   }
   .cw-bubble {
-    max-width: 215px;
+    max-width: 170px;
   }
 }
 @media (prefers-reduced-motion: reduce) {

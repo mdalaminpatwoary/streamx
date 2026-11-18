@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /payment-result.html
+
+Sitemap: https://streamx.com.bd/sitemap.xml

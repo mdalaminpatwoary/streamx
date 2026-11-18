@@ -101,3 +101,12 @@ The "What's trending" section shows the top 10 movies and series per streaming p
 3. Reload the site. The section and its menu link appear.
 
 Platforms and regions are listed at the top of `assets/js/features/trending.js` and `api/trending.js`. Rankings are TMDB popularity on each platform per region (not official viewing charts). TMDB asks for the attribution line, which is already shown under the section.
+
+## SEO
+- `index.html` head: title, description, canonical (`https://streamx.com.bd/`, change if your main domain differs), Open Graph, Twitter, JSON-LD (Organization, WebSite, ItemList of products with BDT prices, FAQPage) and a `<noscript>` product list.
+- `robots.txt` and `sitemap.xml` in the root. If you add pages, add them to the sitemap. If the domain changes, update the canonical/og:url/JSON-LD/sitemap URLs.
+- Product prices in the JSON-LD are static; regenerate them after big price changes.
+
+## Catalog notes
+- New categories: Virtual Cards. 3-year plans use duration key `36` in `catalog.js`.
+- Apple Gift Card: ৳130 per $1, $5 to $500 in steps of $5 (`GIFT` in `catalog.js`; the server re-checks the price).

@@ -3,7 +3,7 @@
 function planLink(i,v,k){return location.href.split("#")[0]+"#plan="+slug(PRODUCTS[i].name)+"&v="+v+"&k="+k}
 function sharePlan(i,v,k){
   const p=PRODUCTS[i],vr=p.variants[v],pl=vr.plans[k],url=planLink(i,v,k),btn=document.querySelectorAll("#planTable .pshare")[k];
-  const text=`${p.name}${p.variants.length>1?" – "+vr.n:""} · ${pl.v} · ${taka(pl.p)}${p.packs?" / month":""} on StreamX. Prices may change, check the latest here:`;
+  const text=`${p.name}${p.variants.length>1?" – "+vr.n:""} · ${pl.v} · ${taka(pl.p)}${p.packs?" / month":""} on StreamX. Prices are fixed. See the plan here:`;
   const ok=()=>{if(!btn)return;btn.classList.add("done");btn.innerHTML=CHECK;setTimeout(()=>{btn.classList.remove("done");btn.innerHTML=SHARE},1800)};
   if(navigator.share){navigator.share({title:"StreamX · "+p.name,text,url}).then(ok).catch(()=>{});return}
   const full=text+" "+url,done=()=>{toast("Link copied. Paste it anywhere to share.");ok()};
