@@ -8,7 +8,7 @@
   if(!calm)splitWords(title);
 
   // Services shown in the carousel / ticker (key in LOGOS, label, regex to find the shop product for its price)
-  const SV=[["netflix","Netflix",/^netflix$/i],["spotify","Spotify",/spotify/i],["youtube","YouTube Premium",/youtube/i],["primevideo","Prime Video",/prime/i],["openai","ChatGPT",/chatgpt|openai/i],["crunchyroll","Crunchyroll",/crunchy/i],["hbomax","HBO Max",/hbo/i],["canva","Canva",/canva/i]]
+  const SV=[["netflix","Netflix",/^netflix$/i],["spotify","Spotify",/spotify/i],["youtube","YouTube Premium",/youtube/i],["primevideo","Prime Video",/prime/i],["openai","ChatGPT",/chatgpt|openai/i],["disneyplus","Disney+",/disney/i],["applemusic","Apple Music",/apple music/i],["canva","Canva",/canva/i],["claude","Claude",/^claude$/i],["hbomax","HBO Max",/hbo/i],["udemy","Udemy",/udemy/i],["adobeexpress","Adobe Express",/adobe/i]]
     .filter(s=>LOGOS[s[0]]).map(s=>{
       const p=(typeof PRODUCTS!=="undefined"?PRODUCTS:[]).find(x=>s[2].test(x.name));
       const from=p?Math.min(...p.variants.flatMap(v=>v.plans.map(x=>x.p))):0;
@@ -37,7 +37,7 @@
   const orbit=$("#hxOrbit"),stage=$("#hxStage"),nameEl=$("#hxName"),fromEl=$("#hxFrom"),info=$("#hxInfo");
   if(orbit&&N){
     const mobile=()=>innerWidth<=520;
-    const R=()=>mobile()?190:290;
+    const R=()=>mobile()?235:300;
     orbit.innerHTML=SV.map((s,i)=>`<div class="hx-slot" style="--ang:${i*STEP};--r:${R()}px"><div class="hx-t" style="--bg:${s.L.bg};--fg:${s.L.fg}">${lg(s)}</div></div>`).join("");
     orbit.style.setProperty("--d",R()*2+"px");
     const slots=[...orbit.children];
