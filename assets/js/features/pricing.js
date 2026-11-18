@@ -2,11 +2,30 @@
 // Pricing: choose a product, then the plan type, then how long
 $("#pickProduct").innerHTML=[...CATS,"Bundle"].map(c=>`<optgroup label="${c==="Bundle"?"Premium Bundles":c==="18+"?"18+ (adults only)":c}">`+PRODUCTS.map((p,i)=>p.cat===c?`<option value="${i}">${p.name}</option>`:"").join("")+"</optgroup>").join("");
 $("#pickProduct").onchange=e=>showPlans(+e.target.value);
+// Horizontal product rail: drag, arrows, keyboard, auto-centres the chosen product
+(function(){
+  const sc=$("#prSc"),L=$("#prL"),R=$("#prR"),box=$("#prail");
+  const logo=p=>p.packs?`<span class="stk">${PARTS[p.name].map(s=>tile(s,"")).join("")}</span>`:ptile(p);
+  sc.innerHTML=[...CATS,"Bundle"].map(c=>{const list=PRODUCTS.map((p,i)=>[p,i]).filter(x=>x[0].cat===c);
+    return list.length?`<span class="pr-cat">${c==="Bundle"?"Bundles":c==="18+"?"18+":c}</span>`+list.map(([p,i])=>`<button type="button" role="tab" class="pkchip" data-i="${i}" aria-selected="false"><i>${logo(p)}</i><span>${p.name}</span></button>`).join(""):""}).join("");
+  const edge=()=>{const m=sc.scrollWidth-sc.clientWidth;box.classList.toggle("fl",sc.scrollLeft>8);box.classList.toggle("fr",sc.scrollLeft<m-8)};
+  sc.addEventListener("scroll",edge,{passive:true});addEventListener("resize",edge);
+  const by=d=>sc.scrollBy({left:d*Math.max(220,sc.clientWidth*.7),behavior:"smooth"});
+  L.onclick=()=>by(-1);R.onclick=()=>by(1);
+  let down=false,sx=0,sl=0,moved=false;
+  sc.addEventListener("pointerdown",e=>{if(e.pointerType!=="mouse")return;down=true;moved=false;sx=e.clientX;sl=sc.scrollLeft});
+  addEventListener("pointermove",e=>{if(!down)return;const d=e.clientX-sx;if(Math.abs(d)>5){moved=true;sc.classList.add("drag")}sc.scrollLeft=sl-d});
+  addEventListener("pointerup",()=>{down=false;sc.classList.remove("drag")});
+  sc.addEventListener("click",e=>{if(moved){e.stopPropagation();e.preventDefault();moved=false;return}const b=e.target.closest(".pkchip");if(b)showPlans(+b.dataset.i)},true);
+  sc.addEventListener("keydown",e=>{if(e.key!=="ArrowRight"&&e.key!=="ArrowLeft")return;const c=[...sc.querySelectorAll(".pkchip")],k=c.indexOf(document.activeElement);if(k<0)return;e.preventDefault();const n=c[Math.max(0,Math.min(c.length-1,k+(e.key==="ArrowRight"?1:-1)))];n.focus();n.scrollIntoView({inline:"center",block:"nearest",behavior:"smooth"})});
+  window.markRail=i=>{sc.querySelectorAll(".pkchip").forEach(b=>{const on=+b.dataset.i===i;b.classList.toggle("on",on);b.setAttribute("aria-selected",on);if(on){const x=b.offsetLeft-sc.clientWidth/2+b.offsetWidth/2;sc.scrollTo({left:x,behavior:"smooth"})}});setTimeout(edge,350)};
+  edge();
+})();
 let cur={i:0,v:0};
 function showPlans(i,scroll,v=0){
   const p=PRODUCTS[i];
   if(p.cat==="18+"&&!ageOK){$("#pickProduct").value=cur.i;askAge(()=>showPlans(i,scroll,v));return}
-  const pk=!!p.packs,multi=p.variants.length>1,vr=p.variants[v]||p.variants[0];cur={i,v};$("#pickProduct").value=i;
+  const pk=!!p.packs,multi=p.variants.length>1,vr=p.variants[v]||p.variants[0];cur={i,v};$("#pickProduct").value=i;if(window.markRail)markRail(i);
   $("#pLogo").innerHTML=pk?`<span class="stk">${PARTS[p.name].map(s=>tile(s,"")).join("")}</span>`:ptile(p);$("#pName").textContent=p.name;
   $("#pDesc").textContent=pk?"Netflix and Prime Video. Choose the pack that fits how you watch.":p.desc;
   document.querySelector("#pricing .note").textContent=pk?"* Prices are per month. Profile type and device access differ by pack. Please confirm availability on WhatsApp before you pay.":"* Prices are in BDT and may change. Please confirm your plan and availability on WhatsApp before you pay.";
