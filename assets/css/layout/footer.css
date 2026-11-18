@@ -955,3 +955,6 @@ footer {
   height: 72px;
   border-radius: 16px;
 }
+
+.fcol a.fdk-link{display:inline-flex;align-items:center;gap:8px}
+.fdk-link .fdk-ic{flex:none;color:#ff8a7c}
