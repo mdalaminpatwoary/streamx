@@ -243,8 +243,8 @@
 @keyframes hxSw{from{opacity:0;transform:translateY(8px)}}
 
 /* ---------- Pay chips with real logos ---------- */
-.hx-pay li img{display:block;height:26px;width:auto;max-width:78px;object-fit:contain}
-.hx-pay li:has(img){padding:6px 12px;background:linear-gradient(145deg,#fff,#e8ecf8);border-color:rgba(255,255,255,.6)}
+.hx-pay li img{display:block;filter:drop-shadow(0 4px 10px rgba(0,0,0,.4));height:28px;width:auto;max-width:78px;object-fit:contain}
+.hx-pay li:has(img){padding:4px 6px;background:none;border-color:transparent;box-shadow:none}
 
 /* ---------- Responsive ---------- */
 @media(max-width:960px){.hero{grid-template-columns:1fr;gap:20px;min-height:0;padding-top:112px}.hx-stage{height:480px}}
