@@ -45,13 +45,15 @@ async function epsFetch(url, opts) {
   }
 }
 
+const stage = (code, msg) => Object.assign(new Error(msg), { stage: code });
+
 async function getToken(c) {
   const r = await epsFetch(c.base + "/Auth/GetToken", {
     method: "POST",
     headers: { "Content-Type": "application/json", "x-hash": xhash(c.hashKey, c.userName) },
     body: JSON.stringify({ userName: c.userName, password: c.password }),
   });
-  if (!r.json || !r.json.token) throw new Error("EPS login failed" + (r.json && r.json.errorMessage ? ": " + r.json.errorMessage : ""));
+  if (!r.json || !r.json.token) throw stage("LOGIN", "EPS login failed (HTTP " + r.status + ")" + (r.json && r.json.errorMessage ? ": " + r.json.errorMessage : r.text ? ": " + r.text.slice(0, 120) : ""));
   return r.json.token;
 }
 
@@ -59,7 +61,9 @@ async function getToken(c) {
 let _products;
 function products() {
   if (_products) return _products;
-  const file = path.join(process.cwd(), "assets", "js", "data", "catalog.js");
+  const rel = path.join("assets", "js", "data", "catalog.js");
+  const file = [path.join(process.cwd(), rel), path.join(__dirname, "..", rel), path.join("/var/task", rel)].find((f) => fs.existsSync(f));
+  if (!file) throw stage("CATALOG", "catalog.js was not found on the server (is vercel.json uploaded?)");
   const code = fs.readFileSync(file, "utf8");
   _products = vm.runInNewContext(code + "\n;PRODUCTS;", {}, { timeout: 2000 });
   return _products;
@@ -81,4 +85,4 @@ function priceCart(items) {
   });
 }
 
-module.exports = { config, xhash, epsFetch, getToken, priceCart, clean };
+module.exports = { config, xhash, epsFetch, getToken, priceCart, clean, stage };

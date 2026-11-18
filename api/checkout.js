@@ -1,6 +1,6 @@
 /* POST /api/checkout  ->  { redirectUrl }
    Creates an EPS payment session for the cart and returns the EPS payment page link. */
-const { config, xhash, epsFetch, getToken, priceCart, clean } = require("./_eps");
+const { config, xhash, epsFetch, getToken, priceCart, clean, stage } = require("./_eps");
 
 const PHONE = /^(?:\+?88)?01[3-9]\d{8}$/;
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
@@ -91,12 +91,16 @@ module.exports = async (req, res) => {
     if (!(r.json && r.json.RedirectURL)) r = await send(c.txnType === 1 ? 10 : 1);
     if (!(r.json && r.json.RedirectURL)) {
       console.error("EPS initialize failed", r.status, r.text && r.text.slice(0, 400));
-      return res.status(424).json({ error: "The payment page could not be opened. Please try again or order on WhatsApp." });
+      const d = process.env.EPS_DEBUG ? " [INIT HTTP " + r.status + ": " + String(r.text || "").slice(0, 200) + "]" : " (code: INIT)";
+      return res.status(424).json({ error: "The payment page could not be opened. Please try again or order on WhatsApp." + d });
     }
     return res.status(200).json({ redirectUrl: r.json.RedirectURL });
   } catch (e) {
-    console.error("checkout error", e && e.message);
-    const safe = /Your cart|no longer available|not configured/.test(e && e.message) ? e.message : "Something went wrong. Please try again or order on WhatsApp.";
-    return res.status(/not configured/.test(e && e.message) ? 424 : 400).json({ error: safe });
+    const msg = (e && e.message) || "";
+    console.error("checkout error", (e && e.stage) || "", msg);
+    if (/Your cart|no longer available|not configured/.test(msg)) return res.status(/not configured/.test(msg) ? 424 : 400).json({ error: msg });
+    const code = (e && e.stage) || "SERVER";
+    const detail = process.env.EPS_DEBUG ? " [" + code + ": " + msg.slice(0, 220) + "]" : " (code: " + code + ")";
+    return res.status(424).json({ error: "Something went wrong. Please try again or order on WhatsApp." + detail });
   }
 };
