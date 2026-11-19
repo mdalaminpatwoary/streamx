@@ -1,6 +1,6 @@
 /* Share a plan: share sheet or copy link. */
 // ===== Share a plan: phone share sheet, or copy link. The link opens that plan. =====
-function planLink(i,v,k){return location.href.split("#")[0]+"#plan="+slug(PRODUCTS[i].name)+"&v="+v+"&k="+k}
+function planLink(i,v,k){const n=PRODUCTS[i].name;return PRODUCTS[i].cat==="18+"?location.href.split("#")[0]+"#plan="+slug(n)+"&v="+v+"&k="+k:location.origin+"/services/"+slug(n)+"/"}
 function sharePlan(i,v,k){
   const p=PRODUCTS[i],vr=p.variants[v],pl=vr.plans[k],url=planLink(i,v,k),btn=document.querySelectorAll("#planTable .pshare")[k];
   const text=`${p.name}${p.variants.length>1?" – "+vr.n:""} · ${pl.v} · ${taka(pl.p)}${p.packs?" / month":""} on StreamX. Prices are fixed. See the plan here:`;

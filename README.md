@@ -109,3 +109,9 @@ Platforms and regions are listed at the top of `assets/js/features/trending.js` 
 ## Catalog notes
 - New categories: Virtual Cards. 3-year plans use duration key `36` in `catalog.js`.
 - Apple Gift Card: ৳130 per $1, $5 to $500 in steps of $5 (`GIFT` in `catalog.js`; the server re-checks the price).
+
+
+## Service pages and share images
+- Every service has its own SEO page at `/services/<slug>/` (plus the hub `/services/`). They are generated from the catalog, so prices always match.
+- After changing `assets/js/data/catalog.js` or the copy in `scripts/service-content.js`, run `node scripts/build-services.js` (pages + `sitemap.xml`) and `node scripts/build-og.js` (1200x630 share images in `assets/img/og/`, needs Playwright), then commit the output.
+- Shared product links (`/services/<slug>/`) show a branded logo preview on WhatsApp, Facebook, Messenger, Telegram and X. 18+ services have no public page.

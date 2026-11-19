@@ -1145,3 +1145,7 @@
   gap: 8px;
 }
 
+
+.svc-all{margin-top:14px}
+.svc-all a{color:#ff8a7c;font-weight:700;font-size:14.5px;transition:color .25s}
+.svc-all a:hover{color:#fff}

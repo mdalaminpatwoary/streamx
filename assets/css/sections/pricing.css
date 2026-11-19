@@ -530,3 +530,6 @@
 .gc-range::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:#fff;border:3px solid #ed3124}
 .gc-range:focus-visible{box-shadow:0 0 0 3px rgba(237,49,36,.3)}
 .gc-ends{display:flex;justify-content:space-between;font-size:12px;color:var(--mut);margin-bottom:6px}
+
+.pmore{display:inline-block;margin-left:6px;color:#ff8a7c;font-weight:700;font-size:.95em;white-space:nowrap}
+.pmore:hover{color:#fff}
