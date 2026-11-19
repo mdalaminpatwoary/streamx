@@ -54,7 +54,7 @@ const head = ({ title, desc, url, img, extra = "" }) => `<!DOCTYPE html>
 <meta name="theme-color" content="#0a0d1a">
 <link rel="icon" href="/favicon.ico" sizes="any"><link rel="apple-touch-icon" href="/assets/img/favicon/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/css/service-page.css?v=14">
+<link rel="stylesheet" href="/assets/css/service-page.css?v=15">
 ${extra}
 </head>`;
 
@@ -114,7 +114,7 @@ function servicePage(p) {
 <body style="--c:${p.color}">
 ${nav([["Home", "/"], ["Pricing", "#plans"], ...(combo ? [["Combo", "#combo"]] : []), ...(TREND[p.name] ? [["Trending", "#trending"]] : []), ["About", "#about"], ["Reviews", "#reviews"], ["FAQ", "#faq"], ["Contact", "#contact"]])}
 <main>
-<section class="sp-hero"><div class="sp-grid" aria-hidden="true"></div><div class="sp-scan" aria-hidden="true"></div>
+<section class="sp-hero"><div class="sp-grid" aria-hidden="true"></div>
  <div class="sp-wrap sp-herogrid">
   <div class="sp-rv"><nav class="sp-crumb" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span><a href="/services/">Services</a><span>/</span><b>${esc(p.name)}</b></nav>
    <span class="sp-eyebrow">${esc(p.cat === "Bundle" ? "Bundle" : p.cat)}</span>
@@ -163,7 +163,7 @@ function hubPage() {
   const ld = { "@context": "https://schema.org", "@type": "CollectionPage", name: "StreamX services", url, hasPart: pages.map(p => ({ "@type": "WebPage", name: p.name, url: `${SITE}/services/${slug(p.name)}/` })) };
   return head({ title, desc, url, img, extra: `<script type="application/ld+json">${JSON.stringify(ld)}</script>` }) + `
 <body style="--c:#ed3124">${nav([["Home", "/"], ...cats.map(c => [({ "Bundle": "Bundles", "Music & Audio": "Music", "Virtual Cards": "Cards" })[c] || c, "#" + slug(c)]), ["Contact", "#contact"]])}<main>
-<section class="sp-hero sp-hub"><div class="sp-grid" aria-hidden="true"></div><div class="sp-scan" aria-hidden="true"></div><div class="sp-wrap"><div class="sp-rv"><span class="sp-eyebrow">All services</span><h1>Premium subscriptions <span>for Bangladesh</span></h1><p class="sp-lead">Streaming, music, AI tools, VPN, learning, gift cards and virtual cards. Fixed prices in BDT, local payments, support on WhatsApp.</p></div></div></section>
+<section class="sp-hero sp-hub"><div class="sp-grid" aria-hidden="true"></div><div class="sp-wrap"><div class="sp-rv"><span class="sp-eyebrow">All services</span><h1>Premium subscriptions <span>for Bangladesh</span></h1><p class="sp-lead">Streaming, music, AI tools, VPN, learning, gift cards and virtual cards. Fixed prices in BDT, local payments, support on WhatsApp.</p></div></div></section>
 ${cats.map(c => `<section class="sp-sec" id="${slug(c)}"><div class="sp-wrap"><h2 class="sp-rv">${esc(c === "Bundle" ? "Bundles" : c)}</h2><div class="sp-rel sp-big">${pages.filter(p => p.cat === c).map(x => `<a class="sp-rc sp-rv" href="/services/${slug(x.name)}/" style="--c:${x.color}">${logo(x)}<span><b>${esc(x.name)}</b><small>From ${taka(lo(x))}</small></span></a>`).join("")}</div></div></section>`).join("")}
 </main>${foot}${script}</body></html>`;
 }

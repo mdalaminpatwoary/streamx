@@ -125,7 +125,7 @@ h1,h2,h3{line-height:1.12;margin:0;letter-spacing:-.02em}
 .sp-rv.in{opacity:1;transform:none}
 @media(max-width:860px){.sp-herogrid,.sp-two{grid-template-columns:1fr}.sp-hcard{max-width:420px}.sp-foot>.sp-wrap:first-child{grid-template-columns:1fr}}
 @media(max-width:520px){.sp-wrap{width:calc(100% - 32px)}.sp-hero{padding:40px 0 52px}.sp-sec{padding:52px 0}.sp-btn{padding:13px 22px}}
-@media(prefers-reduced-motion:reduce){.sp-grid,.sp-scan,.sp-hcard{animation:none}.sp-rv{opacity:1;transform:none;transition:none}html{scroll-behavior:auto}}
+@media(prefers-reduced-motion:reduce){.sp-grid,.sp-hcard{animation:none}.sp-rv{opacity:1;transform:none;transition:none}html{scroll-behavior:auto}}
 @supports not (background:color-mix(in srgb,red,blue)){.sp-hero::before{background:radial-gradient(520px circle at var(--mx) var(--my),rgba(237,49,36,.3),transparent 70%)}}
 
 /* nav: same links as the main site; scrolls sideways on small screens */
