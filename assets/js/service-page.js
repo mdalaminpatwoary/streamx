@@ -21,6 +21,17 @@
     rv.forEach(function (e, i) { e.style.setProperty("--d", (i % 4) * 70 + "ms"); io.observe(e); });
   }
 
+  /* Highlight the nav link of the section in view */
+  var links = $$('.sp-nav nav a[href^="#"]'), secs = links.map(function (a) { return $(a.getAttribute("href")); });
+  if (links.length && "IntersectionObserver" in window) {
+    var cur = null, so = new IntersectionObserver(function (es) {
+      es.forEach(function (e) { if (e.isIntersecting) cur = e.target; });
+      links.forEach(function (a, i) { if (secs[i] && secs[i] === cur) a.setAttribute("aria-current", "true"); else a.removeAttribute("aria-current"); });
+    }, { rootMargin: "-35% 0px -60% 0px" });
+    secs.forEach(function (s) { if (s) so.observe(s); });
+    addEventListener("scroll", function () { if (innerHeight + scrollY >= document.documentElement.scrollHeight - 6) { cur = null; links.forEach(function (a, i) { if (i === links.length - 1) a.setAttribute("aria-current", "true"); else a.removeAttribute("aria-current"); }); } }, { passive: true });
+  }
+
   /* 3. Hero: cursor light, particle network, decoded headline, count-up price */
   var hero = $(".sp-hero");
   if (hero && FINE && !RM) {
@@ -56,7 +67,7 @@
     };
     var load = function (first) {
       var p = st.p; if (cache[p]) { paint(cache[p]); return Promise.resolve(); }
-      return fetch("/api/trending?p=" + p + "&r=BD").then(function (r) { if (!r.ok) throw 0; return r.json(); }).then(function (d) { cache[p] = d; if (p === st.p) paint(d); if (first) ts.hidden = false; }).catch(function () { if (!first) rail.innerHTML = '<p class="sp-empty">Trending is unavailable right now.</p>'; });
+      return fetch("/api/trending?p=" + p + "&r=BD").then(function (r) { if (!r.ok) throw 0; return r.json(); }).then(function (d) { cache[p] = d; if (p === st.p) paint(d); if (first) { ts.hidden = false; var tl = $('.sp-nav nav a[href="#trending"]'); if (tl) tl.hidden = false; } }).catch(function () { if (!first) rail.innerHTML = '<p class="sp-empty">Trending is unavailable right now.</p>'; });
     };
     $$(".sp-seg", ts).forEach(function (seg) { seg.addEventListener("click", function (e) { var b = e.target.closest("button"); if (!b) return; $$("button", seg).forEach(function (x) { x.classList.toggle("on", x === b); }); st[seg.dataset.seg] = b.dataset.v; if (cache[st.p]) paint(cache[st.p]); else load(false); }); });
     load(true);
