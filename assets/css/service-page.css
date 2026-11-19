@@ -137,8 +137,8 @@ h1,h2,h3{line-height:1.12;margin:0;letter-spacing:-.02em}
 .sp-hcard .sp-from b{background:linear-gradient(90deg,#fff,color-mix(in srgb,var(--c) 40%,#fff),#fff);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:spShine 5s linear infinite}
 @keyframes spShine{to{background-position:-200% 0}}
 /* holographic sweep across plan cards and headings */
-.sp-vcard::before,.sp-rev::before{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(115deg,transparent 40%,rgba(255,255,255,.08) 50%,transparent 60%);transform:translateX(-120%);pointer-events:none}
-.sp-vcard:hover::before,.sp-rev:hover::before{transform:translateX(120%);transition:transform 1s ease}
+
+
 .sp-sec h2{position:relative}
 .sp-sec h2::after{content:"";display:block;width:48px;height:3px;margin-top:14px;border-radius:3px;background:var(--ac)}
 .sp-narrow h2::after,.sp-end h2::after{margin-left:0}
@@ -309,4 +309,3 @@ body.sp-adult:not(.ok) .sp-age{display:grid}
 .sp-share svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .sp-toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,20px);opacity:0;z-index:99;padding:12px 18px;border-radius:14px;background:#161b36;border:1px solid rgba(255,255,255,.14);color:#fff;font-size:14px;transition:.3s;max-width:calc(100% - 32px);text-align:center}
 .sp-toast.on{opacity:1;transform:translate(-50%,0)}
-.sp-ring{display:none!important}
