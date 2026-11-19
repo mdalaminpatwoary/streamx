@@ -303,3 +303,9 @@ body.sp-adult:not(.ok) .sp-age{display:grid}
 .sp-agebox .sp-btn{width:100%;justify-content:center;border:0;cursor:pointer}
 .sp-agno{display:block;margin-top:14px;color:var(--mut);font-size:14px;text-decoration:underline}
 .sp-adlock{padding:22px;border:1px dashed var(--line);border-radius:16px;color:var(--mut)}.sp-adlock p{margin:0 0 14px}.sp-adlock .sp-btn{border:0;cursor:pointer}
+
+/* Share button + toast */
+.sp-share{display:inline-flex;align-items:center;gap:8px;cursor:pointer;font:inherit}
+.sp-share svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.sp-toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,20px);opacity:0;z-index:99;padding:12px 18px;border-radius:14px;background:#161b36;border:1px solid rgba(255,255,255,.14);color:#fff;font-size:14px;transition:.3s;max-width:calc(100% - 32px);text-align:center}
+.sp-toast.on{opacity:1;transform:translate(-50%,0)}
