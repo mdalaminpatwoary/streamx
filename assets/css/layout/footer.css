@@ -966,3 +966,10 @@ footer {
 .fdk-tx{writing-mode:vertical-rl;text-orientation:mixed;transform:rotate(180deg)}
 .fdk-tab:hover{border-color:rgba(237,49,36,.55);background:linear-gradient(180deg,rgba(40,20,36,.95),rgba(14,12,28,.97));padding-right:12px}
 @media(max-width:600px){.fdk-tab{padding:10px 6px 12px}.fdk-tx{font-size:12px}}
+
+/* two-line footer links */
+.fcol a.fl{display:block;width:auto;max-width:100%;margin-bottom:14px;line-height:1.35}
+.fcol a.fl::after{display:none}
+.fcol a.fl b{display:block;color:#e4e9f8;font-size:14px;font-weight:600;transition:color .2s}
+.fcol a.fl span{display:block;margin-top:2px;color:#7b86ad;font-size:12.5px}
+.fcol a.fl:hover b{color:#ff6a58}

@@ -254,3 +254,8 @@ h1,h2,h3{line-height:1.12;margin:0;letter-spacing:-.02em}
 .sp-foot .soc2{width:40px;height:40px}
 @media(max-width:1000px){.sf-grid{grid-template-columns:1fr 1fr 1fr}.sp-foot .socs{flex-wrap:wrap}}
 @media(max-width:640px){.sf-grid{grid-template-columns:1fr 1fr}}
+.sf-col a.fl{padding:0;margin-bottom:14px;line-height:1.35;transform:none}
+.sf-col a.fl b{display:block;color:#e4e9f8;font-size:14px;font-weight:600;transition:color .2s}
+.sf-col a.fl span{display:block;margin-top:2px;color:#7b86ad;font-size:12.5px}
+.sf-col a.fl:hover{transform:none}
+.sf-col a.fl:hover b{color:#ff6a58}
