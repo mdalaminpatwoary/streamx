@@ -18,17 +18,21 @@
   document.body.appendChild(m);
   var f = $("form", m), er = $(".co-er", m), go = $(".co-go", m), cur = null;
   function close() { m.hidden = true; document.documentElement.style.overflow = ""; }
+  function show(items, totalTxt, label) {
+    cur = { items: items.map(function (x) { return { name: x.name, vr: x.vr || undefined, v: x.v, q: x.q || 1 }; }), price: totalTxt, label: label };
+    $("#co-s").innerHTML = items.map(function (x) { return '<div><span>' + esc(x.label) + ' <em>×' + (x.q || 1) + '</em></span><b>' + esc(x.priceTxt) + '</b></div>'; }).join("") + '<div class="co-tot"><span>Total</span><b>' + esc(totalTxt) + "</b></div>"; $("#co-c").value = "";
+    var s = {}; try { s = JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (e) {}
+    $("#co-n").value = s.n || ""; $("#co-p").value = s.p || ""; $("#co-e").value = s.e || "";
+    er.textContent = ""; go.disabled = false; go.textContent = "Pay " + totalTxt + " securely";
+    $(".co-wa a", m).href = "https://wa.me/" + WA + "?text=" + encodeURIComponent("Hi StreamX! I want to order:\n" + items.map(function (x, j) { return (j + 1) + ". " + x.label + " x" + (x.q || 1) + " - " + x.priceTxt; }).join("\n") + "\nTotal: " + totalTxt);
+    m.hidden = false; document.documentElement.style.overflow = "hidden"; setTimeout(function () { ($("#co-n").value ? $("#co-p") : $("#co-n")).focus(); }, 50); return true;
+  }
   function open(a) {
     var d; try { d = JSON.parse(a.dataset.buy); } catch (e) { return false; }
     var price = ($("b", a) || {}).textContent || "", label = d.n + (d.vr ? " · " + d.vr : "") + " · " + d.v;
-    cur = { item: { name: d.n, vr: d.vr || undefined, v: d.v, q: 1 }, price: price, label: label };
-    $("#co-s").innerHTML = '<div><span>' + esc(label) + ' <em>×1</em></span><b>' + esc(price) + '</b></div><div class="co-tot"><span>Total</span><b>' + esc(price) + "</b></div>"; $("#co-c").value = "";
-    var s = {}; try { s = JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (e) {}
-    $("#co-n").value = s.n || ""; $("#co-p").value = s.p || ""; $("#co-e").value = s.e || "";
-    er.textContent = ""; go.disabled = false; go.textContent = "Pay " + price + " securely";
-    $(".co-wa a", m).href = "https://wa.me/" + WA + "?text=" + encodeURIComponent("Hi StreamX! I want to buy " + label + " (" + price + ").");
-    m.hidden = false; document.documentElement.style.overflow = "hidden"; setTimeout(function () { ($("#co-n").value ? $("#co-p") : $("#co-n")).focus(); }, 50); return true;
+    return show([{ name: d.n, vr: d.vr, v: d.v, q: 1, label: label, priceTxt: price }], price, label);
   }
+  window.spCheckout = show;
   document.addEventListener("click", function (e) {
     var a = e.target.closest && e.target.closest("[data-buy]");
     if (a && !(e.metaKey || e.ctrlKey || e.shiftKey) && open(a)) e.preventDefault();
@@ -43,7 +47,7 @@
     if (!EMAIL.test(email)) { er.textContent = "Enter a valid email address."; return; }
     er.textContent = ""; go.disabled = true; go.textContent = "Opening secure payment…";
     try { localStorage.setItem(KEY, JSON.stringify({ n: name, p: phone, e: email })); } catch (x) {}
-    fetch("/api/checkout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: name, phone: phone, email: email, tip: 0, comment: $("#co-c").value.trim().slice(0, 300), items: [cur.item] }) })
+    fetch("/api/checkout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: name, phone: phone, email: email, tip: 0, comment: $("#co-c").value.trim().slice(0, 300), items: cur.items }) })
       .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { if (!r.ok || !j.redirectUrl) throw new Error(j.error || "Online payment is unavailable right now. Please order on WhatsApp."); location.href = j.redirectUrl; }); })
       .catch(function (x) { er.textContent = x.message; go.disabled = false; go.textContent = "Pay " + cur.price + " securely"; });
   });

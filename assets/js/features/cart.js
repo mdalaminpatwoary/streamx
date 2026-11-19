@@ -34,4 +34,7 @@ $("#closeCart").onclick=$("#overlay").onclick=()=>openCart(false);
 $("#clearCart").onclick=()=>{cart=[];renderCart()};
 document.onkeydown=e=>{if(e.key==="Escape"){openCart(false);$("#mdl").classList.remove("show")}};
 renderCart();
+// Stay in sync when the cart changes on another tab or a service page (also when coming back with the Back button).
+window.addEventListener("storage",e=>{if(e.key==="sx_cart"){try{cart=JSON.parse(e.newValue)||[]}catch(x){cart=[]}renderCart()}});
+window.addEventListener("pageshow",e=>{if(e.persisted){try{cart=JSON.parse(localStorage.getItem("sx_cart"))||[]}catch(x){}renderCart()}});
 
