@@ -158,3 +158,6 @@
 #why .tk{height:40px}
 #why .bw-chat{min-height:84px}
 #why .bw-b .vp{height:230px!important}
+
+/* Phones: the step labels pop up above the icons, so leave room for them (they used to overlap "Often in minutes.") */
+@media(max-width:1000px){#why .bw-a .bw-flow{padding-top:70px}#why .bw-a .bw-big{padding-bottom:4px}}
