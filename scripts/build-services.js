@@ -51,11 +51,11 @@ const head = ({ title, desc, url, img, extra = "" }) => `<!DOCTYPE html>
 <meta name="theme-color" content="#0a0d1a">
 <link rel="icon" href="/favicon.ico" sizes="any"><link rel="apple-touch-icon" href="/assets/img/favicon/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/css/service-page.css?v=1">
+<link rel="stylesheet" href="/assets/css/service-page.css?v=2">
 ${extra}
 </head>`;
 
-const nav = `<header class="sp-nav"><div class="sp-wrap sp-navin"><a class="sp-brand" href="/"><img src="/assets/img/brand/logo.png" alt="StreamX" width="40" height="40"></a><nav aria-label="Main"><a href="/#products">Products</a><a href="/services/">All services</a><a href="/#pricing">Pricing</a><a href="/#faq">FAQ</a></nav><a class="sp-btn sp-sm" href="${wa("Hi StreamX!")}" rel="noopener">WhatsApp</a></div></header>`;
+const nav = (cur) => `<header class="sp-nav"><div class="sp-wrap sp-navin"><a class="sp-brand" href="/"><img src="/assets/img/brand/logo.png" alt="StreamX" width="40" height="40"></a><nav aria-label="Main"><a href="/">Home</a><a href="/#products">Products</a><a href="/services/" ${cur}>Services</a><a href="/#pricing">Pricing</a><a href="/#how">How It Works</a><a href="/#reviews">Reviews</a><a href="/#faq">FAQ</a><a href="/#contact">Contact</a></nav><a class="sp-btn sp-sm" href="${wa("Hi StreamX!")}" rel="noopener">WhatsApp</a></div></header>`;
 const foot = `<footer class="sp-foot"><div class="sp-wrap"><div><a class="sp-brand" href="/"><img src="/assets/img/brand/logo.png" alt="StreamX" width="40" height="40"></a><p>Digital subscriptions made easier for Bangladesh. Fixed BDT prices, local payments, support on WhatsApp.</p></div><div><h4>Explore</h4><a href="/">Home</a><a href="/services/">All services</a><a href="/#pricing">Pricing</a><a href="/#faq">FAQ</a></div><div><h4>Contact</h4><a href="${wa("Hi StreamX!")}">WhatsApp +880 1312-850241</a><a href="mailto:streamx.com.bd@gmail.com">streamx.com.bd@gmail.com</a></div></div><div class="sp-wrap sp-fine">© 2026 StreamX. Independent reseller, not affiliated with any brand shown. Brand names and logos belong to their owners.</div></footer>`;
 const script = `<script>(function(){var r=document.querySelectorAll('.sp-rv');if(!('IntersectionObserver' in window)){r.forEach(function(e){e.classList.add('in')});return}var o=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');o.unobserve(e.target)}})},{threshold:.12});r.forEach(function(e,i){e.style.setProperty('--d',(i%4)*70+'ms');o.observe(e)});var h=document.querySelector('.sp-hero');if(h&&matchMedia('(hover:hover)').matches){h.addEventListener('pointermove',function(e){var b=h.getBoundingClientRect();h.style.setProperty('--mx',(e.clientX-b.left)+'px');h.style.setProperty('--my',(e.clientY-b.top)+'px')})}})();</script>`;
 
@@ -85,7 +85,7 @@ function servicePage(p) {
   const orderMsg = `Hi StreamX! I want to buy ${p.name}.`;
   return head({ title, desc, url, img, extra: `<script type="application/ld+json">${JSON.stringify(ld)}</script>` }) + `
 <body style="--c:${p.color}">
-${nav}
+${nav("aria-current=\"page\"")}
 <main>
 <section class="sp-hero"><div class="sp-grid" aria-hidden="true"></div><div class="sp-scan" aria-hidden="true"></div>
  <div class="sp-wrap sp-herogrid">
@@ -131,7 +131,7 @@ function hubPage() {
   const cats = [...new Set(pages.map(p => p.cat))];
   const ld = { "@context": "https://schema.org", "@type": "CollectionPage", name: "StreamX services", url, hasPart: pages.map(p => ({ "@type": "WebPage", name: p.name, url: `${SITE}/services/${slug(p.name)}/` })) };
   return head({ title, desc, url, img, extra: `<script type="application/ld+json">${JSON.stringify(ld)}</script>` }) + `
-<body style="--c:#ed3124">${nav}<main>
+<body style="--c:#ed3124">${nav("aria-current=\"page\"")}<main>
 <section class="sp-hero sp-hub"><div class="sp-grid" aria-hidden="true"></div><div class="sp-scan" aria-hidden="true"></div><div class="sp-wrap"><div class="sp-rv"><span class="sp-eyebrow">All services</span><h1>Premium subscriptions <span>for Bangladesh</span></h1><p class="sp-lead">Streaming, music, AI tools, VPN, learning, gift cards and virtual cards. Fixed prices in BDT, local payments, support on WhatsApp.</p></div></div></section>
 ${cats.map(c => `<section class="sp-sec"><div class="sp-wrap"><h2 class="sp-rv">${esc(c === "Bundle" ? "Bundles" : c)}</h2><div class="sp-rel sp-big">${pages.filter(p => p.cat === c).map(x => `<a class="sp-rc sp-rv" href="/services/${slug(x.name)}/" style="--c:${x.color}">${logo(x)}<span><b>${esc(x.name)}</b><small>From ${taka(lo(x))}</small></span></a>`).join("")}</div></div></section>`).join("")}
 </main>${foot}${script}</body></html>`;

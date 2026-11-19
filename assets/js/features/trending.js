@@ -94,7 +94,7 @@
       const j=await fetchTop(st.p,st.r);
       if(my!==token)return;
       data=j;render();paintLive();
-      if(!shown){shown=true;sec.hidden=false;const n=$("#trNav");if(n)n.hidden=false;requestAnimationFrame(paintControls)}
+      if(!shown){shown=true;sec.hidden=false;const n=$("#trNav");if(n)n.hidden=false;requestAnimationFrame(()=>{paintControls();if(window.realignHash)realignHash()})}
     }catch(e){
       if(my!==token)return;
       if(!shown)return; // first load failed (e.g. not configured yet): keep the whole section hidden

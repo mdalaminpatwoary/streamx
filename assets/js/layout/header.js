@@ -15,3 +15,9 @@ links.forEach(a=>{const h=a.getAttribute("href");const s=h[0]==="#"&&document.qu
 addEventListener("resize",()=>setActive(curLink));
 $("#lang").addEventListener("click",()=>setTimeout(()=>setActive(curLink),40));
 setActive(links[0]);frame();
+
+/* Opening the site with #section (e.g. from a service page): keep the section in view while images, fonts and the Trending block finish loading, until the visitor scrolls. */
+(function(){const id=decodeURIComponent(location.hash.slice(1));if(!id||id.indexOf("plan=")===0)return;let on=true;
+const stop=()=>{on=false};["wheel","touchstart","keydown","pointerdown"].forEach(e=>addEventListener(e,stop,{once:true,passive:true}));
+const go=()=>{if(!on)return;const el=document.getElementById(id);if(el)el.scrollIntoView()};
+window.realignHash=go;addEventListener("load",go);[400,1000,2000,3500].forEach(t=>setTimeout(go,t))})();
