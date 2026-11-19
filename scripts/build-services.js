@@ -7,11 +7,14 @@ const ROOT = path.join(__dirname, "..");
 const SITE = "https://streamx.com.bd";
 const read = f => fs.readFileSync(path.join(ROOT, f), "utf8");
 const ctx = vm.createContext({});
-["assets/js/data/config.js", "assets/js/utils/helpers.js", "assets/js/data/catalog.js", "assets/js/data/logos.js"]
+["assets/js/data/config.js", "assets/js/utils/helpers.js", "assets/js/data/catalog.js", "assets/js/data/logos.js", "assets/js/data/reviews.js"]
   .forEach(f => vm.runInContext(read(f).replace(/^const /gm, "var "), ctx));
 const run = s => vm.runInContext(s, ctx);
 const PRODUCTS = run("PRODUCTS"), LOGOS = run("LOGOS"), LOGO_OF = run("LOGO_OF"), WA = run("WA_NUMBER"), slug = run("slug");
 const CONTENT = require("./service-content.js");
+const REVIEWS = run("REVIEWS");
+const TREND = { "Netflix": ["netflix"], "Amazon Prime Video": ["prime"], "Disney+": ["disney"], "HBO Max": ["hbomax"], "Hulu": ["hulu"], "Paramount+": ["paramount"], "Crunchyroll": ["crunchyroll"], "JioHotstar": ["hotstar"], "ZEE5": ["zee5"], "Entertainment Combo": ["netflix", "prime"] };
+const TNAME = { netflix: "Netflix", prime: "Prime Video", disney: "Disney+", hbomax: "HBO Max", hulu: "Hulu", paramount: "Paramount+", crunchyroll: "Crunchyroll", hotstar: "JioHotstar", zee5: "ZEE5" };
 const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 const taka = n => "৳" + n.toLocaleString("en-US");
 const wa = t => `https://wa.me/${WA}?text=${encodeURIComponent(t)}`;
@@ -51,14 +54,30 @@ const head = ({ title, desc, url, img, extra = "" }) => `<!DOCTYPE html>
 <meta name="theme-color" content="#0a0d1a">
 <link rel="icon" href="/favicon.ico" sizes="any"><link rel="apple-touch-icon" href="/assets/img/favicon/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/css/service-page.css?v=2">
+<link rel="stylesheet" href="/assets/css/service-page.css?v=5">
 ${extra}
 </head>`;
 
 const nav = (cur) => `<header class="sp-nav"><div class="sp-wrap sp-navin"><a class="sp-brand" href="/"><img src="/assets/img/brand/logo.png" alt="StreamX" width="40" height="40"></a><nav aria-label="Main"><a href="/">Home</a><a href="/#products">Products</a><a href="/services/" ${cur}>Services</a><a href="/#pricing">Pricing</a><a href="/#how">How It Works</a><a href="/#reviews">Reviews</a><a href="/#faq">FAQ</a><a href="/#contact">Contact</a></nav><a class="sp-btn sp-sm" href="${wa("Hi StreamX!")}" rel="noopener">WhatsApp</a></div></header>`;
 const foot = `<footer class="sp-foot"><div class="sp-wrap"><div><a class="sp-brand" href="/"><img src="/assets/img/brand/logo.png" alt="StreamX" width="40" height="40"></a><p>Digital subscriptions made easier for Bangladesh. Fixed BDT prices, local payments, support on WhatsApp.</p></div><div><h4>Explore</h4><a href="/">Home</a><a href="/services/">All services</a><a href="/#pricing">Pricing</a><a href="/#faq">FAQ</a></div><div><h4>Contact</h4><a href="${wa("Hi StreamX!")}">WhatsApp +880 1312-850241</a><a href="mailto:streamx.com.bd@gmail.com">streamx.com.bd@gmail.com</a></div></div><div class="sp-wrap sp-fine">© 2026 StreamX. Independent reseller, not affiliated with any brand shown. Brand names and logos belong to their owners.</div></footer>`;
-const script = `<script>(function(){var r=document.querySelectorAll('.sp-rv');if(!('IntersectionObserver' in window)){r.forEach(function(e){e.classList.add('in')});return}var o=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');o.unobserve(e.target)}})},{threshold:.12});r.forEach(function(e,i){e.style.setProperty('--d',(i%4)*70+'ms');o.observe(e)});var h=document.querySelector('.sp-hero');if(h&&matchMedia('(hover:hover)').matches){h.addEventListener('pointermove',function(e){var b=h.getBoundingClientRect();h.style.setProperty('--mx',(e.clientX-b.left)+'px');h.style.setProperty('--my',(e.clientY-b.top)+'px')})}})();</script>`;
+const scriptOld = `<script>(function(){var r=document.querySelectorAll('.sp-rv');if(!('IntersectionObserver' in window)){r.forEach(function(e){e.classList.add('in')});return}var o=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');o.unobserve(e.target)}})},{threshold:.12});r.forEach(function(e,i){e.style.setProperty('--d',(i%4)*70+'ms');o.observe(e)});var h=document.querySelector('.sp-hero');if(h&&matchMedia('(hover:hover)').matches){h.addEventListener('pointermove',function(e){var b=h.getBoundingClientRect();h.style.setProperty('--mx',(e.clientX-b.left)+'px');h.style.setProperty('--my',(e.clientY-b.top)+'px')})}})();</script>`;
 
+const script = `<script src="/assets/js/service-page.js?v=2" defer></script>`;
+const stars = n => "★".repeat(n) + "☆".repeat(5 - n);
+function trendHtml(p) {
+  const ids = TREND[p.name]; if (!ids) return "";
+  const names = ids.map(i => TNAME[i]).join(" and ");
+  return `<section class="sp-sec sp-alt sp-trend" id="trending" data-trend="${ids.join(",")}" data-names="${esc(ids.map(i => TNAME[i]).join(","))}" hidden><div class="sp-wrap"><div class="sp-thead"><div><span class="sp-eyebrow">Trending now</span><h2>Trending on ${esc(names)}</h2><p class="sp-sub">The top 10 movies and series people are watching, updated through the day.</p></div><div class="sp-tctl">${ids.length > 1 ? `<div class="sp-seg" data-seg="p">${ids.map((i, n) => `<button type="button" data-v="${i}"${n ? "" : ' class="on"'}>${TNAME[i]}</button>`).join("")}</div>` : ""}<div class="sp-seg" data-seg="k"><button type="button" data-v="movie" class="on">Movies</button><button type="button" data-v="tv">Series</button></div></div></div><div class="sp-rail" aria-live="polite"></div><p class="sp-tnote"></p></div></section>`;
+}
+function reviewsHtml(p) {
+  const list = REVIEWS.filter(r => (r.services || []).includes(p.name) || r.p === p.name);
+  const avg = list.length ? (list.reduce((a, r) => a + r.s, 0) / list.length).toFixed(1) : "";
+  const init = n => n.split(/\s+/).map(w => w[0]).join("").slice(0, 2).toUpperCase();
+  const cards = list.map(r => `<figure class="sp-rev sp-rv"><div class="sp-rst" aria-label="${r.s} out of 5">${stars(r.s)}</div><blockquote>${esc(r.t)}</blockquote><figcaption><span class="sp-av">${esc(init(r.n))}</span><span><b>${esc(r.n)}</b><small>${esc([r.role, r.loc].filter(Boolean).join(" · "))}</small></span></figcaption></figure>`).join("");
+  return `<section class="sp-sec" id="reviews"><div class="sp-wrap"><div class="sp-thead"><div><span class="sp-eyebrow">Customer reviews</span><h2>What customers say about ${esc(p.name)}</h2>${list.length ? `<p class="sp-sub"><span class="sp-avg">${avg}</span> average from ${list.length} review${list.length > 1 ? "s" : ""} of ${esc(p.name)}.</p>` : `<p class="sp-sub">No reviews of ${esc(p.name)} yet. Bought it from us? Be the first to share how it went.</p>`}</div><a class="sp-btn sp-ghost sp-sm" href="https://www.facebook.com/streamx.com.bd/reviews" target="_blank" rel="noopener">Reviews on Facebook ↗</a></div>
+${cards ? `<div class="sp-revgrid">${cards}</div>` : ""}
+<form class="sp-rform sp-rv" data-svc="${esc(p.name)}" data-wa="${WA}" novalidate><h3>Write a review of ${esc(p.name)}</h3><div class="sp-pick" role="radiogroup" aria-label="Your rating">${[1, 2, 3, 4, 5].map(n => `<button type="button" role="radio" aria-checked="${n === 5}" data-n="${n}" aria-label="${n} star${n > 1 ? "s" : ""}"${n === 5 ? ' class="on"' : ""}>★</button>`).join("")}</div><div class="sp-rrow"><input name="n" type="text" placeholder="Your name (optional)" autocomplete="name"><textarea name="t" rows="3" placeholder="How was your experience with ${esc(p.name)}?" required></textarea></div><div class="sp-ract"><button class="sp-btn" type="submit">Send review on WhatsApp</button><small>Your review opens in WhatsApp so you can read it before you send.</small></div></form></div></section>`;
+}
 function servicePage(p) {
   const s = slug(p.name), c = CONTENT[p.name] || { h: p.desc, about: [p.desc], pop: [], popLabel: "Highlights", best: [], faq: [] };
   const url = `${SITE}/services/${s}/`, img = `${SITE}/assets/img/og/${s}.jpg`;
@@ -96,11 +115,12 @@ ${nav("aria-current=\"page\"")}
    <div class="sp-cta"><a class="sp-btn" href="#plans">See plans and prices</a><a class="sp-btn sp-ghost" href="${wa(orderMsg)}" rel="noopener">Order on WhatsApp</a></div>
    <ul class="sp-trust"><li>${ic("bolt")}Fast delivery</li><li>${ic("card")}bKash, Nagad, Rocket</li><li>${ic("shield")}Replacement warranty</li><li>${ic("chat")}24/7 support</li></ul>
   </div>
-  <div class="sp-hcard sp-rv">${logo(p)}<div class="sp-from"><small>Starting from</small><b>${taka(from)}</b><small>${p.gift ? "for a $5 card" : cheap && cheap.m ? `for ${esc(cheap.v)}${p.packs ? "" : ""}` : ""}</small></div><div class="sp-meta"><span>${p.variants.length > 1 || p.packs ? (p.packs ? p.packs.length : p.variants.length) + " plan types" : "1 plan type"}</span><span>Fixed BDT price</span></div></div>
+  <div class="sp-hcard sp-rv"><i class="sp-ring r1" aria-hidden="true"></i><i class="sp-ring r2" aria-hidden="true"></i>${logo(p)}<div class="sp-from"><small>Starting from</small><b>${taka(from)}</b><small>${p.gift ? "for a $5 card" : cheap && cheap.m ? `for ${esc(cheap.v)}${p.packs ? "" : ""}` : ""}</small></div><div class="sp-meta"><span>${p.variants.length > 1 || p.packs ? (p.packs ? p.packs.length : p.variants.length) + " plan types" : "1 plan type"}</span><span>Fixed BDT price</span></div></div>
  </div></section>
 
 <section class="sp-sec" id="plans"><div class="sp-wrap"><h2 class="sp-rv">${esc(p.name)} plans and prices</h2><p class="sp-sub sp-rv">Every price is fixed in BDT. Choose a plan type, then the duration. Longer plans cost less per month.</p><div class="sp-vgrid">${plansHtml(p).replace(/<div class="sp-vcard">/g, '<div class="sp-vcard sp-rv">')}</div></div></section>
 
+${trendHtml(p)}
 <section class="sp-sec sp-alt"><div class="sp-wrap sp-two">
  <div class="sp-rv"><h2>About ${esc(p.name)}</h2>${c.about.map(t => `<p>${esc(t)}</p>`).join("")}</div>
  <div class="sp-rv"><h2>${esc(c.popLabel || "Highlights")}</h2><div class="sp-chips">${(c.pop || []).map(t => `<span>${esc(t)}</span>`).join("")}</div>${(c.best || []).length ? `<h3>Great for</h3><ul class="sp-list">${c.best.map(t => `<li>${esc(t)}</li>`).join("")}</ul>` : ""}</div>
@@ -112,6 +132,8 @@ ${nav("aria-current=\"page\"")}
  <div class="sp-rv">${ic("shield")}<h3>Replacement warranty</h3><p>If an eligible subscription has a problem during its stated period, we sort it out.</p></div>
  <div class="sp-rv">${ic("chat")}<h3>Real people on WhatsApp</h3><p>Questions about a plan, payment or delivery? We reply directly, any time.</p></div>
 </div></div></section>
+
+${reviewsHtml(p)}
 
 <section class="sp-sec sp-alt"><div class="sp-wrap sp-narrow"><h2 class="sp-rv">${esc(p.name)} questions, answered</h2>${faqs.map(([q, a]) => `<details class="sp-faq sp-rv"><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join("")}</div></section>
 

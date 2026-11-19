@@ -131,3 +131,70 @@ h1,h2,h3{line-height:1.12;margin:0;letter-spacing:-.02em}
 /* nav: same links as the main site; scrolls sideways on small screens */
 .sp-nav nav a[aria-current]{background:rgba(237,49,36,.14);color:#fff}
 @media(max-width:860px){.sp-navin{flex-wrap:wrap}.sp-nav nav{order:3;width:100%;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}.sp-nav nav::-webkit-scrollbar{display:none}.sp-nav nav a{white-space:nowrap;flex:none}}
+
+/* ===== Futuristic layer ===== */
+.sp-prog{position:fixed;left:0;top:0;height:3px;width:100%;z-index:60;transform-origin:0 50%;transform:scaleX(0);background:linear-gradient(90deg,#4f6bff,var(--c,#ed3124),#ff8a5c);box-shadow:0 0 14px var(--c,#ed3124)}
+.sp-net{position:absolute;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none}
+.sp-herogrid,.sp-vgrid,.sp-revgrid,.sp-rail,.sp-why,.sp-rel{perspective:1100px}
+.sp-vcard,.sp-hcard,.sp-rev,.sp-rc,.sp-poster,.sp-why>div{position:relative;will-change:rotate}
+.sp-tilting::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:radial-gradient(260px circle at var(--gx,50%) var(--gy,50%),rgba(255,255,255,.14),transparent 60%)}
+/* orbit rings around the hero card */
+.sp-ring{position:absolute;left:50%;top:92px;width:150px;height:150px;margin:-75px 0 0 -75px;border-radius:50%;border:1px dashed color-mix(in srgb,var(--c) 70%,#fff);opacity:.45;pointer-events:none;animation:spOrbit 14s linear infinite}
+.sp-ring.r2{width:190px;height:190px;margin:-95px 0 0 -95px;border-style:solid;border-color:rgba(255,255,255,.12);animation-duration:22s;animation-direction:reverse}
+.sp-ring::before{content:"";position:absolute;top:-4px;left:50%;width:8px;height:8px;margin-left:-4px;border-radius:50%;background:#fff;box-shadow:0 0 14px 2px var(--c)}
+@keyframes spOrbit{to{transform:rotate(360deg)}}
+.sp-hcard .sp-logo{position:relative;z-index:1}
+.sp-hcard .sp-from b{background:linear-gradient(90deg,#fff,color-mix(in srgb,var(--c) 40%,#fff),#fff);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:spShine 5s linear infinite}
+@keyframes spShine{to{background-position:-200% 0}}
+/* holographic sweep across plan cards and headings */
+.sp-vcard::before,.sp-rev::before{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(115deg,transparent 40%,rgba(255,255,255,.08) 50%,transparent 60%);transform:translateX(-120%);pointer-events:none}
+.sp-vcard:hover::before,.sp-rev:hover::before{transform:translateX(120%);transition:transform 1s ease}
+.sp-sec h2{position:relative}
+.sp-sec h2::after{content:"";display:block;width:0;height:3px;margin-top:14px;border-radius:3px;background:linear-gradient(90deg,var(--c,#ed3124),#4f6bff);box-shadow:0 0 14px var(--c,#ed3124);transition:width 1.1s cubic-bezier(.16,1,.3,1) .25s}
+.sp-rv.in h2::after,h2.sp-rv.in::after,.sp-rv.in>h2::after{width:72px}
+.sp-narrow h2::after,.sp-end h2::after{margin-left:0}
+.sp-end h2::after{margin-inline:auto}
+/* trending */
+.sp-thead{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:18px}
+.sp-tctl{display:flex;flex-wrap:wrap;gap:10px}
+.sp-seg{display:inline-flex;padding:4px;border-radius:99px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1)}
+.sp-seg button{border:0;background:none;color:#b9c2de;font:700 13.5px Manrope,sans-serif;padding:8px 16px;border-radius:99px;cursor:pointer;transition:background .25s,color .25s}
+.sp-seg button.on{background:var(--g);color:#fff;box-shadow:0 8px 20px -10px rgba(237,49,36,.9)}
+.sp-rail{display:flex;gap:16px;margin-top:30px;overflow-x:auto;padding:6px 4px 18px;scroll-snap-type:x proximity;scrollbar-width:thin;scrollbar-color:#2a3157 transparent}
+.sp-poster{flex:none;width:176px;scroll-snap-align:start;border-radius:18px;overflow:hidden;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);opacity:0;transform:translateY(24px) scale(.96);animation:spPop .7s calc(var(--i)*70ms) cubic-bezier(.16,1,.3,1) forwards;transition:border-color .3s,box-shadow .3s}
+.sp-poster:hover{border-color:color-mix(in srgb,var(--c) 70%,#fff);box-shadow:0 22px 44px -22px var(--c)}
+@keyframes spPop{to{opacity:1;transform:none}}
+.sp-poster img{display:block;width:100%;height:auto;aspect-ratio:2/3;object-fit:cover;background:#151a35}
+.sp-poster>div{padding:11px 13px 13px}
+.sp-poster b{display:block;font-size:14px;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.sp-poster small{color:var(--mut);font-size:12.5px}
+.sp-rank{position:absolute;left:8px;top:2px;z-index:2;font:800 46px/1 Manrope,sans-serif;color:transparent;-webkit-text-stroke:1.5px rgba(255,255,255,.85);text-shadow:0 4px 18px rgba(0,0,0,.7)}
+.sp-tnote,.sp-empty{margin:4px 0 0;color:var(--mut);font-size:13px}
+.sp-empty{padding:30px 0}
+/* reviews */
+.sp-avg{color:#ffc247;font-weight:800}
+.sp-revgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px;margin-top:30px}
+.sp-rev{margin:0;display:flex;flex-direction:column;gap:14px;padding:24px;border-radius:22px;background:linear-gradient(160deg,rgba(255,255,255,.055),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.09);overflow:hidden}
+.sp-rst{color:#ffc247;letter-spacing:3px;font-size:16px}
+.sp-rev blockquote{margin:0;font-size:16px;line-height:1.6;color:#e6eaf7}
+.sp-rev figcaption{display:flex;align-items:center;gap:12px;margin-top:auto}
+.sp-rev figcaption b{display:block;font-size:14.5px}
+.sp-rev figcaption small{color:var(--mut);font-size:12.5px}
+.sp-av{display:grid;place-items:center;flex:none;width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--c),#4f6bff);font-weight:800;font-size:13.5px}
+.sp-rform{margin-top:26px;padding:26px;border-radius:22px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.09)}
+.sp-rform h3{font-size:19px;margin-bottom:14px}
+.sp-pick{display:flex;gap:4px;margin-bottom:14px}
+.sp-pick button{border:0;background:none;padding:0 2px;font-size:30px;line-height:1;color:#39406a;cursor:pointer;transition:color .2s,transform .2s}
+.sp-pick button.on{color:#ffc247;text-shadow:0 0 14px rgba(255,194,71,.55)}
+.sp-pick button:hover{transform:scale(1.18)}
+.sp-rrow{display:grid;grid-template-columns:260px 1fr;gap:12px}
+.sp-rform input,.sp-rform textarea{width:100%;padding:13px 16px;border-radius:14px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.04);color:#fff;font:500 15px Manrope,sans-serif;resize:vertical;transition:border-color .25s,box-shadow .25s}
+.sp-rform input:focus,.sp-rform textarea:focus{outline:none;border-color:var(--ac);box-shadow:0 0 0 3px rgba(237,49,36,.2)}
+.sp-rform textarea.bad{border-color:#ff4f3f;animation:spShake .5s}
+@keyframes spShake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.sp-ract{display:flex;flex-wrap:wrap;align-items:center;gap:14px;margin-top:14px}
+.sp-ract small{color:var(--mut);font-size:12.5px}
+.sp-ract .sp-btn{border:0;cursor:pointer;font-family:inherit}
+@media(max-width:700px){.sp-rrow{grid-template-columns:1fr}.sp-poster{width:150px}.sp-rank{font-size:38px}.sp-ring{top:80px}}
+@media(prefers-reduced-motion:reduce){.sp-ring,.sp-hcard .sp-from b{animation:none}.sp-poster{opacity:1;transform:none;animation:none}.sp-prog{display:none}.sp-sec h2::after{width:72px;transition:none}}
+.sp-sec[id]{scroll-margin-top:96px}@media(max-width:860px){.sp-sec[id]{scroll-margin-top:130px}}
