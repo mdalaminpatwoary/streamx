@@ -973,3 +973,4 @@ footer {
 .fcol a.fl b{display:block;color:#e4e9f8;font-size:14px;font-weight:600;transition:color .2s}
 .fcol a.fl span{display:block;margin-top:2px;color:#7b86ad;font-size:12.5px}
 .fcol a.fl:hover b{color:#ff6a58}
+.fcol a.fl{margin-bottom:13px}
