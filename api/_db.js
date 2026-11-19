@@ -9,7 +9,7 @@ async function rest(method, pathAndQuery, body, prefer) {
   try {
     const r = await fetch(process.env.SUPABASE_URL.replace(/\/$/, "") + "/rest/v1/" + pathAndQuery, {
       method,
-      headers: Object.assign({ apikey: key, Authorization: "Bearer " + key, "Content-Type": "application/json" }, prefer ? { Prefer: prefer } : {}),
+      headers: Object.assign({ apikey: key, "Content-Type": "application/json" }, /^eyJ/.test(key) ? { Authorization: "Bearer " + key } : {}, prefer ? { Prefer: prefer } : {}), // new sb_secret_ keys go in apikey only; legacy JWT keys also go in Authorization
       body: body === undefined ? undefined : JSON.stringify(body),
       signal: ctl.signal,
     });
