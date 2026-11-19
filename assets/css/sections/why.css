@@ -146,3 +146,15 @@
 #why .bw-a .bw-big{padding-top:8px}
 #why .bw-a .bw-flow{padding-top:22px}
 @media(max-width:640px){#why .bw{padding:20px 18px 18px;border-radius:18px}#why .bw-big b{font-size:34px}}
+
+/* Tighter content so every card carries its content without big gaps */
+#why .bw-big b{font-size:clamp(30px,3vw,40px);letter-spacing:-1px;line-height:1.1}
+#why .bw-a .bw-big{padding-top:4px}
+#why .bw-a .bw-flow{padding-top:14px}
+#why .bw-nodes{margin-top:-26px}
+#why .bw-c .bw-shield{gap:14px}
+#why .bw-shield .sc{width:112px;height:112px}
+#why .bw-shield .sc svg{width:62px;height:62px}
+#why .tk{height:40px}
+#why .bw-chat{min-height:84px}
+#why .bw-b .vp{height:230px!important}
