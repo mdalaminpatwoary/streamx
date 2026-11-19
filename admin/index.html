@@ -21,6 +21,11 @@
   </section>
 
   <div id="panel" hidden>
+    <section class="ac-card" style="margin-bottom:18px">
+      <div class="ac-bar"><b>Paid orders</b><select class="ac-in" id="of" style="max-width:190px"><option value="pending">Not delivered yet</option><option value="delivered">Delivered</option><option value="all">All</option></select></div>
+      <div class="ad-scroll"><table class="ad-tbl"><thead><tr><th>Paid (Dhaka)</th><th>Customer</th><th>Bought</th><th>Order ID</th><th>Delivery</th></tr></thead><tbody id="orows"></tbody></table></div>
+      <p class="ac-note" id="ocnt"></p>
+    </section>
     <section class="ac-card">
       <b>Add a subscription</b> <span class="ac-note">Expiry is calculated. If the customer already has this service running, the new period starts when the current one ends.</span>
       <form id="af" class="ad-grid" novalidate>
@@ -43,6 +48,6 @@
   </div>
 </main>
 <script src="/assets/js/data/catalog.js"></script>
-<script src="/assets/js/admin.js?v=3"></script>
+<script src="/assets/js/admin.js?v=4"></script>
 </body>
 </html>

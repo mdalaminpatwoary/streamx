@@ -26,8 +26,17 @@ create table if not exists public.orders (
   name        text,
   phone       text,
   lines       jsonb not null,
+  paid        boolean not null default false,
+  paid_at     timestamptz,
+  delivery    text not null default 'pending',
+  delivered_at timestamptz,
   created_at  timestamptz not null default now()
 );
+-- For projects created before delivery tracking:
+alter table public.orders add column if not exists paid boolean not null default false;
+alter table public.orders add column if not exists paid_at timestamptz;
+alter table public.orders add column if not exists delivery text not null default 'pending';
+alter table public.orders add column if not exists delivered_at timestamptz;
 
 create table if not exists public.login_links (
   email       text primary key,

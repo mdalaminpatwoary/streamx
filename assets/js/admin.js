@@ -20,7 +20,7 @@
 
   function list() {
     api("?q=" + encodeURIComponent($("#q").value.trim())).then(function (d) {
-      $("#gate").hidden = true; $("#panel").hidden = false;
+      $("#gate").hidden = true; $("#panel").hidden = false; orders();
       $("#rows").innerHTML = d.rows.map(function (s) {
         var left = days(today, s.end_date), c = left < 0 ? "#ef4444" : left <= 7 ? "#f59e0b" : "#22c55e";
         return "<tr><td><b>" + esc(s.name || "") + "</b><br>" + esc(s.email) + "<br>" + esc(s.phone || "") + "</td><td>" + esc(s.service) + "<br><small style='color:#98a1bc'>" + esc(s.source) + "</small></td><td>" + esc(s.plan) + "</td><td>" + esc(s.start_date) + '</td><td><input class="ac-in" type="date" value="' + esc(s.end_date) + '" data-end="' + s.id + '" style="padding:6px 8px;width:150px"></td><td class="st" style="color:' + c + '">' + (left < 0 ? "Expired" : left + " d") + '</td><td><button class="ad-x" data-del="' + s.id + '">Delete</button></td></tr>';
@@ -28,6 +28,21 @@
       $("#cnt").textContent = d.rows.length + " shown (latest 300). Change a date and click away to save.";
     }).catch(function (e) { if (e.status === 401) { key = ""; try { sessionStorage.removeItem("sx_admin"); } catch (x) {} $("#panel").hidden = true; $("#gate").hidden = false; $("#gm").textContent = e.message; } else { $("#cnt").textContent = e.message; $("#gm").textContent = e.message; } });
   }
+  var ORD = [];
+  function orders() {
+    api("?view=orders").then(function (d) { ORD = d.rows; drawOrders(); }).catch(function (e) { $("#ocnt").textContent = e.message; });
+  }
+  function drawOrders() {
+    var f = $("#of").value, rows = ORD.filter(function (o) { return f === "all" || (o.delivery || "pending") === f; });
+    $("#orows").innerHTML = rows.map(function (o) {
+      var dn = o.delivery === "delivered", t = new Date(Date.parse(o.paid_at || o.created_at) + 6 * 3600e3).toISOString().slice(0, 16).replace("T", " ");
+      var items = (o.lines || []).map(function (l) { return esc(l.name) + " · " + esc(l.plan) + (l.q > 1 ? " ×" + l.q : ""); }).join("<br>");
+      return "<tr><td>" + esc(t) + "</td><td><b>" + esc(o.name || "") + "</b><br>" + esc(o.email) + "<br>" + esc(o.phone || "") + "</td><td>" + items + "</td><td><small>" + esc(o.mtid) + '</small></td><td><button class="ac-btn ac-sm' + (dn ? " ac-ghost" : "") + '" data-dv="' + esc(o.mtid) + '" data-to="' + (dn ? "pending" : "delivered") + '">' + (dn ? "Delivered ✓ (undo)" : "Mark delivered") + "</button></td></tr>";
+    }).join("");
+    $("#ocnt").textContent = rows.length + " order" + (rows.length === 1 ? "" : "s") + ". Only paid orders appear here.";
+  }
+  $("#of").addEventListener("change", drawOrders);
+  $("#orows").addEventListener("click", function (e) { var b = e.target.closest("[data-dv]"); if (b) api("?order=" + encodeURIComponent(b.dataset.dv), { method: "PATCH", body: JSON.stringify({ delivery: b.dataset.to }) }).then(orders).catch(function (er) { alert(er.message); }); });
   $("#gf").addEventListener("submit", function (e) { e.preventDefault(); key = $("#ak").value; try { sessionStorage.setItem("sx_admin", key); } catch (x) {} $("#gm").textContent = ""; list(); });
   $("#lock").addEventListener("click", function () { key = ""; try { sessionStorage.removeItem("sx_admin"); } catch (x) {} $("#panel").hidden = true; $("#gate").hidden = false; $("#ak").value = ""; });
   var t; $("#q").addEventListener("input", function () { clearTimeout(t); t = setTimeout(list, 300); });

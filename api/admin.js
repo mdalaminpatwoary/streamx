@@ -2,7 +2,9 @@
    GET    /api/admin?q=<text>       list / search subscriptions
    POST   /api/admin                add one  {email,name,phone,service,plan,months,start?,notes?}
    PATCH  /api/admin?id=<n>         change expiry  {end_date}
-   DELETE /api/admin?id=<n>         remove one */
+   DELETE /api/admin?id=<n>         remove one
+   GET    /api/admin?view=orders    list paid orders (newest first) with delivery status
+   PATCH  /api/admin?order=<mtid>   set delivery  {delivery:"pending"|"delivered"} */
 const crypto = require("crypto");
 const db = require("./_db");
 const { addSub, validDate, normEmail } = require("./_subs");
@@ -19,6 +21,14 @@ module.exports = async (req, res) => {
     const body = typeof req.body === "string" ? JSON.parse(req.body || "{}") : req.body || {};
     const id = parseInt((req.query && req.query.id) || "", 10);
 
+    const ord = clean(req.query && req.query.order, 40).replace(/[^0-9A-Za-z]/g, "");
+    if (req.method === "GET" && req.query && req.query.view === "orders")
+      return res.status(200).json({ rows: await db.rest("GET", "orders?select=*&paid=eq.true&order=created_at.desc&limit=200") });
+    if (req.method === "PATCH" && ord) {
+      const dv = body.delivery === "delivered" ? "delivered" : body.delivery === "pending" ? "pending" : "";
+      if (!dv) return res.status(400).json({ error: "Invalid status." });
+      return res.status(200).json({ row: (await db.rest("PATCH", `orders?mtid=eq.${db.q(ord)}`, { delivery: dv, delivered_at: dv === "delivered" ? new Date().toISOString() : null }, "return=representation"))[0] });
+    }
     if (req.method === "GET") {
       const t = clean(req.query && req.query.q, 60).replace(/[(),*%]/g, "");
       const f = t ? `&or=(email.ilike.*${db.q(t)}*,phone.ilike.*${db.q(t)}*,name.ilike.*${db.q(t)}*,service.ilike.*${db.q(t)}*)` : "";

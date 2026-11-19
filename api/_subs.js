@@ -35,6 +35,7 @@ async function activateOrder(mtid) {
   const o = await rest("GET", `orders?mtid=eq.${q(mtid)}&select=*`);
   if (!o || !o[0]) return 0;
   const ord = o[0];
+  if (!ord.paid) { try { await rest("PATCH", `orders?mtid=eq.${q(mtid)}`, { paid: true, paid_at: new Date().toISOString() }); } catch (e) { console.error("mark paid failed", e && e.message); } }
   let n = 0;
   const lines = Array.isArray(ord.lines) ? ord.lines : [];
   for (let i = 0; i < lines.length; i++) {
