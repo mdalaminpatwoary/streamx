@@ -26,8 +26,6 @@ h1,h2,h3{line-height:1.12;margin:0;letter-spacing:-.02em}
 .sp-hero::before{content:"";position:absolute;inset:0;z-index:-2;background:radial-gradient(520px circle at var(--mx) var(--my),color-mix(in srgb,var(--c) 38%,transparent),transparent 70%),radial-gradient(900px 500px at 10% -10%,rgba(79,107,255,.18),transparent 70%)}
 .sp-grid{position:absolute;inset:0;z-index:-1;background-image:linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px);background-size:46px 46px;-webkit-mask:radial-gradient(ellipse at 60% 40%,#000 15%,transparent 70%);mask:radial-gradient(ellipse at 60% 40%,#000 15%,transparent 70%);animation:spGrid 14s linear infinite}
 @keyframes spGrid{to{background-position:46px 46px}}
-.sp-scan{position:absolute;left:0;right:0;height:140px;z-index:-1;background:linear-gradient(180deg,transparent,rgba(255,255,255,.05),transparent);animation:spScan 7s ease-in-out infinite}
-@keyframes spScan{0%{top:-140px}100%{top:100%}}
 .sp-herogrid{display:grid;grid-template-columns:1.35fr 1fr;gap:48px;align-items:center}
 .sp-crumb{display:flex;flex-wrap:wrap;gap:8px;font-size:13.5px;color:var(--mut);margin-bottom:20px}
 .sp-crumb b{color:#fff;font-weight:600}

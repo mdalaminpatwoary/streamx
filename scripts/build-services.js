@@ -54,7 +54,7 @@ const head = ({ title, desc, url, img, extra = "" }) => `<!DOCTYPE html>
 <meta name="theme-color" content="#0a0d1a">
 <link rel="icon" href="/favicon.ico" sizes="any"><link rel="apple-touch-icon" href="/assets/img/favicon/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/css/service-page.css?v=15">
+<link rel="stylesheet" href="/assets/css/service-page.css?v=16">
 ${extra}
 </head>`;
 
