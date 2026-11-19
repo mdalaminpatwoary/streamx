@@ -11,7 +11,7 @@ function frame(){
 }
 addEventListener("scroll",()=>{if(!ticking){ticking=true;requestAnimationFrame(frame)}},{passive:true});
 const spy=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)setActive(links.find(a=>a.getAttribute("href")==="#"+e.target.id))}),{rootMargin:"-35% 0px -60% 0px"});
-links.forEach(a=>{const s=document.querySelector(a.getAttribute("href"));s&&spy.observe(s)});
+links.forEach(a=>{const h=a.getAttribute("href");const s=h[0]==="#"&&document.querySelector(h);s&&spy.observe(s)});
 addEventListener("resize",()=>setActive(curLink));
 $("#lang").addEventListener("click",()=>setTimeout(()=>setActive(curLink),40));
 setActive(links[0]);frame();
