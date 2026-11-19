@@ -197,3 +197,9 @@ h1,h2,h3{line-height:1.12;margin:0;letter-spacing:-.02em}
 @media(prefers-reduced-motion:reduce){.sp-ring,.sp-hcard .sp-from b{animation:none}.sp-poster{opacity:1;transform:none;animation:none}.sp-prog{display:none}}
 .sp-sec[id]{scroll-margin-top:96px}@media(max-width:860px){.sp-sec[id]{scroll-margin-top:130px}}
 
+
+/* Soft edges: the hero glow and the tinted bands fade out instead of ending in a straight line */
+.sp-hero{padding-bottom:130px;-webkit-mask:linear-gradient(180deg,#000 calc(100% - 120px),transparent);mask:linear-gradient(180deg,#000 calc(100% - 120px),transparent)}
+.sp-hub{padding-bottom:90px}
+.sp-alt{background:linear-gradient(180deg,transparent,rgba(79,107,255,.07) 18%,rgba(79,107,255,.07) 82%,transparent)}
+@media(max-width:520px){.sp-hero{padding-bottom:100px}}
