@@ -1149,3 +1149,39 @@
 .svc-all{margin-top:14px}
 .svc-all a{color:#ff8a7c;font-weight:700;font-size:14.5px;transition:color .25s}
 .svc-all a:hover{color:#fff}
+
+/* Phones: compact catalog (filters in one swipe row, product cards as tidy list rows) */
+@media (max-width: 600px) {
+  #products .hhead p { font-size: 14.5px; margin-top: 10px; }
+  #products .tools { margin-top: 18px; align-items: stretch; gap: 0; margin-bottom: 0; }
+  #products .tools > * { min-width: 0; }
+  #products .trow { flex-direction: column; align-items: stretch; gap: 10px; }
+  #products .trow .sbox, #products .trow .sort { width: 100%; max-width: none; }
+  #products .trow .sort { display: flex; align-items: center; justify-content: space-between; }
+  #products .trow .sort select { margin-left: auto; }
+  #chips.tabs {
+    flex-wrap: nowrap; justify-content: flex-start; gap: 8px; overflow-x: auto;
+    margin: 14px -20px 14px; padding: 2px 20px 6px; width: auto; max-width: none;
+    scrollbar-width: none; -webkit-overflow-scrolling: touch;
+  }
+  #chips.tabs::-webkit-scrollbar { display: none; }
+  #chips.tabs button {
+    flex: none; padding: 9px 16px; font: 600 13.5px Manrope, system-ui, sans-serif; white-space: nowrap;
+  }
+  #productGrid { grid-template-columns: 1fr; gap: 12px; }
+  #productGrid .pc {
+    display: grid; grid-template-columns: 56px 1fr auto; column-gap: 14px; align-items: center;
+    padding: 14px 16px; border-radius: 18px;
+  }
+  #productGrid .pc .ph { grid-column: 1; grid-row: 1 / 4; margin: 0; }
+  #productGrid .pc .ph .cat { display: none; }
+  #productGrid .pc h3 { grid-column: 2; grid-row: 1; margin: 0; font-size: 16.5px; line-height: 1.25; }
+  #productGrid .pc p {
+    grid-column: 2; grid-row: 2; margin: 3px 0 4px; font-size: 12.5px; line-height: 1.4;
+    display: -webkit-box !important; -webkit-line-clamp: 1 !important; -webkit-box-orient: vertical; overflow: hidden !important; min-height: 0 !important; max-height: 1.4em; text-overflow: clip;
+  }
+  #productGrid .pc .pf { display: contents; }
+  #productGrid .pc .pr { grid-column: 2; grid-row: 3; }
+  #productGrid .pc .pr b { font-size: 18px; }
+  #productGrid .pc .go { grid-column: 3; grid-row: 1 / 4; width: 38px; height: 38px; font-size: 16px; }
+}
