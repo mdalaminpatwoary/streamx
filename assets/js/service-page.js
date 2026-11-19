@@ -27,27 +27,6 @@
     hero.addEventListener("pointermove", function (e) { var b = hero.getBoundingClientRect(); hero.style.setProperty("--mx", (e.clientX - b.left) + "px"); hero.style.setProperty("--my", (e.clientY - b.top) + "px"); });
   }
   if (hero && !RM) {
-    var cv = document.createElement("canvas"); cv.className = "sp-net"; cv.setAttribute("aria-hidden", "true"); hero.insertBefore(cv, hero.firstChild);
-    var ctx = cv.getContext("2d"), W = 0, H = 0, pts = [], px = -999, py = -999, run = true, dpr = Math.min(2, devicePixelRatio || 1);
-    var col = (getComputedStyle(document.body).getPropertyValue("--c") || "#ed3124").trim();
-    function size() { var b = hero.getBoundingClientRect(); W = b.width; H = b.height; cv.width = W * dpr; cv.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); var n = W < 600 ? 26 : 58; pts = []; for (var i = 0; i < n; i++) pts.push({ x: Math.random() * W, y: Math.random() * H, vx: (Math.random() - .5) * .35, vy: (Math.random() - .5) * .35, r: 1 + Math.random() * 1.6 }); }
-    size(); addEventListener("resize", size);
-    hero.addEventListener("pointermove", function (e) { var b = hero.getBoundingClientRect(); px = e.clientX - b.left; py = e.clientY - b.top; });
-    hero.addEventListener("pointerleave", function () { px = py = -999; });
-    function frame() {
-      if (!run) return; ctx.clearRect(0, 0, W, H);
-      for (var i = 0; i < pts.length; i++) {
-        var a = pts[i]; a.x += a.vx; a.y += a.vy; if (a.x < 0 || a.x > W) a.vx *= -1; if (a.y < 0 || a.y > H) a.vy *= -1;
-        var dx = a.x - px, dy = a.y - py, d = Math.sqrt(dx * dx + dy * dy); if (d < 140) { a.x += dx / d * .6; a.y += dy / d * .6; }
-        for (var j = i + 1; j < pts.length; j++) { var b = pts[j], ex = a.x - b.x, ey = a.y - b.y, ed = ex * ex + ey * ey; if (ed < 15000) { ctx.globalAlpha = (1 - ed / 15000) * .35; ctx.strokeStyle = col; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke(); } }
-        ctx.globalAlpha = .8; ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(a.x, a.y, a.r, 0, 6.283); ctx.fill();
-      }
-      requestAnimationFrame(frame);
-    }
-    if ("IntersectionObserver" in window) new IntersectionObserver(function (es) { var v = es[0].isIntersecting; if (v && !run) { run = true; frame(); } run = v; }, { threshold: 0 }).observe(hero);
-    document.addEventListener("visibilitychange", function () { if (document.hidden) run = false; else if (!run) { run = true; frame(); } });
-    frame();
-
     /* decode the headline */
     var h1 = $("h1", hero);
     if (h1) {
