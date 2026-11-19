@@ -1185,3 +1185,31 @@
   #productGrid .pc .pr b { font-size: 18px; }
   #productGrid .pc .go { grid-column: 3; grid-row: 1 / 4; width: 38px; height: 38px; font-size: 16px; }
 }
+
+/* Phones: compact "Pick your plan" (details card, plan type tabs and one tidy row per duration) */
+@media (max-width: 600px) {
+  #planTable .vtabs { gap: 8px; margin-bottom: 14px; }
+  #planTable .vtab { padding: 9px 14px; font-size: 13.5px; border-radius: 12px; }
+  #planTable .vbody { gap: 14px; }
+  #planTable .vinfo { padding: 18px 16px; border-radius: 18px; }
+  #planTable .vinfo h3 { font-size: 19px; margin-bottom: 6px; }
+  #planTable .vinfo > p { font-size: 13.5px; line-height: 1.55; margin-bottom: 12px; }
+  #planTable .vtag { margin-bottom: 8px; }
+  #planTable .vf { grid-template-columns: 1fr 1fr; gap: 8px 12px; font-size: 12.5px; line-height: 1.4; }
+  #planTable .vf li { gap: 6px; }
+  #planTable .vn { margin-top: 12px; padding-top: 12px; font-size: 12.5px; gap: 6px; }
+  #planTable .vplans { grid-template-columns: 1fr; gap: 12px; }
+  #planTable .vplans .pcard:not(.gcc) {
+    display: grid; grid-template-columns: 1fr 134px; grid-template-areas: "dur dur" "amt act" "pm act" "save act";
+    column-gap: 14px; row-gap: 0; align-items: center; padding: 14px 16px 16px; border-radius: 18px;
+  }
+  #planTable .vplans .pcard:not(.gcc) .dur { grid-area: dur; margin-bottom: 6px; font-size: 14px; padding-right: 96px; }
+  #planTable .vplans .pcard:not(.gcc) .amt { grid-area: amt; }
+  #planTable .vplans .pcard:not(.gcc) .amt b { font-size: 32px; line-height: 1.1; }
+  #planTable .vplans .pcard:not(.gcc) .pm { grid-area: pm; margin: 2px 0 0; font-size: 12.5px; }
+  #planTable .vplans .pcard:not(.gcc) .save { grid-area: save; margin: 8px 0 0; padding: 3px 10px; font-size: 11.5px; justify-self: start; }
+  #planTable .vplans .pcard:not(.gcc) .actions { grid-area: act; margin: 0; gap: 8px; }
+  #planTable .vplans .pcard:not(.gcc) .actions .btn { padding: 10px 8px; font-size: 13px; border-radius: 12px; }
+  #planTable .pshare { top: 10px; right: 10px; }
+  #planTable .vplans .pcard:not(.gcc) .tag { top: 14px; right: 52px; padding: 3px 10px; }
+}
