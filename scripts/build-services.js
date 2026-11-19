@@ -18,7 +18,10 @@ const TNAME = { netflix: "Netflix", prime: "Prime Video", disney: "Disney+", hbo
 const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 const taka = n => "৳" + n.toLocaleString("en-US");
 const wa = t => `https://wa.me/${WA}?text=${encodeURIComponent(t)}`;
-const pages = PRODUCTS.filter(p => p.cat !== "18+");
+const ADULT = run("ADULT_PAGES");
+const isAdult = p => p.cat === "18+";
+const pages = PRODUCTS.filter(p => p.cat !== "18+" || ADULT.includes(p.name));
+const open18 = pages.filter(p => !isAdult(p));   // pages shown in the hub, sitemap, share images and "related" lists
 const allPrices = p => p.variants.flatMap(v => v.plans.map(x => x.p));
 const lo = p => Math.min(...allPrices(p)), hi = p => Math.max(...allPrices(p));
 const logo = p => {
@@ -41,12 +44,12 @@ function plansHtml(p) {
   return p.variants.map((v, vi) => `<div class="sp-vcard"><div class="sp-vh"><h3>${esc(v.n)}</h3>${v.tag ? `<span class="sp-tag">${esc(v.tag)}</span>` : ""}</div><p>${esc(v.line)}</p><ul class="sp-ft">${v.f.map(x => `<li>${esc(x)}</li>`).join("")}</ul>${v.notes.length ? `<ul class="sp-nt">${v.notes.map(x => `<li>${esc(x)}</li>`).join("")}</ul>` : ""}<div class="sp-rows">${v.plans.map((pl, k) => `<a class="sp-row" href="/#plan=${s}&v=${vi}&k=${k}"${buy(p.name, p.variants.length > 1 ? v.n : "", pl.v)}><span>${esc(pl.v)}${pl.m > 1 ? `<small>${taka(Math.round(pl.p / pl.m))} / month</small>` : ""}</span><b>${taka(pl.p)}</b><i>Buy</i></a>`).join("")}</div></div>`).join("");
 }
 
-const head = ({ title, desc, url, img, extra = "" }) => `<!DOCTYPE html>
+const head = ({ title, desc, url, img, extra = "", noindex = false }) => `<!DOCTYPE html>
 <html lang="en"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(desc)}">
-<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
+<meta name="robots" content="${noindex ? "noindex,nofollow" : "index,follow,max-image-preview:large,max-snippet:-1"}">
 <link rel="canonical" href="${url}">
 <meta property="og:type" content="website"><meta property="og:site_name" content="StreamX"><meta property="og:locale" content="en_BD">
 <meta property="og:url" content="${url}"><meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(desc)}">
@@ -55,7 +58,7 @@ const head = ({ title, desc, url, img, extra = "" }) => `<!DOCTYPE html>
 <meta name="theme-color" content="#0a0d1a">
 <link rel="icon" href="/favicon.ico" sizes="any"><link rel="apple-touch-icon" href="/assets/img/favicon/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/css/service-page.css?v=27">
+<link rel="stylesheet" href="/assets/css/service-page.css?v=28">
 ${extra}
 </head>`;
 
@@ -69,6 +72,7 @@ const foot = `<footer class="sp-foot" id="contact"><div class="sf-w sf-trust">${
 const scriptOld = `<script>(function(){var r=document.querySelectorAll('.sp-rv');if(!('IntersectionObserver' in window)){r.forEach(function(e){e.classList.add('in')});return}var o=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');o.unobserve(e.target)}})},{threshold:.12});r.forEach(function(e,i){e.style.setProperty('--d',(i%4)*70+'ms');o.observe(e)});var h=document.querySelector('.sp-hero');if(h&&matchMedia('(hover:hover)').matches){h.addEventListener('pointermove',function(e){var b=h.getBoundingClientRect();h.style.setProperty('--mx',(e.clientX-b.left)+'px');h.style.setProperty('--my',(e.clientY-b.top)+'px')})}})();</script>`;
 
 const script = `<script src="/assets/js/service-page.js?v=7" defer></script><script src="/assets/js/feedback-lite.js?v=3" defer></script><script src="/assets/js/service-checkout.js?v=2" defer></script>`;
+const AGE = `<div class="sp-age" id="spAge" role="dialog" aria-modal="true" aria-labelledby="spAgeT"><div class="sp-agebox"><b class="sp-age18">18+</b><h2 id="spAgeT">Adults only</h2><p>This page is about a service with mature content. Please confirm that you are 18 or older to continue.</p><button type="button" class="sp-btn" id="spAgeYes">I am 18 or older</button><a class="sp-agno" href="/">Leave</a></div></div><script>(function(){var b=document.body,ok=false;try{ok=sessionStorage.getItem("sx_18")==="1"}catch(e){}if(ok){b.classList.add("ok");return}document.getElementById("spAgeYes").onclick=function(){try{sessionStorage.setItem("sx_18","1")}catch(e){}b.classList.add("ok")}})()</script>`;
 const stars = n => "★".repeat(n) + "☆".repeat(5 - n);
 function trendHtml(p) {
   const ids = TREND[p.name]; if (!ids) return "";
@@ -94,13 +98,13 @@ ${cards ? `<div class="sp-revgrid">${cards}</div>` : ""}
 function servicePage(p) {
   const combo = PRODUCTS.find(x => x.packs && (PARTS[x.name] || []).includes(LOGO_OF[p.name]) && x !== p);
   const s = slug(p.name), c = CONTENT[p.name] || { h: p.desc, about: [p.desc], pop: [], popLabel: "Highlights", best: [], faq: [] };
-  const url = `${SITE}/services/${s}/`, img = `${SITE}/assets/img/og/${s}.jpg`;
+  const url = `${SITE}/services/${s}/`, img = isAdult(p) ? `${SITE}/assets/img/og/home.jpg` : `${SITE}/assets/img/og/${s}.jpg`;
   const from = lo(p), cheap = p.variants.flatMap(v => v.plans).find(x => x.p === from);
   const unit = p.gift ? "" : p.packs ? " / month" : "";
   const title = `Buy ${p.name} in Bangladesh – from ${taka(from)} | StreamX`;
   let desc = `Buy ${p.name} in Bangladesh from ${taka(from)}. ${p.desc} Pay with bKash, Nagad, Rocket or card. Fixed BDT prices.`;
   if (desc.length > 158) desc = `Buy ${p.name} in Bangladesh from ${taka(from)}. Fixed BDT prices, pay with bKash, Nagad, Rocket or card, support on WhatsApp.`;
-  const related = pages.filter(x => x.cat === p.cat && x !== p).slice(0, 4).concat(pages.filter(x => x.cat !== p.cat && x.cat !== "Bundle")).slice(0, 4);
+  const related = isAdult(p) ? pages.filter(x => isAdult(x) && x !== p) : open18.filter(x => x.cat === p.cat && x !== p).slice(0, 4).concat(open18.filter(x => x.cat !== p.cat && x.cat !== "Bundle")).slice(0, 4);
   const faqs = [
     [`How much is ${p.name} in Bangladesh?`, `${p.name} on StreamX starts from ${taka(from)}${unit}${p.gift ? " (for a $5 card)" : ""}. Prices are fixed in BDT, so the amount you see is the amount you pay. Plans for longer periods cost less per month.`],
     [`How do I pay for ${p.name}?`, `Pay online with bKash, Nagad, Rocket, Upay or a card through EPS's secure payment page, or order on WhatsApp and send the payment yourself.`],
@@ -116,8 +120,8 @@ function servicePage(p) {
     { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: faqs.map(([q, a]) => ({ "@type": "Question", name: q, acceptedAnswer: { "@type": "Answer", text: a } })) }
   ];
   const orderMsg = `Hi StreamX! I want to buy ${p.name}.`;
-  return head({ title, desc, url, img, extra: `<script type="application/ld+json">${JSON.stringify(ld)}</script>` }) + `
-<body style="--c:${p.color}">
+  return head({ title, desc, url, img, noindex: isAdult(p), extra: isAdult(p) ? "" : `<script type="application/ld+json">${JSON.stringify(ld)}</script>` }) + `
+<body style="--c:${p.color}"${isAdult(p) ? ' class="sp-adult"' : ""}>${isAdult(p) ? AGE : ""}
 ${nav([["Home", "/"], ["Pricing", "#plans"], ...(combo ? [["Combo", "#combo"]] : []), ...(TREND[p.name] ? [["Trending", "#trending"]] : []), ["About", "#about"], ["Reviews", "#reviews"], ["FAQ", "#faq"], ["Contact", "#contact"]])}
 <main>
 <section class="sp-hero"><div class="sp-grid" aria-hidden="true"></div>
@@ -162,23 +166,26 @@ ${script}
 }
 
 function hubPage() {
+  const ad = pages.filter(isAdult);
+  const HUB18 = ad.length ? `<section class="sp-sec" id="adults"><div class="sp-wrap"><h2 class="sp-rv">18+ <span class="sp-tag">Adults only</span></h2><div id="adLock" class="sp-adlock"><p>These services contain mature content and are for viewers aged 18 or older.</p><button type="button" class="sp-btn" id="adShow">I am 18 or older, show them</button></div><div class="sp-rel sp-big" id="adList" hidden>${ad.map(x => `<a class="sp-rc" href="/services/${slug(x.name)}/" style="--c:${x.color}">${logo(x)}<span><b>${esc(x.name)}</b><small>From ${taka(lo(x))}</small></span></a>`).join("")}</div></div></section>` : "";
+  const HUB18JS = ad.length ? `<script>(function(){var l=document.getElementById("adList"),k=document.getElementById("adLock");function go(){l.hidden=false;k.hidden=true}var ok=false;try{ok=sessionStorage.getItem("sx_18")==="1"}catch(e){}if(ok)go();document.getElementById("adShow").onclick=function(){try{sessionStorage.setItem("sx_18","1")}catch(e){}go()}})()</script>` : "";
   const url = `${SITE}/services/`, img = `${SITE}/assets/img/og/home.jpg`;
   const title = "All Services in Bangladesh – Netflix, Spotify, ChatGPT | StreamX";
   const desc = "Browse every StreamX service: streaming, music, AI, VPN, learning and cards at fixed BDT prices. Pay with bKash, Nagad, Rocket or card.";
-  const cats = [...new Set(pages.map(p => p.cat))];
-  const ld = { "@context": "https://schema.org", "@type": "CollectionPage", name: "StreamX services", url, hasPart: pages.map(p => ({ "@type": "WebPage", name: p.name, url: `${SITE}/services/${slug(p.name)}/` })) };
+  const cats = [...new Set(open18.map(p => p.cat))];
+  const ld = { "@context": "https://schema.org", "@type": "CollectionPage", name: "StreamX services", url, hasPart: open18.map(p => ({ "@type": "WebPage", name: p.name, url: `${SITE}/services/${slug(p.name)}/` })) };
   return head({ title, desc, url, img, extra: `<script type="application/ld+json">${JSON.stringify(ld)}</script>` }) + `
 <body style="--c:#ed3124">${nav([["Home", "/"], ...cats.map(c => [({ "Bundle": "Bundles", "Music & Audio": "Music", "Virtual Cards": "Cards" })[c] || c, "#" + slug(c)]), ["Contact", "#contact"]])}<main>
 <section class="sp-hero sp-hub"><div class="sp-grid" aria-hidden="true"></div><div class="sp-wrap"><div class="sp-rv"><span class="sp-eyebrow">All services</span><h1>Premium subscriptions <span>for Bangladesh</span></h1><p class="sp-lead">Streaming, music, AI tools, VPN, learning, gift cards and virtual cards. Fixed prices in BDT, local payments, support on WhatsApp.</p></div></div></section>
-${cats.map(c => `<section class="sp-sec" id="${slug(c)}"><div class="sp-wrap"><h2 class="sp-rv">${esc(c === "Bundle" ? "Bundles" : c)}</h2><div class="sp-rel sp-big">${pages.filter(p => p.cat === c).map(x => `<a class="sp-rc sp-rv" href="/services/${slug(x.name)}/" style="--c:${x.color}">${logo(x)}<span><b>${esc(x.name)}</b><small>From ${taka(lo(x))}</small></span></a>`).join("")}</div></div></section>`).join("")}
-</main>${foot}${script}</body></html>`;
+${cats.map(c => `<section class="sp-sec" id="${slug(c)}"><div class="sp-wrap"><h2 class="sp-rv">${esc(c === "Bundle" ? "Bundles" : c)}</h2><div class="sp-rel sp-big">${open18.filter(p => p.cat === c).map(x => `<a class="sp-rc sp-rv" href="/services/${slug(x.name)}/" style="--c:${x.color}">${logo(x)}<span><b>${esc(x.name)}</b><small>From ${taka(lo(x))}</small></span></a>`).join("")}</div></div></section>`).join("")}
+${HUB18}</main>${foot}${script}${HUB18JS}</body></html>`;
 }
 
 const out = (f, t) => { const p = path.join(ROOT, f); fs.mkdirSync(path.dirname(p), { recursive: true }); fs.writeFileSync(p, t); };
 pages.forEach(p => out(`services/${slug(p.name)}/index.html`, servicePage(p)));
 out("services/index.html", hubPage());
 const d = new Date().toISOString().slice(0, 10);
-const urls = [["/", "1.0", "weekly"], ["/services/", "0.9", "weekly"], ...pages.map(p => [`/services/${slug(p.name)}/`, "0.8", "weekly"])];
+const urls = [["/", "1.0", "weekly"], ["/services/", "0.9", "weekly"], ...open18.map(p => [`/services/${slug(p.name)}/`, "0.8", "weekly"])];
 out("sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map(([u, pr, cf]) => `<url><loc>${SITE}${u}</loc><lastmod>${d}</lastmod><changefreq>${cf}</changefreq><priority>${pr}</priority></url>`).join("\n")}\n</urlset>\n`);
-console.log("pages:", pages.length, "| OG list:", pages.map(p => slug(p.name)).join(","));
-fs.writeFileSync(path.join(__dirname, "og-list.json"), JSON.stringify(pages.map(p => ({ slug: slug(p.name), name: p.name, from: lo(p), color: p.color, cat: p.cat, logo: LOGOS[LOGO_OF[p.name]] || null }))));
+console.log("pages:", pages.length, "| OG list:", open18.map(p => slug(p.name)).join(","));
+fs.writeFileSync(path.join(__dirname, "og-list.json"), JSON.stringify(open18.map(p => ({ slug: slug(p.name), name: p.name, from: lo(p), color: p.color, cat: p.cat, logo: LOGOS[LOGO_OF[p.name]] || null }))));
