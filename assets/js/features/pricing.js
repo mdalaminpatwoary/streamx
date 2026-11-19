@@ -25,7 +25,7 @@ let cur={i:0,v:0};
 function showPlans(i,scroll,v=0){
   const p=PRODUCTS[i];
   if(p.cat==="18+"&&!ageOK){$("#pickProduct").value=cur.i;askAge(()=>showPlans(i,scroll,v));return}
-  const pk=!!p.packs,multi=p.variants.length>1,vr=p.variants[v]||p.variants[0];cur={i,v};$("#pickProduct").value=i;if(window.markRail)markRail(i);
+  const pk=!!p.packs,multi=p.variants.length>1,vr=p.variants[v]||p.variants[0];cur={i,v};typeof warmShareImg==="function"&&warmShareImg(i);$("#pickProduct").value=i;if(window.markRail)markRail(i);
   $("#pLogo").innerHTML=pk?`<span class="stk">${PARTS[p.name].map(s=>tile(s,"")).join("")}</span>`:ptile(p);$("#pName").textContent=p.name;
   $("#pDesc").textContent=pk?"Netflix and Prime Video. Choose the pack that fits how you watch.":p.desc;if(p.cat!=="18+"||ADULT_PAGES.includes(p.name))$("#pDesc").insertAdjacentHTML("beforeend",` <a class="pmore" href="/services/${slug(p.name)}/">Full details <span aria-hidden="true">→</span></a>`);
   document.querySelector("#pricing .note").textContent=pk?"* Every price is fixed in BDT, per month. Profile type and device access differ by pack.":"* Every price is fixed in BDT. What you see here is exactly what you pay, with no hidden charges.";
