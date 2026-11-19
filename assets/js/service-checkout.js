@@ -6,12 +6,15 @@
   var esc = function (t) { return String(t).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
   var PHONE = /^(?:\+?88)?01[3-9]\d{8}$/, EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
   var m = document.createElement("div"); m.className = "co"; m.hidden = true; m.setAttribute("role", "dialog"); m.setAttribute("aria-modal", "true"); m.setAttribute("aria-labelledby", "co-t");
-  m.innerHTML = '<form class="co-box" novalidate><button class="co-x" type="button" data-x aria-label="Close">✕</button><span class="co-eb">Checkout</span><h3 id="co-t"></h3><div class="co-pr"></div>' +
-    '<label for="co-n">Your name</label><input id="co-n" autocomplete="name">' +
-    '<label for="co-p">Mobile number</label><input id="co-p" type="tel" inputmode="tel" autocomplete="tel" placeholder="01XXXXXXXXX">' +
-    '<label for="co-e">Email</label><input id="co-e" type="email" autocomplete="email" placeholder="you@example.com">' +
+  m.innerHTML = '<form class="co-box" novalidate><button class="co-x" type="button" data-x aria-label="Close">✕</button><span class="co-eb">Secure checkout</span><h3 id="co-t">Pay online</h3><div class="co-sum" id="co-s"></div>' +
+    '<label><span class="co-l">Your name</span><input id="co-n" type="text" autocomplete="name" placeholder="e.g. Rafiq Ahmed" maxlength="60"></label>' +
+    '<div class="co-row"><label><span class="co-l">Mobile number</span><input id="co-p" type="tel" inputmode="numeric" autocomplete="tel" placeholder="01XXXXXXXXX" maxlength="14"></label>' +
+    '<label><span class="co-l">Email</span><input id="co-e" type="email" autocomplete="email" placeholder="you@example.com" maxlength="100"></label></div>' +
+    '<label><span class="co-l">Note for us <em>(optional)</em></span><textarea id="co-c" rows="2" maxlength="300" placeholder="Anything we should know about your order?"></textarea></label>' +
     '<p class="co-er" role="alert"></p><button class="co-go" type="submit"></button>' +
-    '<p class="co-nt">Pay with bKash, Nagad, Rocket, cards and more on the secure EPS page. We deliver on WhatsApp to the mobile number above.</p><a class="co-wa" target="_blank" rel="noopener"></a></form>';
+    '<img class="co-eps" src="/assets/img/pay/eps-checkout.webp" alt="Pay with EPS: Visa, Mastercard, American Express, bKash, Nagad, Rocket and more" loading="lazy" width="1100" height="190">' +
+    '<small class="co-fine">You will be taken to the EPS payment page. We never see your card or wallet PIN.</small>' +
+    '<small class="co-fine co-wa">Prefer to order by chat? <a target="_blank" rel="noopener">Order on WhatsApp instead ↗</a></small></form>';
   document.body.appendChild(m);
   var f = $("form", m), er = $(".co-er", m), go = $(".co-go", m), cur = null;
   function close() { m.hidden = true; document.documentElement.style.overflow = ""; }
@@ -19,12 +22,11 @@
     var d; try { d = JSON.parse(a.dataset.buy); } catch (e) { return false; }
     var price = ($("b", a) || {}).textContent || "", label = d.n + (d.vr ? " · " + d.vr : "") + " · " + d.v;
     cur = { item: { name: d.n, vr: d.vr || undefined, v: d.v, q: 1 }, price: price, label: label };
-    $("#co-t").textContent = label; $(".co-pr", m).textContent = price;
+    $("#co-s").innerHTML = '<div><span>' + esc(label) + ' <em>×1</em></span><b>' + esc(price) + '</b></div><div class="co-tot"><span>Total</span><b>' + esc(price) + "</b></div>"; $("#co-c").value = "";
     var s = {}; try { s = JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (e) {}
     $("#co-n").value = s.n || ""; $("#co-p").value = s.p || ""; $("#co-e").value = s.e || "";
     er.textContent = ""; go.disabled = false; go.textContent = "Pay " + price + " securely";
-    $(".co-wa", m).textContent = "Prefer WhatsApp? Order there instead";
-    $(".co-wa", m).href = "https://wa.me/" + WA + "?text=" + encodeURIComponent("Hi StreamX! I want to buy " + label + " (" + price + ").");
+    $(".co-wa a", m).href = "https://wa.me/" + WA + "?text=" + encodeURIComponent("Hi StreamX! I want to buy " + label + " (" + price + ").");
     m.hidden = false; document.documentElement.style.overflow = "hidden"; setTimeout(function () { ($("#co-n").value ? $("#co-p") : $("#co-n")).focus(); }, 50); return true;
   }
   document.addEventListener("click", function (e) {
@@ -41,7 +43,7 @@
     if (!EMAIL.test(email)) { er.textContent = "Enter a valid email address."; return; }
     er.textContent = ""; go.disabled = true; go.textContent = "Opening secure payment…";
     try { localStorage.setItem(KEY, JSON.stringify({ n: name, p: phone, e: email })); } catch (x) {}
-    fetch("/api/checkout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: name, phone: phone, email: email, tip: 0, comment: "", items: [cur.item] }) })
+    fetch("/api/checkout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: name, phone: phone, email: email, tip: 0, comment: $("#co-c").value.trim().slice(0, 300), items: [cur.item] }) })
       .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { if (!r.ok || !j.redirectUrl) throw new Error(j.error || "Online payment is unavailable right now. Please order on WhatsApp."); location.href = j.redirectUrl; }); })
       .catch(function (x) { er.textContent = x.message; go.disabled = false; go.textContent = "Pay " + cur.price + " securely"; });
   });
