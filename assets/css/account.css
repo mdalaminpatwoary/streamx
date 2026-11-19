@@ -60,3 +60,11 @@ h1{margin:10px 0 8px;font-size:clamp(30px,5vw,46px);line-height:1.1;letter-spaci
 .ac-mt{margin:8px 0 4px;font-size:21px;line-height:1.25}
 .ac-price{margin:0 0 6px;font-size:32px;font-weight:800;background:var(--g);-webkit-background-clip:text;background-clip:text;color:transparent}
 .ac-x{position:absolute;top:12px;right:12px;width:34px;height:34px;border:1px solid var(--line);border-radius:50%;background:none;color:#fff;cursor:pointer}
+
+.ac-soc{display:grid;gap:10px;margin-bottom:6px}
+.ac-soc[hidden]{display:none}
+.ac-sb{display:flex;align-items:center;justify-content:center;gap:10px;padding:13px 16px;border-radius:99px;border:1px solid #2a3258;background:rgba(255,255,255,.04);color:#fff;font:700 15px Manrope,system-ui,sans-serif;text-decoration:none;transition:border-color .2s,transform .2s}
+.ac-sb:hover{border-color:#ed3124;transform:translateY(-1px)}
+.ac-sb svg{width:20px;height:20px;flex:none}
+.ac-or{display:flex;align-items:center;gap:12px;margin:8px 0 2px;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mut)}
+.ac-or::before,.ac-or::after{content:"";flex:1;height:1px;background:#2a3258}
