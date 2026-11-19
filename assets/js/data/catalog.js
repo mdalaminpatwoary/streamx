@@ -13,7 +13,7 @@ const PRIVF=["Profile name and PIN protected","Customizable profile","Instant de
 const SH={1:180,6:800,12:1200},PR={1:250,6:1100,12:1900};
 const GEMF=["5 TB Google storage","Activated on your own email"];
 // 18+ services that also get their own (age-gated, not search-indexed) page under /services/.
-const ADULT_PAGES=["Ullu","ALTT"];
+const ADULT_PAGES=["Ullu","ALTT","Atrangii"];
 // [name, category, brand color, short description, [plan types]]
 const CATALOG=[
 ["Netflix","Streaming","#e50914","Blockbusters and binge-worthy series in FHD / 4K, with four plan types to choose from.",[
