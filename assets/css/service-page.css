@@ -262,3 +262,19 @@ h1,h2,h3{line-height:1.12;margin:0;letter-spacing:-.02em}
 .sf-col a.fl{margin-bottom:13px}
 .sp-acct{display:grid;place-items:center;flex:none;width:40px;height:40px;margin-left:auto;margin-right:10px;border:1px solid var(--line);border-radius:50%;color:#fff;transition:.3s}
 .sp-acct:hover{background:var(--ac);border-color:var(--ac)}
+/* checkout modal */
+.co{position:fixed;inset:0;z-index:260;display:grid;place-items:center;padding:16px;background:rgba(5,7,16,.75);backdrop-filter:blur(6px)}
+.co[hidden]{display:none}
+.co-box{position:relative;width:min(440px,100%);max-height:92vh;overflow:auto;padding:26px 24px 22px;border:1px solid var(--line);border-radius:22px;background:#0d1124;color:var(--tx,#f4f6fb)}
+.co-box h3{margin:8px 0 4px;font-size:20px;line-height:1.25}
+.co-eb{color:#ed3124;font-size:12px;font-weight:800;letter-spacing:.18em;text-transform:uppercase}
+.co-pr{margin:0 0 12px;font-size:32px;font-weight:800;background:linear-gradient(90deg,#ed3124,#ff4f3f);-webkit-background-clip:text;background-clip:text;color:transparent}
+.co-box label{display:block;margin:12px 0 6px;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mut)}
+.co-box input{width:100%;padding:12px 14px;border:1px solid rgba(255,255,255,.16);border-radius:13px;background:rgba(255,255,255,.04);color:#fff;font:inherit;font-size:15px}
+.co-box input:focus{outline:2px solid rgba(237,49,36,.6);outline-offset:1px}
+.co-er{min-height:20px;margin:10px 0 0;font-size:13.5px;color:#ff8a7c}
+.co-go{width:100%;margin-top:6px;padding:13px;border:0;border-radius:99px;background:linear-gradient(90deg,#ed3124,#ff4f3f);color:#fff;font:700 15px Manrope,system-ui,sans-serif;cursor:pointer;box-shadow:0 14px 30px -14px rgba(237,49,36,.9)}
+.co-go[disabled]{opacity:.6;cursor:wait}
+.co-nt{margin:14px 0 6px;font-size:12.5px;color:var(--mut)}
+.co-wa{font-size:13px;color:#c5cce2;text-decoration:underline}
+.co-x{position:absolute;top:12px;right:12px;width:34px;height:34px;border:1px solid var(--line);border-radius:50%;background:none;color:#fff;cursor:pointer}
