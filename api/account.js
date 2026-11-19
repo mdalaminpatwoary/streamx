@@ -2,23 +2,11 @@
    POST /api/account?a=login    {email}  -> emails a sign-in link (only if that email has subscriptions; the reply is always the same)
    POST /api/account?a=session  {token}  -> exchanges the link token for a 30-day session token
    GET  /api/account?a=me                -> the signed-in customer's subscriptions   (Authorization: Bearer <session>) */
-const crypto = require("crypto");
 const db = require("./_db");
+const { secret, sign, verify, bearer } = require("./_auth");
 const { dhakaToday, normEmail } = require("./_subs");
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-const b64 = (b) => Buffer.from(b).toString("base64url");
-const secret = () => process.env.AUTH_SECRET || "";
-const sign = (o) => { const p = b64(JSON.stringify(o)); return p + "." + crypto.createHmac("sha256", secret()).update(p).digest("base64url"); };
-function verify(tok, type) {
-  try {
-    const [p, s] = String(tok || "").split(".");
-    const ok = crypto.createHmac("sha256", secret()).update(p).digest("base64url");
-    if (!s || s.length !== ok.length || !crypto.timingSafeEqual(Buffer.from(s), Buffer.from(ok))) return null;
-    const o = JSON.parse(Buffer.from(p, "base64url").toString());
-    return o.t === type && o.exp > Date.now() ? o : null;
-  } catch (e) { return null; }
-}
 const esc = (v) => String(v).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
 async function sendLink(email, link) {
@@ -60,10 +48,11 @@ module.exports = async (req, res) => {
       return res.status(200).json({ session: sign({ t: "sess", e: o.e, exp: Date.now() + 30 * 86400000 }), email: o.e });
     }
     if (a === "me" && req.method === "GET") {
-      const o = verify(String(req.headers.authorization || "").replace(/^Bearer /, ""), "sess");
+      const o = verify(bearer(req), "sess");
       if (!o) return res.status(401).json({ error: "Please sign in again." });
-      const rows = await db.rest("GET", `subscriptions?email=eq.${db.q(o.e)}&select=id,service,plan,months,start_date,end_date&order=end_date.desc`);
-      return res.status(200).json({ email: o.e, today: dhakaToday(), subscriptions: rows || [] });
+      const rows = await db.rest("GET", `subscriptions?email=eq.${db.q(o.e)}&select=id,service,plan,months,start_date,end_date,name,phone&order=end_date.desc`);
+      const c = (rows || []).find((r) => r.phone) || (rows || [])[0] || {};
+      return res.status(200).json({ email: o.e, today: dhakaToday(), contact: { name: c.name || "", phone: c.phone || "" }, subscriptions: (rows || []).map(({ name, phone, ...r }) => r) });
     }
     return res.status(404).json({ error: "Not found" });
   } catch (e) {

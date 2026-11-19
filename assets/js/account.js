@@ -22,11 +22,19 @@
     p.variants[vi].plans.forEach(function (pl, j) { if (pl.m === s.months) pj = j; });
     return "/#plan=" + slug(p.name) + "&v=" + vi + "&k=" + pj;
   }
+  /* Same product, variant and plan as the subscription, so the server can price it. Returns null if the plan was removed. */
+  function planOf(s) {
+    var p = PROD.filter(function (x) { return x.name === s.service; })[0]; if (!p) return null;
+    var label = s.plan.indexOf(" · ") > -1 ? s.plan.split(" · ")[0] : "", vr = label ? p.variants.filter(function (v) { return v.n === label; })[0] : p.variants[0];
+    var pl = vr && vr.plans.filter(function (x) { return x.m === s.months; })[0];
+    return pl ? { name: p.name, vr: label || undefined, v: pl.v, price: pl.p } : null;
+  }
+  var DATA = null, taka = function (n) { return "৳" + n.toLocaleString("en-US"); };
   function tile(s) { var p = PROD.filter(function (x) { return x.name === s.service; })[0]; return '<span class="ac-tile" style="--c:' + esc((p && p.color) || "#444") + '" aria-hidden="true">' + esc(((p && p.icon) || s.service[0] || "?").toString().slice(0, 2)) + "</span>"; }
 
   function render(d) {
     $("#login").hidden = true; $("#app").hidden = false; $("#who").textContent = d.email;
-    var today = d.today, rows = d.subscriptions.map(function (s) { s._left = days(today, s.end_date); return s; });
+    DATA = d; var today = d.today, rows = d.subscriptions.map(function (s) { s._left = days(today, s.end_date); return s; });
     var live = rows.filter(function (s) { return s._left >= 0; }).sort(function (a, b) { return a._left - b._left; });
     var gone = rows.filter(function (s) { return s._left < 0; }).sort(function (a, b) { return b._left - a._left; });
     $("#sub").textContent = live.length ? live.length + " active " + (live.length === 1 ? "subscription" : "subscriptions") + ". Expiry dates are in Bangladesh time." : "You have no active subscription right now.";
@@ -40,7 +48,7 @@
         '<div><div class="ac-name">' + esc(s.service) + '<span class="ac-chip">' + st[0] + '</span></div><div class="ac-plan">' + esc(s.plan) + '</div>' +
         '<div class="ac-dates"><span>Started<b>' + fmt(s.start_date) + '</b></span><span>Expires<b>' + fmt(s.end_date) + '</b></span></div><div class="ac-track"><i style="--p:' + used + '%"></i></div></div>' +
         '<div class="ac-act"><div class="ac-left"><b>' + esc(big) + '</b>' + esc(small) + '</div>' +
-        '<a class="ac-btn ac-sm" href="' + renewLink(s) + '">Renew</a><a class="ac-btn ac-ghost ac-sm" target="_blank" rel="noopener" href="https://wa.me/' + WA + "?text=" + encodeURIComponent(msg) + '">Renew on WhatsApp</a></div></article>';
+        (planOf(s) ? '<button class="ac-btn ac-sm" type="button" data-renew="' + s.id + '">Renew · ' + taka(planOf(s).price) + '</button>' : '<a class="ac-btn ac-sm" href="' + renewLink(s) + '">Renew</a>') + '<a class="ac-btn ac-ghost ac-sm" target="_blank" rel="noopener" href="https://wa.me/' + WA + "?text=" + encodeURIComponent(msg) + '">Renew on WhatsApp</a></div></article>';
     }).join("");
   }
 
@@ -62,6 +70,32 @@
       .then(function () { setTimeout(function () { b.disabled = false; }, 4000); });
   });
   $("#out").addEventListener("click", function () { set(null); showLogin(); });
+
+  /* Renew: confirm the contact details, then open the EPS payment page. Expiry is extended automatically once payment is confirmed. */
+  var rm = $("#rm"), cur = null;
+  function closeRenew() { rm.hidden = true; document.documentElement.style.overflow = ""; }
+  $("#list").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-renew]"); if (!b || !DATA) return;
+    cur = DATA.subscriptions.filter(function (x) { return String(x.id) === b.dataset.renew; })[0]; var pl = cur && planOf(cur); if (!pl) return;
+    var base = cur.end_date > DATA.today ? cur.end_date : DATA.today, end = new Date(Date.parse(base + "T00:00:00Z")); end.setUTCMonth(end.getUTCMonth() + cur.months);
+    $("#rt").textContent = cur.service + " · " + cur.plan; $("#rp").textContent = taka(pl.price);
+    $("#rn").textContent = "Your plan will run until about " + fmt(end.toISOString().slice(0, 10)) + ". It is added after your current expiry, so no days are lost.";
+    $("#rname").value = (DATA.contact && DATA.contact.name) || ""; $("#rphone").value = (DATA.contact && DATA.contact.phone) || "";
+    $("#re").textContent = ""; $("#rgo").disabled = false; $("#rgo").textContent = "Pay " + taka(pl.price) + " securely";
+    rm.hidden = false; document.documentElement.style.overflow = "hidden";
+  });
+  rm.addEventListener("click", function (e) { if (e.target === rm || e.target.closest("[data-close]")) closeRenew(); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeRenew(); });
+  $("#rf").addEventListener("submit", function (e) {
+    e.preventDefault(); var pl = cur && planOf(cur), name = $("#rname").value.trim(), phone = $("#rphone").value.replace(/[\s-]/g, ""), er = $("#re"), go = $("#rgo");
+    if (!pl) return;
+    if (name.length < 2) { er.textContent = "Please enter your name."; return; }
+    if (!/^(?:\+?88)?01[3-9]\d{8}$/.test(phone)) { er.textContent = "Enter a valid mobile number, e.g. 01712345678."; return; }
+    er.textContent = ""; go.disabled = true; go.textContent = "Opening secure payment…";
+    fetch("/api/checkout", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + get() }, body: JSON.stringify({ renew: true, name: name, phone: phone, items: [{ name: pl.name, vr: pl.vr, v: pl.v, q: 1 }] }) })
+      .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { if (r.status === 401) { set(null); closeRenew(); showLogin("Your session ended. Please sign in again."); throw new Error("signed out"); } if (!r.ok || !j.redirectUrl) throw new Error(j.error || "Online payment is unavailable right now. Please renew on WhatsApp."); location.href = j.redirectUrl; }); })
+      .catch(function (x) { if (x.message === "signed out") return; er.textContent = x.message; go.disabled = false; go.textContent = "Pay " + taka(pl.price) + " securely"; });
+  });
 
   var h = location.hash.match(/^#t=([\w.\-]+)/);
   if (h) {

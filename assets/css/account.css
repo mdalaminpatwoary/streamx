@@ -53,3 +53,10 @@ h1{margin:10px 0 8px;font-size:clamp(30px,5vw,46px);line-height:1.1;letter-spaci
 .ad-x{background:none;border:1px solid var(--line);color:#c5cce2;border-radius:9px;padding:5px 10px;cursor:pointer;font:600 12px Manrope,system-ui,sans-serif}
 .ad-x:hover{border-color:var(--ac);color:#fff}
 .ad-grid{grid-template-columns:repeat(auto-fit,minmax(215px,1fr))}
+.ac-modal{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:16px;background:rgba(5,7,16,.75);backdrop-filter:blur(6px)}
+.ac-modal[hidden]{display:none}
+.ac-mbox{position:relative;width:min(440px,100%);max-height:92vh;overflow:auto}
+.ac-mbox label{display:block;margin:0 0 6px;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mut)}
+.ac-mt{margin:8px 0 4px;font-size:21px;line-height:1.25}
+.ac-price{margin:0 0 6px;font-size:32px;font-weight:800;background:var(--g);-webkit-background-clip:text;background-clip:text;color:transparent}
+.ac-x{position:absolute;top:12px;right:12px;width:34px;height:34px;border:1px solid var(--line);border-radius:50%;background:none;color:#fff;cursor:pointer}

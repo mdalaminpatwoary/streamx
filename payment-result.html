@@ -47,7 +47,7 @@ h1{margin:0 0 8px;font-size:26px}p{margin:0 0 6px;color:var(--mut);line-height:1
     var st=String(d.status||"").toLowerCase();
     if(st==="success"){
       try{localStorage.removeItem("sx_cart")}catch(e){}
-      show("ok","✓","Payment received","Thank you! Your order is confirmed. We will deliver your subscription shortly. Keep the reference below.");done(d);
+      show("ok","✓","Payment received","Thank you! Your order is confirmed. We will deliver your subscription shortly. Keep the reference below.");done(d);acts.innerHTML+=' <a class="btn" href="/account/" style="background:transparent;border:1px solid rgba(255,255,255,.2)">My subscriptions</a>';
     }else if(st==="pending"||st==="processing"||st==="initiated"){
       show("wait","…","Payment is processing","Your bank is still confirming. If money was deducted, send us the reference on WhatsApp.");done(d);
     }else{

@@ -2,6 +2,7 @@
    Creates an EPS payment session for the cart and returns the EPS payment page link. */
 const { config, xhash, epsFetch, getToken, priceCart, clean, stage } = require("./_eps");
 const db = require("./_db");
+const auth = require("./_auth");
 
 const PHONE = /^(?:\+?88)?01[3-9]\d{8}$/;
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
@@ -11,7 +12,10 @@ module.exports = async (req, res) => {
   if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
   try {
     const b = typeof req.body === "string" ? JSON.parse(req.body) : req.body || {};
-    const name = clean(b.name, 60), email = clean(b.email, 100), phone = clean(b.phone, 20).replace(/[\s-]/g, "");
+    // A signed-in customer renewing: the email always comes from their verified session, never from the request.
+    const sess = b.renew ? auth.verify(auth.bearer(req), "sess") : null;
+    if (b.renew && !sess) return res.status(401).json({ error: "Please sign in again." });
+    const name = clean(b.name, 60), email = sess ? sess.e : clean(b.email, 100), phone = clean(b.phone, 20).replace(/[\s-]/g, "");
     if (name.length < 2) return res.status(400).json({ error: "Please enter your name." });
     if (!EMAIL.test(email)) return res.status(400).json({ error: "Please enter a valid email address." });
     if (!PHONE.test(phone)) return res.status(400).json({ error: "Please enter a valid Bangladeshi mobile number (01XXXXXXXXX)." });
