@@ -58,7 +58,7 @@ const head = ({ title, desc, url, img, extra = "", noindex = false }) => `<!DOCT
 <meta name="theme-color" content="#0a0d1a">
 <link rel="icon" href="/favicon.ico" sizes="any"><link rel="apple-touch-icon" href="/assets/img/favicon/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/css/service-page.css?v=29">
+<link rel="stylesheet" href="/assets/css/service-page.css?v=30">
 ${extra}
 </head>`;
 
@@ -133,7 +133,7 @@ ${nav([["Home", "/"], ["Pricing", "#plans"], ...(combo ? [["Combo", "#combo"]] :
    <div class="sp-cta"><a class="sp-btn" href="#plans">See plans and prices</a><a class="sp-btn sp-ghost" href="${wa(orderMsg)}" rel="noopener">Order on WhatsApp</a><button type="button" class="sp-btn sp-ghost sp-share" data-name="${esc(p.name)}" data-text="${esc(p.name)} in Bangladesh on StreamX. Fixed prices in BDT, fast delivery. See plans:" ${isAdult(p) ? "" : `data-img="/assets/img/og/${s}.jpg"`}><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.5l6.8-4M8.6 13.5l6.8 4"/></svg><span>Share</span></button></div>
    <ul class="sp-trust"><li>${ic("bolt")}Fast delivery</li><li>${ic("card")}bKash, Nagad, Rocket</li><li>${ic("shield")}Replacement warranty</li><li>${ic("chat")}24/7 support</li></ul>
   </div>
-  <div class="sp-hcard sp-rv"><i class="sp-ring r1" aria-hidden="true"></i><i class="sp-ring r2" aria-hidden="true"></i>${logo(p)}<div class="sp-from"><small>Starting from</small><b>${taka(from)}</b><small>${p.gift ? "for a $5 card" : cheap && cheap.m ? `for ${esc(cheap.v)}${p.packs ? "" : ""}` : ""}</small></div><div class="sp-meta"><span>${p.variants.length > 1 || p.packs ? (p.packs ? p.packs.length : p.variants.length) + " plan types" : "1 plan type"}</span><span>Fixed BDT price</span></div></div>
+  <div class="sp-hcard sp-rv">${logo(p)}<div class="sp-from"><small>Starting from</small><b>${taka(from)}</b><small>${p.gift ? "for a $5 card" : cheap && cheap.m ? `for ${esc(cheap.v)}${p.packs ? "" : ""}` : ""}</small></div><div class="sp-meta"><span>${p.variants.length > 1 || p.packs ? (p.packs ? p.packs.length : p.variants.length) + " plan types" : "1 plan type"}</span><span>Fixed BDT price</span></div></div>
  </div></section>
 
 <section class="sp-sec" id="plans"><div class="sp-wrap"><h2 class="sp-rv">${esc(p.name)} plans and prices</h2><p class="sp-sub sp-rv">Every price is fixed in BDT. Choose a plan type, then the duration. Longer plans cost less per month.</p><div class="sp-vgrid">${plansHtml(p).replace(/<div class="sp-vcard">/g, '<div class="sp-vcard sp-rv">')}</div></div></section>
