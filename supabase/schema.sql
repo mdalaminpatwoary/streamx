@@ -37,3 +37,8 @@ create table if not exists public.login_links (
 alter table public.subscriptions enable row level security;
 alter table public.orders        enable row level security;
 alter table public.login_links   enable row level security;
+
+-- Let the server (service_role) use these tables. Needed because "Grant API access to new tables automatically" was off.
+grant usage on schema public to service_role;
+grant select, insert, update, delete on public.subscriptions, public.orders, public.login_links to service_role;
+grant usage, select on all sequences in schema public to service_role;
