@@ -133,3 +133,16 @@
 .tk .f{background:rgba(237,49,36,.12);border:1px solid rgba(237,49,36,.4);color:#ffb0a8}.tk .f b{background:#ed3124;color:#fff}
 .tk .k{background:rgba(53,208,127,.12);border:1px solid rgba(53,208,127,.45);color:#9af0c4;transform:rotateX(180deg)}.tk .k b{background:#35d07f;color:#04210f}
 @keyframes bwFlip{0%,38%{transform:rotateX(0)}50%,88%{transform:rotateX(180deg)}100%{transform:rotateX(360deg)}}
+
+/* Compact sizing so the bento matches the site's other card sections */
+#why .hhead h2{font-size:clamp(34px,4.4vw,56px)}
+#why .bw-grid{gap:16px;margin-top:36px}
+#why .bw{padding:24px 24px 22px;border-radius:20px}
+#why .bw h3{font-size:19px}
+#why .bw p{font-size:14px;line-height:1.6}
+#why .bw-no{margin-bottom:12px}
+#why .bw>div{padding-top:18px}
+#why .bw-big b{font-size:clamp(34px,3.6vw,50px);letter-spacing:-1.2px}
+#why .bw-a .bw-big{padding-top:8px}
+#why .bw-a .bw-flow{padding-top:22px}
+@media(max-width:640px){#why .bw{padding:20px 18px 18px;border-radius:18px}#why .bw-big b{font-size:34px}}
