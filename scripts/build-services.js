@@ -10,7 +10,7 @@ const ctx = vm.createContext({});
 ["assets/js/data/config.js", "assets/js/utils/helpers.js", "assets/js/data/catalog.js", "assets/js/data/logos.js", "assets/js/data/reviews.js"]
   .forEach(f => vm.runInContext(read(f).replace(/^const /gm, "var "), ctx));
 const run = s => vm.runInContext(s, ctx);
-const PRODUCTS = run("PRODUCTS"), LOGOS = run("LOGOS"), LOGO_OF = run("LOGO_OF"), WA = run("WA_NUMBER"), slug = run("slug");
+const PRODUCTS = run("PRODUCTS"), LOGOS = run("LOGOS"), LOGO_OF = run("LOGO_OF"), WA = run("WA_NUMBER"), slug = run("slug"), PARTS = run("PARTS");
 const CONTENT = require("./service-content.js");
 const REVIEWS = run("REVIEWS");
 const TREND = { "Netflix": ["netflix"], "Amazon Prime Video": ["prime"], "Disney+": ["disney"], "HBO Max": ["hbomax"], "Hulu": ["hulu"], "Paramount+": ["paramount"], "Crunchyroll": ["crunchyroll"], "JioHotstar": ["hotstar"], "ZEE5": ["zee5"], "Entertainment Combo": ["netflix", "prime"] };
@@ -54,7 +54,7 @@ const head = ({ title, desc, url, img, extra = "" }) => `<!DOCTYPE html>
 <meta name="theme-color" content="#0a0d1a">
 <link rel="icon" href="/favicon.ico" sizes="any"><link rel="apple-touch-icon" href="/assets/img/favicon/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/css/service-page.css?v=9">
+<link rel="stylesheet" href="/assets/css/service-page.css?v=11">
 ${extra}
 </head>`;
 
@@ -68,6 +68,13 @@ function trendHtml(p) {
   const ids = TREND[p.name]; if (!ids) return "";
   const names = ids.map(i => TNAME[i]).join(" and ");
   return `<section class="sp-sec sp-alt sp-trend" id="trending" data-trend="${ids.join(",")}" data-names="${esc(ids.map(i => TNAME[i]).join(","))}" hidden><div class="sp-wrap"><div class="sp-thead"><div><span class="sp-eyebrow">Trending now</span><h2>Trending on ${esc(names)}</h2><p class="sp-sub">The top 10 movies and series people are watching, updated through the day.</p></div><div class="sp-tctl">${ids.length > 1 ? `<div class="sp-seg" data-seg="p">${ids.map((i, n) => `<button type="button" data-v="${i}"${n ? "" : ' class="on"'}>${TNAME[i]}</button>`).join("")}</div>` : ""}<div class="sp-seg" data-seg="k"><button type="button" data-v="movie" class="on">Movies</button><button type="button" data-v="tv">Series</button></div></div></div><div class="sp-rail" aria-live="polite"></div><p class="sp-tnote"></p></div></section>`;
+}
+function comboHtml(p) {
+  const combo = PRODUCTS.find(x => x.packs && (PARTS[x.name] || []).includes(LOGO_OF[p.name]));
+  if (!combo || combo === p) return "";
+  const cs = slug(combo.name), others = (PARTS[combo.name] || []).filter(k => k !== LOGO_OF[p.name]).map(k => (PRODUCTS.find(x => LOGO_OF[x.name] === k) || {}).name).filter(Boolean);
+  return `<section class="sp-sec sp-combo" id="combo"><div class="sp-wrap"><div class="sp-thead"><div><span class="sp-eyebrow">Save more, together</span><h2>${esc(p.name)}${others.length ? " + " + esc(others.join(" + ")) : ""} combo packs</h2><p class="sp-sub">Get ${esc(p.name)} with ${esc(others.join(" and ") || "more")} in one monthly price, and save compared with buying each separately.</p></div><a class="sp-btn sp-ghost sp-sm" href="/services/${cs}/">About the combo</a></div>
+<div class="sp-vgrid">${combo.packs.map((k, i) => `<div class="sp-vcard sp-rv"><div class="sp-vh"><h3>${esc(k.n)}</h3><span class="sp-tag">${esc(k.tag)}</span></div><p>${esc(k.sub)}</p><ul class="sp-ft">${k.f.map(x => `<li>${esc(x)}</li>`).join("")}</ul><div class="sp-rows"><a class="sp-row" href="/#plan=${cs}&v=0&k=${i}"><span>Per month<small>Regular <s>${taka(k.old)}</s> · Save ${taka(k.old - k.p)}</small></span><b>${taka(k.p)}</b><i>Buy</i></a></div></div>`).join("")}</div></div></section>`;
 }
 function reviewsHtml(p) {
   const list = REVIEWS.filter(r => (r.services || []).includes(p.name) || r.p === p.name);
@@ -120,6 +127,7 @@ ${nav("aria-current=\"page\"")}
 
 <section class="sp-sec" id="plans"><div class="sp-wrap"><h2 class="sp-rv">${esc(p.name)} plans and prices</h2><p class="sp-sub sp-rv">Every price is fixed in BDT. Choose a plan type, then the duration. Longer plans cost less per month.</p><div class="sp-vgrid">${plansHtml(p).replace(/<div class="sp-vcard">/g, '<div class="sp-vcard sp-rv">')}</div></div></section>
 
+${comboHtml(p)}
 ${trendHtml(p)}
 <section class="sp-sec sp-alt"><div class="sp-wrap sp-two">
  <div class="sp-rv"><h2>About ${esc(p.name)}</h2>${c.about.map(t => `<p>${esc(t)}</p>`).join("")}</div>
