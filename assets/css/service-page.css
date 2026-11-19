@@ -205,3 +205,11 @@ h1,h2,h3{line-height:1.12;margin:0;letter-spacing:-.02em}
 @media(max-width:520px){.sp-hero{padding-bottom:100px}}
 .sp-combo{background:linear-gradient(180deg,transparent,rgba(237,49,36,.06) 18%,rgba(237,49,36,.06) 82%,transparent)}.sp-row s{opacity:.7}
 .sp-combo .sp-vgrid{grid-template-columns:repeat(auto-fit,minmax(255px,1fr))}
+
+/* nav: single-line labels, tighter padding; scrolls sideways if it ever runs out of room */
+.sp-nav nav{flex:1;min-width:0;justify-content:center;overflow-x:auto;scrollbar-width:none}
+.sp-nav nav::-webkit-scrollbar{display:none}
+.sp-nav nav a{white-space:nowrap;flex:none;padding:8px 12px;font-size:14px}
+.sp-navin{gap:12px}
+@media(max-width:860px){.sp-nav nav{justify-content:flex-start}}
+.sp-nav nav{padding:0 6px}

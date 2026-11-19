@@ -54,7 +54,7 @@ const head = ({ title, desc, url, img, extra = "" }) => `<!DOCTYPE html>
 <meta name="theme-color" content="#0a0d1a">
 <link rel="icon" href="/favicon.ico" sizes="any"><link rel="apple-touch-icon" href="/assets/img/favicon/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/css/service-page.css?v=12">
+<link rel="stylesheet" href="/assets/css/service-page.css?v=14">
 ${extra}
 </head>`;
 
@@ -162,7 +162,7 @@ function hubPage() {
   const cats = [...new Set(pages.map(p => p.cat))];
   const ld = { "@context": "https://schema.org", "@type": "CollectionPage", name: "StreamX services", url, hasPart: pages.map(p => ({ "@type": "WebPage", name: p.name, url: `${SITE}/services/${slug(p.name)}/` })) };
   return head({ title, desc, url, img, extra: `<script type="application/ld+json">${JSON.stringify(ld)}</script>` }) + `
-<body style="--c:#ed3124">${nav([["Home", "/"], ...cats.map(c => [c === "Bundle" ? "Bundles" : c, "#" + slug(c)]), ["Contact", "#contact"]])}<main>
+<body style="--c:#ed3124">${nav([["Home", "/"], ...cats.map(c => [({ "Bundle": "Bundles", "Music & Audio": "Music", "Virtual Cards": "Cards" })[c] || c, "#" + slug(c)]), ["Contact", "#contact"]])}<main>
 <section class="sp-hero sp-hub"><div class="sp-grid" aria-hidden="true"></div><div class="sp-scan" aria-hidden="true"></div><div class="sp-wrap"><div class="sp-rv"><span class="sp-eyebrow">All services</span><h1>Premium subscriptions <span>for Bangladesh</span></h1><p class="sp-lead">Streaming, music, AI tools, VPN, learning, gift cards and virtual cards. Fixed prices in BDT, local payments, support on WhatsApp.</p></div></div></section>
 ${cats.map(c => `<section class="sp-sec" id="${slug(c)}"><div class="sp-wrap"><h2 class="sp-rv">${esc(c === "Bundle" ? "Bundles" : c)}</h2><div class="sp-rel sp-big">${pages.filter(p => p.cat === c).map(x => `<a class="sp-rc sp-rv" href="/services/${slug(x.name)}/" style="--c:${x.color}">${logo(x)}<span><b>${esc(x.name)}</b><small>From ${taka(lo(x))}</small></span></a>`).join("")}</div></div></section>`).join("")}
 </main>${foot}${script}</body></html>`;
