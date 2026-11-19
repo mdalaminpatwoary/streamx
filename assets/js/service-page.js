@@ -27,18 +27,6 @@
     hero.addEventListener("pointermove", function (e) { var b = hero.getBoundingClientRect(); hero.style.setProperty("--mx", (e.clientX - b.left) + "px"); hero.style.setProperty("--my", (e.clientY - b.top) + "px"); });
   }
   if (hero && !RM) {
-    /* decode the headline */
-    var h1 = $("h1", hero);
-    if (h1) {
-      var nodes = [], w = document.createTreeWalker(h1, NodeFilter.SHOW_TEXT, null); while (w.nextNode()) nodes.push(w.currentNode);
-      var finals = nodes.map(function (n) { return n.nodeValue; }), G = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#$%&*";
-      var t0 = performance.now(), DUR = 900;
-      (function step(t) {
-        var k = Math.min(1, (t - t0) / DUR);
-        nodes.forEach(function (n, i) { var f = finals[i], out = ""; for (var c = 0; c < f.length; c++) { out += (f[c] === " " || c < f.length * k) ? f[c] : G[(Math.random() * G.length) | 0]; } n.nodeValue = out; });
-        if (k < 1) requestAnimationFrame(step); else nodes.forEach(function (n, i) { n.nodeValue = finals[i]; });
-      })(t0);
-    }
     /* count up the starting price */
     var pb = $(".sp-from b");
     if (pb) { var m = pb.textContent.match(/^(\D*)([\d,]+)(.*)$/); if (m) { var to = +m[2].replace(/,/g, ""), s = performance.now(); (function up(t) { var k = Math.min(1, (t - s) / 1100), e = 1 - Math.pow(1 - k, 3); pb.textContent = m[1] + Math.round(to * e).toLocaleString("en-US") + m[3]; if (k < 1) requestAnimationFrame(up); })(s); } }

@@ -54,7 +54,7 @@ const head = ({ title, desc, url, img, extra = "" }) => `<!DOCTYPE html>
 <meta name="theme-color" content="#0a0d1a">
 <link rel="icon" href="/favicon.ico" sizes="any"><link rel="apple-touch-icon" href="/assets/img/favicon/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/css/service-page.css?v=6">
+<link rel="stylesheet" href="/assets/css/service-page.css?v=7">
 ${extra}
 </head>`;
 
@@ -62,7 +62,7 @@ const nav = (cur) => `<header class="sp-nav"><div class="sp-wrap sp-navin"><a cl
 const foot = `<footer class="sp-foot"><div class="sp-wrap"><div><a class="sp-brand" href="/"><img src="/assets/img/brand/logo.png" alt="StreamX" width="40" height="40"></a><p>Digital subscriptions made easier for Bangladesh. Fixed BDT prices, local payments, support on WhatsApp.</p></div><div><h4>Explore</h4><a href="/">Home</a><a href="/services/">All services</a><a href="/#pricing">Pricing</a><a href="/#faq">FAQ</a></div><div><h4>Contact</h4><a href="${wa("Hi StreamX!")}">WhatsApp +880 1312-850241</a><a href="mailto:streamx.com.bd@gmail.com">streamx.com.bd@gmail.com</a></div></div><div class="sp-wrap sp-fine">© 2026 StreamX. Independent reseller, not affiliated with any brand shown. Brand names and logos belong to their owners.</div></footer>`;
 const scriptOld = `<script>(function(){var r=document.querySelectorAll('.sp-rv');if(!('IntersectionObserver' in window)){r.forEach(function(e){e.classList.add('in')});return}var o=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');o.unobserve(e.target)}})},{threshold:.12});r.forEach(function(e,i){e.style.setProperty('--d',(i%4)*70+'ms');o.observe(e)});var h=document.querySelector('.sp-hero');if(h&&matchMedia('(hover:hover)').matches){h.addEventListener('pointermove',function(e){var b=h.getBoundingClientRect();h.style.setProperty('--mx',(e.clientX-b.left)+'px');h.style.setProperty('--my',(e.clientY-b.top)+'px')})}})();</script>`;
 
-const script = `<script src="/assets/js/service-page.js?v=3" defer></script>`;
+const script = `<script src="/assets/js/service-page.js?v=4" defer></script>`;
 const stars = n => "★".repeat(n) + "☆".repeat(5 - n);
 function trendHtml(p) {
   const ids = TREND[p.name]; if (!ids) return "";
