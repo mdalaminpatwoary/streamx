@@ -10,9 +10,9 @@
 /* Payment method logos sit on white chips so every brand stays readable on the dark page */
 /* Transparent logos sit straight on the dark cards, no chip behind them */
 .plg img {
-  height: 54px;
+  height: 34px;
   width: auto;
-  max-width: 112px;
+  max-width: 104px;
   object-fit: contain;
   filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.45));
   transition:
@@ -20,7 +20,7 @@
     filter 0.4s;
 }
 .plg:has(img) {
-  min-height: 64px;
+  min-height: 40px;
 }
 .pb:hover .plg img {
   transform: translateY(-4px) scale(1.06);
