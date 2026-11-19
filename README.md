@@ -115,3 +115,26 @@ Platforms and regions are listed at the top of `assets/js/features/trending.js` 
 - Every service has its own SEO page at `/services/<slug>/` (plus the hub `/services/`). They are generated from the catalog, so prices always match.
 - After changing `assets/js/data/catalog.js` or the copy in `scripts/service-content.js`, run `node scripts/build-services.js` (pages + `sitemap.xml`) and `node scripts/build-og.js` (1200x630 share images in `assets/img/og/`, needs Playwright), then commit the output.
 - Shared product links (`/services/<slug>/`) show a branded logo preview on WhatsApp, Facebook, Messenger, Telegram and X. 18+ services have no public page.
+
+## Customer accounts (My subscriptions) and admin
+
+Customers sign in with an emailed link (no password) at `/account/` and see each subscription with start date, expiry, days left and a Renew button. You manage records at `/admin/`.
+
+**One-time setup**
+
+1. Create a free project at supabase.com. In *SQL Editor* run `supabase/schema.sql`.
+2. In Vercel *Settings → Environment Variables* add (then redeploy):
+   - `SUPABASE_URL` (Project Settings → API → Project URL)
+   - `SUPABASE_SERVICE_KEY` (the `service_role` key; keep it secret, server only)
+   - `AUTH_SECRET` (any long random text, signs the sign-in links)
+   - `ADMIN_KEY` (the password for `/admin/`)
+   - `RESEND_API_KEY` and `MAIL_FROM` (already used for order emails). `MAIL_FROM` must be an address on a domain verified in Resend (for example `StreamX <no-reply@streamx.com.bd>`), otherwise customers will not receive sign-in emails.
+3. Open `/admin/`, enter the admin key, add a test subscription with your own email, then sign in at `/account/`.
+
+**How records are created**
+
+- Paid EPS orders: checkout saves the cart, and when the payment is confirmed the subscription records are created automatically (start = today, or the end of the current period if the customer already has that service, so renewals never lose days).
+- WhatsApp or manual orders: add them on `/admin/`. You can also change an expiry date or delete a record there.
+- Gift cards are not subscriptions and are skipped.
+
+Files: `api/account.js`, `api/admin.js`, `api/_db.js`, `api/_subs.js`, `account/`, `admin/`, `assets/js/account.js`, `assets/js/admin.js`.

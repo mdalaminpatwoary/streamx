@@ -1,6 +1,7 @@
 /* POST /api/checkout  ->  { redirectUrl }
    Creates an EPS payment session for the cart and returns the EPS payment page link. */
 const { config, xhash, epsFetch, getToken, priceCart, clean, stage } = require("./_eps");
+const db = require("./_db");
 
 const PHONE = /^(?:\+?88)?01[3-9]\d{8}$/;
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
@@ -29,6 +30,12 @@ module.exports = async (req, res) => {
     const ret = (s) => `${site}/payment-result.html?s=${s}&t=${mtid}`;
     const summary = lines.map((l) => `${l.name} (${l.plan}) x${l.q}`).join("; ");
     const ip = clean((req.headers["x-forwarded-for"] || "").split(",")[0], 45) || "0.0.0.0";
+
+    // Remember what was ordered so a confirmed payment can create the customer's subscription records. Never blocks checkout.
+    if (db.enabled()) {
+      try { await db.rest("POST", "orders?on_conflict=mtid", [{ mtid, email: email.toLowerCase(), name, phone, lines: lines.map((l) => ({ name: l.name, plan: l.plan, months: l.months, q: l.q })) }], "resolution=ignore-duplicates"); }
+      catch (e) { console.error("order save failed", e && e.message); }
+    }
 
     const token = await getToken(c);
     const body = (txnType) => ({

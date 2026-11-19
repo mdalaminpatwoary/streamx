@@ -93,7 +93,7 @@ function priceCart(items) {
     }
     const q = Math.floor(Number(it.q));
     if (!pl || !(q >= 1 && q <= 20)) throw new Error("An item in your cart is no longer available. Please re-add it.");
-    return { name: p.name, plan: (p.variants.length > 1 ? vr.n + " · " : "") + pl.v, price: pl.p, q };
+    return { name: p.name, plan: (p.variants.length > 1 ? vr.n + " · " : "") + pl.v, price: pl.p, q, months: pl.m || null };
   });
 }
 

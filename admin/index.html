@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>StreamX admin</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="icon" href="/favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/account.css?v=1">
+</head>
+<body>
+<div class="ac-top"><a href="/"><img src="/assets/img/brand/logo.png" alt="StreamX" width="40" height="40"></a><a class="back" href="/">Open site</a></div>
+<main class="ac-wrap" style="width:min(1100px,100% - 32px)">
+  <div class="ac-eyebrow">Owner only</div>
+  <h1>Subscriptions</h1>
+
+  <section id="gate" class="ac-card ac-login">
+    <form id="gf"><label for="ak" style="display:block;margin-bottom:8px;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mut)">Admin key</label>
+    <input class="ac-in" id="ak" type="password" autocomplete="current-password" required><p class="ac-msg" id="gm" role="alert"></p><button class="ac-btn" type="submit">Open</button></form>
+  </section>
+
+  <div id="panel" hidden>
+    <section class="ac-card">
+      <b>Add a subscription</b> <span class="ac-note">Expiry is calculated. If the customer already has this service running, the new period starts when the current one ends.</span>
+      <form id="af" class="ad-grid" novalidate>
+        <div><label>Email *</label><input class="ac-in" name="email" type="email" required></div>
+        <div><label>Name</label><input class="ac-in" name="name"></div>
+        <div><label>Mobile</label><input class="ac-in" name="phone" inputmode="tel"></div>
+        <div><label>Service *</label><select class="ac-in" name="service" id="svc"></select></div>
+        <div><label>Plan *</label><select class="ac-in" name="plan" id="pln"></select></div>
+        <div><label>Start date (optional)</label><input class="ac-in" name="start" type="date"></div>
+        <div><label>Note</label><input class="ac-in" name="notes"></div>
+        <div style="align-self:end"><button class="ac-btn" type="submit" style="width:100%">Add</button></div>
+      </form>
+      <p class="ac-msg" id="am"></p>
+    </section>
+    <section class="ac-card" style="margin-top:18px">
+      <div class="ac-bar"><input class="ac-in" id="q" placeholder="Search email, mobile, name or service" style="max-width:380px"><button class="ac-btn ac-ghost ac-sm" id="lock" type="button">Lock</button></div>
+      <div class="ad-scroll"><table class="ad-tbl"><thead><tr><th>Customer</th><th>Service</th><th>Plan</th><th>Start</th><th>Expires</th><th>Left</th><th></th></tr></thead><tbody id="rows"></tbody></table></div>
+      <p class="ac-note" id="cnt"></p>
+    </section>
+  </div>
+</main>
+<script src="/assets/js/data/catalog.js"></script>
+<script src="/assets/js/admin.js?v=2"></script>
+</body>
+</html>

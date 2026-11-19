@@ -1,6 +1,8 @@
 /* GET /api/verify?t=<merchantTransactionId>  ->  { status, amount, ... }
    Asks EPS directly whether the payment succeeded. The page never trusts the URL alone. */
 const { config, xhash, epsFetch, getToken } = require("./_eps");
+const db = require("./_db");
+const subs = require("./_subs");
 
 const esc = (v) => String(v == null ? "" : v).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
@@ -51,7 +53,10 @@ module.exports = async (req, res) => {
     });
     const j = r.json || {};
     if (!j.MerchantTransactionId && !j.Status) return res.status(200).json({ status: "Unknown" });
-    if (String(j.Status).toLowerCase() === "success") await mailOrder(j, t, c.env);
+    if (String(j.Status).toLowerCase() === "success") {
+      await mailOrder(j, t, c.env);
+      if (db.enabled()) { try { await subs.activateOrder(t); } catch (e) { console.error("activate failed", e && e.message); } }
+    }
     // Only non-personal fields go back to the browser.
     return res.status(200).json({
       status: j.Status || "Unknown",
