@@ -507,9 +507,29 @@
   .tr-rank {
     font-size: 96px;
   }
+  .tr-ctl {
+    flex-wrap: nowrap;
+    gap: 10px;
+  }
+  .tr-seg {
+    flex: none;
+  }
+  .tr-reg {
+    margin-left: auto;
+    min-width: 0;
+  }
+  .tr-regbtn {
+    max-width: 100%;
+  }
+  .tr-regbtn span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
   .tr-pop {
-    right: auto;
-    left: 0;
+    left: auto;
+    right: 0;
+    width: min(300px, calc(100vw - 40px));
   }
 }
 @media (prefers-reduced-motion: reduce) {
