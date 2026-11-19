@@ -1213,3 +1213,37 @@
   #planTable .pshare { top: 10px; right: 10px; }
   #planTable .vplans .pcard:not(.gcc) .tag { top: 14px; right: 52px; padding: 3px 10px; }
 }
+
+/* Phones: compact Entertainment Combo (bundle card + pack cards) */
+@media (max-width: 600px) {
+  #bundleGrid { gap: 14px; }
+  #bundleGrid .bd { padding: 18px 16px; border-radius: 20px; gap: 0; }
+  #bundleGrid .bd .sv { margin-bottom: 12px; padding: 3px 10px; font-size: 10px; }
+  #bundleGrid .bd .stk .lg { width: 40px; height: 40px; }
+  #bundleGrid .bd h3 { font-size: 19px; margin: 10px 0 8px; }
+  #bundleGrid .bd .inc { grid-template-columns: 1fr 1fr; gap: 5px 10px; font-size: 12px; line-height: 1.35; margin-bottom: 12px; }
+  #bundleGrid .bd .inc li::before { margin-right: 5px; }
+  #bundleGrid .bd .br { gap: 10px; width: 100%; }
+  #bundleGrid .bd .pr b { font-size: 28px; }
+  #bundleGrid .bd .pks { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; width: 100%; }
+  #bundleGrid .bd .pk { padding: 5px 10px; font-size: 12px; text-align: center; }
+  #bundleGrid .bd .btn { width: 100%; padding: 12px 16px; font-size: 14px; margin-top: 4px; }
+
+  #planTable.packs { gap: 12px; }
+  #planTable.packs .pcard {
+    display: grid; grid-template-columns: 1fr 134px; column-gap: 14px; row-gap: 0; align-items: center;
+    grid-template-areas: "dur dur" "sub sub" "amt act" "pm act" "save act" "ul ul";
+    padding: 14px 16px 16px; border-radius: 18px;
+  }
+  #planTable.packs .pcard .dur { grid-area: dur; margin: 0 0 2px; font-size: 15px; padding-right: 110px; }
+  #planTable.packs .pcard .sub { grid-area: sub; margin: 0 0 8px; font-size: 12.5px; line-height: 1.4; }
+  #planTable.packs .pcard .amt { grid-area: amt; }
+  #planTable.packs .pcard .amt b { font-size: 30px; line-height: 1.1; }
+  #planTable.packs .pcard .pm { grid-area: pm; margin: 2px 0 0; font-size: 12px; }
+  #planTable.packs .pcard .save { grid-area: save; margin: 8px 0 0; padding: 3px 10px; font-size: 11.5px; justify-self: start; }
+  #planTable.packs .pcard .actions { grid-area: act; margin: 0; gap: 8px; }
+  #planTable.packs .pcard .actions .btn { padding: 10px 8px; font-size: 13px; border-radius: 12px; }
+  #planTable.packs .pcard ul { grid-area: ul; margin: 12px 0 0; padding-top: 12px; border-top: 1px solid var(--line); gap: 5px; font-size: 12.5px; line-height: 1.4; }
+  #planTable.packs .pshare { top: 10px; right: 10px; }
+  #planTable.packs .pcard .tag { top: 14px; right: 52px; padding: 3px 10px; }
+}
