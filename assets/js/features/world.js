@@ -9,28 +9,28 @@
   var HUB = PTS.BD, NS = "http://www.w3.org/2000/svg";
   var flag = function (c) { return "https://flagcdn.com/w40/" + c.toLowerCase() + ".png"; };
   var arcs = "", pins = "", cns = "", grat = "";
-  for (var gx = 100; gx < 1000; gx += 100) grat += '<path d="M' + gx + ' 0V500"/>';
-  for (var gy = 71; gy < 500; gy += 71) grat += '<path d="M0 ' + gy + 'H1000"/>';
+  for (var gx = 100; gx < 1000; gx += 100) grat += '<path d="M' + gx + ' 0V450"/>';
+  for (var gy = 71; gy < 450; gy += 71) grat += '<path d="M0 ' + gy + 'H1000"/>';
   LIST.forEach(function (c, i) {
     var p = PTS[c[0]], dx = p[0] - HUB[0], dy = p[1] - HUB[1], dist = Math.sqrt(dx * dx + dy * dy);
     var cx = (p[0] + HUB[0]) / 2, cy = Math.max(14, Math.min(p[1], HUB[1]) - dist * 0.32);
     var d = "M" + HUB[0] + " " + HUB[1] + "Q" + cx.toFixed(1) + " " + cy.toFixed(1) + " " + p[0] + " " + p[1];
     cns += '<path class="wd-cn" data-c="' + c[0] + '" d="' + CN[c[0]] + '"/>';
     arcs += '<g class="wd-c" data-c="' + c[0] + '" style="--i:' + i + '"><path id="wdp' + c[0] + '" class="wd-arc" pathLength="100" d="' + d + '"/><path class="wd-flow" pathLength="100" d="' + d + '"/>' +
-      '<circle class="wd-comet" r="2.6" fill="#fff"><animateMotion dur="' + (3.4 + (i % 4) * 0.5).toFixed(1) + 's" begin="-' + (i * 0.7).toFixed(1) + 's" repeatCount="indefinite" keyPoints="0;1" keyTimes="0;1" calcMode="linear"><mpath href="#wdp' + c[0] + '"/></animateMotion></circle>' +
+      '<circle class="wd-comet" r="2.6" fill="#fff"><animateMotion dur="' + (6 + (i % 4) * 0.8).toFixed(1) + 's" begin="-' + (i * 0.7).toFixed(1) + 's" repeatCount="indefinite" keyPoints="0;1" keyTimes="0;1" calcMode="linear"><mpath href="#wdp' + c[0] + '"/></animateMotion></circle>' +
       '<circle class="wd-ring" cx="' + p[0] + '" cy="' + p[1] + '" r="6"/><circle class="wd-pin" cx="' + p[0] + '" cy="' + p[1] + '" r="3.2"/></g>';
   });
   var chips = LIST.map(function (c, i) { return '<button type="button" class="wd-chip" data-c="' + c[0] + '" style="--i:' + i + '"><img src="' + flag(c[0]) + '" alt="" width="22" height="16" loading="lazy" decoding="async"><span>' + c[1] + "</span></button>"; }).join("");
   root.querySelector(".wd-map").innerHTML =
-    '<svg viewBox="0 0 1000 500" role="img" aria-label="World map showing StreamX delivery from Bangladesh to ' + LIST.length + ' countries" preserveAspectRatio="xMidYMid meet">' +
+    '<svg viewBox="0 0 1000 450" role="img" aria-label="World map showing StreamX delivery from Bangladesh to ' + LIST.length + ' countries" preserveAspectRatio="xMidYMid meet">' +
     '<defs><clipPath id="wdclip"><path d="' + LAND + '"/></clipPath><linearGradient id="wdg" x1="0" x2="1"><stop offset="0" stop-color="#000"/><stop offset=".55" stop-color="#fff"/><stop offset="1" stop-color="#000"/></linearGradient><mask id="wdm" maskUnits="userSpaceOnUse" x="0" y="0" width="1000" height="500"><rect class="wd-scan" x="-260" y="0" width="260" height="500" fill="url(#wdg)"/></mask>' +
-    '<linearGradient id="wdl" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="1000" y2="500"><stop offset="0" stop-color="#ff7c70"/><stop offset=".55" stop-color="#ed3124"/><stop offset="1" stop-color="#b3170d"/></linearGradient>' + '<radialGradient id="wdh"><stop offset="0" stop-color="#ff5a4d" stop-opacity=".55"/><stop offset="1" stop-color="#ff5a4d" stop-opacity="0"/></radialGradient></defs>' +
+    '<linearGradient id="wdl" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="1000" y2="500"><stop offset="0" stop-color="#e8574b"/><stop offset=".55" stop-color="#c9382d"/><stop offset="1" stop-color="#8f2a22"/></linearGradient>' + '<radialGradient id="wdh"><stop offset="0" stop-color="#ff5a4d" stop-opacity=".55"/><stop offset="1" stop-color="#ff5a4d" stop-opacity="0"/></radialGradient></defs>' +
     '<g class="wd-grat">' + grat + '</g><path class="wd-land" d="' + LAND + '"/><path class="wd-bord" d="' + BORD + '"/><g class="wd-cns">' + cns + '</g>' +
     '<g class="wd-arcs">' + arcs + "</g>" +
     '<g class="wd-hub"><circle class="wd-orb" cx="' + HUB[0] + '" cy="' + HUB[1] + '" r="22"/><circle class="wd-orb o2" cx="' + HUB[0] + '" cy="' + HUB[1] + '" r="34"/><circle cx="' + HUB[0] + '" cy="' + HUB[1] + '" r="34" fill="url(#wdh)"/><circle class="wd-hr" cx="' + HUB[0] + '" cy="' + HUB[1] + '" r="8"/><circle class="wd-hr b" cx="' + HUB[0] + '" cy="' + HUB[1] + '" r="8"/><circle cx="' + HUB[0] + '" cy="' + HUB[1] + '" r="4.6" fill="#ff5a4d" stroke="#fff" stroke-width="1.4"/></g></svg>' +
-    '<div class="wd-hubl" style="left:' + HUB[0] / 10 + "%;top:" + HUB[1] / 5 + '%"><i></i>Bangladesh</div>' +
+    '<div class="wd-hubl" style="left:' + HUB[0] / 10 + "%;top:" + HUB[1] / 4.5 + '%"><i></i>Bangladesh</div>' +
     '<div class="wd-tag" aria-hidden="true"><img alt="" width="20" height="14"><b></b></div>';
-  root.querySelector(".wd-chips").innerHTML = chips;
+  root.querySelector(".wd-chips").innerHTML = '<div class="wd-track">' + chips + chips.replace(/<button /g, '<button aria-hidden="true" tabindex="-1" ') + "</div>";
 
   var tag = root.querySelector(".wd-tag"), tImg = tag.querySelector("img"), tB = tag.querySelector("b"), stage = root.querySelector(".wd-stage");
   var cur = -1, timer = null, hold = false;
@@ -38,14 +38,14 @@
     cur = i; var c = LIST[i], p = PTS[c[0]];
     root.querySelectorAll(".wd-c.on,.wd-chip.on,.wd-cn.on").forEach(function (n) { n.classList.remove("on"); });
     root.querySelector('.wd-c[data-c="' + c[0] + '"]').classList.add("on"); root.querySelector('.wd-cn[data-c="' + c[0] + '"]').classList.add("on");
-    var ch = root.querySelector('.wd-chip[data-c="' + c[0] + '"]'); ch.classList.add("on");
+    var ch = root.querySelector('.wd-chip[data-c="' + c[0] + '"]'); root.querySelectorAll('.wd-chip[data-c="' + c[0] + '"]').forEach(function (n) { n.classList.add("on"); });
     tImg.src = flag(c[0]); tB.textContent = c[1];
-    tag.style.left = p[0] / 10 + "%"; tag.style.top = p[1] / 5 + "%";
+    tag.style.left = p[0] / 10 + "%"; tag.style.top = p[1] / 4.5 + "%";
     tag.classList.toggle("below", p[1] < 120); tag.classList.add("on");
     if (!user && ch.scrollIntoView && root.querySelector(".wd-chips").scrollWidth > root.querySelector(".wd-chips").clientWidth + 2) { /* chips wrap, nothing to scroll */ }
   }
   var calm = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
-  function run() { if (timer || calm) return; timer = setInterval(function () { if (!hold) pick((cur + 1) % LIST.length); }, 2000); }
+  function run() { if (timer || calm) return; timer = setInterval(function () { if (!hold) pick((cur + 1) % LIST.length); }, 3200); }
   function stop() { clearInterval(timer); timer = null; }
   root.querySelector(".wd-chips").addEventListener("click", function (e) { var b = e.target.closest(".wd-chip"); if (!b) return; pick(LIST.findIndex(function (x) { return x[0] === b.dataset.c; }), true); });
   root.querySelector(".wd-chips").addEventListener("mouseover", function (e) { var b = e.target.closest(".wd-chip"); if (!b) return; hold = true; pick(LIST.findIndex(function (x) { return x[0] === b.dataset.c; }), true); });
