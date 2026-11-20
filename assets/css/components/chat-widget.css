@@ -277,3 +277,18 @@
 @keyframes cwW{0%,42%{opacity:1;transform:none}48%,92%{opacity:0;transform:rotate(-70deg) scale(.4)}100%{opacity:1;transform:none}}
 @keyframes cwM{0%,42%{opacity:0;transform:rotate(70deg) scale(.4)}48%,92%{opacity:1;transform:none}98%,100%{opacity:0;transform:rotate(70deg) scale(.4)}}
 @media (prefers-reduced-motion:reduce){.cw-wa,.cw-wa svg.cwi-w,.cw-wa svg.cwi-m{animation:none}.cw-wa svg.cwi-m{opacity:0}}
+
+/* Badge: three platforms, driven by data-p (WhatsApp, Messenger, Instagram) */
+.cw-wa{animation:none!important;transition:background .35s,transform .35s;background:#25d366}
+.cw-wa svg.cwi-w,.cw-wa svg.cwi-m,.cw-wa svg.cwi-i{animation:none!important;opacity:0;transform:rotate(60deg) scale(.4);transition:opacity .3s,transform .35s;fill:#fff}
+.cw-wa[data-p=wa]{background:#25d366}.cw-wa[data-p=wa] .cwi-w,.cw-wa[data-p=ms] .cwi-m,.cw-wa[data-p=ig] .cwi-i{opacity:1;transform:none}
+.cw-wa[data-p=ms]{background:linear-gradient(135deg,#0099ff,#a033ff 60%,#ff5280)}
+.cw-wa[data-p=ig]{background:linear-gradient(45deg,#f9a53b,#e4405f 45%,#8a3ab9)}
+.cw-go.cw-ig{background:linear-gradient(45deg,#f9a53b,#e4405f 45%,#8a3ab9)}
+.cw-acts{flex-wrap:wrap}
+@media (prefers-reduced-motion:reduce){.cw-wa{transition:none}}
+/* Three platforms in one tidy row: logo-only buttons */
+.cw-acts{flex-wrap:nowrap;gap:10px}
+.cw-acts .cw-go{width:46px;height:38px;padding:0;justify-content:center;font-size:0;gap:0;border-radius:12px;transition:transform .25s,filter .25s}
+.cw-acts .cw-go svg{width:19px;height:19px}
+.cw-acts .cw-go:hover{transform:translateY(-2px);filter:brightness(1.1)}

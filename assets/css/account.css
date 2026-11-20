@@ -326,3 +326,5 @@ h1{margin:10px 0 8px;font-size:clamp(30px,5vw,46px);line-height:1.1;letter-spaci
 .ac-msgt{white-space:pre-line;color:#c3cae8}.ac-cc small{display:block;margin-top:6px;color:#8089ab;font-size:12px}
 @media(prefers-reduced-motion:reduce){.ac-dlist li{animation:none}}
 .ac-val.ac-msgt{display:block;background:none;border:0;padding:4px 0 0;font-weight:500;font-size:13.5px;line-height:1.5}
+/* Sign-in on a phone: just the sign-in box, no subscriptions intro */
+@media(max-width:760px){body:has(#login:not([hidden])) .ac-intro{display:none}}

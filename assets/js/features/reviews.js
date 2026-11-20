@@ -16,7 +16,7 @@ const rcard=(r,dup)=>{const i=REVIEWS.indexOf(r),p=PRODUCTS.find(x=>x.name===r.p
   rows.forEach((row,x)=>{if(!row.length)return;$("#rrow"+(x+1)).innerHTML=[0,1,2,3].map(c=>row.map(r=>rcard(r,c>0)).join("")).join("")});
 })();
 // Popular review spotlight: big portrait, one review after another every 10 seconds (pauses on hover, off-screen and in background tabs)
-const POP=(()=>{const a=REVIEWS.map((r,i)=>i).filter(i=>REVIEWS[i].popular);return a.length?a:REVIEWS.slice(0,4).map((r,i)=>i)})();
+const POP=REVIEWS.map((r,i)=>i); // every review takes its turn in the spotlight
 const QUOTE='<svg class="rs-q" viewBox="0 0 48 36" aria-hidden="true"><path d="M0 36V20C0 8 6 1.5 18 0v7c-6 1.2-8.600 4.400-8.800 9H18v20zm27 0V20C27 8 33 1.500 45 0v7c-6 1.200-8.600 4.400-8.800 9H45v20z"/></svg>';
 const POP_MS=10000;
 let pk=0,pEl=0,pHover=false,pSeen=true,pBusy=false;
@@ -38,6 +38,7 @@ function setPop(n,instant){
       <div class="rs-act"><button class="btn grad-bg" onclick="openReview(${i})">View full story →</button></div></div>
     <div class="rs-nav" role="tablist">${POP.map((j,x)=>`<button type="button" role="tab" aria-selected="${x===pk}" class="${x===pk?"on":""}" onclick="setPop(${x})" style="${grad(j)}"><span class="rs-mini"><i>${initials(REVIEWS[j].n)}</i>${ph(REVIEWS[j])}</span><span class="rs-nm"><b>${REVIEWS[j].n}</b><small>${REVIEWS[j].role||"Customer"}</small></span><span class="rs-bar"><i></i></span></button>`).join("")}</div></div>`;
     pBusy=false;
+    const nv=box.querySelector(".rs-nav"),ab=nv&&nv.querySelector("button.on");if(ab&&nv.scrollWidth>nv.clientWidth)nv.scrollTo({left:ab.offsetLeft-nv.clientWidth/2+ab.offsetWidth/2,behavior:instant?"auto":"smooth"});
   };
   if(prev&&!instant){pBusy=true;prev.classList.add("out");setTimeout(paint,480)}else paint();
 }

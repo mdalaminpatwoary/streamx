@@ -9,8 +9,4 @@ $("#menu").onclick = e => { if(e.target.tagName==="A") $("#menu").classList.remo
 // Language toggle (English / Bangla)
 let bn = false;
 document.querySelectorAll("[data-bn]").forEach(e=>e.dataset.en=e.innerHTML);
-$("#lang").onclick = () => {
-  bn = !bn;
-  document.querySelectorAll("[data-bn]").forEach(e=>e.innerHTML = bn ? e.dataset.bn : e.dataset.en);
-  $("#lang").textContent = bn ? "English" : "বাংলা";
-};
+

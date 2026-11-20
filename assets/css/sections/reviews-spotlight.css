@@ -79,3 +79,9 @@
 .rs-badge{padding:7px 14px}
 .rs-wrap{margin:26px 0 24px}
 @media(max-width:860px){.rs{padding:22px 18px 18px;gap:22px}.rs-portrait{max-width:200px}.rs-init{font-size:64px}.rs-body blockquote{font-size:18px}}
+
+/* Every review gets a tab: the row scrolls sideways when there are many */
+.rs-nav{display:flex;grid-template-columns:none;overflow-x:auto;min-width:0;scroll-snap-type:x proximity;scrollbar-width:none;padding-bottom:2px}
+.rs-nav::-webkit-scrollbar{display:none}
+.rs-nav button{flex:none;min-width:170px;scroll-snap-align:center}
+@media(max-width:860px){.rs-nav{display:flex;grid-template-columns:none}.rs-nav button{min-width:150px}}

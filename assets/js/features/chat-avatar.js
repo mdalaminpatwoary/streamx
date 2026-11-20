@@ -31,7 +31,11 @@
 
   const av=$("#cwAv"),bubble=$("#cwBubble"),nameEl=$("#cwName"),msgEl=$("#cwMsg");
   av.innerHTML=`<img src="/assets/img/brand/al-amin.webp" alt="${NAME}" width="160" height="160" decoding="async">`;
-  $("#cwBtn").setAttribute("aria-label",`Chat with ${NAME} on WhatsApp`);
+  // The small logo on the photo rotates WhatsApp, Messenger and Instagram; tapping the photo opens the one shown.
+  const PL=[["wa","WhatsApp",()=>wa("Hi StreamX!")],["ms","Messenger",()=>"https://m.me/streamx.com.bd"],["ig","Instagram",()=>"https://instagram.com/streamx.com.bd"]];
+  const badge=$("#cwBadge"),btn=$("#cwBtn");let pi=0;
+  function plat(i){pi=i;const p=PL[i];badge.dataset.p=p[0];btn.href=p[2]();btn.setAttribute("aria-label",`Chat with ${NAME} on ${p[1]}`)}
+  plat(0);if(!calm)setInterval(()=>{if(!document.hidden)plat((pi+1)%PL.length)},3200);
   let mi=0,paused=false,closed=false;
   try{closed=sessionStorage.getItem("sx_cw_x")==="1"}catch(e){}
 

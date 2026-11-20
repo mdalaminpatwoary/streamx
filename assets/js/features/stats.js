@@ -15,6 +15,5 @@ document.querySelectorAll(".stat").forEach(s=>sio.observe(s));
   const shown=MQ.slice(0,6),total=PRODUCTS.filter(p=>p.cat!=="Bundle").length;
   $("#slogos").innerHTML=shown.map(m=>tile(m[0],"")).join("")+`<span class="more">+${total-shown.length} more</span>`;
   const since=+document.querySelector(".yr b").dataset.to,y=new Date().getFullYear()-since;
-  $("#yrs").textContent=y>=1?`Serving Bangladesh for ${y} year${y>1?"s":""} with local payment options.`:"Just getting started, serving Bangladesh with local payments.";
 })();
 document.addEventListener("click",e=>{const a=e.target.closest("[data-plan]");if(!a)return;e.preventDefault();const i=PRODUCTS.findIndex(p=>p.name===a.dataset.plan);if(i>-1)showPlans(i,true)});

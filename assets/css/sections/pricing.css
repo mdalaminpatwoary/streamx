@@ -511,7 +511,11 @@
 .pr-a.l{left:-6px}.pr-a.r{right:-6px}
 .prail.fl .pr-a.l,.prail.fr .pr-a.r{opacity:1;pointer-events:auto}
 .pr-a:hover{background:var(--ac);transform:scale(1.08)}
-@media(max-width:700px){.pr-a{display:none}.pkchip{padding-right:13px;font-size:13.5px}}
+.pr-a{display:grid;place-items:center;font-size:0}.pr-a svg{width:18px;height:18px}
+@media(max-width:700px){.pr-a{width:34px;height:34px;box-shadow:0 6px 18px rgba(0,0,0,.45)}.pr-a svg{width:16px;height:16px}.pr-a.l{left:-4px}.pr-a.r{right:-4px}.prail.fr .pr-a.r{animation:prNudge 1.8s ease-in-out infinite}.prail.fl .pr-a.l{animation:prNudgeL 1.8s ease-in-out infinite}.pkchip{padding-right:13px;font-size:13.5px}}
+@keyframes prNudge{0%,100%{transform:translateX(0)}50%{transform:translateX(4px)}}
+@keyframes prNudgeL{0%,100%{transform:translateX(0)}50%{transform:translateX(-4px)}}
+@media(prefers-reduced-motion:reduce){.prail .pr-a{animation:none!important}}
 
 /* Apple Gift Card: other amount */
 .gcc{border-style:dashed}
