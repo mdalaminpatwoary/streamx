@@ -343,3 +343,10 @@ body.sp-adult:not(.ok) .sp-age{display:grid}
 .sc-wa{text-align:center;padding:12px;border-radius:99px;border:1px solid rgba(255,255,255,.16);font-weight:700;font-size:14px}
 .sc-wa.off{opacity:.45;pointer-events:none}
 .sc-clr{background:none;border:0;color:var(--mut);cursor:pointer;font-size:13px}
+
+/* Phones: platform switch on the left, Movies / Series toggle on the right (one tidy row) */
+@media (max-width:600px){
+  .sp-tctl{flex-wrap:nowrap;justify-content:space-between;align-items:center;width:100%;gap:8px}
+  .sp-tctl .sp-seg[data-seg=k]{margin-left:auto;flex:none}
+  .sp-tctl .sp-seg button{padding:7px 11px;font-size:12.5px}
+}

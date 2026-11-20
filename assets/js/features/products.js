@@ -3,11 +3,13 @@ const mq=matchMedia("(max-width:600px)");let PAGE=mq.matches?4:8,MORE=8; // phon
 let cat="All",q="",limit=PAGE,view=[],sortKey="rec";
 // Sort factors: popularity (list order), price, name, newest (added last), category
 const SORTS={rec:(a,b)=>a[1]-b[1],pa:(a,b)=>entry(a[0]).p-entry(b[0]).p||a[1]-b[1],pd:(a,b)=>entry(b[0]).p-entry(a[0]).p||a[1]-b[1],az:(a,b)=>a[0].name.localeCompare(b[0].name),za:(a,b)=>b[0].name.localeCompare(a[0].name),new:(a,b)=>b[1]-a[1],cat:(a,b)=>a[0].cat.localeCompare(b[0].cat)||a[1]-b[1]};
-const card=(p,i,d=0)=>`<div class="card pc" style="animation-delay:${d}ms" onclick="showPlans(${i},true)">
+const NOPAGE=["Brazzers","FapHouse"]; // 18+ items without a service page keep the plan picker
+const openSvc=i=>{const p=PRODUCTS[i];if(NOPAGE.includes(p.name)){showPlans(i,true);return}if(p.cat==="18+"&&!ageOK){askAge(()=>{location.href="/services/"+slug(p.name)+"/"});return}location.href="/services/"+slug(p.name)+"/"};
+const card=(p,i,d=0)=>`<div class="card pc" style="animation-delay:${d}ms" onclick="openSvc(${i})">
   <div class="ph">${ptile(p)}<span class="cat">${p.cat}</span></div>
   <h3>${p.name}</h3><p>${p.desc}</p>
-  <div class="pf"><div class="pr"><small>From</small> <b>${taka(entry(p).p)}</b> <small>/ ${entry(p).u||UNIT[entry(p).m]}</small></div><button class="go" aria-label="View plans">→</button></div></div>`;
-const bcard=(p,i)=>`<div class="card bd" onclick="showPlans(${i},true)">
+  <div class="pf"><div class="pr"><small>From</small> <b>${taka(entry(p).p)}</b> <small>/ ${entry(p).u||UNIT[entry(p).m]}</small></div><button class="go" aria-label="Open ${p.name} page">→</button></div></div>`;
+const bcard=(p,i)=>`<div class="card bd" onclick="openSvc(${i})">
   <div class="bl2"><span class="sv">Save up to ${taka(Math.max(...p.packs.map(k=>k.old-k.p)))} / month</span>
   <div class="stk">${PARTS[p.name].map(s=>tile(s,`<span class="lg" style="background:#1E2545">${s[0].toUpperCase()}</span>`)).join("")}</div>
   <h3>${p.name}</h3><ul class="inc">${p.desc.split(" + ").map(x=>`<li>${x}</li>`).join("")}<li>${p.packs.length} packs: shared or private Netflix profile</li><li>Packs 3 and 4 add TV access</li></ul></div>

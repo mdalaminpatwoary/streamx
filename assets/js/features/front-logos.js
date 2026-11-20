@@ -1,6 +1,8 @@
 /* Front page: real logos in hero cards and moving strip. */
 // ===== Front page: real logos (hero cards + moving strip) =====
 document.querySelectorAll(".hx-stage i[data-logo]").forEach(i=>{const L=LOGOS[i.dataset.logo];if(L){i.style.background=L.bg;i.innerHTML=`<svg viewBox="${L.vb}" fill="${L.fg}"><path d="${L.p}"/></svg>`}});
-const MQ=[["netflix","Netflix"],["primevideo","Prime Video"],["spotify","Spotify"],["youtube","YouTube"],["openai","ChatGPT"],["canva","Canva"],["hbomax","HBO Max"],["paramountplus","Paramount+"],["hulu","Hulu"],["crunchyroll","Crunchyroll"],["claude","Claude"],["googlegemini","Gemini"],["disneyplus","Disney+"],["applemusic","Apple Music"],["adobeexpress","Adobe Express"],["apple","Apple Gift Card"],["udemy","Udemy"],["grammarly","Grammarly"],["capcut","CapCut"],["gamma","Gamma AI","#6d5efc"],["bybit","Bybit Card"],["pokepay","PokePay","#ff5a36"],["redotpay","RedotPay"],["nordvpn","NordVPN"],["surfshark","Surfshark"],["expressvpn","ExpressVPN"],["audible","Audible"],["scribd","Scribd"],["skillshare","Skillshare"]].filter(m=>LOGOS[m[0]]||m[2]);
-const mqItem=m=>{const L=LOGOS[m[0]];if(!L)return `<span class="mi" style="--c:${m[2]}"><b style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:6px;background:${m[2]};color:#fff;font-size:12px">${m[1][0]}</b>${m[1]}</span>`;return `<span class="mi" style="--c:${L.bg==="#1E2545"?"#fff":L.bg}"><svg viewBox="${L.vb}" style="width:${Math.min(76,Math.round(22*L.a))}px;height:22px"><path d="${L.p}"/></svg>${m[1]}</span>`};
-$("#mqTrack").innerHTML=MQ.map(mqItem).join("")+MQ.map(mqItem).join("");
+const MQ=PRODUCTS.filter(p=>p.cat!=="Bundle"&&p.cat!=="18+");
+const mqItem=p=>{const L=LOGOS[LOGO_OF[p.name]],href="/services/"+slug(p.name)+"/";
+  if(!L)return `<a class="mi" href="${href}" style="--c:${p.color}"><b class="mi-i" style="background:${p.color}">${p.name[0].toUpperCase()}</b>${p.name}</a>`;
+  return `<a class="mi" href="${href}" style="--c:${L.bg==="#1E2545"?"#fff":L.bg}"><svg viewBox="${L.vb}" style="width:${Math.min(76,Math.round(22*L.a))}px;height:22px"><path d="${L.p}"/></svg>${p.name}</a>`};
+$("#mqTrack").innerHTML=MQ.map(mqItem).join("")+MQ.map(mqItem).join("").replace(/<a class="mi"/g,'<a class="mi" tabindex="-1" aria-hidden="true"');

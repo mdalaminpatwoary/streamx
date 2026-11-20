@@ -37,7 +37,7 @@ module.exports = async (req, res) => {
 
     // Remember what was ordered so a confirmed payment can create the customer's subscription records. Never blocks checkout.
     if (db.enabled()) {
-      try { await db.rest("POST", "orders?on_conflict=mtid", [{ mtid, email: email.toLowerCase(), name, phone, lines: lines.map((l) => ({ name: l.name, plan: l.plan, months: l.months, q: l.q })) }], "resolution=ignore-duplicates"); }
+      try { await db.rest("POST", "orders?on_conflict=mtid", [{ mtid, email: email.toLowerCase(), name, phone, lines: lines.map((l) => ({ name: l.name, plan: l.plan, months: l.months, q: l.q, price: l.price })) }], "resolution=ignore-duplicates"); }
       catch (e) { console.error("order save failed", e && e.message); }
     }
 
@@ -105,6 +105,14 @@ module.exports = async (req, res) => {
       const d = process.env.EPS_DEBUG ? " [INIT HTTP " + r.status + ": " + String(r.text || "").slice(0, 200) + "]" : " (code: INIT)";
       return res.status(424).json({ error: "The payment page could not be opened. Please try again or order on WhatsApp." + d });
     }
+    // Copy of the order to the shop mailbox right away (payment still pending). Never blocks the customer.
+    try {
+      const mail = require("./_mail");
+      if (process.env.RESEND_API_KEY) {
+        const m = mail.orderCopy(req, { ref: mtid, paid: false, amount: total, name, phone, email, items: summary, note: comment, tip: tip ? "৳" + tip : "", env: c.env, date: new Date(Date.now() + 6 * 3600000).toISOString().replace("T", " ").slice(0, 16) + " (BD time)" });
+        await mail.send({ to: process.env.ORDER_EMAIL_TO || "streamx.com.bd@gmail.com", subject: m.subject, html: m.html, text: m.text, replyTo: email, idem: "placed-" + mtid });
+      }
+    } catch (e) { console.error("order-placed email failed", e && e.message); }
     return res.status(200).json({ redirectUrl: r.json.RedirectURL });
   } catch (e) {
     const msg = (e && e.message) || "";

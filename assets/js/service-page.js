@@ -62,9 +62,41 @@
     var paint = function (d) {
       var list = (st.k === "movie" ? d.movies : d.tv) || [];
       if (!list.length) { rail.innerHTML = '<p class="sp-empty">Nothing to show here right now.</p>'; return; }
-      rail.innerHTML = list.map(function (m, i) { return '<article class="sp-poster" style="--i:' + i + '"><span class="sp-rank" aria-hidden="true">' + (i + 1) + '</span><img src="https://image.tmdb.org/t/p/w342' + esc(m.p) + '" alt="' + esc(m.t) + ' poster" loading="lazy" width="342" height="513"><div><b>' + esc(m.t) + '</b><small>' + esc([m.y, m.v ? "★ " + m.v : ""].filter(Boolean).join(" · ")) + '</small></div></article>'; }).join("");
+      rail.innerHTML = list.map(function (m, i) { return '<article class="sp-poster" style="--i:' + i + '" tabindex="0" role="button" aria-label="' + esc(m.t) + ': details and trailer" data-id="' + m.id + '" data-k="' + m.k + '"><span class="sp-rank" aria-hidden="true">' + (i + 1) + '</span><img src="https://image.tmdb.org/t/p/w342' + esc(m.p) + '" alt="' + esc(m.t) + ' poster" loading="lazy" width="342" height="513"><div class="sp-ov" aria-hidden="true"><i><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></i><b>Watch trailer</b></div><div><b>' + esc(m.t) + '</b><small>' + esc([m.y, m.v ? "★ " + m.v : ""].filter(Boolean).join(" · ")) + '</small></div></article>'; }).join("");
       note.textContent = d.fallback ? "Local chart not available for this platform, showing the " + (REG[d.fallback] || d.fallback) + " chart. Data: TMDB." : "Chart for " + (REG[d.region] || d.region) + ". Data: TMDB.";
     };
+    /* Title details dialog: same design and logic as the home page (trailer, IMDb link, "buy" card). */
+    var dlg = document.createElement("div"); dlg.className = "tt"; dlg.hidden = true; dlg.setAttribute("role", "dialog"); dlg.setAttribute("aria-modal", "true");
+    dlg.innerHTML = '<div class="tt-bg" data-x></div><div class="tt-box" tabindex="-1"><button class="tt-x" type="button" data-x aria-label="Close">×</button><div class="tt-in"></div></div>';
+    document.body.appendChild(dlg);
+    var tin = $(".tt-in", dlg), tbox = $(".tt-box", dlg), lastFocus = null, tTok = 0, tcache = {};
+    var mins = function (n) { return n ? (n >= 60 ? Math.floor(n / 60) + "h " + (n % 60 ? n % 60 + "m" : "") : n + "m") : ""; };
+    var closeT = function () { dlg.hidden = true; tin.innerHTML = ""; document.documentElement.classList.remove("tt-open"); if (lastFocus) lastFocus.focus(); };
+    dlg.addEventListener("click", function (e) { if (e.target.closest("[data-x]")) closeT(); });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !dlg.hidden) closeT(); });
+    var svcName = ts.dataset.svc || "", svcLogo = ($(".sp-hcard .sp-logo") || {}).outerHTML || "";
+    var buyCard = function () { var svcFrom = ($(".sp-hcard .sp-from b") || {}).textContent || ""; return '<div class="tt-buy">' + svcLogo + '<div class="tt-buy-t"><small>Wanna watch it now?</small><b>Grab yours · ' + esc(svcName) + '</b>' + (svcFrom ? '<span>Plans from <strong>' + esc(svcFrom) + '</strong></span>' : '') + '</div><button class="btn grad-bg" type="button" data-buy>Buy now <i aria-hidden="true">→</i></button></div>'; };
+    tin.addEventListener("click", function (e) { if (!e.target.closest("[data-buy]")) return; closeT(); var pl = document.getElementById("plans"); if (pl) pl.scrollIntoView({ behavior: "smooth" }); });
+    var paintT = function (d) {
+      var meta = [d.y, d.k === "tv" ? (d.seasons ? d.seasons + " season" + (d.seasons > 1 ? "s" : "") : "Series") : mins(d.rt), d.lang].filter(Boolean).map(function (x) { return "<span>" + esc(x) + "</span>"; }).join("");
+      tin.innerHTML = '<div class="tt-hero" style="' + (d.bd ? "--bd:url(https://image.tmdb.org/t/p/w780" + esc(d.bd) + ")" : "") + '"><div class="tt-media" id="ttMedia">' + (d.yt ? '<button class="tt-play" type="button" id="ttPlay" aria-label="Play trailer"><span><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span><b>Play trailer</b></button>' : '<div class="tt-nt">No trailer available</div>') + '</div></div>' +
+        '<div class="tt-body"><div class="tt-head"><div class="tt-ttl"><h3>' + esc(d.t) + '</h3>' + (d.tag ? '<p class="tt-tag">' + esc(d.tag) + '</p>' : "") + '</div>' + buyCard() + '</div>' +
+        '<div class="tt-meta">' + meta + (d.v ? '<span class="tt-rate">★ ' + d.v + '<small>/10 TMDB' + (d.vc ? " · " + d.vc.toLocaleString() + " votes" : "") + '</small></span>' : "") + '</div>' +
+        (d.g && d.g.length ? '<div class="tt-gen">' + d.g.map(function (g) { return "<i>" + esc(g) + "</i>"; }).join("") + '</div>' : "") +
+        (d.o ? '<p class="tt-ov">' + esc(d.o) + '</p>' : "") +
+        (d.dir ? '<p class="tt-dir"><small>' + (d.k === "tv" ? "Created by" : "Director") + '</small> ' + esc(d.dir) + '</p>' : "") +
+        (d.cast && d.cast.length ? '<div class="tt-cast">' + d.cast.slice(0, 6).map(function (c) { return "<div>" + (c.p ? '<img src="https://image.tmdb.org/t/p/w185' + esc(c.p) + '" alt="" loading="lazy">' : '<span class="tt-ph">' + esc(c.n[0] || "") + '</span>') + "<b>" + esc(c.n) + "</b><small>" + esc(c.c) + "</small></div>"; }).join("") + '</div>' : "") +
+        '<div class="tt-act">' + (d.imdb ? '<a class="btn imdb" href="https://www.imdb.com/title/' + esc(d.imdb) + '/" target="_blank" rel="noopener"><b>IMDb</b> View ratings &amp; reviews ↗</a>' : '<a class="btn ghost" href="https://www.imdb.com/find/?q=' + encodeURIComponent(d.t) + '" target="_blank" rel="noopener">Search on IMDb ↗</a>') + (d.yt ? '<a class="btn ghost" href="https://www.youtube.com/watch?v=' + esc(d.yt) + '" target="_blank" rel="noopener">Open on YouTube ↗</a>' : "") + '</div></div>';
+      var pb = $("#ttPlay"); if (pb) pb.onclick = function () { $("#ttMedia").innerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/' + encodeURIComponent(d.yt) + '?autoplay=1&rel=0&modestbranding=1" title="' + esc(d.t) + ' trailer" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>'; };
+    };
+    var openT = function (id, k, from) {
+      lastFocus = from; var my = ++tTok; dlg.hidden = false; document.documentElement.classList.add("tt-open");
+      tin.innerHTML = '<div class="tt-load"><i></i><span>Loading details…</span></div>'; tbox.focus();
+      var key = k + id, got = tcache[key] ? Promise.resolve(tcache[key]) : fetch("/api/title?id=" + id + "&k=" + k).then(function (r) { if (!r.ok) throw 0; return r.json(); }).then(function (d) { tcache[key] = d; return d; });
+      got.then(function (d) { if (my === tTok && !dlg.hidden) paintT(d); }).catch(function () { if (my === tTok) tin.innerHTML = '<div class="tt-load"><span>Couldn\'t load details right now. Please try again.</span><button class="btn ghost" type="button" data-x>Close</button></div>'; });
+    };
+    rail.addEventListener("click", function (e) { var c = e.target.closest(".sp-poster[data-id]"); if (c) openT(c.dataset.id, c.dataset.k, c); });
+    rail.addEventListener("keydown", function (e) { if ((e.key === "Enter" || e.key === " ") && e.target.matches(".sp-poster[data-id]")) { e.preventDefault(); openT(e.target.dataset.id, e.target.dataset.k, e.target); } });
     var load = function (first) {
       var p = st.p; if (cache[p]) { paint(cache[p]); return Promise.resolve(); }
       return fetch("/api/trending?p=" + p + "&r=BD").then(function (r) { if (!r.ok) throw 0; return r.json(); }).then(function (d) { cache[p] = d; if (p === st.p) paint(d); if (first) { ts.hidden = false; var tl = $('.sp-nav nav a[href="#trending"]'); if (tl) tl.hidden = false; } }).catch(function () { if (!first) rail.innerHTML = '<p class="sp-empty">Trending is unavailable right now.</p>'; });

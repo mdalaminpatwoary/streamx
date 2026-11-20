@@ -8,36 +8,13 @@ const esc = (v) => String(v == null ? "" : v).replace(/[&<>"]/g, (c) => ({ "&": 
 
 // Sends the owner a copy of a PAID order (via Resend). Safe to call many times:
 // the idempotency key makes Resend ignore repeats, so refreshing the result page never sends duplicates.
-async function mailOrder(j, mtid, env) {
-  const key = process.env.RESEND_API_KEY;
-  if (!key) return;
-  const to = process.env.ORDER_EMAIL_TO || "streamx.com.bd@gmail.com";
-  const from = process.env.MAIL_FROM || "StreamX Orders <onboarding@resend.dev>";
-  const rows = [
-    ["Order reference", mtid], ["Status", j.Status], ["Amount", "৳" + j.TotalAmount], ["Paid with", j.FinancialEntity],
-    ["EPS transaction ID", j.EpsTransactionId], ["Date", j.TransactionDate], ["Environment", env],
-    ["Customer", j.CustomerName], ["Phone", j.CustomerPhone], ["Email", j.CustomerEmail],
-    ["Items", j.ValueC || j.ProductName], ["Customer note", j.ValueA], ["Tip", j.ValueB],
-  ].filter((r) => r[1]);
-  const html = `<div style="font-family:Arial,sans-serif;max-width:560px"><h2 style="color:#ED3124">New paid order · StreamX</h2><table cellpadding="8" style="border-collapse:collapse;width:100%">${rows
-    .map((r) => `<tr><td style="border-bottom:1px solid #eee;color:#666">${esc(r[0])}</td><td style="border-bottom:1px solid #eee"><b>${esc(r[1])}</b></td></tr>`)
-    .join("")}</table><p style="color:#666">Deliver the subscription on WhatsApp to the phone number above.</p></div>`;
-  const text = rows.map((r) => r[0] + ": " + r[1]).join("\n");
-  const ctl = new AbortController();
-  const t = setTimeout(() => ctl.abort(), 8000);
+async function mailOrder(j, mtid, env, req) {
+  if (!process.env.RESEND_API_KEY) return;
   try {
-    const r = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: { Authorization: "Bearer " + key, "Content-Type": "application/json", "Idempotency-Key": "order-" + mtid },
-      body: JSON.stringify({ from, to: [to], reply_to: j.CustomerEmail || undefined, subject: `New paid order ৳${j.TotalAmount} · ${j.CustomerName || mtid}`, html, text }),
-      signal: ctl.signal,
-    });
-    if (!r.ok) console.error("order email failed", r.status, (await r.text()).slice(0, 200));
-  } catch (e) {
-    console.error("order email error", e && e.message);
-  } finally {
-    clearTimeout(t);
-  }
+    const mail = require("./_mail");
+    const m = mail.orderCopy(req, { ref: mtid, paid: true, amount: j.TotalAmount, method: j.FinancialEntity, eps: j.EpsTransactionId, date: j.TransactionDate, name: j.CustomerName, phone: j.CustomerPhone, email: j.CustomerEmail, items: j.ValueC || j.ProductName, note: j.ValueA, tip: j.ValueB, env });
+    await mail.send({ to: process.env.ORDER_EMAIL_TO || "streamx.com.bd@gmail.com", subject: m.subject, html: m.html, text: m.text, replyTo: j.CustomerEmail || undefined, idem: "order-" + mtid });
+  } catch (e) { console.error("order email error", e && e.message); }
 }
 
 module.exports = async (req, res) => {
@@ -54,7 +31,7 @@ module.exports = async (req, res) => {
     const j = r.json || {};
     if (!j.MerchantTransactionId && !j.Status) return res.status(200).json({ status: "Unknown" });
     if (String(j.Status).toLowerCase() === "success") {
-      await mailOrder(j, t, c.env);
+      await mailOrder(j, t, c.env, req);
       if (db.enabled()) { try { await subs.activateOrder(t); } catch (e) { console.error("activate failed", e && e.message); } }
     }
     // Only non-personal fields go back to the browser.

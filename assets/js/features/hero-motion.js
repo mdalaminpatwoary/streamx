@@ -8,27 +8,28 @@
   if(!calm)splitWords(title);
 
   // Services shown in the carousel / ticker (key in LOGOS, label, regex to find the shop product for its price)
-  const SV=[["netflix","Netflix",/^netflix$/i],["spotify","Spotify",/spotify/i],["youtube","YouTube Premium",/youtube/i],["primevideo","Prime Video",/prime/i],["openai","ChatGPT",/chatgpt|openai/i],["disneyplus","Disney+",/disney/i],["applemusic","Apple Music",/apple music/i],["canva","Canva",/canva/i],["claude","Claude",/^claude$/i],["hbomax","HBO Max",/hbo/i],["udemy","Udemy",/udemy/i],["adobeexpress","Adobe Express",/adobe/i]]
-    .filter(s=>LOGOS[s[0]]).map(s=>{
-      const p=(typeof PRODUCTS!=="undefined"?PRODUCTS:[]).find(x=>s[2].test(x.name));
-      const from=p?Math.min(...p.variants.flatMap(v=>v.plans.map(x=>x.p))):0;
-      return{k:s[0],n:s[1],L:LOGOS[s[0]],from};
-    });
+  // Every service in the shop (adult categories stay out of the hero). Each tile opens its own service page.
+  const SV=(typeof PRODUCTS!=="undefined"?PRODUCTS:[]).filter(p=>p.cat!=="Bundle"&&p.cat!=="18+").map(p=>{
+    const k=LOGO_OF[p.name],L=LOGOS[k]||{bg:p.color,fg:"#fff",txt:p.name.replace(/[^A-Za-z0-9]/g," ").trim()[0].toUpperCase(),vb:"0 0 24 24",p:""};
+    const from=Math.min(...p.variants.flatMap(v=>v.plans.map(x=>x.p)));
+    return{k:k||p.name,n:p.name,L,from,href:"/services/"+slug(p.name)+"/"};
+  });
   const N=SV.length,STEP=360/N;
-  const lg=s=>`<svg viewBox="${s.L.vb}"><path d="${s.L.p}"/></svg>`;
+  const lg=s=>s.L.txt?`<i class="hx-ini">${s.L.txt}</i>`:`<svg viewBox="${s.L.vb}"><path d="${s.L.p}"/></svg>`;
   const col=s=>s.L.bg==="#1E2545"||s.L.bg==="#000000"||s.L.bg==="#000"?"#fff":s.L.bg;
   const price=s=>s.from?taka(s.from):"";
 
   // ---------- Rolling ticker ----------
   const list=$("#rlList"),pr=$("#rlPrice"),win=list&&list.parentElement;
   if(list){
-    list.innerHTML=SV.concat(SV[0]).map(s=>`<b style="--c:${col(s)}">${lg(s)}${s.n}</b>`).join("");
     let i=0;const h=()=>win.clientHeight-4||30;
-    const setP=()=>{pr.textContent=price(SV[i%N])||"৳"};setP();
+    const TK=SV.slice(0,12),TN=TK.length;
+    list.innerHTML=TK.concat(TK[0]).map(s=>`<b style="--c:${col(s)}">${lg(s)}${s.n}</b>`).join("");
+    const setP=()=>{pr.textContent=price(TK[i%TN])||"৳"};setP();
     const tick=()=>{
       if(document.hidden)return;
       i++;list.style.transition="transform .7s cubic-bezier(.77,0,.18,1)";list.style.transform=`translateY(${-i*(list.firstElementChild.offsetHeight)}px)`;setP();
-      if(i===N)setTimeout(()=>{list.style.transition="none";list.style.transform="translateY(0)";i=0},750);
+      if(i===TN)setTimeout(()=>{list.style.transition="none";list.style.transform="translateY(0)";i=0},750);
     };
     if(!calm)setInterval(tick,2400);
   }
@@ -37,11 +38,11 @@
   const orbit=$("#hxOrbit"),stage=$("#hxStage"),nameEl=$("#hxName"),fromEl=$("#hxFrom"),info=$("#hxInfo");
   if(orbit&&N){
     const mobile=()=>innerWidth<=520;
-    const R=()=>mobile()?235:300;
-    orbit.innerHTML=SV.map((s,i)=>`<div class="hx-slot" style="--ang:${i*STEP};--r:${R()}px"><div class="hx-t" style="--bg:${s.L.bg};--fg:${s.L.fg}">${lg(s)}</div></div>`).join("");
-    orbit.style.setProperty("--d",R()*2+"px");
+    const TW=()=>mobile()?66:88;const R=()=>Math.max(mobile()?235:300,Math.round(N*TW()*.6/6.283));
+    orbit.innerHTML=SV.map((s,i)=>`<div class="hx-slot" data-href="${s.href}" style="--ang:${i*STEP};--r:${R()}px"><div class="hx-t" style="--bg:${s.L.bg};--fg:${s.L.fg}">${lg(s)}</div></div>`).join("");
+    orbit.style.setProperty("--d",R()*2+"px");orbit.style.setProperty("--w",TW()+"px");orbit.style.setProperty("--h",Math.round(TW()*1.2)+"px");
     const slots=[...orbit.children];
-    addEventListener("resize",()=>{slots.forEach(e=>e.style.setProperty("--r",R()+"px"));orbit.style.setProperty("--d",R()*2+"px")});
+    addEventListener("resize",()=>{slots.forEach(e=>e.style.setProperty("--r",R()+"px"));orbit.style.setProperty("--d",R()*2+"px");orbit.style.setProperty("--w",TW()+"px");orbit.style.setProperty("--h",Math.round(TW()*1.2)+"px")});
     let ry=0,vel=calm?0:-.18,dragging=false,lx=0,front=-1,seen=true,tgtTy=0,ty=0;
     new IntersectionObserver(e=>seen=e[0].isIntersecting).observe(stage);
     function paintFront(){
@@ -69,13 +70,14 @@
       paintFront();
     }
     requestAnimationFrame(frame);
-    stage.addEventListener("pointerdown",e=>{dragging=true;lx=e.clientX;stage.classList.add("drag");stage.setPointerCapture(e.pointerId)});
+    let sx=0;
+    stage.addEventListener("pointerdown",e=>{dragging=true;sx=lx=e.clientX;stage.classList.add("drag");stage.setPointerCapture(e.pointerId)});
     stage.addEventListener("pointermove",e=>{
       const r=stage.getBoundingClientRect();tgtTy=((e.clientY-r.top)/r.height-.5)*-14;
       if(dragging){const dx=e.clientX-lx;lx=e.clientX;ry+=dx*.32;vel=dx*.32}
     });
     const up=()=>{dragging=false;stage.classList.remove("drag")};
-    stage.addEventListener("pointerup",up);stage.addEventListener("pointercancel",up);
+    stage.addEventListener("pointerup",e=>{up();if(Math.abs(e.clientX-sx)<6){const el=document.elementFromPoint(e.clientX,e.clientY)||e.target;const t=el.closest&&el.closest(".hx-slot");const go=t?t.dataset.href:(el.closest&&el.closest("#hxInfo")?SV[front]&&SV[front].href:null);if(go)location.href=go}});stage.addEventListener("pointercancel",up);
     stage.addEventListener("pointerleave",()=>{tgtTy=0});
   }
 

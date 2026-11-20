@@ -259,3 +259,7 @@
 .cw-av img{object-position:50% 45%}
 @media (max-width:400px){.cw-bubble{max-width:min(236px,calc(100vw - 110px))}}
 @media (max-width:400px){.cw-bubble b small{display:none}}
+.cw-acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.cw-acts .cw-go{margin-top:0;display:inline-flex;align-items:center;gap:6px}
+.cw-go.cw-ms{background:linear-gradient(135deg,#0099ff,#a033ff 60%,#ff5280)}
+.cw-go svg{width:14px;height:14px;fill:#fff}

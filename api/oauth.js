@@ -66,7 +66,8 @@ module.exports = async (req, res) => {
       const email = String(c.email || "").trim().toLowerCase();
       const verified = c.email_verified === true || c.email_verified === "true" || k === "microsoft";
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email) || !verified) return fail(res, "Your " + prov.name + " account has no verified email.");
-      return back(res, "t=" + sign({ t: "link", e: email, exp: Date.now() + 2 * 60000 }));
+      const pic = typeof c.picture === "string" && /^https:\/\//.test(c.picture) ? c.picture.slice(0, 300) : "";
+      return back(res, "t=" + sign({ t: "link", e: email, n: String(c.name || "").slice(0, 80), pic, pv: k, exp: Date.now() + 2 * 60000 }));
     }
     return res.status(404).json({ error: "Not found" });
   } catch (e) {

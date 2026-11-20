@@ -27,7 +27,15 @@ module.exports = async (req, res) => {
     if (req.method === "PATCH" && ord) {
       const dv = body.delivery === "delivered" ? "delivered" : body.delivery === "pending" ? "pending" : "";
       if (!dv) return res.status(400).json({ error: "Invalid status." });
-      return res.status(200).json({ row: (await db.rest("PATCH", `orders?mtid=eq.${db.q(ord)}`, { delivery: dv, delivered_at: dv === "delivered" ? new Date().toISOString() : null }, "return=representation"))[0] });
+      const before = ((await db.rest("GET", `orders?mtid=eq.${db.q(ord)}&select=delivery`)) || [])[0];
+      const row = (await db.rest("PATCH", `orders?mtid=eq.${db.q(ord)}`, { delivery: dv, delivered_at: dv === "delivered" ? new Date().toISOString() : null }, "return=representation"))[0];
+      let mailed = false;
+      // First time it flips to "delivered": tell the customer by email.
+      if (row && dv === "delivered" && !(before && before.delivery === "delivered") && row.email && process.env.RESEND_API_KEY) {
+        try { const mail = require("./_mail"), m = mail.delivered(req, row); await mail.send({ to: row.email, subject: m.subject, html: m.html, text: m.text, idem: "delivered-" + row.mtid }); mailed = true; }
+        catch (e) { console.error("delivered email failed", e && e.message); }
+      }
+      return res.status(200).json({ row, mailed });
     }
     if (req.method === "GET") {
       const t = clean(req.query && req.query.q, 60).replace(/[(),*%]/g, "");

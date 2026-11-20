@@ -9,16 +9,9 @@ const { dhakaToday, normEmail } = require("./_subs");
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const esc = (v) => String(v).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
-async function sendLink(email, link) {
-  const key = process.env.RESEND_API_KEY;
-  if (!key) throw new Error("Email is not configured.");
-  const from = process.env.MAIL_FROM || "StreamX <onboarding@resend.dev>";
-  const html = `<div style="font-family:Arial,sans-serif;max-width:480px"><h2 style="color:#ED3124;margin:0 0 12px">Sign in to StreamX</h2><p>Press the button to see your subscriptions and expiry dates. The link works for 20 minutes.</p><p><a href="${esc(link)}" style="display:inline-block;background:#ED3124;color:#fff;padding:12px 22px;border-radius:99px;text-decoration:none;font-weight:700">Open my account</a></p><p style="color:#666;font-size:13px">If you did not ask for this, you can ignore this email.</p></div>`;
-  const r = await fetch("https://api.resend.com/emails", {
-    method: "POST", headers: { Authorization: "Bearer " + key, "Content-Type": "application/json" },
-    body: JSON.stringify({ from, to: [email], subject: "Your StreamX sign-in link", html, text: "Sign in to StreamX: " + link + "\nThe link works for 20 minutes." }),
-  });
-  if (!r.ok) throw new Error("mail " + r.status + " " + (await r.text()).slice(0, 160));
+async function sendLink(req, email, link) {
+  const mail = require("./_mail"), m = mail.signIn(req, link);
+  await mail.send({ to: email, subject: m.subject, html: m.html, text: m.text });
 }
 
 module.exports = async (req, res) => {
@@ -37,7 +30,7 @@ module.exports = async (req, res) => {
         if (!(last && last[0] && Date.now() - Date.parse(last[0].sent_at) < 60000)) {
           await db.rest("POST", "login_links?on_conflict=email", [{ email, sent_at: new Date().toISOString() }], "resolution=merge-duplicates");
           const site = (process.env.SITE_URL || "https://" + (req.headers["x-forwarded-host"] || req.headers.host)).replace(/\/$/, "");
-          await sendLink(email, `${site}/account/#t=${sign({ t: "link", e: email, exp: Date.now() + 20 * 60000 })}`);
+          await sendLink(req, email, `${site}/account/#t=${sign({ t: "link", e: email, exp: Date.now() + 20 * 60000 })}`);
         }
       }
       return res.status(200).json({ ok: true });
@@ -45,14 +38,24 @@ module.exports = async (req, res) => {
     if (a === "session" && req.method === "POST") {
       const o = verify(body.token, "link");
       if (!o) return res.status(401).json({ error: "This link has expired. Please request a new one." });
-      return res.status(200).json({ session: sign({ t: "sess", e: o.e, exp: Date.now() + 30 * 86400000 }), email: o.e });
+      return res.status(200).json({ session: sign({ t: "sess", e: o.e, n: o.n || "", pic: o.pic || "", pv: o.pv || "", exp: Date.now() + 30 * 86400000 }), email: o.e });
     }
     if (a === "me" && req.method === "GET") {
       const o = verify(bearer(req), "sess");
       if (!o) return res.status(401).json({ error: "Please sign in again." });
       const rows = await db.rest("GET", `subscriptions?email=eq.${db.q(o.e)}&select=id,service,plan,months,start_date,end_date,name,phone&order=end_date.desc`);
       const c = (rows || []).find((r) => r.phone) || (rows || [])[0] || {};
-      return res.status(200).json({ email: o.e, today: dhakaToday(), contact: { name: c.name || "", phone: c.phone || "" }, subscriptions: (rows || []).map(({ name, phone, ...r }) => r) });
+      // Purchase history: paid online orders for this email (empty if the orders table has not been upgraded yet).
+      let orders = [];
+      try {
+        orders = await db.rest("GET", `orders?email=eq.${db.q(o.e)}&paid=eq.true&select=mtid,lines,paid_at,created_at,delivery,delivered_at&order=created_at.desc&limit=50`) || [];
+      } catch (e) { console.error("orders history", e && e.message); }
+      return res.status(200).json({
+        email: o.e, today: dhakaToday(), contact: { name: c.name || "", phone: c.phone || "" },
+        profile: { name: o.n || c.name || "", picture: o.pic || "", provider: o.pv || "" },
+        subscriptions: (rows || []).map(({ name, phone, ...r }) => r),
+        orders: orders.map((r) => ({ id: r.mtid, date: r.paid_at || r.created_at, delivery: r.delivery || "pending", delivered_at: r.delivered_at || null, lines: Array.isArray(r.lines) ? r.lines : [] })),
+      });
     }
     return res.status(404).json({ error: "Not found" });
   } catch (e) {
