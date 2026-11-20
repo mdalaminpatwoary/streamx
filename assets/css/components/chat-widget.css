@@ -271,9 +271,9 @@
 /* Badge on the avatar: WhatsApp and Messenger swap with a small pop */
 .cw-wa{width:22px;height:22px;overflow:hidden;animation:cwBadge 6s ease-in-out infinite}
 .cw-wa svg{position:absolute;inset:0;margin:auto;width:12px;height:12px}
-.cw-wa svg.w{animation:cwW 6s ease-in-out infinite}
-.cw-wa svg.m{animation:cwM 6s ease-in-out infinite}
+.cw-wa svg.cwi-w{animation:cwW 6s ease-in-out infinite}
+.cw-wa svg.cwi-m{animation:cwM 6s ease-in-out infinite}
 @keyframes cwBadge{0%,42%{background:#25d366;transform:scale(1)}46%{transform:scale(1.28)}50%,92%{background:linear-gradient(135deg,#0099ff,#a033ff 60%,#ff5280);transform:scale(1)}96%{transform:scale(1.28)}100%{background:#25d366;transform:scale(1)}}
 @keyframes cwW{0%,42%{opacity:1;transform:none}48%,92%{opacity:0;transform:rotate(-70deg) scale(.4)}100%{opacity:1;transform:none}}
 @keyframes cwM{0%,42%{opacity:0;transform:rotate(70deg) scale(.4)}48%,92%{opacity:1;transform:none}98%,100%{opacity:0;transform:rotate(70deg) scale(.4)}}
-@media (prefers-reduced-motion:reduce){.cw-wa,.cw-wa svg.w,.cw-wa svg.m{animation:none}.cw-wa svg.m{opacity:0}}
+@media (prefers-reduced-motion:reduce){.cw-wa,.cw-wa svg.cwi-w,.cw-wa svg.cwi-m{animation:none}.cw-wa svg.cwi-m{opacity:0}}
