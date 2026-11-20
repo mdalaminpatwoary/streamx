@@ -42,10 +42,12 @@
   function loginBox(s) {
     var lg = s.login || {}, wa = "https://wa.me/" + WA + "?text=" + encodeURIComponent("Hi StreamX! I need the login details for my " + s.service + " (" + s.plan + ").");
     var h = '<div class="ac-lbx"><div class="ac-lbh">' + LOCK + "Account login</div>";
-    if (!lg.email && !lg.password && !lg.otp) return h + '<p class="ac-lbn">Your login details will appear here once your account is ready. Need them now? <a href="' + wa + '" target="_blank" rel="noopener">Talk to support</a>.</p></div>';
+    if (!lg.email && !lg.password && !lg.otp && !lg.profile && !lg.pin) return h + '<p class="ac-lbn">Your login details will appear here once your account is ready. Need them now? <a href="' + wa + '" target="_blank" rel="noopener">Talk to support</a>.</p></div>';
     h += '<div class="ac-lr"><span class="ac-lk">Email</span><span class="ac-lv">' + (lg.email ? esc(lg.email) : '<em>Not added yet</em>') + "</span>" + (lg.email ? '<button class="ac-cp" type="button" data-copy="e" data-sid="' + s.id + '">' + COPY + "<span>Copy</span></button>" : "") + "</div>";
     if (lg.otp) h += '<div class="ac-lr"><span class="ac-lk">Password</span><span class="ac-lv ac-ot">OTP based. Please <a href="' + wa + '" target="_blank" rel="noopener">talk to support</a> for your login code.</span></div>';
     else h += '<div class="ac-lr"><span class="ac-lk">Password</span><span class="ac-lv" data-pv="' + s.id + '">' + (lg.password ? "••••••••••" : "<em>Not added yet</em>") + "</span>" + (lg.password ? '<button class="ac-eye" type="button" data-eye="' + s.id + '" aria-label="Show password"><span>Show</span></button><button class="ac-cp" type="button" data-copy="p" data-sid="' + s.id + '">' + COPY + "<span>Copy</span></button>" : "") + "</div>";
+    if (lg.profile) h += '<div class="ac-lr"><span class="ac-lk">Profile</span><span class="ac-lv">' + esc(lg.profile) + '</span><button class="ac-cp" type="button" data-copy="f" data-sid="' + s.id + '">' + COPY + "<span>Copy</span></button></div>";
+    if (lg.pin) h += '<div class="ac-lr"><span class="ac-lk">PIN</span><span class="ac-lv" data-pn="' + s.id + '">••••</span><button class="ac-eye" type="button" data-eye="' + s.id + '" data-k="pin" aria-label="Show PIN"><span>Show</span></button><button class="ac-cp" type="button" data-copy="n" data-sid="' + s.id + '">' + COPY + "<span>Copy</span></button></div>";
     return h + "</div>";
   }
 
@@ -96,15 +98,15 @@
     var c = e.target.closest("[data-copy]"), v = e.target.closest("[data-eye]");
     if (c) {
       var s = subById(c.dataset.sid), lg = s && s.login; if (!lg) return;
-      copyText(c.dataset.copy === "p" ? lg.password : lg.email).then(function () {
+      copyText({ p: lg.password, f: lg.profile, n: lg.pin }[c.dataset.copy] || lg.email).then(function () {
         var sp = c.querySelector("span"); c.classList.add("ok"); sp.textContent = "Copied"; clearTimeout(c._t);
         c._t = setTimeout(function () { c.classList.remove("ok"); sp.textContent = "Copy"; }, 1800);
       }).catch(function () { var sp = c.querySelector("span"); sp.textContent = "Press Ctrl+C"; });
     }
     if (v) {
-      var s2 = subById(v.dataset.eye), el = document.querySelector('[data-pv="' + v.dataset.eye + '"]'); if (!s2 || !el) return;
-      var show = !el.classList.contains("shown"); el.classList.toggle("shown", show);
-      el.textContent = show ? s2.login.password : "••••••••••"; v.querySelector("span").textContent = show ? "Hide" : "Show";
+      var s2 = subById(v.dataset.eye), pin = v.dataset.k === "pin", el = document.querySelector("[" + (pin ? "data-pn" : "data-pv") + '="' + v.dataset.eye + '"]'); if (!s2 || !el) return;
+      var show = !el.classList.contains("shown"), val = pin ? s2.login.pin : s2.login.password; el.classList.toggle("shown", show);
+      el.textContent = show ? val : (pin ? "••••" : "••••••••••"); v.querySelector("span").textContent = show ? "Hide" : "Show";
     }
   });
 

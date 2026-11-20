@@ -71,8 +71,10 @@ module.exports = async (req, res) => {
       const o = verify(bearer(req), "sess");
       if (!o) return res.status(401).json({ error: "Please sign in again." });
       let rows;
-      try { rows = await db.rest("GET", `subscriptions?email=eq.${db.q(o.e)}&select=id,service,plan,months,start_date,end_date,name,phone,acct_email,acct_pass,acct_otp&order=end_date.desc`); }
-      catch (e) { rows = await db.rest("GET", `subscriptions?email=eq.${db.q(o.e)}&select=id,service,plan,months,start_date,end_date,name,phone&order=end_date.desc`); } // login-detail columns not added yet
+      const base = "id,service,plan,months,start_date,end_date,name,phone";
+      for (const cols of [",acct_email,acct_pass,acct_otp,acct_profile,acct_pin", ",acct_email,acct_pass,acct_otp", ""]) { // newer login columns may not exist yet
+        try { rows = await db.rest("GET", `subscriptions?email=eq.${db.q(o.e)}&select=${base}${cols}&order=end_date.desc`); break; } catch (e) { if (!cols) throw e; }
+      }
       const c = (rows || []).find((r) => r.phone) || (rows || [])[0] || {};
       // Purchase history: paid online orders for this email (empty if the orders table has not been upgraded yet).
       let orders = [];
@@ -82,7 +84,7 @@ module.exports = async (req, res) => {
       return res.status(200).json({
         email: o.e, today: dhakaToday(), contact: { name: c.name || "", phone: c.phone || "" },
         profile: { name: o.n || c.name || "", picture: o.pic || "", provider: o.pv || "" },
-        subscriptions: (rows || []).map(({ name, phone, acct_email, acct_pass, acct_otp, ...r }) => Object.assign(r, { login: { email: acct_email || "", password: cred.dec(acct_pass), otp: !!acct_otp } })),
+        subscriptions: (rows || []).map(({ name, phone, acct_email, acct_pass, acct_otp, acct_profile, acct_pin, ...r }) => Object.assign(r, { login: { email: acct_email || "", password: cred.dec(acct_pass), otp: !!acct_otp, profile: acct_profile || "", pin: cred.dec(acct_pin) } })),
         orders: orders.map((r) => ({ id: r.mtid, date: r.paid_at || r.created_at, delivery: r.delivery || "pending", delivered_at: r.delivered_at || null, lines: Array.isArray(r.lines) ? r.lines : [] })),
       });
     }

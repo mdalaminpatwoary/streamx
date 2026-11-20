@@ -19,8 +19,8 @@
   $("#svc").addEventListener("change", plans); plans();
 
   function loginEd(s) {
-    var has = s.acct_email || s.acct_pass || s.acct_otp;
-    return '<details class="ad-lg"><summary>' + (has ? "Edit login ✓" : "Add login") + '</summary><div class="ad-lgb"><input class="ac-in" placeholder="Account email" value="' + esc(s.acct_email || "") + '" data-f="e" autocomplete="off"><input class="ac-in" placeholder="Account password" value="' + esc(s.acct_pass || "") + '" data-f="p" autocomplete="off"><label class="ad-ck"><input type="checkbox" data-f="o"' + (s.acct_otp ? " checked" : "") + '> OTP based (customer talks to support)</label><button class="ac-btn ac-sm" type="button" data-lg="' + s.id + '">Save login</button></div></details>';
+    var has = s.acct_email || s.acct_pass || s.acct_otp || s.acct_profile || s.acct_pin;
+    return '<details class="ad-lg"><summary>' + (has ? "Edit login ✓" : "Add login") + '</summary><div class="ad-lgb"><input class="ac-in" placeholder="Account email" value="' + esc(s.acct_email || "") + '" data-f="e" autocomplete="off"><input class="ac-in" placeholder="Account password" value="' + esc(s.acct_pass || "") + '" data-f="p" autocomplete="off"><input class="ac-in" placeholder="Profile name (optional)" value="' + esc(s.acct_profile || "") + '" data-f="n" autocomplete="off"><input class="ac-in" placeholder="Profile PIN (optional)" value="' + esc(s.acct_pin || "") + '" data-f="i" autocomplete="off" inputmode="numeric"><label class="ad-ck"><input type="checkbox" data-f="o"' + (s.acct_otp ? " checked" : "") + '> OTP based (customer talks to support)</label><button class="ac-btn ac-sm" type="button" data-lg="' + s.id + '">Save login</button></div></details>';
   }
   function list() {
     api("?q=" + encodeURIComponent($("#q").value.trim())).then(function (d) {
@@ -59,8 +59,8 @@
   var t; $("#q").addEventListener("input", function () { clearTimeout(t); t = setTimeout(list, 300); });
   $("#af").addEventListener("submit", function (e) {
     e.preventDefault(); var f = e.target, m = $("#am"), o = f.plan.selectedOptions[0];
-    api("", { method: "POST", body: JSON.stringify({ email: f.email.value, name: f.name.value, phone: f.phone.value, service: f.service.value, plan: o.value, months: +o.dataset.m, start: f.start.value || null, notes: f.notes.value, acct_email: f.acct_email.value, acct_pass: f.acct_pass.value, acct_otp: f.acct_otp.checked }) })
-      .then(function (d) { m.className = "ac-msg ok"; m.textContent = d.warn ? "Added, but login details were not saved: " + d.warn : "Added. Expires " + d.row.end_date + "."; f.acct_email.value = f.acct_pass.value = ""; f.acct_otp.checked = false; f.email.value = f.name.value = f.phone.value = f.start.value = f.notes.value = ""; list(); })
+    api("", { method: "POST", body: JSON.stringify({ email: f.email.value, name: f.name.value, phone: f.phone.value, service: f.service.value, plan: o.value, months: +o.dataset.m, start: f.start.value || null, notes: f.notes.value, acct_email: f.acct_email.value, acct_pass: f.acct_pass.value, acct_otp: f.acct_otp.checked, acct_profile: f.acct_profile.value, acct_pin: f.acct_pin.value }) })
+      .then(function (d) { m.className = "ac-msg ok"; m.textContent = d.warn ? "Added, but login details were not saved: " + d.warn : "Added. Expires " + d.row.end_date + "."; f.acct_email.value = f.acct_pass.value = f.acct_profile.value = f.acct_pin.value = ""; f.acct_otp.checked = false; f.email.value = f.name.value = f.phone.value = f.start.value = f.notes.value = ""; list(); })
       .catch(function (er) { m.className = "ac-msg"; m.textContent = er.message; });
   });
   $("#rows").addEventListener("click", function (e) { var b = e.target.closest("[data-del]"); if (b && confirm("Delete this subscription?")) api("?id=" + b.dataset.del, { method: "DELETE" }).then(function () { toast("Deleted."); list(); }).catch(function (er) { toast(er.message, 1); }); });
@@ -76,7 +76,7 @@
     var bx = b.parentNode, q = function (k) { return bx.querySelector('[data-f="' + k + '"]'); };
     var key = ""; try { key = sessionStorage.getItem("sx_admin") || ""; } catch (x) {}
     b.disabled = true;
-    fetch("/api/admin?id=" + b.dataset.lg, { method: "PATCH", headers: { "x-admin-key": key, "Content-Type": "application/json" }, body: JSON.stringify({ acct_email: q("e").value, acct_pass: q("p").value, acct_otp: q("o").checked }) })
+    fetch("/api/admin?id=" + b.dataset.lg, { method: "PATCH", headers: { "x-admin-key": key, "Content-Type": "application/json" }, body: JSON.stringify({ acct_email: q("e").value, acct_pass: q("p").value, acct_otp: q("o").checked, acct_profile: q("n").value, acct_pin: q("i").value }) })
       .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { if (!r.ok) throw new Error(j.error || "Error " + r.status); }); })
       .then(function () { say("Login saved."); })
       .catch(function (er) { say(er.message, 1); })

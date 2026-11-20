@@ -22,6 +22,8 @@ create table if not exists public.subscriptions (
 alter table public.subscriptions add column if not exists acct_email text;
 alter table public.subscriptions add column if not exists acct_pass  text;
 alter table public.subscriptions add column if not exists acct_otp   boolean not null default false;
+alter table public.subscriptions add column if not exists acct_profile text;
+alter table public.subscriptions add column if not exists acct_pin     text;
 create index if not exists subscriptions_email_idx on public.subscriptions (email);
 
 create table if not exists public.orders (
