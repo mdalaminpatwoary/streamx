@@ -68,6 +68,13 @@ module.exports = async (req, res) => {
       if (!o) return res.status(401).json({ error: "This link has expired. Please request a new one." });
       return res.status(200).json({ session: sign({ t: "sess", e: o.e, n: o.n || "", pic: o.pic || "", pv: o.pv || "", exp: Date.now() + 30 * 86400000 }), email: o.e });
     }
+    if (a === "seen" && req.method === "POST") { // the customer has read the "your login details changed" notice
+      const o = verify(bearer(req), "sess");
+      if (!o) return res.status(401).json({ error: "Please sign in again." });
+      const ids = (Array.isArray(body.ids) ? body.ids : []).map((x) => parseInt(x, 10)).filter((x) => x > 0).slice(0, 50);
+      if (ids.length) { try { await db.rest("PATCH", `subscriptions?email=eq.${db.q(o.e)}&id=in.(${ids.join(",")})`, { acct_seen_at: new Date().toISOString() }); } catch (e) { console.error("seen not saved", e && e.message); } }
+      return res.status(200).json({ ok: true });
+    }
     if (a === "me" && req.method === "GET") {
       const o = verify(bearer(req), "sess");
       if (!o) return res.status(401).json({ error: "Please sign in again." });
@@ -84,7 +91,7 @@ module.exports = async (req, res) => {
       return res.status(200).json({
         email: o.e, today: dhakaToday(), contact: { name: c.name || "", phone: c.phone || "" },
         profile: { name: o.n || c.name || "", picture: o.pic || "", provider: o.pv || "" },
-        subscriptions: (rows || []).map((r) => ({ id: r.id, service: r.service, plan: r.plan, months: r.months, start_date: r.start_date, end_date: r.end_date, login: access.fromRow(r) })),
+        subscriptions: (rows || []).map((r) => ({ id: r.id, service: r.service, plan: r.plan, months: r.months, start_date: r.start_date, end_date: r.end_date, order_ref: r.order_ref || null, login: access.fromRow(r) })),
         orders: orders.map((r) => ({ id: r.mtid, date: r.paid_at || r.created_at, delivery: r.delivery || "pending", delivered_at: r.delivered_at || null, lines: Array.isArray(r.lines) ? r.lines : [] })),
       });
     }

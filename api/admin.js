@@ -45,11 +45,25 @@ module.exports = async (req, res) => {
       return res.status(200).json({ rows: (rows || []).map((r) => Object.assign({}, r, { acct_pass: undefined, acct_pin: undefined, gift_code: undefined, access: access.fromRow(r) })) });
     }
     if (req.method === "POST") {
-      const gift = /gift card$/i.test(clean(body.service, 80)), email = normEmail(body.email), months = gift ? 6 : Math.floor(Number(body.months));
+      const svc = clean(body.service, 80), gift = /gift card$/i.test(svc), email = normEmail(body.email), months = gift ? 6 : Math.floor(Number(body.months));
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return res.status(400).json({ error: "Enter a valid email." });
-      if (!clean(body.service, 80) || !clean(body.plan, 80) || !(months >= 1 && months <= 60)) return res.status(400).json({ error: "Choose a service and plan." });
       if (body.start && !validDate(body.start)) return res.status(400).json({ error: "Start date is not valid." });
-      const row = await addSub({ email, name: clean(body.name, 60), phone: clean(body.phone, 20), service: clean(body.service, 80), plan: clean(body.plan, 80), months, nostack: gift, start: body.start || null, notes: clean(body.notes, 200), source: "admin" });
+      const base = { email, name: clean(body.name, 60), phone: clean(body.phone, 20), service: svc, months, nostack: gift, start: body.start || null, notes: clean(body.notes, 200), source: "admin" };
+      if (gift) {
+        // One order can hold several cards of different amounts: each becomes its own subscription row, grouped by a shared order reference.
+        const cards = (Array.isArray(body.gifts) ? body.gifts : [{ amount: body.gift_amount || body.plan, code: body.gift_code }]).slice(0, 20).map((g) => ({ amount: clean(g && g.amount, 20), code: clean(g && g.code, 120) })).filter((g) => g.amount);
+        if (!svc || !cards.length) return res.status(400).json({ error: "Add at least one gift card with an amount." });
+        const ref = "ADM" + Date.now().toString(36).toUpperCase(), rows = [];
+        let warn = "";
+        for (let i = 0; i < cards.length; i++) {
+          const row = await addSub(Object.assign({}, base, { plan: cards[i].amount, order_ref: ref, line_idx: i }));
+          rows.push(row);
+          if (row && row.id) { try { const lg = access.toRow({ gift_code: cards[i].code, gift_region: body.gift_region || "US", gift_amount: cards[i].amount }); await db.rest("PATCH", `subscriptions?id=eq.${row.id}`, lg); } catch (e) { console.error("gift details not saved", e && e.message); warn = "Added, but the gift card details could not be saved. Run the latest SQL in Supabase."; } }
+        }
+        return res.status(200).json(warn ? { row: rows[0], rows, warn } : { row: rows[0], rows });
+      }
+      if (!svc || !clean(body.plan, 80) || !(months >= 1 && months <= 60)) return res.status(400).json({ error: "Choose a service and plan." });
+      const row = await addSub(Object.assign({}, base, { plan: clean(body.plan, 80) }));
       const lg = access.toRow(body);
       if (lg && row && row.id) { try { await db.rest("PATCH", `subscriptions?id=eq.${row.id}`, lg); } catch (e) { console.error("login details not saved", e && e.message); return res.status(200).json({ row, warn: "Added, but the login details could not be saved. Run the latest SQL in Supabase." }); } }
       return res.status(200).json({ row });
@@ -59,9 +73,17 @@ module.exports = async (req, res) => {
       const upd = {};
       if (body.end_date !== undefined) { if (!validDate(body.end_date)) return res.status(400).json({ error: "Expiry date is not valid." }); upd.end_date = body.end_date; }
       const lg = access.toRow(body);
-      if (lg) Object.assign(upd, lg);
+      let stamp = null;
+      if (lg) {
+        Object.assign(upd, lg);
+        // Tell the customer what changed the next time they open My account (never includes secrets).
+        try { const cur = ((await db.rest("GET", `subscriptions?id=eq.${id}&select=*`)) || [])[0], lines = cur ? access.describeChange(cur, body) : []; if (lines.length) stamp = { acct_changed_at: new Date().toISOString(), acct_change: lines.join("\n") }; } catch (e) { console.error("change notice skipped", e && e.message); }
+      }
       if (!Object.keys(upd).length) return res.status(400).json({ error: "Nothing to change." });
-      return res.status(200).json({ row: (await db.rest("PATCH", `subscriptions?id=eq.${id}`, upd, "return=representation"))[0] });
+      let out;
+      try { out = await db.rest("PATCH", `subscriptions?id=eq.${id}`, Object.assign({}, upd, stamp || {}), "return=representation"); }
+      catch (e) { if (!stamp) throw e; out = await db.rest("PATCH", `subscriptions?id=eq.${id}`, upd, "return=representation"); } // notice columns not added yet
+      return res.status(200).json({ row: out[0] });
     }
     if (req.method === "DELETE") { await db.rest("DELETE", `subscriptions?id=eq.${id}`); return res.status(200).json({ ok: true }); }
     return res.status(405).json({ error: "Method not allowed" });

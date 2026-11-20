@@ -32,6 +32,10 @@ alter table public.subscriptions add column if not exists vpn_country  text;
 alter table public.subscriptions add column if not exists gift_code    text;
 alter table public.subscriptions add column if not exists gift_region  text;
 alter table public.subscriptions add column if not exists gift_amount  text;
+alter table public.subscriptions add column if not exists acct_devices    jsonb;
+alter table public.subscriptions add column if not exists acct_changed_at timestamptz;
+alter table public.subscriptions add column if not exists acct_change     text;
+alter table public.subscriptions add column if not exists acct_seen_at    timestamptz;
 create index if not exists subscriptions_email_idx on public.subscriptions (email);
 
 create table if not exists public.orders (

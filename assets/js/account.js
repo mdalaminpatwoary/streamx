@@ -41,47 +41,110 @@
   var COPY = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>';
   var GIFTI = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M5 12v9h14v-9M7.5 8a2.5 2.5 0 1 1 0-5C10 3 12 8 12 8s2-5 4.5-5a2.5 2.5 0 1 1 0 5"/></svg>';
   var isGift = function (s) { return /gift card$/i.test(s.service || ""); };
-  var famLabel = function (s) { return /truecaller/i.test(s.service) ? "Family number" : "Family mail"; };
-  var hasFam = function (s) { return /spotify|truecaller/i.test(s.service); };
-  function supportMsg(s, lg) {
-    var phone = lg.mode === "phone_otp" || lg.mode === "phone_pass" || lg.mode === "number";
-    var t = ["Hi StreamX! I need my " + (lg.otp ? "login code" : isGift(s) ? "redeem code" : "login details") + " for " + s.service + ".", ""];
-    if (phone && lg.phone) t.push(s.service + " number: " + lg.phone);
-    else if (lg.email) t.push(s.service + " mail: " + lg.email);
+  var phoneFlag = function (p) { p = String(p || "").replace(/\s/g, ""); return /^\+?880/.test(p) ? flagImg("bd") : /^\+?91/.test(p) ? flagImg("in") : ""; };
+  var ic = function (d) { return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + d + "</svg>"; };
+  var PLAT = {
+    web: ["Web", ic('<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/>')],
+    ios: ["iOS", ic('<rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/>')],
+    android: ["Android", ic('<rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><path d="M10 5.5h4M11 18.5h2"/>')],
+    tablet: ["Tablet", ic('<rect x="3.5" y="5" width="17" height="14" rx="2.5"/><path d="M11 16.5h2"/>')],
+    tv: ["TV", ic('<rect x="3" y="5" width="18" height="12" rx="2"/><path d="M8 21h8M12 17v4"/>')]
+  };
+  function supportMsg(s, lg, issue) {
+    var phone = lg.mode === "phone_otp" || lg.mode === "phone_pass" || lg.mode === "number", who = phone ? lg.phone : (lg.email || lg.phone);
+    var t = [issue ? "Hi StreamX! I need help with " + s.service + " (" + s.plan + ")." : "Hi StreamX! I need my " + (lg.otp ? "login code" : isGift(s) ? "redeem code" : "login details") + " for " + s.service + ".", ""];
+    if (issue) t.push("Issue: " + issue);
+    if (who) t.push(s.service + (phone || (!lg.email && lg.phone) ? " number: " : " mail: ") + who);
     if (lg.profile) t.push("Profile: " + lg.profile);
     if (isGift(s) && lg.gift && lg.gift.amount) t.push("Gift card: " + lg.gift.amount + (lg.gift.region ? " (" + lg.gift.region + ")" : ""));
     if (DATA && DATA.email) t.push("My StreamX email: " + DATA.email);
+    if (issue) t.push("Subscription ID: #" + s.id);
     return t.join("\n");
   }
   function lrow(k, v, extra, cls) { return '<div class="ac-lr"><span class="ac-lk">' + k + '</span><span class="ac-lv' + (cls ? " " + cls : "") + '">' + v + "</span>" + (extra || "") + "</div>"; }
   function cp(key, s) { return '<button class="ac-cp" type="button" data-copy="' + key + '" data-sid="' + s.id + '">' + COPY + "<span>Copy</span></button>"; }
-  function secret(k, s, mask, val) { return lrow(({ pass: "Password", pin: "PIN", gift: "Redeem code" })[k], '<span data-sv="' + s.id + ":" + k + '" data-mask="' + mask + '">' + mask + "</span>", '<button class="ac-eye" type="button" data-eye="' + s.id + '" data-k="' + k + '" aria-label="Show"><span>Show</span></button>' + cp(k === "pass" ? "p" : k === "pin" ? "n" : "g", s)); }
+  function secret(k, s, mask, label) { return lrow(label || ({ pass: "Password", pin: "PIN", gift: "Redeem code" })[k], '<span data-sv="' + s.id + ":" + k + '" data-mask="' + mask + '">' + mask + "</span>", '<button class="ac-eye" type="button" data-eye="' + s.id + '" data-k="' + k + '" aria-label="Show"><span>Show</span></button>' + cp(k === "pass" ? "p" : k === "pin" ? "n" : "g", s)); }
+  function waLink(s, lg, issue) { return "https://wa.me/" + WA + "?text=" + encodeURIComponent(supportMsg(s, lg, issue)); }
+
+  function devBlock(lg) {
+    var d = lg.devices || {}, h = "";
+    if (d.platforms && d.platforms.length) h += lrow("Signed in on", '<span class="ac-plats">' + d.platforms.map(function (p) { return PLAT[p] ? '<span class="ac-plat">' + PLAT[p][1] + PLAT[p][0] + "</span>" : ""; }).join("") + "</span>");
+    if (d.names && d.names.length) h += lrow("Devices", '<span class="ac-devs">' + d.names.map(function (n) { return '<span class="ac-dev">' + esc(n) + "</span>"; }).join("") + "</span>");
+    if (d.limit) h += lrow("Device limit", "<b>" + d.limit + "</b> " + (d.limit === 1 ? "device" : "devices") + (d.names && d.names.length ? ' <em>(' + d.names.length + " in use)</em>" : ""));
+    return h;
+  }
+
+  function giftBox(s) {
+    var gs = s.gifts || [s], sup = '<a href="' + waLink(s, gs[0].login || {}) + '" target="_blank" rel="noopener">talk to support</a>';
+    var h = '<div class="ac-lbx ac-gift"><div class="ac-lbh">' + GIFTI + (gs.length > 1 ? gs.length + " gift cards" : "Gift card") + "</div>";
+    gs.forEach(function (g, i) {
+      var gg = (g.login && g.login.gift) || {}, head = (gg.amount ? "<b>" + esc(gg.amount) + "</b>" : "<b>Gift card</b>") + (gg.region ? " " + flagImg(gg.region) + " " + esc(countryName(gg.region)) : "");
+      h += '<div class="ac-gc"><div class="ac-gch">' + (gs.length > 1 ? '<span class="ac-gn">' + (i + 1) + "</span>" : "") + head + "</div>" +
+        (gg.code ? secret("gift", g, "••••-••••-••••") : '<p class="ac-lbn">Your redeem code will appear here once it is ready. Need it now? Please ' + sup + ".</p>") + "</div>";
+    });
+    h += lrow("Valid until", fmt(s.end_date) + " <em>(6 months from purchase)</em>");
+    return h + '<p class="ac-lbn ac-hint">Redeem in the App Store or at apple.com/redeem. Each code works once.</p></div>';
+  }
+
   function loginBox(s) {
-    var lg = s.login || {}, g = lg.gift || {}, vp = lg.vpn || {}, wa = "https://wa.me/" + WA + "?text=" + encodeURIComponent(supportMsg(s, lg));
-    var sup = '<a href="' + wa + '" target="_blank" rel="noopener">talk to support</a>', h, any = false, mode = lg.mode || "none";
-    if (isGift(s)) {
-      h = '<div class="ac-lbx ac-gift"><div class="ac-lbh">' + GIFTI + "Gift card</div>";
-      if (g.code) h += secret("gift", s, "••••-••••-••••");
-      else h += '<p class="ac-lbn">Your redeem code will appear here once it is ready. Need it now? Please ' + sup + ".</p>";
-      if (g.region) h += lrow("Region", flagImg(g.region) + " " + esc(countryName(g.region)));
-      if (g.amount) h += lrow("Amount", esc(g.amount));
-      h += lrow("Valid until", fmt(s.end_date) + ' <em>(6 months from purchase)</em>');
-      return h + '<p class="ac-lbn ac-hint">Redeem it in the App Store or at apple.com/redeem. Each code works once.</p></div>';
-    }
+    if (isGift(s)) return giftBox(s);
+    var lg = s.login || {}, vp = lg.vpn || {}, sup = '<a href="' + waLink(s, lg) + '" target="_blank" rel="noopener">talk to support</a>', h, any = false, mode = lg.mode || "none";
     h = '<div class="ac-lbx"><div class="ac-lbh">' + LOCK + "Account login</div>";
-    var ph = lg.phone ? esc(lg.phone) : "<em>Not added yet</em>", em = lg.email ? esc(lg.email) : "<em>Not added yet</em>";
+    var ph = lg.phone ? phoneFlag(lg.phone) + " " + esc(lg.phone) : "<em>Not added yet</em>", em = lg.email ? esc(lg.email) : "<em>Not added yet</em>";
     var otp = '<span class="ac-ot">OTP based. Please ' + sup + " for your login code.</span>";
     if (mode === "email_pass" || mode === "email_otp") { any = true; h += lrow("Email", em, lg.email ? cp("e", s) : ""); h += mode === "email_pass" ? (lg.password ? secret("pass", s, "••••••••••") : lrow("Password", "<em>Not added yet</em>")) : lrow("Login", otp); }
-    else if (mode === "phone_pass" || mode === "phone_otp") { any = true; h += lrow("Number", ph, lg.phone ? cp("t", s) : ""); h += mode === "phone_pass" ? (lg.password ? secret("pass", s, "••••••••••") : lrow("Password", "<em>Not added yet</em>")) : lrow("Login", otp); }
-    else if (mode === "number") { any = true; h += lrow("Number", ph, lg.phone ? cp("t", s) : ""); h += '<p class="ac-lbn ac-hint">Activated on this number. No password needed.</p>'; }
-    else if (mode === "own") { any = true; var oe = lg.email || (DATA && DATA.email) || ""; h += lrow("Activated on", esc(oe), cp("e0", s)); h += '<p class="ac-lbn ac-hint">Activated on your own email. No password needed.</p>'; }
+    else if (mode === "phone_otp" || mode === "phone_pass" || mode === "number") { any = true; h += lrow("Number", ph, lg.phone ? cp("t", s) : ""); h += mode === "phone_otp" ? lrow("Login", otp) : mode === "phone_pass" ? (lg.password ? secret("pass", s, "••••••••••") : lrow("Password", "<em>Not added yet</em>")) : '<p class="ac-lbn ac-hint">Activated on this number. No password needed.</p>'; }
+    else if (mode === "own") { any = true; var onNum = !lg.email && lg.phone, v = lg.email || lg.phone || (DATA && DATA.email) || ""; h += lrow("Activated on", (onNum ? phoneFlag(lg.phone) + " " : "") + esc(v), cp("e0", s)); h += '<p class="ac-lbn ac-hint">Activated on your own ' + (onNum ? "number" : "mail") + ". No password needed.</p>"; }
     if (lg.profile) { any = true; h += lrow("Profile", esc(lg.profile), cp("f", s)); }
     if (lg.pin) { any = true; h += secret("pin", s, "••••"); }
-    if (lg.family && hasFam(s)) { any = true; h += lrow(famLabel(s), esc(lg.family), cp("m", s)) + '<p class="ac-lbn ac-hint">' + (famLabel(s) === "Family number" ? "Your plan is activated from this number." : "Your plan is activated from this mail.") + "</p>"; }
+    if (lg.family) { any = true; h += lrow("Family mail", esc(lg.family), cp("m", s)) + '<p class="ac-lbn ac-hint">Your plan is activated from this mail.</p>'; }
     if (vp.required) { any = true; h += lrow("VPN", '<span class="ac-vpn"><b>Required</b>' + (vp.country ? flagImg(vp.country) + " " + esc(countryName(vp.country)) : "") + "</span>") + '<p class="ac-lbn ac-hint">Connect to a server in ' + (vp.country ? esc(countryName(vp.country)) : "the required country") + " before you sign in.</p>"; }
+    var dv = devBlock(lg); if (dv) { any = true; h += '<div class="ac-dsep"></div>' + dv; }
     if (!any) return h + '<p class="ac-lbn">Your login details will appear here once your account is ready. Need them now? Please ' + sup + ".</p></div>";
     return h + "</div>";
   }
+
+  /* "Need help?" panel: every topic opens WhatsApp with the subscription details already filled in. */
+  var HELPI = ic('<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.6 2.2c-.7.4-1.1.9-1.1 1.8M12 17h.01"/>');
+  function helpBox(s) {
+    var lg = s.login || {}, topics;
+    if (isGift(s)) topics = ["My redeem code is not working", "I have not received my code", "Something else"];
+    else {
+      topics = ["I cannot sign in"];
+      topics.push(lg.otp ? "I need my login code" : "My password is not working");
+      if (lg.devices && (lg.devices.limit || lg.devices.names.length) || /netflix/i.test(s.service)) topics.push("Device limit reached");
+      if (lg.vpn && lg.vpn.required) topics.push("VPN is not working");
+      topics.push("Something else");
+    }
+    var sub = encodeURIComponent("Help with " + s.service + " (#" + s.id + ")");
+    return '<details class="ac-help"><summary>' + HELPI + "<span>Need help with this subscription?</span></summary><div class=\"ac-hb\"><p>Pick what is happening. We open WhatsApp with your subscription details filled in, so you do not have to explain it again.</p><div class=\"ac-topics\">" +
+      topics.map(function (t) { return '<a class="ac-topic" href="' + waLink(s, lg, t) + '" target="_blank" rel="noopener">' + esc(t) + "</a>"; }).join("") +
+      '</div><div class="ac-alt"><a href="https://m.me/streamx.com.bd" target="_blank" rel="noopener">Message us on Messenger</a><a href="mailto:streamx.com.bd@gmail.com?subject=' + sub + '">Email support</a></div></div></details>';
+  }
+
+  /* Gift cards bought together (same order) are shown as one card with several codes. */
+  function groupRows(list) {
+    var out = [], idx = {};
+    list.forEach(function (s) {
+      if (!isGift(s)) { s.members = [s]; out.push(s); return; }
+      var k = s.service + "|" + (s.order_ref || "id" + s.id) + "|" + (s._left >= 0);
+      if (idx[k] === undefined) { idx[k] = out.length; var g = Object.assign({}, s); g.gifts = [s]; g.members = [s]; out.push(g); }
+      else { var g2 = out[idx[k]]; g2.gifts.push(s); g2.members.push(s); }
+    });
+    out.forEach(function (g) {
+      if (!g.gifts || g.gifts.length < 2) return;
+      var am = g.gifts.map(function (x) { return (x.login && x.login.gift && x.login.gift.amount) || x.plan; }), nums = am.map(function (a) { return parseFloat(String(a).replace(/[^\d.]/g, "")); });
+      g.plan = g.gifts.length + " cards · " + (am.length <= 4 ? am.join(" + ") : (nums.every(function (n) { return n > 0; }) ? "$" + nums.reduce(function (a, b) { return a + b; }, 0) + " total" : ""));
+    });
+    return out;
+  }
+  var BELL = ic('<path d="M6 9a6 6 0 1 1 12 0c0 5 2 6 2 6H4s2-1 2-6zM10 19a2 2 0 0 0 4 0"/>');
+  function noticeOf(g) {
+    var lines = [], at = "";
+    g.members.forEach(function (m) { var n = m.login && m.login.notice; if (!n) return; if (n.at > at) at = n.at; n.lines.forEach(function (l) { if (lines.indexOf(l) < 0) lines.push(l); }); });
+    return lines.length ? { lines: lines, at: at } : null;
+  }
+  function when(iso) { var d = new Date(Date.parse(iso) + 6 * 3600000); return fmt(d.toISOString().slice(0, 10)) + ", " + d.toISOString().slice(11, 16); }
 
   function render(d) {
     $("#login").hidden = true; $("#app").hidden = false; $("#who").textContent = d.email;
@@ -91,24 +154,35 @@
     var pvEl = $("#pv"); pvEl.hidden = !pf.provider; if (pf.provider) pvEl.textContent = "Signed in with " + (NM[pf.provider] || pf.provider);
     renderOrders(d.orders || []);
     DATA = d; var today = d.today, rows = d.subscriptions.map(function (s) { s._left = days(today, s.end_date); return s; });
-    var live = rows.filter(function (s) { return s._left >= 0; }).sort(function (a, b) { return a._left - b._left; });
-    var gone = rows.filter(function (s) { return s._left < 0; }).sort(function (a, b) { return b._left - a._left; });
+    var live = groupRows(rows.filter(function (s) { return s._left >= 0; }).sort(function (a, b) { return a._left - b._left; }));
+    var gone = groupRows(rows.filter(function (s) { return s._left < 0; }).sort(function (a, b) { return b._left - a._left; }));
     $("#sub").textContent = live.length ? live.length + " active " + (live.length === 1 ? "subscription" : "subscriptions") + ". Expiry dates are in Bangladesh time." : "You have no active subscription right now.";
-    if (!rows.length) { $("#list").innerHTML = '<div class="ac-card ac-empty">No subscriptions found for this email yet.<br><a class="ac-btn ac-sm" style="margin-top:14px" href="/#pricing">Browse plans</a></div>'; return; }
-    var idx = 0;
+    if (!rows.length) { $("#notes").innerHTML = ""; $("#list").innerHTML = '<div class="ac-card ac-empty">No subscriptions found for this email yet.<br><a class="ac-btn ac-sm" style="margin-top:14px" href="/#pricing">Browse plans</a></div>'; return; }
+    var idx = 0, notes = "";
     $("#list").innerHTML = live.concat(gone).map(function (s) {
       var st = s._left < 0 ? ["Expired", "#ef4444"] : s._left <= 7 ? ["Expires soon", "#f59e0b"] : ["Active", "#22c55e"];
       var total = Math.max(1, days(s.start_date, s.end_date)), left = Math.min(100, Math.max(0, Math.round(s._left / total * 100)));
       var L = s._left, big = L < 0 ? "Expired" : L === 0 ? "Today" : String(L), small = L < 0 ? (-L) + (L === -1 ? " day ago" : " days ago") : L === 0 ? "last day" : (L === 1 ? "day left" : "days left");
       var msg = "Hi StreamX! I want to renew my " + s.service + " (" + s.plan + "), " + (s._left < 0 ? "expired on " : "expires on ") + fmt(s.end_date) + ". My email: " + d.email;
-      return '<article class="ac-sub-card" style="--st:' + st[1] + ';--i:' + (idx++) + '">' + tile(s) +
-        '<div><div class="ac-name">' + esc(s.service) + '<span class="ac-chip">' + st[0] + '</span></div><div class="ac-plan">' + esc(s.plan) + '</div>' +
+      var nt = s._left >= 0 ? noticeOf(s) : null, ids = s.members.map(function (m) { return m.id; }).join(",");
+      if (nt) notes += '<div class="ac-nb" data-ids="' + ids + '" role="status"><span class="ac-nbi">' + BELL + '</span><div class="ac-nbt"><b>' + esc(s.service) + " details were updated</b><ul>" + nt.lines.map(function (l) { return "<li>" + esc(l) + "</li>"; }).join("") + "</ul><small>" + when(nt.at) + '</small></div><button class="ac-btn ac-sm" type="button" data-seen>Got it</button></div>';
+      return '<article class="ac-sub-card' + (nt ? " ac-upd" : "") + '" data-g="' + ids + '" style="--st:' + st[1] + ';--i:' + (idx++) + '">' + tile(s) +
+        '<div><div class="ac-name">' + esc(s.service) + '<span class="ac-chip">' + st[0] + "</span>" + (nt ? '<span class="ac-chip ac-new">Updated</span>' : "") + '</div><div class="ac-plan">' + esc(s.plan) + '</div>' +
         '<div class="ac-dates"><span>Started<b>' + fmt(s.start_date) + '</b></span><span>Expires<b>' + fmt(s.end_date) + '</b></span></div><div class="ac-track" title="' + left + '% of this plan is left"><i data-p="' + left + '"></i></div></div>' +
         '<div class="ac-act"><div class="ac-left"><b data-n="' + (L >= 0 ? L : "") + '">' + esc(big) + '</b>' + esc(small) + '</div>' +
-        (isGift(s) ? '<a class="ac-btn ac-sm" href="/#pricing">Buy another</a>' : (planOf(s) ? '<button class="ac-btn ac-sm" type="button" data-renew="' + s.id + '">Renew · ' + taka(planOf(s).price) + '</button>' : '<a class="ac-btn ac-sm" href="' + renewLink(s) + '">Renew</a>') + '<a class="ac-btn ac-ghost ac-sm" target="_blank" rel="noopener" href="https://wa.me/' + WA + "?text=" + encodeURIComponent(msg) + '">Renew on WhatsApp</a>') + '</div>' + (s._left >= 0 ? loginBox(s) : "") + '</article>';
+        (isGift(s) ? '<a class="ac-btn ac-sm" href="/#pricing">Buy another</a>' : (planOf(s) ? '<button class="ac-btn ac-sm" type="button" data-renew="' + s.id + '">Renew · ' + taka(planOf(s).price) + '</button>' : '<a class="ac-btn ac-sm" href="' + renewLink(s) + '">Renew</a>') + '<a class="ac-btn ac-ghost ac-sm" target="_blank" rel="noopener" href="https://wa.me/' + WA + "?text=" + encodeURIComponent(msg) + '">Renew on WhatsApp</a>') + '</div>' +
+        (s._left >= 0 ? loginBox(s) + helpBox(s) : "") + '</article>';
     }).join("");
+    $("#notes").innerHTML = notes;
     animateIn();
   }
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-seen]"); if (!b) return;
+    var box = b.closest(".ac-nb"), ids = box.dataset.ids.split(",").map(Number), t = get();
+    box.classList.add("out"); setTimeout(function () { box.remove(); }, 350);
+    ids.forEach(function (id) { var c = document.querySelector('.ac-sub-card[data-g*="' + id + '"]'); if (c) { c.classList.remove("ac-upd"); var n = c.querySelector(".ac-new"); if (n) n.remove(); } var s = subById(id); if (s && s.login) s.login.notice = null; });
+    if (t) api("seen", { method: "POST", headers: { Authorization: "Bearer " + t, "Content-Type": "application/json" }, body: JSON.stringify({ ids: ids }) }).catch(function () {});
+  });
 
   var calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
   function animateIn() {
@@ -130,7 +204,7 @@
     var c = e.target.closest("[data-copy]"), v = e.target.closest("[data-eye]");
     if (c) {
       var s = subById(c.dataset.sid), lg = s && s.login; if (!lg) return;
-      var map = { p: lg.password, f: lg.profile, n: lg.pin, e: lg.email, e0: lg.email || (DATA && DATA.email), t: lg.phone, m: lg.family, g: lg.gift && lg.gift.code };
+      var map = { p: lg.password, f: lg.profile, n: lg.pin, e: lg.email, e0: lg.email || lg.phone || (DATA && DATA.email), t: lg.phone, m: lg.family, g: lg.gift && lg.gift.code };
       copyText(map[c.dataset.copy] || "").then(function () {
         var sp = c.querySelector("span"); c.classList.add("ok"); sp.textContent = "Copied"; clearTimeout(c._t);
         c._t = setTimeout(function () { c.classList.remove("ok"); sp.textContent = "Copy"; }, 1800);
