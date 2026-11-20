@@ -1,6 +1,6 @@
 /* Header: smooth scroll-spy and progress rail. */
 // ===== Header: light and smooth (rAF + IntersectionObserver scroll-spy) =====
-const nav=$("#nav"),ind=$("#ind"),links=[...document.querySelectorAll("#menu a")];let lastY=0,ticking=false,curLink=links[0];
+const nav=$("#nav"),ind=$("#ind"),links=[...document.querySelectorAll("#menu>a")];let lastY=0,ticking=false,curLink=links[0];
 function setActive(a){if(!a)return;curLink=a;links.forEach(l=>l.classList.toggle("on",l===a));if(innerWidth>860){ind.style.width=a.offsetWidth+"px";ind.style.transform=`translateX(${a.offsetLeft}px)`}}
 function frame(){
   ticking=false;const y=scrollY,dy=y-lastY,max=Math.max(1,document.documentElement.scrollHeight-innerHeight);

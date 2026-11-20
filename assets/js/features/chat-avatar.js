@@ -7,7 +7,7 @@
   // One real person: the founder. Each popup asks a different question.
   const NAME="Muhammad Al-Amin";
   const QUESTIONS=[
-    "Which subscription are you looking for today? 👋",
+    "Which subscription are you looking for today?",
     "Want Netflix + Prime together and save more?",
     "Watching on TV, phone or both? I'll pick the right plan.",
     "Tell me your budget and I'll suggest the best plan.",
@@ -24,7 +24,12 @@
     "Learning something? Ask me about Udemy and Skillshare.",
     "Want to renew your subscription? I'll help.",
     "Payment question? bKash, Nagad, Rocket and Upay all work.",
-    "Prefer Messenger? You can message me there too."
+    "Prefer Messenger? You can message me there too.",
+    "Sign in to My account anytime to see your login details.",
+    "Renew in one tap from My account, or ask me to help.",
+    "Need a login code for an OTP-based service? Ask me here.",
+    "If your login details change, you get a notice in My account.",
+    "See how many days are left on every subscription in My account."
   ];
   // Start at a random question, then go through the rest without repeating.
   const order=QUESTIONS.map((q,i)=>i).sort(()=>Math.random()-.5);

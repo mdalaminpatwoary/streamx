@@ -251,3 +251,30 @@ nav a:hover {
 .nr .cartbtn{width:42px;display:grid;place-items:center}
 .nr .lang:hover,.nr .cartbtn:hover,#burger:hover{background:rgba(237,49,36,.14);border-color:rgba(237,49,36,.5);transform:translateY(-1px)}
 .logo img{box-shadow:0 6px 18px -6px rgba(237,49,36,.55)}
+
+/* ---------- Mobile menu: glass sheet with icon rows, matching the notice drawer ---------- */
+.mn-foot{display:none}.mn-bg{display:none}
+@media (max-width:860px){
+  .navbar nav{padding:10px 10px 12px;border-radius:24px;max-height:calc(100vh - 110px);max-height:calc(100dvh - 110px);overflow-y:auto;background:linear-gradient(180deg,rgba(20,25,53,.97),rgba(9,12,26,.98));box-shadow:0 30px 70px -20px rgba(0,0,0,.85),inset 0 1px 0 rgba(255,255,255,.07);transform:translateY(-10px) scale(.98);z-index:60}
+  .navbar nav a{position:relative;display:flex;align-items:center;gap:14px;padding:11px 12px;border-radius:16px;font-size:15.5px;font-weight:600;color:#e4e8f7;opacity:0;transform:translateY(8px);transition:background .25s,color .25s}
+  .navbar nav.open a{animation:mnIn .45s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i,0)*45ms + 60ms)}
+  .navbar nav a::after{content:"";margin-left:auto;width:7px;height:7px;border-right:2px solid rgba(255,255,255,.35);border-top:2px solid rgba(255,255,255,.35);transform:rotate(45deg);transition:.25s}
+  .navbar nav a:hover,.navbar nav a:active{background:rgba(255,255,255,.06);color:#fff}
+  .navbar nav a:hover::after{border-color:#ff7c70;transform:translateX(3px) rotate(45deg)}
+  .navbar nav a.on{background:linear-gradient(135deg,rgba(237,49,36,.2),rgba(237,49,36,.05));color:#fff;box-shadow:inset 0 0 0 1px rgba(237,49,36,.35)}
+  .navbar nav .mi{flex:none;width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);color:#aab4da}
+  .navbar nav .mi svg{width:19px;height:19px}
+  .navbar nav a.on .mi{background:rgba(237,49,36,.22);border-color:rgba(237,49,36,.45);color:#ff9a8f}
+  .mn-foot{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px;padding-top:12px;border-top:1px solid rgba(255,255,255,.08)}
+  .navbar nav .mn-b{justify-content:center;padding:12px 10px;border-radius:14px;font-size:14px;font-weight:700;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);text-align:center;animation-delay:.5s}
+  .navbar nav .mn-b::after{display:none}
+  .navbar nav .mn-b.wa{background:linear-gradient(135deg,#1fb865,#12894a);border-color:transparent;color:#fff}
+  .mn-bg{display:block;position:fixed;inset:0;z-index:40;background:rgba(3,5,16,.62);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);opacity:0;pointer-events:none;transition:opacity .3s}
+  .mn-bg.on{opacity:1;pointer-events:auto}
+  .nav{z-index:50}
+  html.mn-lock{overflow:hidden}
+  #burger{font-size:17px}
+}
+@keyframes mnIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.navbar nav.open a{animation:none;opacity:1;transform:none}}
+@media (max-width:860px){.navbar nav .mi svg{fill:none!important;stroke:currentColor!important}}

@@ -85,3 +85,5 @@
 .rs-nav::-webkit-scrollbar{display:none}
 .rs-nav button{flex:none;min-width:170px;scroll-snap-align:center}
 @media(max-width:860px){.rs-nav{display:flex;grid-template-columns:none}.rs-nav button{min-width:150px}}
+/* Soft edges on the review tab row */
+.rs-nav{-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 26px,#000 calc(100% - 26px),transparent 100%);mask-image:linear-gradient(90deg,transparent 0,#000 26px,#000 calc(100% - 26px),transparent 100%);padding-left:8px;padding-right:8px}
