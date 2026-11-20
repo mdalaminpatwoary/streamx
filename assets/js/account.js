@@ -39,8 +39,19 @@
   }
   var LOCK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
   var COPY = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>';
+  function supportMsg(s, lg) {
+    var L = s._left, t = [(lg.otp ? "Hi StreamX! I need my login code for this account (OTP based)." : "Hi StreamX! I need the login details for my account."), "", "Service: " + s.service, "Plan: " + s.plan];
+    t.push("Subscription: " + fmt(s.start_date) + " to " + fmt(s.end_date) + (L >= 0 ? " (" + L + (L === 1 ? " day" : " days") + " left)" : " (expired)"));
+    if (lg.email) t.push("Account email: " + lg.email);
+    if (lg.profile) t.push("Profile: " + lg.profile);
+    if (DATA && DATA.email) t.push("My StreamX email: " + DATA.email);
+    if (DATA && DATA.contact && DATA.contact.phone) t.push("My mobile: " + DATA.contact.phone);
+    if (DATA && DATA.contact && DATA.contact.name) t.push("Name: " + DATA.contact.name);
+    t.push("Subscription ID: #" + s.id);
+    return t.join("\n");
+  }
   function loginBox(s) {
-    var lg = s.login || {}, wa = "https://wa.me/" + WA + "?text=" + encodeURIComponent("Hi StreamX! I need the login details for my " + s.service + " (" + s.plan + ").");
+    var lg = s.login || {}, wa = "https://wa.me/" + WA + "?text=" + encodeURIComponent(supportMsg(s, lg));
     var h = '<div class="ac-lbx"><div class="ac-lbh">' + LOCK + "Account login</div>";
     if (!lg.email && !lg.password && !lg.otp && !lg.profile && !lg.pin) return h + '<p class="ac-lbn">Your login details will appear here once your account is ready. Need them now? <a href="' + wa + '" target="_blank" rel="noopener">Talk to support</a>.</p></div>';
     h += '<div class="ac-lr"><span class="ac-lk">Email</span><span class="ac-lv">' + (lg.email ? esc(lg.email) : '<em>Not added yet</em>') + "</span>" + (lg.email ? '<button class="ac-cp" type="button" data-copy="e" data-sid="' + s.id + '">' + COPY + "<span>Copy</span></button>" : "") + "</div>";
