@@ -5,4 +5,4 @@ Disallow: /payment-result.html
 Disallow: /account/
 Disallow: /admin/
 
-Sitemap: https://streamx.com.bd/sitemap.xml
+Sitemap: https://streamx.bd/sitemap.xml

@@ -4,7 +4,7 @@
    Edit prices/plans in assets/js/data/catalog.js and copy in scripts/service-content.js, then run this again. */
 const fs = require("fs"), path = require("path"), vm = require("vm");
 const ROOT = path.join(__dirname, "..");
-const SITE = "https://streamx.com.bd";
+const SITE = "https://streamx.bd";
 const read = f => fs.readFileSync(path.join(ROOT, f), "utf8");
 const ctx = vm.createContext({});
 ["assets/js/data/config.js", "assets/js/utils/helpers.js", "assets/js/data/catalog.js", "assets/js/data/logos.js", "assets/js/data/reviews.js"]
