@@ -73,13 +73,14 @@ async function send({ to, subject, html, text, replyTo, idem, bcc }) {
 }
 
 /* ---------- the emails ---------- */
-const signIn = (req, link) => ({
-  subject: "Your StreamX sign-in link",
-  html: layout({ req, preheader: "Your secure sign-in link. It works for 20 minutes.", eyebrow: "My account", title: "Sign in to StreamX",
-    intro: "Press the button below to see your subscriptions, expiry dates and purchase history. The link works for 20 minutes and can be used once.",
+const signIn = (req, link, code) => ({
+  subject: code ? "Your StreamX sign-in code: " + code : "Your StreamX sign-in link",
+  html: layout({ req, preheader: code ? "Your code is " + code + ". It works for 10 minutes." : "Your secure sign-in link. It works for 20 minutes.", eyebrow: "My account", title: "Sign in to StreamX",
+    intro: code ? "Enter this code on the sign-in page to see your subscriptions, expiry dates and purchase history. It works for 10 minutes and can be used once." : "Press the button below to see your subscriptions, expiry dates and purchase history. The link works for 20 minutes and can be used once.",
+    body: code ? "<div style=\"margin:6px 0 4px;padding:18px 12px;text-align:center;border:1px solid " + C.line + ";border-radius:16px;background:" + C.bg + "\"><div style=\"font:800 34px/1 'Courier New',monospace;letter-spacing:10px;color:#ffffff;padding-left:10px\">" + esc(code) + "</div></div><p style=\"margin:14px 0 0;color:" + C.mut + ";font-size:13.5px;text-align:center\">Or sign in with one tap:</p>" : "",
     cta: [link, "Sign in securely"],
-    note: "If the button does not work, copy this link into your browser:<br><span style=\"color:#c5cce2;word-break:break-all\">" + esc(link) + "</span><br><br>Did not ask for this? You can safely ignore this email." }),
-  text: "Sign in to StreamX: " + link + "\nThe link works for 20 minutes.",
+    note: "Never share this code with anyone. StreamX will never ask you for it on WhatsApp or by phone.<br><br>Did not ask for this? You can safely ignore this email." }),
+  text: (code ? "Your StreamX sign-in code: " + code + "\nIt works for 10 minutes. Never share it with anyone.\n\nOr use this link: " : "Sign in to StreamX: ") + link,
 });
 
 const delivered = (req, ord) => {

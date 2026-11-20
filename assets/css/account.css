@@ -125,3 +125,10 @@ h1{margin:10px 0 8px;font-size:clamp(30px,5vw,46px);line-height:1.1;letter-spaci
 @media(max-width:560px){.ac-prof{flex-wrap:wrap;padding:16px}.ac-pi{flex:1 1 calc(100% - 80px)}.ac-out{width:100%;justify-content:center;order:3}}
 /* phones / tablets: sign in first, the "Your subscriptions" intro below it */
 @media(max-width:860px){.ac-login{order:-1}.ac-grid2{display:flex;flex-direction:column}}
+
+/* Sign-in code */
+.ac-code{font:800 28px/1 ui-monospace,Menlo,Consolas,monospace;letter-spacing:.5em;text-align:center;padding:16px 10px 16px 24px!important}
+.ac-cl{text-align:center}
+.ac-lnk{background:none;border:0;padding:0;color:#ffb3aa;font:700 13px Manrope,system-ui,sans-serif;cursor:pointer;text-decoration:underline}
+.ac-lnk[disabled]{color:var(--mut);cursor:default;text-decoration:none}
+#cf[hidden],#lf[hidden]{display:none}

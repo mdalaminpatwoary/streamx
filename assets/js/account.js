@@ -12,7 +12,7 @@
   var fmt = function (iso) { var d = new Date(iso + "T00:00:00Z"); return d.getUTCDate() + " " + ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][d.getUTCMonth()] + " " + d.getUTCFullYear(); };
   var days = function (a, b) { return Math.round((Date.parse(b + "T00:00:00Z") - Date.parse(a + "T00:00:00Z")) / 86400000); };
 
-  function showLogin(msg) { $("#app").hidden = true; $("#login").hidden = false; $("#sub").textContent = "See what is active, when it ends, and renew in one tap."; if (msg) { var m = $("#lm"); m.textContent = msg; m.className = "ac-msg"; } }
+  function showLogin(msg) { $("#app").hidden = true; $("#login").hidden = false; $("#cf").hidden = true; $("#lf").hidden = false; $("#sub").textContent = "See what is active, when it ends, and renew in one tap."; if (msg) { var m = $("#lm"); m.textContent = msg; m.className = "ac-msg"; } }
 
   function renewLink(s) {
     var p = PROD.filter(function (x) { return x.name === s.service; })[0];
@@ -78,16 +78,37 @@
     });
   }
 
+  var curEmail = "", lockT = null;
+  var post = function (a, o) { return api(a, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(o) }); };
+  function resendLock(sec) { var r = $("#cr"); r.disabled = true; var n = sec; clearInterval(lockT); r.textContent = "Resend code (" + n + ")"; lockT = setInterval(function () { n--; if (n <= 0) { clearInterval(lockT); r.disabled = false; r.textContent = "Resend code"; } else r.textContent = "Resend code (" + n + ")"; }, 1000); }
+  function sendCode(em, quiet) {
+    var m = $("#lm"), b = $("#lb"); b.disabled = true; m.className = "ac-msg"; m.textContent = "";
+    return post("login", { email: em }).then(function () {
+      curEmail = em; $("#lf").hidden = true; $("#cf").hidden = false; $("#cd").value = ""; $("#cm").textContent = "";
+      $("#cs").textContent = "If " + em + " has subscriptions with us, a 6-digit code is on its way. Check spam too.";
+      resendLock(60); setTimeout(function () { $("#cd").focus(); }, 50);
+    }).catch(function (er) { (quiet ? $("#cm") : m).className = "ac-msg"; (quiet ? $("#cm") : m).textContent = er.message; })
+      .then(function () { b.disabled = false; });
+  }
   $("#lf").addEventListener("submit", function (e) {
     e.preventDefault();
-    var em = $("#em").value.trim(), m = $("#lm"), b = $("#lb");
+    var em = $("#em").value.trim(), m = $("#lm");
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em)) { m.className = "ac-msg"; m.textContent = "Please enter a valid email address."; return; }
-    b.disabled = true; m.className = "ac-msg"; m.textContent = "";
-    api("login", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: em }) })
-      .then(function () { m.className = "ac-msg ok"; m.textContent = "Check your inbox. If this email has subscriptions with us, a sign-in link is on its way (look in spam too)."; })
-      .catch(function (er) { m.textContent = er.message; })
-      .then(function () { setTimeout(function () { b.disabled = false; }, 4000); });
+    sendCode(em, false);
   });
+  $("#cd").addEventListener("input", function () { this.value = this.value.replace(/\D/g, "").slice(0, 6); if (this.value.length === 6) $("#cf").requestSubmit ? $("#cf").requestSubmit() : $("#cb").click(); });
+  $("#cf").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var code = $("#cd").value, m = $("#cm"), b = $("#cb");
+    if (code.length !== 6) { m.className = "ac-msg"; m.textContent = "Enter the 6-digit code from your email."; return; }
+    b.disabled = true; m.className = "ac-msg"; m.textContent = "";
+    post("code", { email: curEmail, code: code })
+      .then(function (j) { set(j.session); $("#cf").hidden = true; $("#lf").hidden = false; load(); })
+      .catch(function (er) { m.textContent = er.message; $("#cd").select(); })
+      .then(function () { b.disabled = false; });
+  });
+  $("#cr").addEventListener("click", function () { sendCode(curEmail, true).then(function () { var m = $("#cm"); if (!m.textContent) { m.className = "ac-msg ok"; m.textContent = "A new code was sent."; } }); });
+  $("#cx").addEventListener("click", function () { $("#cf").hidden = true; $("#lf").hidden = false; $("#em").focus(); });
   $("#out").addEventListener("click", function () { set(null); showLogin(); });
 
   /* Renew: confirm the contact details, then open the EPS payment page. Expiry is extended automatically once payment is confirmed. */

@@ -34,8 +34,17 @@
         <label for="em">Email address</label>
         <input class="ac-in" id="em" type="email" autocomplete="email" inputmode="email" placeholder="you@example.com" required>
         <p class="ac-msg" id="lm" role="alert"></p>
-        <button class="ac-btn ac-full" id="lb" type="submit">Email me a sign-in link</button>
-        <p class="ac-note">We email you a secure link that works for 20 minutes. Ordered on WhatsApp? Message us and we will add your email.</p>
+        <button class="ac-btn ac-full" id="lb" type="submit">Email me a sign-in code</button>
+        <p class="ac-note">We email you a 6-digit code (and a one-tap link as a backup). Ordered on WhatsApp? Message us and we will add your email.</p>
+      </form>
+      <form id="cf" novalidate hidden>
+        <p class="ac-ls" id="cs" style="margin:0 0 14px"></p>
+        <label for="cd">6-digit code</label>
+        <input class="ac-in ac-code" id="cd" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]*" maxlength="6" placeholder="••••••" required>
+        <p class="ac-msg" id="cm" role="alert"></p>
+        <button class="ac-btn ac-full" id="cb" type="submit">Verify and sign in</button>
+        <p class="ac-note ac-cl"><button type="button" class="ac-lnk" id="cr" disabled>Resend code</button> · <button type="button" class="ac-lnk" id="cx">Use a different email</button></p>
+        <p class="ac-note">The code works for 10 minutes. You can also open the link in the same email.</p>
       </form>
       <p class="ac-fine"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span>Secure sign-in. By continuing you agree to our <a href="/terms/">Terms</a> and <a href="/privacy/">Privacy Policy</a>.</span></p>
     </section>
@@ -70,6 +79,6 @@
   </form>
 </div>
 <script src="/assets/js/data/catalog.js"></script>
-<script src="/assets/js/account.js?v=5"></script>
+<script src="/assets/js/account.js?v=6"></script>
 </body>
 </html>

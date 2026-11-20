@@ -43,11 +43,21 @@ create table if not exists public.login_links (
   sent_at     timestamptz not null default now()
 );
 
+-- One-time sign-in codes (6 digits, stored only as a keyed hash).
+create table if not exists public.login_codes (
+  email       text primary key,
+  code_hash   text not null,
+  expires_at  timestamptz not null,
+  tries       int  not null default 0,
+  sent_at     timestamptz not null default now()
+);
+
 alter table public.subscriptions enable row level security;
 alter table public.orders        enable row level security;
 alter table public.login_links   enable row level security;
+alter table public.login_codes   enable row level security;
 
 -- Let the server (service_role) use these tables. Needed because "Grant API access to new tables automatically" was off.
 grant usage on schema public to service_role;
-grant select, insert, update, delete on public.subscriptions, public.orders, public.login_links to service_role;
+grant select, insert, update, delete on public.subscriptions, public.orders, public.login_links, public.login_codes to service_role;
 grant usage, select on all sequences in schema public to service_role;
