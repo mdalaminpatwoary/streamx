@@ -14,7 +14,17 @@
     "Prefer bKash, Nagad or card? I'll guide you.",
     "First time buying here? Ask me anything.",
     "Looking for Spotify, ChatGPT or Canva?",
-    "Need a longer plan? It costs less per month."
+    "Need a longer plan? It costs less per month.",
+    "Want YouTube Premium without ads? Ask me about plans.",
+    "Looking for ChatGPT, Claude or Gemini?",
+    "Need an App Store or iTunes gift card?",
+    "Not sure which plan fits? Tell me what you watch.",
+    "Want Disney+, Hoichoi or Chorki? I have them.",
+    "Need a VPN like NordVPN or Surfshark?",
+    "Learning something? Ask me about Udemy and Skillshare.",
+    "Want to renew your subscription? I'll help.",
+    "Payment question? bKash, Nagad, Rocket and Upay all work.",
+    "Prefer Messenger? You can message me there too."
   ];
   // Start at a random question, then go through the rest without repeating.
   const order=QUESTIONS.map((q,i)=>i).sort(()=>Math.random()-.5);
