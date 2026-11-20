@@ -8,11 +8,12 @@
   if(!calm)splitWords(title);
 
   // Services shown in the carousel / ticker (key in LOGOS, label, regex to find the shop product for its price)
-  // Every service in the shop (adult categories stay out of the hero). Each tile opens its own service page.
-  const SV=(typeof PRODUCTS!=="undefined"?PRODUCTS:[]).filter(p=>p.cat!=="Bundle"&&p.cat!=="18+").map(p=>{
-    const k=LOGO_OF[p.name],L=LOGOS[k]||{bg:p.color,fg:"#fff",txt:p.name.replace(/[^A-Za-z0-9]/g," ").trim()[0].toUpperCase(),vb:"0 0 24 24",p:""};
+  // The original premium 12, plus six more popular services. Every tile opens its own service page.
+  const PICK=["Netflix","Spotify","YouTube Premium","Amazon Prime Video","ChatGPT","Disney+","Apple Music","Canva","Claude","HBO Max","Udemy","Adobe Express","Gemini Pro","Crunchyroll"];
+  const SV=PICK.map(n=>(typeof PRODUCTS!=="undefined"?PRODUCTS:[]).find(p=>p.name===n)).filter(p=>p&&LOGOS[LOGO_OF[p.name]]).map(p=>{
+    const k=LOGO_OF[p.name],L=LOGOS[k];
     const from=Math.min(...p.variants.flatMap(v=>v.plans.map(x=>x.p)));
-    return{k:k||p.name,n:p.name,L,from,href:"/services/"+slug(p.name)+"/"};
+    return{k,n:p.name,L,from,href:"/services/"+slug(p.name)+"/"};
   });
   const N=SV.length,STEP=360/N;
   const lg=s=>s.L.txt?`<i class="hx-ini">${s.L.txt}</i>`:`<svg viewBox="${s.L.vb}"><path d="${s.L.p}"/></svg>`;
@@ -38,11 +39,11 @@
   const orbit=$("#hxOrbit"),stage=$("#hxStage"),nameEl=$("#hxName"),fromEl=$("#hxFrom"),info=$("#hxInfo");
   if(orbit&&N){
     const mobile=()=>innerWidth<=520;
-    const TW=()=>mobile()?66:88;const R=()=>Math.max(mobile()?235:300,Math.round(N*TW()*.6/6.283));
+    const TW=()=>mobile()?100:134;const R=()=>Math.max(mobile()?235:300,Math.round(N*(TW()+(mobile()?10:12))/6.283));const fit=()=>{stage.style.perspective=Math.round(R()/(1-1/(mobile()?1.2:1.27)))+"px"};
     orbit.innerHTML=SV.map((s,i)=>`<div class="hx-slot" data-href="${s.href}" style="--ang:${i*STEP};--r:${R()}px"><div class="hx-t" style="--bg:${s.L.bg};--fg:${s.L.fg}">${lg(s)}</div></div>`).join("");
-    orbit.style.setProperty("--d",R()*2+"px");orbit.style.setProperty("--w",TW()+"px");orbit.style.setProperty("--h",Math.round(TW()*1.2)+"px");
+    orbit.style.setProperty("--d",R()*2+"px");orbit.style.setProperty("--w",TW()+"px");orbit.style.setProperty("--h",Math.round(TW()*1.2)+"px");fit();
     const slots=[...orbit.children];
-    addEventListener("resize",()=>{slots.forEach(e=>e.style.setProperty("--r",R()+"px"));orbit.style.setProperty("--d",R()*2+"px");orbit.style.setProperty("--w",TW()+"px");orbit.style.setProperty("--h",Math.round(TW()*1.2)+"px")});
+    addEventListener("resize",()=>{slots.forEach(e=>e.style.setProperty("--r",R()+"px"));orbit.style.setProperty("--d",R()*2+"px");orbit.style.setProperty("--w",TW()+"px");orbit.style.setProperty("--h",Math.round(TW()*1.2)+"px");fit()});
     let ry=0,vel=calm?0:-.18,dragging=false,lx=0,front=-1,seen=true,tgtTy=0,ty=0;
     new IntersectionObserver(e=>seen=e[0].isIntersecting).observe(stage);
     function paintFront(){
