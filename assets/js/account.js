@@ -38,6 +38,9 @@
     return '<span class="ac-tile" style="--c:' + esc((p && p.color) || "#444") + '" aria-hidden="true">' + esc(((p && p.icon) || s.service[0] || "?").toString().slice(0, 2)) + "</span>";
   }
   var LOCK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
+  var CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>';
+  var EYE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>';
+  var EYEOFF = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3l18 18M10.6 5.1A10 10 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-3.2 4.1M6.5 6.6C3.7 8.4 2 12 2 12s3.6 7 10 7c1.7 0 3.2-.4 4.5-1M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>';
   var COPY = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>';
   var GIFTI = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M5 12v9h14v-9M7.5 8a2.5 2.5 0 1 1 0-5C10 3 12 8 12 8s2-5 4.5-5a2.5 2.5 0 1 1 0 5"/></svg>';
   var isGift = function (s) { return /gift card$/i.test(s.service || ""); };
@@ -62,8 +65,8 @@
     return t.join("\n");
   }
   function lrow(k, v, extra, cls) { return '<div class="ac-lr"><span class="ac-lk">' + k + '</span><span class="ac-lv' + (cls ? " " + cls : "") + '">' + v + "</span>" + (extra || "") + "</div>"; }
-  function cp(key, s) { return '<button class="ac-cp" type="button" data-copy="' + key + '" data-sid="' + s.id + '">' + COPY + "<span>Copy</span></button>"; }
-  function secret(k, s, mask, label) { return lrow(label || ({ pass: "Password", pin: "PIN", gift: "Redeem code" })[k], '<span data-sv="' + s.id + ":" + k + '" data-mask="' + mask + '">' + mask + "</span>", '<button class="ac-eye" type="button" data-eye="' + s.id + '" data-k="' + k + '" aria-label="Show"><span>Show</span></button>' + cp(k === "pass" ? "p" : k === "pin" ? "n" : "g", s)); }
+  function cp(key, s) { return '<button class="ac-ib ac-cp" type="button" data-copy="' + key + '" data-sid="' + s.id + '" aria-label="Copy"><span class="ic a">' + COPY + '</span><span class="ic b">' + CHECK + "</span></button>"; }
+  function secret(k, s, mask, label) { return lrow(label || ({ pass: "Password", pin: "PIN", gift: "Redeem code" })[k], '<span data-sv="' + s.id + ":" + k + '" data-mask="' + mask + '">' + mask + "</span>", '<span class="ac-ibs"><button class="ac-ib ac-eye" type="button" data-eye="' + s.id + '" data-k="' + k + '" aria-label="Show"><span class="ic a">' + EYE + '</span><span class="ic b">' + EYEOFF + "</span></button>" + cp(k === "pass" ? "p" : k === "pin" ? "n" : "g", s) + "</span>"); }
   function waLink(s, lg, issue) { return "https://wa.me/" + WA + "?text=" + encodeURIComponent(supportMsg(s, lg, issue)); }
 
   function devBlock(lg) {
@@ -139,6 +142,18 @@
     return out;
   }
   var BELL = ic('<path d="M6 9a6 6 0 1 1 12 0c0 5 2 6 2 6H4s2-1 2-6zM10 19a2 2 0 0 0 4 0"/>');
+  var LINEI = {
+    key: ic('<circle cx="8" cy="15" r="4"/><path d="m10.8 12.2 8.2-8.2M16 7l3 3M14 9l2 2"/>'),
+    shield: ic('<path d="M12 3 5 6v6c0 4.2 2.9 7.4 7 9 4.1-1.6 7-4.8 7-9V6z"/><path d="m9 12 2 2 4-4"/>'),
+    devices: ic('<rect x="3" y="5" width="14" height="10" rx="2"/><path d="M8 19h4M10 15v4"/><rect x="18" y="9" width="3" height="8" rx="1"/>'),
+    swap: ic('<path d="M7 7h12l-3-3M17 17H5l3 3"/>'),
+    mail: ic('<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>'),
+    phone: ic('<rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/>'),
+    gift: ic('<rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M5 12v9h14v-9M7.5 8a2.5 2.5 0 1 1 0-5C10 3 12 8 12 8s2-5 4.5-5a2.5 2.5 0 1 1 0 5"/>'),
+    user: ic('<circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/>'),
+    spark: ic('<path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M18 6l-2.5 2.5M8.5 15.5 6 18"/>')
+  };
+  function lineIcon(l) { return /login type/i.test(l) ? LINEI.swap : /password|PIN/i.test(l) ? LINEI.key : /VPN/i.test(l) ? LINEI.shield : /device/i.test(l) ? LINEI.devices : /email|mail/i.test(l) ? LINEI.mail : /number/i.test(l) ? LINEI.phone : /code/i.test(l) ? LINEI.gift : /profile/i.test(l) ? LINEI.user : LINEI.spark; }
   function noticeOf(g) {
     var lines = [], at = "";
     g.members.forEach(function (m) { var n = m.login && m.login.notice; if (!n) return; if (n.at > at) at = n.at; n.lines.forEach(function (l) { if (lines.indexOf(l) < 0) lines.push(l); }); });
@@ -146,43 +161,67 @@
   }
   function when(iso) { var d = new Date(Date.parse(iso) + 6 * 3600000); return fmt(d.toISOString().slice(0, 10)) + ", " + d.toISOString().slice(11, 16); }
 
+  /* ---- Update pop-up: shown before anything else when the owner changed account details ---- */
+  var PENDING = [], paintLater = null, modal = null, lastFocus = null;
+  function setBell() { var n = PENDING.length, b = $("#bn"); if (b) { b.hidden = !n; b.textContent = n; } var bl = $("#bell"); if (bl) bl.classList.toggle("has", !!n); }
+  function openNotice() {
+    if (!PENDING.length) return;
+    if (!modal) { modal = document.createElement("div"); modal.className = "ac-ov"; modal.setAttribute("role", "dialog"); modal.setAttribute("aria-modal", "true"); modal.setAttribute("aria-labelledby", "acnt"); document.body.appendChild(modal); modal.addEventListener("click", function (e) { if (e.target === modal || e.target.closest("[data-nclose]")) closeNotice(); }); }
+    var many = PENDING.length > 1;
+    modal.innerHTML = '<div class="ac-md"><span class="ac-scan"></span><button class="ac-mx" type="button" data-nclose aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>' +
+      '<div class="ac-mh"><span class="ac-orb"><i></i><i></i><span class="ac-bi">' + BELL + '</span></span><div><small>Account update</small><h3 id="acnt">' + (many ? PENDING.length + " of your accounts were updated" : "Your " + esc(PENDING[0].name) + " details were updated") + "</h3></div></div>" +
+      '<div class="ac-mb">' + PENDING.map(function (p, gi) {
+        return '<section class="ac-mg" style="--d:' + gi + '">' + (many ? '<div class="ac-mgt">' + p.tile + "<b>" + esc(p.name) + "</b><small>" + when(p.at) + "</small></div>" : "") + "<ul>" +
+          p.lines.map(function (l, i) { return '<li style="--i:' + (i + gi * 3) + '"><span class="ac-li">' + lineIcon(l) + "</span><span>" + esc(l) + "</span></li>"; }).join("") + "</ul>" + (many ? "" : "<small class=\"ac-mt\">Updated " + when(p.at) + " (Dhaka time)</small>") + "</section>";
+      }).join("") + "</div>" +
+      '<div class="ac-mf"><p>Open My account to see the new details. Nothing else needs to be done.</p><button class="ac-go" type="button" data-nclose><span>Got it</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg></button></div></div>';
+    lastFocus = document.activeElement; document.documentElement.style.overflow = "hidden";
+    requestAnimationFrame(function () { modal.classList.add("on"); var b = modal.querySelector(".ac-go"); if (b) b.focus({ preventScroll: true }); });
+  }
+  function closeNotice() {
+    if (!modal || !modal.classList.contains("on")) return;
+    var ids = []; PENDING.forEach(function (p) { p.ids.forEach(function (i) { ids.push(i); var s = subById(i); if (s && s.login) s.login.notice = null; }); });
+    var t = get(); if (t && ids.length) api("seen", { method: "POST", headers: { Authorization: "Bearer " + t, "Content-Type": "application/json" }, body: JSON.stringify({ ids: ids }) }).catch(function () {});
+    PENDING = []; setBell(); modal.classList.remove("on"); modal.classList.add("off"); document.documentElement.style.overflow = "";
+    setTimeout(function () { if (modal) modal.classList.remove("off"); }, 400);
+    if (lastFocus && lastFocus.focus) try { lastFocus.focus({ preventScroll: true }); } catch (e) {}
+    if (paintLater) { var f = paintLater; paintLater = null; setTimeout(f, 120); }
+  }
+  function flash(msg) { var t = document.createElement("div"); t.className = "ac-toast"; t.innerHTML = BELL + "<span>" + esc(msg) + "</span>"; document.body.appendChild(t); requestAnimationFrame(function () { t.classList.add("on"); }); setTimeout(function () { t.classList.remove("on"); setTimeout(function () { t.remove(); }, 400); }, 2200); }
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeNotice(); });
+  document.addEventListener("click", function (e) { if (e.target.closest("#bell")) { if (PENDING.length) openNotice(); else flash("You are all caught up. No new updates."); } });
+
   function render(d) {
     $("#login").hidden = true; $("#app").hidden = false; $("#who").textContent = d.email;
     var pf = d.profile || {}, nm = pf.name || "", av = $("#av"); av.innerHTML = "";
     if (pf.picture) { var im = new Image(); im.alt = ""; im.referrerPolicy = "no-referrer"; im.onerror = function () { av.textContent = (nm || d.email)[0].toUpperCase(); }; im.src = pf.picture; av.appendChild(im); } else av.textContent = (nm || d.email)[0].toUpperCase();
     $("#hi").textContent = nm ? "Welcome back, " + nm : "Welcome back";
     var pvEl = $("#pv"); pvEl.hidden = !pf.provider; if (pf.provider) pvEl.textContent = "Signed in with " + (NM[pf.provider] || pf.provider);
-    renderOrders(d.orders || []);
     DATA = d; var today = d.today, rows = d.subscriptions.map(function (s) { s._left = days(today, s.end_date); return s; });
     var live = groupRows(rows.filter(function (s) { return s._left >= 0; }).sort(function (a, b) { return a._left - b._left; }));
     var gone = groupRows(rows.filter(function (s) { return s._left < 0; }).sort(function (a, b) { return b._left - a._left; }));
     $("#sub").textContent = live.length ? live.length + " active " + (live.length === 1 ? "subscription" : "subscriptions") + ". Expiry dates are in Bangladesh time." : "You have no active subscription right now.";
-    if (!rows.length) { $("#notes").innerHTML = ""; $("#list").innerHTML = '<div class="ac-card ac-empty">No subscriptions found for this email yet.<br><a class="ac-btn ac-sm" style="margin-top:14px" href="/#pricing">Browse plans</a></div>'; return; }
-    var idx = 0, notes = "";
-    $("#list").innerHTML = live.concat(gone).map(function (s) {
+    PENDING = []; paintLater = null;
+    var idx = 0, html;
+    if (!rows.length) html = '<div class="ac-card ac-empty">No subscriptions found for this email yet.<br><a class="ac-btn ac-sm" style="margin-top:14px" href="/#pricing">Browse plans</a></div>';
+    else html = live.concat(gone).map(function (s) {
       var st = s._left < 0 ? ["Expired", "#ef4444"] : s._left <= 7 ? ["Expires soon", "#f59e0b"] : ["Active", "#22c55e"];
       var total = Math.max(1, days(s.start_date, s.end_date)), left = Math.min(100, Math.max(0, Math.round(s._left / total * 100)));
       var L = s._left, big = L < 0 ? "Expired" : L === 0 ? "Today" : String(L), small = L < 0 ? (-L) + (L === -1 ? " day ago" : " days ago") : L === 0 ? "last day" : (L === 1 ? "day left" : "days left");
       var msg = "Hi StreamX! I want to renew my " + s.service + " (" + s.plan + "), " + (s._left < 0 ? "expired on " : "expires on ") + fmt(s.end_date) + ". My email: " + d.email;
-      var nt = s._left >= 0 ? noticeOf(s) : null, ids = s.members.map(function (m) { return m.id; }).join(",");
-      if (nt) notes += '<div class="ac-nb" data-ids="' + ids + '" role="status"><span class="ac-nbi">' + BELL + '</span><div class="ac-nbt"><b>' + esc(s.service) + " details were updated</b><ul>" + nt.lines.map(function (l) { return "<li>" + esc(l) + "</li>"; }).join("") + "</ul><small>" + when(nt.at) + '</small></div><button class="ac-btn ac-sm" type="button" data-seen>Got it</button></div>';
-      return '<article class="ac-sub-card' + (nt ? " ac-upd" : "") + '" data-g="' + ids + '" style="--st:' + st[1] + ';--i:' + (idx++) + '">' + tile(s) +
-        '<div><div class="ac-name">' + esc(s.service) + '<span class="ac-chip">' + st[0] + "</span>" + (nt ? '<span class="ac-chip ac-new">Updated</span>' : "") + '</div><div class="ac-plan">' + esc(s.plan) + '</div>' +
+      var nt = s._left >= 0 ? noticeOf(s) : null;
+      if (nt) PENDING.push({ name: s.service, tile: tile(s), lines: nt.lines, at: nt.at, ids: s.members.map(function (m) { return m.id; }) });
+      return '<article class="ac-sub-card" style="--st:' + st[1] + ';--i:' + (idx++) + '">' + tile(s) +
+        '<div><div class="ac-name">' + esc(s.service) + '<span class="ac-chip">' + st[0] + '</span></div><div class="ac-plan">' + esc(s.plan) + '</div>' +
         '<div class="ac-dates"><span>Started<b>' + fmt(s.start_date) + '</b></span><span>Expires<b>' + fmt(s.end_date) + '</b></span></div><div class="ac-track" title="' + left + '% of this plan is left"><i data-p="' + left + '"></i></div></div>' +
         '<div class="ac-act"><div class="ac-left"><b data-n="' + (L >= 0 ? L : "") + '">' + esc(big) + '</b>' + esc(small) + '</div>' +
         (isGift(s) ? '<a class="ac-btn ac-sm" href="/#pricing">Buy another</a>' : (planOf(s) ? '<button class="ac-btn ac-sm" type="button" data-renew="' + s.id + '">Renew · ' + taka(planOf(s).price) + '</button>' : '<a class="ac-btn ac-sm" href="' + renewLink(s) + '">Renew</a>') + '<a class="ac-btn ac-ghost ac-sm" target="_blank" rel="noopener" href="https://wa.me/' + WA + "?text=" + encodeURIComponent(msg) + '">Renew on WhatsApp</a>') + '</div>' +
         (s._left >= 0 ? loginBox(s) + helpBox(s) : "") + '</article>';
     }).join("");
-    $("#notes").innerHTML = notes;
-    animateIn();
+    var paint = function () { renderOrders(d.orders || []); $("#list").innerHTML = html; animateIn(); };
+    setBell();
+    if (PENDING.length) { $("#list").innerHTML = ""; $("#hist").hidden = true; paintLater = paint; openNotice(); } else paint();
   }
-  document.addEventListener("click", function (e) {
-    var b = e.target.closest("[data-seen]"); if (!b) return;
-    var box = b.closest(".ac-nb"), ids = box.dataset.ids.split(",").map(Number), t = get();
-    box.classList.add("out"); setTimeout(function () { box.remove(); }, 350);
-    ids.forEach(function (id) { var c = document.querySelector('.ac-sub-card[data-g*="' + id + '"]'); if (c) { c.classList.remove("ac-upd"); var n = c.querySelector(".ac-new"); if (n) n.remove(); } var s = subById(id); if (s && s.login) s.login.notice = null; });
-    if (t) api("seen", { method: "POST", headers: { Authorization: "Bearer " + t, "Content-Type": "application/json" }, body: JSON.stringify({ ids: ids }) }).catch(function () {});
-  });
 
   var calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
   function animateIn() {
@@ -205,15 +244,16 @@
     if (c) {
       var s = subById(c.dataset.sid), lg = s && s.login; if (!lg) return;
       var map = { p: lg.password, f: lg.profile, n: lg.pin, e: lg.email, e0: lg.email || lg.phone || (DATA && DATA.email), t: lg.phone, m: lg.family, g: lg.gift && lg.gift.code };
+      var tip = function (msg, bad) { var t = document.createElement("i"); t.className = "ac-tip" + (bad ? " bad" : ""); t.innerHTML = (bad ? "" : CHECK) + "<span>" + msg + "</span>"; c.appendChild(t); setTimeout(function () { t.remove(); }, 1700); };
       copyText(map[c.dataset.copy] || "").then(function () {
-        var sp = c.querySelector("span"); c.classList.add("ok"); sp.textContent = "Copied"; clearTimeout(c._t);
-        c._t = setTimeout(function () { c.classList.remove("ok"); sp.textContent = "Copy"; }, 1800);
-      }).catch(function () { var sp = c.querySelector("span"); sp.textContent = "Press Ctrl+C"; });
+        c.classList.remove("ok"); void c.offsetWidth; c.classList.add("ok"); c.setAttribute("aria-label", "Copied"); tip("Copied to clipboard"); clearTimeout(c._t);
+        c._t = setTimeout(function () { c.classList.remove("ok"); c.setAttribute("aria-label", "Copy"); }, 1800);
+      }).catch(function () { tip("Press Ctrl+C to copy", true); });
     }
     if (v) {
       var s2 = subById(v.dataset.eye), k = v.dataset.k, el = document.querySelector('[data-sv="' + v.dataset.eye + ":" + k + '"]'); if (!s2 || !el) return;
       var l2 = s2.login, val = k === "pin" ? l2.pin : k === "gift" ? l2.gift.code : l2.password, show = !el.classList.contains("shown");
-      el.classList.toggle("shown", show); el.textContent = show ? val : el.dataset.mask; v.querySelector("span").textContent = show ? "Hide" : "Show";
+      el.classList.toggle("shown", show); el.textContent = show ? val : el.dataset.mask; v.classList.toggle("on", show); v.setAttribute("aria-label", show ? "Hide" : "Show");
     }
   });
 
