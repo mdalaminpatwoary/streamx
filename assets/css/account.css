@@ -132,3 +132,33 @@ h1{margin:10px 0 8px;font-size:clamp(30px,5vw,46px);line-height:1.1;letter-spaci
 .ac-lnk{background:none;border:0;padding:0;color:#ffb3aa;font:700 13px Manrope,system-ui,sans-serif;cursor:pointer;text-decoration:underline}
 .ac-lnk[disabled]{color:var(--mut);cursor:default;text-decoration:none}
 #cf[hidden],#lf[hidden]{display:none}
+
+/* Subscription cards: logo tile, animation, login details */
+.ac-tile.ac-logo{box-shadow:0 10px 24px -12px var(--c);transition:transform .5s cubic-bezier(.34,1.56,.64,1)}
+.ac-tile.ac-logo svg{width:58%;height:58%;fill:var(--f,#fff)}
+.ac-sub-card{animation:acUp .65s cubic-bezier(.16,1,.3,1) both;animation-delay:calc(var(--i,0)*90ms);transition:transform .35s cubic-bezier(.16,1,.3,1),border-color .3s,box-shadow .35s}
+.ac-sub-card:hover{transform:translateY(-3px);border-color:color-mix(in srgb,var(--st) 45%,var(--line));box-shadow:0 22px 50px -28px var(--st)}
+.ac-sub-card:hover .ac-tile.ac-logo{transform:scale(1.07) rotate(-3deg)}
+@keyframes acUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+.ac-track i{width:0;transition:width 1.3s cubic-bezier(.16,1,.3,1) .25s;position:relative;overflow:hidden}
+.ac-track i::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.45),transparent);transform:translateX(-100%);animation:acShine 2.8s ease-in-out 1.6s infinite}
+@keyframes acShine{60%,100%{transform:translateX(100%)}}
+.ac-lbx{grid-column:1/-1;margin-top:2px;padding:14px 16px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.03)}
+.ac-lbh{display:flex;align-items:center;gap:8px;margin-bottom:10px;font-size:11.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--mut)}
+.ac-lbh svg{width:15px;height:15px}
+.ac-lr{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid rgba(255,255,255,.06)}
+.ac-lr:first-of-type{border-top:0}
+.ac-lk{flex:none;width:76px;font-size:12.5px;font-weight:700;color:var(--mut)}
+.ac-lv{flex:1;min-width:0;font:600 14.5px ui-monospace,Menlo,Consolas,monospace;color:#fff;word-break:break-all}
+.ac-lv em{font:italic 500 13.5px Manrope,system-ui,sans-serif;color:var(--mut)}
+.ac-lv.ac-ot{font:600 13.5px Manrope,system-ui,sans-serif;color:#ffd3a8}
+.ac-lv a,.ac-lbn a{color:#ffb3aa;text-decoration:underline}
+.ac-lbn{margin:0;font-size:13.5px;color:var(--mut)}
+.ac-cp,.ac-eye{flex:none;display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border:1px solid rgba(255,255,255,.16);border-radius:99px;background:rgba(255,255,255,.05);color:#e6eaf7;font:700 12.5px Manrope,system-ui,sans-serif;cursor:pointer;transition:background .2s,border-color .2s,transform .2s}
+.ac-cp svg{width:14px;height:14px}
+.ac-cp:hover,.ac-eye:hover{background:rgba(255,255,255,.11);border-color:rgba(255,255,255,.3)}
+.ac-cp:active,.ac-eye:active{transform:scale(.94)}
+.ac-cp.ok{background:rgba(34,197,94,.16);border-color:rgba(34,197,94,.55);color:#7ef0ad;animation:acPop .45s cubic-bezier(.34,1.56,.64,1)}
+@keyframes acPop{0%{transform:scale(.85)}60%{transform:scale(1.1)}100%{transform:scale(1)}}
+@media(max-width:640px){.ac-lr{flex-wrap:wrap}.ac-lk{width:100%}.ac-lv{flex:1 1 100%}.ac-lr .ac-cp,.ac-lr .ac-eye{flex:1}}
+@media(prefers-reduced-motion:reduce){.ac-sub-card,.ac-cp.ok{animation:none}.ac-track i{transition:none}.ac-track i::after{animation:none}.ac-sub-card:hover{transform:none}}

@@ -1,16 +1,31 @@
 /* Owner-only API for the /admin/ page. Every call needs the x-admin-key header (env ADMIN_KEY).
    GET    /api/admin?q=<text>       list / search subscriptions
    POST   /api/admin                add one  {email,name,phone,service,plan,months,start?,notes?}
-   PATCH  /api/admin?id=<n>         change expiry  {end_date}
+   PATCH  /api/admin?id=<n>         change expiry {end_date} and/or login details {acct_email, acct_pass, acct_otp}
    DELETE /api/admin?id=<n>         remove one
    GET    /api/admin?view=orders    list paid orders (newest first) with delivery status
    PATCH  /api/admin?order=<mtid>   set delivery  {delivery:"pending"|"delivered"} */
 const crypto = require("crypto");
 const db = require("./_db");
 const { addSub, validDate, normEmail } = require("./_subs");
+const cred = require("./_cred");
 
 const h = (s) => crypto.createHash("sha256").update(String(s)).digest();
 const clean = (v, n) => String(v == null ? "" : v).replace(/[\u0000-\u001f]/g, " ").trim().slice(0, n);
+
+/* Login details sent by the admin page: email, password (encrypted before it is stored) and the "OTP based" flag. */
+function loginFields(b) {
+  if (b.acct_email === undefined && b.acct_pass === undefined && b.acct_otp === undefined) return null;
+  const o = {};
+  if (b.acct_email !== undefined) o.acct_email = clean(b.acct_email, 120);
+  if (b.acct_otp !== undefined) o.acct_otp = !!b.acct_otp;
+  if (b.acct_pass !== undefined) {
+    const p = String(b.acct_pass == null ? "" : b.acct_pass).slice(0, 120);
+    if (p && !cred.ready()) throw new Error("AUTH_SECRET is not set, so passwords cannot be stored safely.");
+    o.acct_pass = cred.enc(p);
+  }
+  return o;
+}
 
 module.exports = async (req, res) => {
   res.setHeader("Cache-Control", "no-store");
@@ -40,7 +55,8 @@ module.exports = async (req, res) => {
     if (req.method === "GET") {
       const t = clean(req.query && req.query.q, 60).replace(/[(),*%]/g, "");
       const f = t ? `&or=(email.ilike.*${db.q(t)}*,phone.ilike.*${db.q(t)}*,name.ilike.*${db.q(t)}*,service.ilike.*${db.q(t)}*)` : "";
-      return res.status(200).json({ rows: await db.rest("GET", `subscriptions?select=*&order=created_at.desc&limit=300${f}`) });
+      const rows = await db.rest("GET", `subscriptions?select=*&order=created_at.desc&limit=300${f}`);
+      return res.status(200).json({ rows: (rows || []).map((r) => Object.assign({}, r, { acct_pass: cred.dec(r.acct_pass) })) });
     }
     if (req.method === "POST") {
       const email = normEmail(body.email), months = Math.floor(Number(body.months));
@@ -48,12 +64,18 @@ module.exports = async (req, res) => {
       if (!clean(body.service, 80) || !clean(body.plan, 80) || !(months >= 1 && months <= 60)) return res.status(400).json({ error: "Choose a service and plan." });
       if (body.start && !validDate(body.start)) return res.status(400).json({ error: "Start date is not valid." });
       const row = await addSub({ email, name: clean(body.name, 60), phone: clean(body.phone, 20), service: clean(body.service, 80), plan: clean(body.plan, 80), months, start: body.start || null, notes: clean(body.notes, 200), source: "admin" });
+      const lg = loginFields(body);
+      if (lg && row && row.id) { try { await db.rest("PATCH", `subscriptions?id=eq.${row.id}`, lg); } catch (e) { console.error("login details not saved", e && e.message); return res.status(200).json({ row, warn: "Added, but the login details could not be saved. Run the latest SQL in Supabase." }); } }
       return res.status(200).json({ row });
     }
     if (!(id > 0)) return res.status(400).json({ error: "Missing id." });
     if (req.method === "PATCH") {
-      if (!validDate(body.end_date)) return res.status(400).json({ error: "Expiry date is not valid." });
-      return res.status(200).json({ row: (await db.rest("PATCH", `subscriptions?id=eq.${id}`, { end_date: body.end_date }, "return=representation"))[0] });
+      const upd = {};
+      if (body.end_date !== undefined) { if (!validDate(body.end_date)) return res.status(400).json({ error: "Expiry date is not valid." }); upd.end_date = body.end_date; }
+      const lg = loginFields(body);
+      if (lg) Object.assign(upd, lg);
+      if (!Object.keys(upd).length) return res.status(400).json({ error: "Nothing to change." });
+      return res.status(200).json({ row: (await db.rest("PATCH", `subscriptions?id=eq.${id}`, upd, "return=representation"))[0] });
     }
     if (req.method === "DELETE") { await db.rest("DELETE", `subscriptions?id=eq.${id}`); return res.status(200).json({ ok: true }); }
     return res.status(405).json({ error: "Method not allowed" });

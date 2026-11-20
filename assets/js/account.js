@@ -31,7 +31,23 @@
   }
   var NM = { google: "Google", microsoft: "Microsoft", apple: "Apple" };
   var DATA = null, taka = function (n) { return "৳" + n.toLocaleString("en-US"); };
-  function tile(s) { var p = PROD.filter(function (x) { return x.name === s.service; })[0]; return '<span class="ac-tile" style="--c:' + esc((p && p.color) || "#444") + '" aria-hidden="true">' + esc(((p && p.icon) || s.service[0] || "?").toString().slice(0, 2)) + "</span>"; }
+  var LG = typeof LOGOS !== "undefined" ? LOGOS : {}, LO = typeof LOGO_OF !== "undefined" ? LOGO_OF : {};
+  function tile(s) {
+    var p = PROD.filter(function (x) { return x.name === s.service; })[0], L = LG[LO[s.service]];
+    if (L && L.p) return '<span class="ac-tile ac-logo" style="--c:' + esc(L.bg) + ';--f:' + esc(L.fg || "#fff") + '" aria-hidden="true"><svg viewBox="' + esc(L.vb) + '"><path d="' + L.p + '"/></svg></span>';
+    return '<span class="ac-tile" style="--c:' + esc((p && p.color) || "#444") + '" aria-hidden="true">' + esc(((p && p.icon) || s.service[0] || "?").toString().slice(0, 2)) + "</span>";
+  }
+  var LOCK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
+  var COPY = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>';
+  function loginBox(s) {
+    var lg = s.login || {}, wa = "https://wa.me/" + WA + "?text=" + encodeURIComponent("Hi StreamX! I need the login details for my " + s.service + " (" + s.plan + ").");
+    var h = '<div class="ac-lbx"><div class="ac-lbh">' + LOCK + "Account login</div>";
+    if (!lg.email && !lg.password && !lg.otp) return h + '<p class="ac-lbn">Your login details will appear here once your account is ready. Need them now? <a href="' + wa + '" target="_blank" rel="noopener">Talk to support</a>.</p></div>';
+    h += '<div class="ac-lr"><span class="ac-lk">Email</span><span class="ac-lv">' + (lg.email ? esc(lg.email) : '<em>Not added yet</em>') + "</span>" + (lg.email ? '<button class="ac-cp" type="button" data-copy="e" data-sid="' + s.id + '">' + COPY + "<span>Copy</span></button>" : "") + "</div>";
+    if (lg.otp) h += '<div class="ac-lr"><span class="ac-lk">Password</span><span class="ac-lv ac-ot">OTP based. Please <a href="' + wa + '" target="_blank" rel="noopener">talk to support</a> for your login code.</span></div>';
+    else h += '<div class="ac-lr"><span class="ac-lk">Password</span><span class="ac-lv" data-pv="' + s.id + '">' + (lg.password ? "••••••••••" : "<em>Not added yet</em>") + "</span>" + (lg.password ? '<button class="ac-eye" type="button" data-eye="' + s.id + '" aria-label="Show password"><span>Show</span></button><button class="ac-cp" type="button" data-copy="p" data-sid="' + s.id + '">' + COPY + "<span>Copy</span></button>" : "") + "</div>";
+    return h + "</div>";
+  }
 
   function render(d) {
     $("#login").hidden = true; $("#app").hidden = false; $("#who").textContent = d.email;
@@ -45,18 +61,52 @@
     var gone = rows.filter(function (s) { return s._left < 0; }).sort(function (a, b) { return b._left - a._left; });
     $("#sub").textContent = live.length ? live.length + " active " + (live.length === 1 ? "subscription" : "subscriptions") + ". Expiry dates are in Bangladesh time." : "You have no active subscription right now.";
     if (!rows.length) { $("#list").innerHTML = '<div class="ac-card ac-empty">No subscriptions found for this email yet.<br><a class="ac-btn ac-sm" style="margin-top:14px" href="/#pricing">Browse plans</a></div>'; return; }
+    var idx = 0;
     $("#list").innerHTML = live.concat(gone).map(function (s) {
       var st = s._left < 0 ? ["Expired", "#ef4444"] : s._left <= 7 ? ["Expires soon", "#f59e0b"] : ["Active", "#22c55e"];
-      var total = Math.max(1, days(s.start_date, s.end_date)), used = Math.min(100, Math.max(0, Math.round(days(s.start_date, today) / total * 100)));
+      var total = Math.max(1, days(s.start_date, s.end_date)), left = Math.min(100, Math.max(0, Math.round(s._left / total * 100)));
       var L = s._left, big = L < 0 ? "Expired" : L === 0 ? "Today" : String(L), small = L < 0 ? (-L) + (L === -1 ? " day ago" : " days ago") : L === 0 ? "last day" : (L === 1 ? "day left" : "days left");
       var msg = "Hi StreamX! I want to renew my " + s.service + " (" + s.plan + "), " + (s._left < 0 ? "expired on " : "expires on ") + fmt(s.end_date) + ". My email: " + d.email;
-      return '<article class="ac-sub-card" style="--st:' + st[1] + '">' + tile(s) +
+      return '<article class="ac-sub-card" style="--st:' + st[1] + ';--i:' + (idx++) + '">' + tile(s) +
         '<div><div class="ac-name">' + esc(s.service) + '<span class="ac-chip">' + st[0] + '</span></div><div class="ac-plan">' + esc(s.plan) + '</div>' +
-        '<div class="ac-dates"><span>Started<b>' + fmt(s.start_date) + '</b></span><span>Expires<b>' + fmt(s.end_date) + '</b></span></div><div class="ac-track"><i style="--p:' + used + '%"></i></div></div>' +
-        '<div class="ac-act"><div class="ac-left"><b>' + esc(big) + '</b>' + esc(small) + '</div>' +
-        (planOf(s) ? '<button class="ac-btn ac-sm" type="button" data-renew="' + s.id + '">Renew · ' + taka(planOf(s).price) + '</button>' : '<a class="ac-btn ac-sm" href="' + renewLink(s) + '">Renew</a>') + '<a class="ac-btn ac-ghost ac-sm" target="_blank" rel="noopener" href="https://wa.me/' + WA + "?text=" + encodeURIComponent(msg) + '">Renew on WhatsApp</a></div></article>';
+        '<div class="ac-dates"><span>Started<b>' + fmt(s.start_date) + '</b></span><span>Expires<b>' + fmt(s.end_date) + '</b></span></div><div class="ac-track" title="' + left + '% of this plan is left"><i data-p="' + left + '"></i></div></div>' +
+        '<div class="ac-act"><div class="ac-left"><b data-n="' + (L >= 0 ? L : "") + '">' + esc(big) + '</b>' + esc(small) + '</div>' +
+        (planOf(s) ? '<button class="ac-btn ac-sm" type="button" data-renew="' + s.id + '">Renew · ' + taka(planOf(s).price) + '</button>' : '<a class="ac-btn ac-sm" href="' + renewLink(s) + '">Renew</a>') + '<a class="ac-btn ac-ghost ac-sm" target="_blank" rel="noopener" href="https://wa.me/' + WA + "?text=" + encodeURIComponent(msg) + '">Renew on WhatsApp</a></div>' + (s._left >= 0 ? loginBox(s) : "") + '</article>';
     }).join("");
+    animateIn();
   }
+
+  var calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function animateIn() {
+    var bars = document.querySelectorAll(".ac-track i"), nums = document.querySelectorAll(".ac-left b[data-n]");
+    requestAnimationFrame(function () { requestAnimationFrame(function () { bars.forEach(function (i) { i.style.width = i.dataset.p + "%"; }); }); });
+    if (calm) return;
+    nums.forEach(function (b) {
+      var to = parseInt(b.dataset.n, 10); if (!(to > 0)) return;
+      var t0 = performance.now(), dur = 900 + Math.min(600, to);
+      (function step(t) { var k = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - k, 3); b.textContent = Math.round(to * e); if (k < 1) requestAnimationFrame(step); })(t0);
+    });
+  }
+  function copyText(txt) {
+    if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(txt);
+    return new Promise(function (ok, no) { try { var t = document.createElement("textarea"); t.value = txt; t.style.cssText = "position:fixed;opacity:0"; document.body.appendChild(t); t.select(); document.execCommand("copy") ? ok() : no(); t.remove(); } catch (e) { no(e); } });
+  }
+  function subById(id) { return DATA && DATA.subscriptions.filter(function (x) { return String(x.id) === String(id); })[0]; }
+  document.addEventListener("click", function (e) {
+    var c = e.target.closest("[data-copy]"), v = e.target.closest("[data-eye]");
+    if (c) {
+      var s = subById(c.dataset.sid), lg = s && s.login; if (!lg) return;
+      copyText(c.dataset.copy === "p" ? lg.password : lg.email).then(function () {
+        var sp = c.querySelector("span"); c.classList.add("ok"); sp.textContent = "Copied"; clearTimeout(c._t);
+        c._t = setTimeout(function () { c.classList.remove("ok"); sp.textContent = "Copy"; }, 1800);
+      }).catch(function () { var sp = c.querySelector("span"); sp.textContent = "Press Ctrl+C"; });
+    }
+    if (v) {
+      var s2 = subById(v.dataset.eye), el = document.querySelector('[data-pv="' + v.dataset.eye + '"]'); if (!s2 || !el) return;
+      var show = !el.classList.contains("shown"); el.classList.toggle("shown", show);
+      el.textContent = show ? s2.login.password : "••••••••••"; v.querySelector("span").textContent = show ? "Hide" : "Show";
+    }
+  });
 
   function renderOrders(os) {
     var box = $("#hist"); box.hidden = !os.length; if (!os.length) return;

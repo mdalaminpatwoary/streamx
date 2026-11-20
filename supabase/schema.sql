@@ -18,6 +18,10 @@ create table if not exists public.subscriptions (
   created_at  timestamptz not null default now(),
   unique (order_ref, line_idx)
 );
+-- Login details of the delivered account (password is stored encrypted by the server)
+alter table public.subscriptions add column if not exists acct_email text;
+alter table public.subscriptions add column if not exists acct_pass  text;
+alter table public.subscriptions add column if not exists acct_otp   boolean not null default false;
 create index if not exists subscriptions_email_idx on public.subscriptions (email);
 
 create table if not exists public.orders (

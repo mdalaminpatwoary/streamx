@@ -18,12 +18,16 @@
   }
   $("#svc").addEventListener("change", plans); plans();
 
+  function loginEd(s) {
+    var has = s.acct_email || s.acct_pass || s.acct_otp;
+    return '<details class="ad-lg"><summary>' + (has ? "Edit login ✓" : "Add login") + '</summary><div class="ad-lgb"><input class="ac-in" placeholder="Account email" value="' + esc(s.acct_email || "") + '" data-f="e" autocomplete="off"><input class="ac-in" placeholder="Account password" value="' + esc(s.acct_pass || "") + '" data-f="p" autocomplete="off"><label class="ad-ck"><input type="checkbox" data-f="o"' + (s.acct_otp ? " checked" : "") + '> OTP based (customer talks to support)</label><button class="ac-btn ac-sm" type="button" data-lg="' + s.id + '">Save login</button></div></details>';
+  }
   function list() {
     api("?q=" + encodeURIComponent($("#q").value.trim())).then(function (d) {
       $("#gate").hidden = true; $("#panel").hidden = false; $("#lock").hidden = false; orders();
       $("#rows").innerHTML = d.rows.map(function (s) {
         var left = days(today, s.end_date), c = left < 0 ? "#ef4444" : left <= 7 ? "#f59e0b" : "#22c55e";
-        return '<tr><td data-l="Customer"><div><b>' + esc(s.name || "") + "</b><br>" + esc(s.email) + "<br>" + esc(s.phone || "") + '</div></td><td data-l="Service"><div>' + esc(s.service) + "<br><small>" + esc(s.source) + '</small></div></td><td data-l="Plan">' + esc(s.plan) + '</td><td data-l="Start">' + esc(s.start_date) + '</td><td data-l="Expires"><input class="ac-in" type="date" value="' + esc(s.end_date) + '" data-end="' + s.id + '" style="padding:6px 8px;width:150px"></td><td data-l="Left"><span class="ad-chip" style="color:' + c + '">' + (left < 0 ? "Expired" : left + " days") + '</span></td><td data-l=""><button class="ad-x" data-del="' + s.id + '">Delete</button></td></tr>';
+        return '<tr><td data-l="Customer"><div><b>' + esc(s.name || "") + "</b><br>" + esc(s.email) + "<br>" + esc(s.phone || "") + '</div>' + loginEd(s) + '</td><td data-l="Service"><div>' + esc(s.service) + "<br><small>" + esc(s.source) + '</small></div></td><td data-l="Plan">' + esc(s.plan) + '</td><td data-l="Start">' + esc(s.start_date) + '</td><td data-l="Expires"><input class="ac-in" type="date" value="' + esc(s.end_date) + '" data-end="' + s.id + '" style="padding:6px 8px;width:150px"></td><td data-l="Left"><span class="ad-chip" style="color:' + c + '">' + (left < 0 ? "Expired" : left + " days") + '</span></td><td data-l=""><button class="ad-x" data-del="' + s.id + '">Delete</button></td></tr>';
       }).join("");
       SUBS = d.rows; stats(); $("#cnt").textContent = d.rows.length + " shown (latest 300). Change a date and click away to save.";
     }).catch(function (e) { if (e.status === 401) { key = ""; try { sessionStorage.removeItem("sx_admin"); } catch (x) {} $("#panel").hidden = true; $("#gate").hidden = false; $("#gm").textContent = e.message; } else { $("#cnt").textContent = e.message; $("#gm").textContent = e.message; } });
@@ -55,11 +59,27 @@
   var t; $("#q").addEventListener("input", function () { clearTimeout(t); t = setTimeout(list, 300); });
   $("#af").addEventListener("submit", function (e) {
     e.preventDefault(); var f = e.target, m = $("#am"), o = f.plan.selectedOptions[0];
-    api("", { method: "POST", body: JSON.stringify({ email: f.email.value, name: f.name.value, phone: f.phone.value, service: f.service.value, plan: o.value, months: +o.dataset.m, start: f.start.value || null, notes: f.notes.value }) })
-      .then(function (d) { m.className = "ac-msg ok"; m.textContent = "Added. Expires " + d.row.end_date + "."; f.email.value = f.name.value = f.phone.value = f.start.value = f.notes.value = ""; list(); })
+    api("", { method: "POST", body: JSON.stringify({ email: f.email.value, name: f.name.value, phone: f.phone.value, service: f.service.value, plan: o.value, months: +o.dataset.m, start: f.start.value || null, notes: f.notes.value, acct_email: f.acct_email.value, acct_pass: f.acct_pass.value, acct_otp: f.acct_otp.checked }) })
+      .then(function (d) { m.className = "ac-msg ok"; m.textContent = d.warn ? "Added, but login details were not saved: " + d.warn : "Added. Expires " + d.row.end_date + "."; f.acct_email.value = f.acct_pass.value = ""; f.acct_otp.checked = false; f.email.value = f.name.value = f.phone.value = f.start.value = f.notes.value = ""; list(); })
       .catch(function (er) { m.className = "ac-msg"; m.textContent = er.message; });
   });
   $("#rows").addEventListener("click", function (e) { var b = e.target.closest("[data-del]"); if (b && confirm("Delete this subscription?")) api("?id=" + b.dataset.del, { method: "DELETE" }).then(function () { toast("Deleted."); list(); }).catch(function (er) { toast(er.message, 1); }); });
   $("#rows").addEventListener("change", function (e) { var i = e.target.closest("[data-end]"); if (i && i.value) api("?id=" + i.dataset.end, { method: "PATCH", body: JSON.stringify({ end_date: i.value }) }).then(function () { toast("Date saved."); list(); }).catch(function (er) { toast(er.message, 1); }); });
   if (key) list();
+})();
+
+(function () {
+  var rows = document.querySelector("#rows");
+  function say(m, bad) { var t = document.querySelector("#toast"); t.textContent = m; t.className = "ad-toast on" + (bad ? " err" : ""); setTimeout(function () { t.className = "ad-toast"; }, 3500); }
+  rows.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-lg]"); if (!b) return;
+    var bx = b.parentNode, q = function (k) { return bx.querySelector('[data-f="' + k + '"]'); };
+    var key = ""; try { key = sessionStorage.getItem("sx_admin") || ""; } catch (x) {}
+    b.disabled = true;
+    fetch("/api/admin?id=" + b.dataset.lg, { method: "PATCH", headers: { "x-admin-key": key, "Content-Type": "application/json" }, body: JSON.stringify({ acct_email: q("e").value, acct_pass: q("p").value, acct_otp: q("o").checked }) })
+      .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { if (!r.ok) throw new Error(j.error || "Error " + r.status); }); })
+      .then(function () { say("Login saved."); })
+      .catch(function (er) { say(er.message, 1); })
+      .then(function () { b.disabled = false; });
+  });
 })();

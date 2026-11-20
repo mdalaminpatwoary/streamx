@@ -32,3 +32,7 @@
  .ad-tbl .ac-btn,.ad-tbl .ad-x{width:100%;padding:11px}
  .ad-scroll{overflow:visible}
 }
+
+.ad-lg{margin-top:8px}.ad-lg summary{cursor:pointer;font-size:12.5px;font-weight:700;color:#ffb3aa}
+.ad-lgb{display:grid;gap:8px;margin-top:8px;min-width:230px}.ad-lgb .ac-in{padding:8px 10px}
+.ad-ck{display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer}.ad-ck input{width:auto}
