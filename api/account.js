@@ -8,6 +8,7 @@ const db = require("./_db");
 const { secret, sign, verify, bearer } = require("./_auth");
 const { dhakaToday, normEmail } = require("./_subs");
 const cred = require("./_cred");
+const access = require("./_access");
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const esc = (v) => String(v).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
@@ -71,9 +72,8 @@ module.exports = async (req, res) => {
       const o = verify(bearer(req), "sess");
       if (!o) return res.status(401).json({ error: "Please sign in again." });
       let rows;
-      const base = "id,service,plan,months,start_date,end_date,name,phone";
-      for (const cols of [",acct_email,acct_pass,acct_otp,acct_profile,acct_pin", ",acct_email,acct_pass,acct_otp", ""]) { // newer login columns may not exist yet
-        try { rows = await db.rest("GET", `subscriptions?email=eq.${db.q(o.e)}&select=${base}${cols}&order=end_date.desc`); break; } catch (e) { if (!cols) throw e; }
+      for (const cols of access.TIERS) { // newer columns may not exist yet
+        try { rows = await db.rest("GET", `subscriptions?email=eq.${db.q(o.e)}&select=${access.BASE}${cols}&order=end_date.desc`); break; } catch (e) { if (!cols) throw e; }
       }
       const c = (rows || []).find((r) => r.phone) || (rows || [])[0] || {};
       // Purchase history: paid online orders for this email (empty if the orders table has not been upgraded yet).
@@ -84,7 +84,7 @@ module.exports = async (req, res) => {
       return res.status(200).json({
         email: o.e, today: dhakaToday(), contact: { name: c.name || "", phone: c.phone || "" },
         profile: { name: o.n || c.name || "", picture: o.pic || "", provider: o.pv || "" },
-        subscriptions: (rows || []).map(({ name, phone, acct_email, acct_pass, acct_otp, acct_profile, acct_pin, ...r }) => Object.assign(r, { login: { email: acct_email || "", password: cred.dec(acct_pass), otp: !!acct_otp, profile: acct_profile || "", pin: cred.dec(acct_pin) } })),
+        subscriptions: (rows || []).map((r) => ({ id: r.id, service: r.service, plan: r.plan, months: r.months, start_date: r.start_date, end_date: r.end_date, login: access.fromRow(r) })),
         orders: orders.map((r) => ({ id: r.mtid, date: r.paid_at || r.created_at, delivery: r.delivery || "pending", delivered_at: r.delivered_at || null, lines: Array.isArray(r.lines) ? r.lines : [] })),
       });
     }

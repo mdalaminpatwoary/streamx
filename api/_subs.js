@@ -19,7 +19,7 @@ async function addSub(s) {
   let start = s.start && validDate(s.start) ? s.start : null;
   if (!start) {
     start = dhakaToday();
-    const cur = await rest("GET", `subscriptions?email=eq.${q(email)}&service=eq.${q(s.service)}&select=end_date&order=end_date.desc&limit=1`);
+    const cur = s.nostack ? null : await rest("GET", `subscriptions?email=eq.${q(email)}&service=eq.${q(s.service)}&select=end_date&order=end_date.desc&limit=1`);
     if (cur && cur[0] && cur[0].end_date > start) start = cur[0].end_date;
   }
   const row = {
@@ -40,9 +40,16 @@ async function activateOrder(mtid) {
   const lines = Array.isArray(ord.lines) ? ord.lines : [];
   for (let i = 0; i < lines.length; i++) {
     const l = lines[i];
-    if (!l || !(l.months >= 1)) continue; // gift cards and the like are not subscriptions
+    if (!l) continue;
+    const gift = /gift card$/i.test(String(l.name || ""));
+    if (!gift && !(l.months >= 1)) continue;
     for (let k = 0; k < (l.q || 1); k++) {
-      await addSub({ email: ord.email, name: ord.name, phone: ord.phone, service: l.name, plan: l.plan, months: l.months, source: "online", order_ref: mtid, line_idx: i * 20 + k });
+      // A gift card is valid for 6 months from purchase and never stacks on an earlier one.
+      const row = await addSub({ email: ord.email, name: ord.name, phone: ord.phone, service: l.name, plan: l.plan, months: gift ? 6 : l.months, nostack: gift, source: "online", order_ref: mtid, line_idx: i * 20 + k });
+      if (gift && row && row.id) {
+        const m = /\$\s?(\d+)/.exec(String(l.plan || ""));
+        try { await rest("PATCH", `subscriptions?id=eq.${row.id}`, { gift_region: "US", gift_amount: m ? "$" + m[1] : null }); } catch (e) { console.error("gift details not saved", e && e.message); }
+      }
       n++;
     }
   }

@@ -24,6 +24,14 @@ alter table public.subscriptions add column if not exists acct_pass  text;
 alter table public.subscriptions add column if not exists acct_otp   boolean not null default false;
 alter table public.subscriptions add column if not exists acct_profile text;
 alter table public.subscriptions add column if not exists acct_pin     text;
+alter table public.subscriptions add column if not exists acct_mode    text;
+alter table public.subscriptions add column if not exists acct_phone   text;
+alter table public.subscriptions add column if not exists acct_family  text;
+alter table public.subscriptions add column if not exists vpn_required boolean not null default false;
+alter table public.subscriptions add column if not exists vpn_country  text;
+alter table public.subscriptions add column if not exists gift_code    text;
+alter table public.subscriptions add column if not exists gift_region  text;
+alter table public.subscriptions add column if not exists gift_amount  text;
 create index if not exists subscriptions_email_idx on public.subscriptions (email);
 
 create table if not exists public.orders (

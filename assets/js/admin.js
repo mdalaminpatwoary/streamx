@@ -1,4 +1,4 @@
-/* Owner page: add, search, extend and remove subscriptions. */
+/* Owner page: orders, subscriptions, and how each customer signs in (account access). */
 (function () {
   "use strict";
   var PROD = typeof PRODUCTS !== "undefined" ? PRODUCTS : [];
@@ -8,28 +8,82 @@
   var api = function (qs, opt) { opt = opt || {}; opt.headers = Object.assign({ "x-admin-key": key, "Content-Type": "application/json" }, opt.headers || {}); return fetch("/api/admin" + (qs || ""), opt).then(function (r) { return r.json().catch(function () { return { error: "Server answered " + r.status + ". The API may not be deployed yet." }; }).then(function (j) { if (!r.ok) { var e = new Error(j.error || "Error"); e.status = r.status; throw e; } return j; }); }); };
   var today = new Date(Date.now() + 6 * 3600e3).toISOString().slice(0, 10);
   var days = function (a, b) { return Math.round((Date.parse(b + "T00:00:00Z") - Date.parse(a + "T00:00:00Z")) / 86400000); };
+  var isGift = function (n) { return /gift card$/i.test(n || ""); };
+  var famOf = function (n) { return /truecaller/i.test(n) ? "Family number (plan is activated from this number)" : /spotify/i.test(n) ? "Family mail (plan is activated from this mail)" : ""; };
 
-  var P = PROD.filter(function (p) { return !p.gift; });
+  /* ---------- Account access editor (used in the Add form and in the edit dialog) ---------- */
+  var MODES = [
+    ["email_pass", "Email + password", "✉️"], ["email_otp", "Email + OTP", "✉️"],
+    ["phone_pass", "Number + password", "📱"], ["phone_otp", "Number + OTP", "📱"],
+    ["number", "Number only", "📱"], ["own", "Customer's own email", "👤"], ["none", "Not set yet", "⏳"]
+  ];
+  var MODE_NAME = {}; MODES.forEach(function (m) { MODE_NAME[m[0]] = m[1]; });
+  var cOpts = function (sel) { return '<option value="">Choose a country</option>' + COUNTRIES.map(function (c) { return '<option value="' + c[0] + '"' + (c[0] === sel ? " selected" : "") + ">" + esc(c[1]) + "</option>"; }).join(""); };
+  var uid = 0;
+  function accessHTML(a, svc) {
+    a = a || {}; var g = a.gift || {}, v = a.vpn || {}, n = "m" + (++uid), mode = a.mode || "email_pass", fam = famOf(svc);
+    return '<div class="ad-acc" data-svc="' + esc(svc) + '">' +
+      '<div class="ad-sec" data-only="login"><div class="ad-lab">How does the customer sign in?</div><div class="ad-modes">' + MODES.map(function (m) { return '<label class="ad-mode"><input type="radio" name="' + n + '" value="' + m[0] + '"' + (m[0] === mode ? " checked" : "") + '><span><i>' + m[2] + "</i>" + m[1] + "</span></label>"; }).join("") + "</div>" +
+      '<div class="ad-grid2">' +
+        '<div data-m="email_pass email_otp own"><label>Account email <small data-own>(blank = customer\'s email)</small></label><input class="ac-in" data-a="acct_email" value="' + esc(a.email) + '" autocomplete="off"></div>' +
+        '<div data-m="phone_pass phone_otp number"><label>Account number</label><input class="ac-in" data-a="acct_phone" value="' + esc(a.phone) + '" inputmode="tel" autocomplete="off"></div>' +
+        '<div data-m="email_pass phone_pass"><label>Password</label><input class="ac-in" data-a="acct_pass" value="' + esc(a.password) + '" autocomplete="off"></div>' +
+        '<div data-m="email_pass email_otp phone_pass phone_otp"><label>Profile name <small>(optional)</small></label><input class="ac-in" data-a="acct_profile" value="' + esc(a.profile) + '" autocomplete="off"></div>' +
+        '<div data-m="email_pass email_otp phone_pass phone_otp"><label>Profile PIN <small>(optional)</small></label><input class="ac-in" data-a="acct_pin" value="' + esc(a.pin) + '" inputmode="numeric" autocomplete="off"></div>' +
+        (fam ? '<div class="ad-wide"><label>' + esc(fam) + '</label><input class="ac-in" data-a="acct_family" value="' + esc(a.family) + '" autocomplete="off"></div>' : "") +
+      "</div>" +
+      '<div class="ad-vpn"><label class="ad-sw"><input type="checkbox" data-a="vpn_required"' + (v.required ? " checked" : "") + '><b></b><span>VPN required</span></label><div class="ad-vc" hidden><span class="ad-flag"></span><select class="ac-in" data-a="vpn_country">' + cOpts(v.country) + "</select></div></div></div>" +
+      '<div class="ad-sec" data-only="gift" hidden><div class="ad-lab">Gift card</div><div class="ad-grid2">' +
+        '<div class="ad-wide"><label>Redeem code</label><input class="ac-in" data-a="gift_code" value="' + esc(g.code) + '" autocomplete="off"></div>' +
+        '<div><label>Region</label><select class="ac-in" data-a="gift_region">' + cOpts(g.region || "US") + '</select></div>' +
+        '<div><label>Amount</label><input class="ac-in" data-a="gift_amount" value="' + esc(g.amount) + '" placeholder="$10" autocomplete="off"></div></div>' +
+        '<p class="ac-note">Valid for 6 months from the start date.</p></div></div>';
+  }
+  function syncAccess(root) {
+    var svc = root.dataset.svc, gift = isGift(svc), mode = (root.querySelector("input[type=radio]:checked") || {}).value || "none";
+    root.querySelector('[data-only="login"]').hidden = gift; root.querySelector('[data-only="gift"]').hidden = !gift;
+    root.querySelectorAll("[data-m]").forEach(function (d) { d.hidden = d.dataset.m.split(" ").indexOf(mode) < 0; });
+    var vc = root.querySelector(".ad-vc"), on = root.querySelector('[data-a="vpn_required"]').checked; vc.hidden = !on;
+    var cc = root.querySelector('[data-a="vpn_country"]').value; vc.querySelector(".ad-flag").innerHTML = cc ? flagImg(cc) : "";
+  }
+  function readAccess(root) {
+    var q = function (k) { var e = root.querySelector('[data-a="' + k + '"]'); return e ? (e.type === "checkbox" ? e.checked : e.value.trim()) : ""; };
+    if (isGift(root.dataset.svc)) return { gift_code: q("gift_code"), gift_region: q("gift_region"), gift_amount: q("gift_amount") };
+    var m = (root.querySelector("input[type=radio]:checked") || {}).value || "none", em = /email|own/.test(m), ph = /phone|number/.test(m), pw = /_pass/.test(m);
+    return { acct_mode: m, acct_email: em ? q("acct_email") : "", acct_phone: ph ? q("acct_phone") : "", acct_pass: pw ? q("acct_pass") : "", acct_profile: m === "none" || m === "own" || m === "number" ? "" : q("acct_profile"), acct_pin: m === "none" || m === "own" || m === "number" ? "" : q("acct_pin"), acct_family: q("acct_family"), vpn_required: q("vpn_required"), vpn_country: q("vpn_required") ? q("vpn_country") : "" };
+  }
+  document.addEventListener("change", function (e) { var r = e.target.closest(".ad-acc"); if (r) syncAccess(r); });
+
+  /* ---------- Add form ---------- */
+  var P = PROD;
   $("#svc").innerHTML = P.map(function (p) { return "<option>" + esc(p.name) + "</option>"; }).join("");
   function plans() {
-    var p = P.filter(function (x) { return x.name === $("#svc").value; })[0], o = [];
-    p.variants.forEach(function (v) { v.plans.forEach(function (pl) { o.push({ t: (p.variants.length > 1 ? v.n + " · " : "") + pl.v, m: pl.m }); }); });
-    $("#pln").innerHTML = o.map(function (x) { return '<option data-m="' + x.m + '">' + esc(x.t) + "</option>"; }).join("");
+    var name = $("#svc").value, p = P.filter(function (x) { return x.name === name; })[0], o = [], gift = isGift(name);
+    $("#pwrap").hidden = gift; $("#gwrap").hidden = !gift;
+    if (!gift) { p.variants.forEach(function (v) { v.plans.forEach(function (pl) { o.push({ t: (p.variants.length > 1 ? v.n + " · " : "") + pl.v, m: pl.m }); }); }); $("#pln").innerHTML = o.map(function (x) { return '<option data-m="' + x.m + '">' + esc(x.t) + "</option>"; }).join(""); }
+    var box = $("#accbox"); box.innerHTML = accessHTML({ mode: /truecaller/i.test(name) ? "number" : /spotify/i.test(name) ? "own" : "email_pass" }, name); syncAccess(box.firstChild);
   }
   $("#svc").addEventListener("change", plans); plans();
 
-  function loginEd(s) {
-    var has = s.acct_email || s.acct_pass || s.acct_otp || s.acct_profile || s.acct_pin;
-    return '<details class="ad-lg"><summary>' + (has ? "Edit login ✓" : "Add login") + '</summary><div class="ad-lgb"><input class="ac-in" placeholder="Account email" value="' + esc(s.acct_email || "") + '" data-f="e" autocomplete="off"><input class="ac-in" placeholder="Account password" value="' + esc(s.acct_pass || "") + '" data-f="p" autocomplete="off"><input class="ac-in" placeholder="Profile name (optional)" value="' + esc(s.acct_profile || "") + '" data-f="n" autocomplete="off"><input class="ac-in" placeholder="Profile PIN (optional)" value="' + esc(s.acct_pin || "") + '" data-f="i" autocomplete="off" inputmode="numeric"><label class="ad-ck"><input type="checkbox" data-f="o"' + (s.acct_otp ? " checked" : "") + '> OTP based (customer talks to support)</label><button class="ac-btn ac-sm" type="button" data-lg="' + s.id + '">Save login</button></div></details>';
+  /* ---------- Subscriptions ---------- */
+  function accSummary(s) {
+    var a = s.access || {}, g = a.gift || {}, v = a.vpn || {}, h = "";
+    if (isGift(s.service)) return '<span class="ad-pill ' + (g.code ? "ok" : "warn") + '">' + (g.code ? "Code added" : "Code needed") + "</span>" + (g.amount ? '<span class="ad-pill">' + esc(g.amount) + (g.region ? " · " + esc(g.region) : "") + "</span>" : "");
+    var m = a.mode || "none"; h = '<span class="ad-pill ' + (m === "none" ? "warn" : "ok") + '">' + esc(MODE_NAME[m] || m) + "</span>";
+    var who = /phone|number/.test(m) ? a.phone : a.email; if (who) h += '<small class="ad-who">' + esc(who) + "</small>";
+    if (v.required) h += '<span class="ad-pill">VPN ' + (v.country ? flagImg(v.country) + " " + esc(v.country) : "") + "</span>";
+    if (a.family) h += '<small class="ad-who">Family: ' + esc(a.family) + "</small>";
+    return h;
   }
   function list() {
     api("?q=" + encodeURIComponent($("#q").value.trim())).then(function (d) {
       $("#gate").hidden = true; $("#panel").hidden = false; $("#lock").hidden = false; orders();
-      $("#rows").innerHTML = d.rows.map(function (s) {
+      SUBS = d.rows;
+      $("#rows").innerHTML = d.rows.map(function (s, i) {
         var left = days(today, s.end_date), c = left < 0 ? "#ef4444" : left <= 7 ? "#f59e0b" : "#22c55e";
-        return '<tr><td data-l="Customer"><div><b>' + esc(s.name || "") + "</b><br>" + esc(s.email) + "<br>" + esc(s.phone || "") + '</div>' + loginEd(s) + '</td><td data-l="Service"><div>' + esc(s.service) + "<br><small>" + esc(s.source) + '</small></div></td><td data-l="Plan">' + esc(s.plan) + '</td><td data-l="Start">' + esc(s.start_date) + '</td><td data-l="Expires"><input class="ac-in" type="date" value="' + esc(s.end_date) + '" data-end="' + s.id + '" style="padding:6px 8px;width:150px"></td><td data-l="Left"><span class="ad-chip" style="color:' + c + '">' + (left < 0 ? "Expired" : left + " days") + '</span></td><td data-l=""><button class="ad-x" data-del="' + s.id + '">Delete</button></td></tr>';
+        return '<tr><td data-l="Customer"><div><b>' + esc(s.name || "") + "</b><br>" + esc(s.email) + "<br>" + esc(s.phone || "") + '</div></td><td data-l="Service"><div><b>' + esc(s.service) + "</b><br>" + esc(s.plan) + "<br><small>" + esc(s.source) + '</small></div></td><td data-l="Access"><div class="ad-accs">' + accSummary(s) + '</div></td><td data-l="Expires"><input class="ac-in" type="date" value="' + esc(s.end_date) + '" data-end="' + s.id + '" style="padding:6px 8px;width:150px"></td><td data-l="Left"><span class="ad-chip" style="color:' + c + '">' + (left < 0 ? "Expired" : left + " days") + '</span></td><td data-l=""><div class="ad-btns"><button class="ac-btn ac-sm" data-edit="' + i + '">Edit access</button><button class="ad-x" data-del="' + s.id + '">Delete</button></div></td></tr>';
       }).join("");
-      SUBS = d.rows; stats(); $("#cnt").textContent = d.rows.length + " shown (latest 300). Change a date and click away to save.";
+      stats(); $("#cnt").textContent = d.rows.length + " shown (latest 300). Change a date and click away to save.";
     }).catch(function (e) { if (e.status === 401) { key = ""; try { sessionStorage.removeItem("sx_admin"); } catch (x) {} $("#panel").hidden = true; $("#gate").hidden = false; $("#gm").textContent = e.message; } else { $("#cnt").textContent = e.message; $("#gm").textContent = e.message; } });
   }
   var ORD = [], SUBS = [];
@@ -53,33 +107,33 @@
     $("#ocnt").textContent = rows.length + " order" + (rows.length === 1 ? "" : "s") + ". Only paid orders appear here.";
   }
   $("#of").addEventListener("change", drawOrders);
-  $("#orows").addEventListener("click", function (e) { var b = e.target.closest("[data-dv]"); if (b) api("?order=" + encodeURIComponent(b.dataset.dv), { method: "PATCH", body: JSON.stringify({ delivery: b.dataset.to }) }).then(function (r) { toast(b.dataset.to === "delivered" ? (r && r.mailed ? "Marked delivered. Customer emailed." : "Marked delivered. No email sent.") : "Moved back to not delivered."); orders(); }).catch(function (er) { toast(er.message, 1); }); });
   $("#gf").addEventListener("submit", function (e) { e.preventDefault(); key = $("#ak").value; try { sessionStorage.setItem("sx_admin", key); } catch (x) {} $("#gm").textContent = ""; list(); });
   $("#lock").addEventListener("click", function () { key = ""; try { sessionStorage.removeItem("sx_admin"); } catch (x) {} $("#panel").hidden = true; $("#gate").hidden = false; $("#lock").hidden = true; $("#ak").value = ""; });
   var t; $("#q").addEventListener("input", function () { clearTimeout(t); t = setTimeout(list, 300); });
+
   $("#af").addEventListener("submit", function (e) {
-    e.preventDefault(); var f = e.target, m = $("#am"), o = f.plan.selectedOptions[0];
-    api("", { method: "POST", body: JSON.stringify({ email: f.email.value, name: f.name.value, phone: f.phone.value, service: f.service.value, plan: o.value, months: +o.dataset.m, start: f.start.value || null, notes: f.notes.value, acct_email: f.acct_email.value, acct_pass: f.acct_pass.value, acct_otp: f.acct_otp.checked, acct_profile: f.acct_profile.value, acct_pin: f.acct_pin.value }) })
-      .then(function (d) { m.className = "ac-msg ok"; m.textContent = d.warn ? "Added, but login details were not saved: " + d.warn : "Added. Expires " + d.row.end_date + "."; f.acct_email.value = f.acct_pass.value = f.acct_profile.value = f.acct_pin.value = ""; f.acct_otp.checked = false; f.email.value = f.name.value = f.phone.value = f.start.value = f.notes.value = ""; list(); })
+    e.preventDefault(); var f = e.target, m = $("#am"), name = f.service.value, gift = isGift(name), o = f.plan.selectedOptions[0];
+    var body = Object.assign({ email: f.email.value, name: f.name.value, phone: f.phone.value, service: name, plan: gift ? (f.amount.value.trim() || "Gift card") : o.value, months: gift ? 6 : +o.dataset.m, start: f.start.value || null, notes: f.notes.value }, readAccess($("#accbox").firstChild));
+    if (gift && !body.gift_amount) body.gift_amount = f.amount.value.trim();
+    api("", { method: "POST", body: JSON.stringify(body) })
+      .then(function (d) { m.className = "ac-msg ok"; m.textContent = d.warn ? "Added, but account details were not saved: " + d.warn : "Added. Expires " + d.row.end_date + "."; toast(d.warn ? "Added, but account details were not saved." : "Subscription added."); f.email.value = f.name.value = f.phone.value = f.start.value = f.notes.value = f.amount.value = ""; plans(); list(); })
       .catch(function (er) { m.className = "ac-msg"; m.textContent = er.message; });
   });
-  $("#rows").addEventListener("click", function (e) { var b = e.target.closest("[data-del]"); if (b && confirm("Delete this subscription?")) api("?id=" + b.dataset.del, { method: "DELETE" }).then(function () { toast("Deleted."); list(); }).catch(function (er) { toast(er.message, 1); }); });
+
+  /* Edit access dialog */
+  var dlg = $("#dlg"), cur = null;
+  $("#rows").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-edit]"), d = e.target.closest("[data-del]");
+    if (b) { cur = SUBS[+b.dataset.edit]; $("#dt").textContent = cur.service + " · " + cur.plan; $("#ds").textContent = cur.email; $("#dbody").innerHTML = accessHTML(cur.access, cur.service); syncAccess($("#dbody").firstChild); if (dlg.showModal) dlg.showModal(); else dlg.setAttribute("open", ""); }
+    if (d && confirm("Delete this subscription?")) api("?id=" + d.dataset.del, { method: "DELETE" }).then(function () { toast("Deleted."); list(); }).catch(function (er) { toast(er.message, 1); });
+  });
+  var closeDlg = function () { if (dlg.close) dlg.close(); else dlg.removeAttribute("open"); };
+  $("#dx").addEventListener("click", closeDlg);
+  $("#dsave").addEventListener("click", function () {
+    if (!cur) return; var b = this; b.disabled = true;
+    api("?id=" + cur.id, { method: "PATCH", body: JSON.stringify(readAccess($("#dbody").firstChild)) })
+      .then(function () { toast("Saved."); closeDlg(); list(); }).catch(function (er) { toast(er.message, 1); }).then(function () { b.disabled = false; });
+  });
   $("#rows").addEventListener("change", function (e) { var i = e.target.closest("[data-end]"); if (i && i.value) api("?id=" + i.dataset.end, { method: "PATCH", body: JSON.stringify({ end_date: i.value }) }).then(function () { toast("Date saved."); list(); }).catch(function (er) { toast(er.message, 1); }); });
   if (key) list();
-})();
-
-(function () {
-  var rows = document.querySelector("#rows");
-  function say(m, bad) { var t = document.querySelector("#toast"); t.textContent = m; t.className = "ad-toast on" + (bad ? " err" : ""); setTimeout(function () { t.className = "ad-toast"; }, 3500); }
-  rows.addEventListener("click", function (e) {
-    var b = e.target.closest("[data-lg]"); if (!b) return;
-    var bx = b.parentNode, q = function (k) { return bx.querySelector('[data-f="' + k + '"]'); };
-    var key = ""; try { key = sessionStorage.getItem("sx_admin") || ""; } catch (x) {}
-    b.disabled = true;
-    fetch("/api/admin?id=" + b.dataset.lg, { method: "PATCH", headers: { "x-admin-key": key, "Content-Type": "application/json" }, body: JSON.stringify({ acct_email: q("e").value, acct_pass: q("p").value, acct_otp: q("o").checked, acct_profile: q("n").value, acct_pin: q("i").value }) })
-      .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { if (!r.ok) throw new Error(j.error || "Error " + r.status); }); })
-      .then(function () { say("Login saved."); })
-      .catch(function (er) { say(er.message, 1); })
-      .then(function () { b.disabled = false; });
-  });
 })();

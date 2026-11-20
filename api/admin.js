@@ -8,30 +8,10 @@
 const crypto = require("crypto");
 const db = require("./_db");
 const { addSub, validDate, normEmail } = require("./_subs");
-const cred = require("./_cred");
+const access = require("./_access");
 
 const h = (s) => crypto.createHash("sha256").update(String(s)).digest();
 const clean = (v, n) => String(v == null ? "" : v).replace(/[\u0000-\u001f]/g, " ").trim().slice(0, n);
-
-/* Login details sent by the admin page: email, password (encrypted before it is stored) and the "OTP based" flag. */
-function loginFields(b) {
-  if (b.acct_email === undefined && b.acct_pass === undefined && b.acct_otp === undefined && b.acct_profile === undefined && b.acct_pin === undefined) return null;
-  const o = {};
-  if (b.acct_email !== undefined) o.acct_email = clean(b.acct_email, 120);
-  if (b.acct_otp !== undefined) o.acct_otp = !!b.acct_otp;
-  if (b.acct_profile !== undefined) o.acct_profile = clean(b.acct_profile, 60);
-  if (b.acct_pin !== undefined) {
-    const n = clean(b.acct_pin, 20);
-    if (n && !cred.ready()) throw new Error("AUTH_SECRET is not set, so PINs cannot be stored safely.");
-    o.acct_pin = cred.enc(n);
-  }
-  if (b.acct_pass !== undefined) {
-    const p = String(b.acct_pass == null ? "" : b.acct_pass).slice(0, 120);
-    if (p && !cred.ready()) throw new Error("AUTH_SECRET is not set, so passwords cannot be stored safely.");
-    o.acct_pass = cred.enc(p);
-  }
-  return o;
-}
 
 module.exports = async (req, res) => {
   res.setHeader("Cache-Control", "no-store");
@@ -62,15 +42,15 @@ module.exports = async (req, res) => {
       const t = clean(req.query && req.query.q, 60).replace(/[(),*%]/g, "");
       const f = t ? `&or=(email.ilike.*${db.q(t)}*,phone.ilike.*${db.q(t)}*,name.ilike.*${db.q(t)}*,service.ilike.*${db.q(t)}*)` : "";
       const rows = await db.rest("GET", `subscriptions?select=*&order=created_at.desc&limit=300${f}`);
-      return res.status(200).json({ rows: (rows || []).map((r) => Object.assign({}, r, { acct_pass: cred.dec(r.acct_pass), acct_pin: cred.dec(r.acct_pin) })) });
+      return res.status(200).json({ rows: (rows || []).map((r) => Object.assign({}, r, { acct_pass: undefined, acct_pin: undefined, gift_code: undefined, access: access.fromRow(r) })) });
     }
     if (req.method === "POST") {
-      const email = normEmail(body.email), months = Math.floor(Number(body.months));
+      const gift = /gift card$/i.test(clean(body.service, 80)), email = normEmail(body.email), months = gift ? 6 : Math.floor(Number(body.months));
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return res.status(400).json({ error: "Enter a valid email." });
       if (!clean(body.service, 80) || !clean(body.plan, 80) || !(months >= 1 && months <= 60)) return res.status(400).json({ error: "Choose a service and plan." });
       if (body.start && !validDate(body.start)) return res.status(400).json({ error: "Start date is not valid." });
-      const row = await addSub({ email, name: clean(body.name, 60), phone: clean(body.phone, 20), service: clean(body.service, 80), plan: clean(body.plan, 80), months, start: body.start || null, notes: clean(body.notes, 200), source: "admin" });
-      const lg = loginFields(body);
+      const row = await addSub({ email, name: clean(body.name, 60), phone: clean(body.phone, 20), service: clean(body.service, 80), plan: clean(body.plan, 80), months, nostack: gift, start: body.start || null, notes: clean(body.notes, 200), source: "admin" });
+      const lg = access.toRow(body);
       if (lg && row && row.id) { try { await db.rest("PATCH", `subscriptions?id=eq.${row.id}`, lg); } catch (e) { console.error("login details not saved", e && e.message); return res.status(200).json({ row, warn: "Added, but the login details could not be saved. Run the latest SQL in Supabase." }); } }
       return res.status(200).json({ row });
     }
@@ -78,7 +58,7 @@ module.exports = async (req, res) => {
     if (req.method === "PATCH") {
       const upd = {};
       if (body.end_date !== undefined) { if (!validDate(body.end_date)) return res.status(400).json({ error: "Expiry date is not valid." }); upd.end_date = body.end_date; }
-      const lg = loginFields(body);
+      const lg = access.toRow(body);
       if (lg) Object.assign(upd, lg);
       if (!Object.keys(upd).length) return res.status(400).json({ error: "Nothing to change." });
       return res.status(200).json({ row: (await db.rest("PATCH", `subscriptions?id=eq.${id}`, upd, "return=representation"))[0] });

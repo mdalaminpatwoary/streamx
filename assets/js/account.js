@@ -39,22 +39,47 @@
   }
   var LOCK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
   var COPY = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>';
+  var GIFTI = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M5 12v9h14v-9M7.5 8a2.5 2.5 0 1 1 0-5C10 3 12 8 12 8s2-5 4.5-5a2.5 2.5 0 1 1 0 5"/></svg>';
+  var isGift = function (s) { return /gift card$/i.test(s.service || ""); };
+  var famLabel = function (s) { return /truecaller/i.test(s.service) ? "Family number" : "Family mail"; };
+  var hasFam = function (s) { return /spotify|truecaller/i.test(s.service); };
   function supportMsg(s, lg) {
-    var t = ["Hi StreamX! I need my " + (lg.otp ? "login code" : "login details") + " for " + s.service + ".", ""];
-    if (lg.email) t.push(s.service + " mail: " + lg.email);
+    var phone = lg.mode === "phone_otp" || lg.mode === "phone_pass" || lg.mode === "number";
+    var t = ["Hi StreamX! I need my " + (lg.otp ? "login code" : isGift(s) ? "redeem code" : "login details") + " for " + s.service + ".", ""];
+    if (phone && lg.phone) t.push(s.service + " number: " + lg.phone);
+    else if (lg.email) t.push(s.service + " mail: " + lg.email);
     if (lg.profile) t.push("Profile: " + lg.profile);
+    if (isGift(s) && lg.gift && lg.gift.amount) t.push("Gift card: " + lg.gift.amount + (lg.gift.region ? " (" + lg.gift.region + ")" : ""));
     if (DATA && DATA.email) t.push("My StreamX email: " + DATA.email);
     return t.join("\n");
   }
+  function lrow(k, v, extra, cls) { return '<div class="ac-lr"><span class="ac-lk">' + k + '</span><span class="ac-lv' + (cls ? " " + cls : "") + '">' + v + "</span>" + (extra || "") + "</div>"; }
+  function cp(key, s) { return '<button class="ac-cp" type="button" data-copy="' + key + '" data-sid="' + s.id + '">' + COPY + "<span>Copy</span></button>"; }
+  function secret(k, s, mask, val) { return lrow(({ pass: "Password", pin: "PIN", gift: "Redeem code" })[k], '<span data-sv="' + s.id + ":" + k + '" data-mask="' + mask + '">' + mask + "</span>", '<button class="ac-eye" type="button" data-eye="' + s.id + '" data-k="' + k + '" aria-label="Show"><span>Show</span></button>' + cp(k === "pass" ? "p" : k === "pin" ? "n" : "g", s)); }
   function loginBox(s) {
-    var lg = s.login || {}, wa = "https://wa.me/" + WA + "?text=" + encodeURIComponent(supportMsg(s, lg));
-    var h = '<div class="ac-lbx"><div class="ac-lbh">' + LOCK + "Account login</div>";
-    if (!lg.email && !lg.password && !lg.otp && !lg.profile && !lg.pin) return h + '<p class="ac-lbn">Your login details will appear here once your account is ready. Need them now? <a href="' + wa + '" target="_blank" rel="noopener">Talk to support</a>.</p></div>';
-    h += '<div class="ac-lr"><span class="ac-lk">Email</span><span class="ac-lv">' + (lg.email ? esc(lg.email) : '<em>Not added yet</em>') + "</span>" + (lg.email ? '<button class="ac-cp" type="button" data-copy="e" data-sid="' + s.id + '">' + COPY + "<span>Copy</span></button>" : "") + "</div>";
-    if (lg.otp) h += '<div class="ac-lr"><span class="ac-lk">Password</span><span class="ac-lv ac-ot">OTP based. Please <a href="' + wa + '" target="_blank" rel="noopener">talk to support</a> for your login code.</span></div>';
-    else h += '<div class="ac-lr"><span class="ac-lk">Password</span><span class="ac-lv" data-pv="' + s.id + '">' + (lg.password ? "••••••••••" : "<em>Not added yet</em>") + "</span>" + (lg.password ? '<button class="ac-eye" type="button" data-eye="' + s.id + '" aria-label="Show password"><span>Show</span></button><button class="ac-cp" type="button" data-copy="p" data-sid="' + s.id + '">' + COPY + "<span>Copy</span></button>" : "") + "</div>";
-    if (lg.profile) h += '<div class="ac-lr"><span class="ac-lk">Profile</span><span class="ac-lv">' + esc(lg.profile) + '</span><button class="ac-cp" type="button" data-copy="f" data-sid="' + s.id + '">' + COPY + "<span>Copy</span></button></div>";
-    if (lg.pin) h += '<div class="ac-lr"><span class="ac-lk">PIN</span><span class="ac-lv" data-pn="' + s.id + '">••••</span><button class="ac-eye" type="button" data-eye="' + s.id + '" data-k="pin" aria-label="Show PIN"><span>Show</span></button><button class="ac-cp" type="button" data-copy="n" data-sid="' + s.id + '">' + COPY + "<span>Copy</span></button></div>";
+    var lg = s.login || {}, g = lg.gift || {}, vp = lg.vpn || {}, wa = "https://wa.me/" + WA + "?text=" + encodeURIComponent(supportMsg(s, lg));
+    var sup = '<a href="' + wa + '" target="_blank" rel="noopener">talk to support</a>', h, any = false, mode = lg.mode || "none";
+    if (isGift(s)) {
+      h = '<div class="ac-lbx ac-gift"><div class="ac-lbh">' + GIFTI + "Gift card</div>";
+      if (g.code) h += secret("gift", s, "••••-••••-••••");
+      else h += '<p class="ac-lbn">Your redeem code will appear here once it is ready. Need it now? Please ' + sup + ".</p>";
+      if (g.region) h += lrow("Region", flagImg(g.region) + " " + esc(countryName(g.region)));
+      if (g.amount) h += lrow("Amount", esc(g.amount));
+      h += lrow("Valid until", fmt(s.end_date) + ' <em>(6 months from purchase)</em>');
+      return h + '<p class="ac-lbn ac-hint">Redeem it in the App Store or at apple.com/redeem. Each code works once.</p></div>';
+    }
+    h = '<div class="ac-lbx"><div class="ac-lbh">' + LOCK + "Account login</div>";
+    var ph = lg.phone ? esc(lg.phone) : "<em>Not added yet</em>", em = lg.email ? esc(lg.email) : "<em>Not added yet</em>";
+    var otp = '<span class="ac-ot">OTP based. Please ' + sup + " for your login code.</span>";
+    if (mode === "email_pass" || mode === "email_otp") { any = true; h += lrow("Email", em, lg.email ? cp("e", s) : ""); h += mode === "email_pass" ? (lg.password ? secret("pass", s, "••••••••••") : lrow("Password", "<em>Not added yet</em>")) : lrow("Login", otp); }
+    else if (mode === "phone_pass" || mode === "phone_otp") { any = true; h += lrow("Number", ph, lg.phone ? cp("t", s) : ""); h += mode === "phone_pass" ? (lg.password ? secret("pass", s, "••••••••••") : lrow("Password", "<em>Not added yet</em>")) : lrow("Login", otp); }
+    else if (mode === "number") { any = true; h += lrow("Number", ph, lg.phone ? cp("t", s) : ""); h += '<p class="ac-lbn ac-hint">Activated on this number. No password needed.</p>'; }
+    else if (mode === "own") { any = true; var oe = lg.email || (DATA && DATA.email) || ""; h += lrow("Activated on", esc(oe), cp("e0", s)); h += '<p class="ac-lbn ac-hint">Activated on your own email. No password needed.</p>'; }
+    if (lg.profile) { any = true; h += lrow("Profile", esc(lg.profile), cp("f", s)); }
+    if (lg.pin) { any = true; h += secret("pin", s, "••••"); }
+    if (lg.family && hasFam(s)) { any = true; h += lrow(famLabel(s), esc(lg.family), cp("m", s)) + '<p class="ac-lbn ac-hint">' + (famLabel(s) === "Family number" ? "Your plan is activated from this number." : "Your plan is activated from this mail.") + "</p>"; }
+    if (vp.required) { any = true; h += lrow("VPN", '<span class="ac-vpn"><b>Required</b>' + (vp.country ? flagImg(vp.country) + " " + esc(countryName(vp.country)) : "") + "</span>") + '<p class="ac-lbn ac-hint">Connect to a server in ' + (vp.country ? esc(countryName(vp.country)) : "the required country") + " before you sign in.</p>"; }
+    if (!any) return h + '<p class="ac-lbn">Your login details will appear here once your account is ready. Need them now? Please ' + sup + ".</p></div>";
     return h + "</div>";
   }
 
@@ -62,7 +87,7 @@
     $("#login").hidden = true; $("#app").hidden = false; $("#who").textContent = d.email;
     var pf = d.profile || {}, nm = pf.name || "", av = $("#av"); av.innerHTML = "";
     if (pf.picture) { var im = new Image(); im.alt = ""; im.referrerPolicy = "no-referrer"; im.onerror = function () { av.textContent = (nm || d.email)[0].toUpperCase(); }; im.src = pf.picture; av.appendChild(im); } else av.textContent = (nm || d.email)[0].toUpperCase();
-    $("#hi").textContent = nm ? "Welcome back, " + nm.split(" ")[0] : "Welcome back";
+    $("#hi").textContent = nm ? "Welcome back, " + nm : "Welcome back";
     var pvEl = $("#pv"); pvEl.hidden = !pf.provider; if (pf.provider) pvEl.textContent = "Signed in with " + (NM[pf.provider] || pf.provider);
     renderOrders(d.orders || []);
     DATA = d; var today = d.today, rows = d.subscriptions.map(function (s) { s._left = days(today, s.end_date); return s; });
@@ -80,7 +105,7 @@
         '<div><div class="ac-name">' + esc(s.service) + '<span class="ac-chip">' + st[0] + '</span></div><div class="ac-plan">' + esc(s.plan) + '</div>' +
         '<div class="ac-dates"><span>Started<b>' + fmt(s.start_date) + '</b></span><span>Expires<b>' + fmt(s.end_date) + '</b></span></div><div class="ac-track" title="' + left + '% of this plan is left"><i data-p="' + left + '"></i></div></div>' +
         '<div class="ac-act"><div class="ac-left"><b data-n="' + (L >= 0 ? L : "") + '">' + esc(big) + '</b>' + esc(small) + '</div>' +
-        (planOf(s) ? '<button class="ac-btn ac-sm" type="button" data-renew="' + s.id + '">Renew · ' + taka(planOf(s).price) + '</button>' : '<a class="ac-btn ac-sm" href="' + renewLink(s) + '">Renew</a>') + '<a class="ac-btn ac-ghost ac-sm" target="_blank" rel="noopener" href="https://wa.me/' + WA + "?text=" + encodeURIComponent(msg) + '">Renew on WhatsApp</a></div>' + (s._left >= 0 ? loginBox(s) : "") + '</article>';
+        (isGift(s) ? '<a class="ac-btn ac-sm" href="/#pricing">Buy another</a>' : (planOf(s) ? '<button class="ac-btn ac-sm" type="button" data-renew="' + s.id + '">Renew · ' + taka(planOf(s).price) + '</button>' : '<a class="ac-btn ac-sm" href="' + renewLink(s) + '">Renew</a>') + '<a class="ac-btn ac-ghost ac-sm" target="_blank" rel="noopener" href="https://wa.me/' + WA + "?text=" + encodeURIComponent(msg) + '">Renew on WhatsApp</a>') + '</div>' + (s._left >= 0 ? loginBox(s) : "") + '</article>';
     }).join("");
     animateIn();
   }
@@ -105,15 +130,16 @@
     var c = e.target.closest("[data-copy]"), v = e.target.closest("[data-eye]");
     if (c) {
       var s = subById(c.dataset.sid), lg = s && s.login; if (!lg) return;
-      copyText({ p: lg.password, f: lg.profile, n: lg.pin }[c.dataset.copy] || lg.email).then(function () {
+      var map = { p: lg.password, f: lg.profile, n: lg.pin, e: lg.email, e0: lg.email || (DATA && DATA.email), t: lg.phone, m: lg.family, g: lg.gift && lg.gift.code };
+      copyText(map[c.dataset.copy] || "").then(function () {
         var sp = c.querySelector("span"); c.classList.add("ok"); sp.textContent = "Copied"; clearTimeout(c._t);
         c._t = setTimeout(function () { c.classList.remove("ok"); sp.textContent = "Copy"; }, 1800);
       }).catch(function () { var sp = c.querySelector("span"); sp.textContent = "Press Ctrl+C"; });
     }
     if (v) {
-      var s2 = subById(v.dataset.eye), pin = v.dataset.k === "pin", el = document.querySelector("[" + (pin ? "data-pn" : "data-pv") + '="' + v.dataset.eye + '"]'); if (!s2 || !el) return;
-      var show = !el.classList.contains("shown"), val = pin ? s2.login.pin : s2.login.password; el.classList.toggle("shown", show);
-      el.textContent = show ? val : (pin ? "••••" : "••••••••••"); v.querySelector("span").textContent = show ? "Hide" : "Show";
+      var s2 = subById(v.dataset.eye), k = v.dataset.k, el = document.querySelector('[data-sv="' + v.dataset.eye + ":" + k + '"]'); if (!s2 || !el) return;
+      var l2 = s2.login, val = k === "pin" ? l2.pin : k === "gift" ? l2.gift.code : l2.password, show = !el.classList.contains("shown");
+      el.classList.toggle("shown", show); el.textContent = show ? val : el.dataset.mask; v.querySelector("span").textContent = show ? "Hide" : "Show";
     }
   });
 
