@@ -164,17 +164,31 @@
   /* ---- Update pop-up: shown before anything else when the owner changed account details ---- */
   var PENDING = [], paintLater = null, modal = null, lastFocus = null;
   function setBell() { var n = PENDING.length, b = $("#bn"); if (b) { b.hidden = !n; b.textContent = n; } var bl = $("#bell"); if (bl) bl.classList.toggle("has", !!n); }
+  var TAGS = { sec: "Security", net: "Network", dev: "Devices", acc: "Access", gift: "Gift card", gen: "Update" };
+  function tagOf(l) { return /^login type/i.test(l) || (/email|number|mail|family|profile name/i.test(l) && !/password|PIN/i.test(l)) ? "acc" : /password|PIN/i.test(l) ? "sec" : /VPN/i.test(l) ? "net" : /device/i.test(l) ? "dev" : /code/i.test(l) ? "gift" : /profile/i.test(l) ? "acc" : "gen"; }
   function openNotice() {
     if (!PENDING.length) return;
-    if (!modal) { modal = document.createElement("div"); modal.className = "ac-ov"; modal.setAttribute("role", "dialog"); modal.setAttribute("aria-modal", "true"); modal.setAttribute("aria-labelledby", "acnt"); document.body.appendChild(modal); modal.addEventListener("click", function (e) { if (e.target === modal || e.target.closest("[data-nclose]")) closeNotice(); }); }
-    var many = PENDING.length > 1;
-    modal.innerHTML = '<div class="ac-md"><span class="ac-scan"></span><button class="ac-mx" type="button" data-nclose aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>' +
-      '<div class="ac-mh"><span class="ac-orb"><i></i><i></i><span class="ac-bi">' + BELL + '</span></span><div><small>Account update</small><h3 id="acnt">' + (many ? PENDING.length + " of your accounts were updated" : "Your " + esc(PENDING[0].name) + " details were updated") + "</h3></div></div>" +
-      '<div class="ac-mb">' + PENDING.map(function (p, gi) {
-        return '<section class="ac-mg" style="--d:' + gi + '">' + (many ? '<div class="ac-mgt">' + p.tile + "<b>" + esc(p.name) + "</b><small>" + when(p.at) + "</small></div>" : "") + "<ul>" +
-          p.lines.map(function (l, i) { return '<li style="--i:' + (i + gi * 3) + '"><span class="ac-li">' + lineIcon(l) + "</span><span>" + esc(l) + "</span></li>"; }).join("") + "</ul>" + (many ? "" : "<small class=\"ac-mt\">Updated " + when(p.at) + " (Dhaka time)</small>") + "</section>";
+    if (!modal) {
+      modal = document.createElement("div"); modal.className = "ac-ov"; document.body.appendChild(modal);
+      modal.addEventListener("click", function (e) { if (e.target === modal || e.target.closest("[data-nclose]")) closeNotice(); });
+      /* swipe down on a phone to dismiss */
+      var y0 = null, dy = 0;
+      modal.addEventListener("touchstart", function (e) { if (e.target.closest(".ac-grab,.ac-shh")) { y0 = e.touches[0].clientY; dy = 0; } }, { passive: true });
+      modal.addEventListener("touchmove", function (e) { if (y0 == null) return; dy = Math.max(0, e.touches[0].clientY - y0); var s = modal.querySelector(".ac-sh"); s.style.transition = "none"; s.style.transform = "translateY(" + dy + "px)"; }, { passive: true });
+      modal.addEventListener("touchend", function () { if (y0 == null) return; var s = modal.querySelector(".ac-sh"); s.style.transition = ""; s.style.transform = ""; if (dy > 90) closeNotice(); y0 = null; });
+    }
+    var total = PENDING.reduce(function (n, p) { return n + p.lines.length; }, 0), at = PENDING.reduce(function (a, p) { return p.at > a ? p.at : a; }, "");
+    var k = 0;
+    modal.innerHTML = '<aside class="ac-sh" role="dialog" aria-modal="true" aria-labelledby="acnt"><div class="ac-grab"><i></i></div>' +
+      '<header class="ac-shh"><span class="ac-shi">' + BELL + '<b></b></span><div><h3 id="acnt">What changed in your account</h3><p>' + total + (total === 1 ? " update" : " updates") + " from StreamX · " + when(at) + '</p></div><button class="ac-mx" type="button" data-nclose aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></header>' +
+      '<div class="ac-shb">' + PENDING.map(function (p) {
+        return '<section class="ac-tl"><div class="ac-tlh">' + p.tile + '<div><b>' + esc(p.name) + "</b><small>" + p.lines.length + (p.lines.length === 1 ? " change" : " changes") + "</small></div></div><ol>" +
+          p.lines.map(function (l) {
+            var t = tagOf(l), m = l.split(": "), n = k++;
+            return '<li style="--i:' + n + '"><span class="ac-nd t-' + t + '">' + lineIcon(l) + '</span><div class="ac-cc"><span class="ac-tag t-' + t + '">' + TAGS[t] + "</span><b>" + esc(m.length > 1 ? m[0] : l) + "</b>" + (m.length > 1 ? '<span class="ac-val">' + esc(m.slice(1).join(": ")) + "</span>" : "") + "</div></li>";
+          }).join("") + "</ol></section>";
       }).join("") + "</div>" +
-      '<div class="ac-mf"><p>Open My account to see the new details. Nothing else needs to be done.</p><button class="ac-go" type="button" data-nclose><span>Got it</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg></button></div></div>';
+      '<footer class="ac-shf"><p>Your details are already updated below. Nothing else to do.</p><button class="ac-go" type="button" data-nclose><span>Got it</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg></button></footer></aside>';
     lastFocus = document.activeElement; document.documentElement.style.overflow = "hidden";
     requestAnimationFrame(function () { modal.classList.add("on"); var b = modal.querySelector(".ac-go"); if (b) b.focus({ preventScroll: true }); });
   }
