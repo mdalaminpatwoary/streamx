@@ -9,6 +9,7 @@
   var today = new Date(Date.now() + 6 * 3600e3).toISOString().slice(0, 10);
   var days = function (a, b) { return Math.round((Date.parse(b + "T00:00:00Z") - Date.parse(a + "T00:00:00Z")) / 86400000); };
   var isGift = function (n) { return /gift card$/i.test(n || ""); };
+  var isStream = function (n) { return PROD.some(function (p) { return p.name === n && p.cat === "Streaming"; }); };
 
   /* ---------- Account access editor (used in the Add form and in the edit dialog) ---------- */
   var MODES = [
@@ -28,7 +29,7 @@
   function accessHTML(a, svc, multi) {
     a = a || {}; var g = a.gift || {}, v = a.vpn || {}, d = a.devices || {}, n = "m" + (++uid), mode = a.mode, ph = splitPhone(a.phone);
     if (mode === "phone_pass" || mode === "number") mode = "phone_otp"; else if (!MODE_NAME[mode] || mode === "none") mode = "email_pass";
-    var netflix = /netflix/i.test(svc);
+    var stream = isStream(svc), devs = (d.items || []);
     return '<div class="ad-acc" data-svc="' + esc(svc) + '"' + (multi ? ' data-multi="1"' : "") + ">" +
       '<div class="ad-sec" data-only="login"><div class="ad-lab">How does the customer sign in?</div><div class="ad-modes">' + MODES.map(function (m) { return '<label class="ad-mode"><input type="radio" name="' + n + '" value="' + m[0] + '"' + (m[0] === mode ? " checked" : "") + '><span><i>' + m[2] + "</i>" + m[1] + "</span></label>"; }).join("") + "</div>" +
       '<div class="ad-grid2">' +
@@ -41,7 +42,7 @@
         '<div data-m="email_pass email_otp phone_otp"><label>Profile PIN <small>(optional)</small></label><input class="ac-in" data-a="acct_pin" value="' + esc(a.pin) + '" inputmode="numeric" autocomplete="off"></div>' +
       "</div>" +
       '<div class="ad-vpn"><label class="ad-sw"><input type="checkbox" data-a="vpn_required"' + (v.required ? " checked" : "") + '><b></b><span>VPN required</span></label><div class="ad-vc" hidden><span class="ad-flag"></span><select class="ac-in" data-a="vpn_country">' + vOpts(v.country) + "</select></div></div></div>" +
-      (netflix ? '<div class="ad-sec" data-only="login"><div class="ad-lab">Devices <small>(optional, shown to the customer)</small></div><div class="ad-lab2">Logged in on</div><div class="ad-plats">' + PLATS.map(function (p) { return '<label class="ad-pl"><input type="checkbox" data-p="' + p[0] + '"' + ((d.platforms || []).indexOf(p[0]) > -1 ? " checked" : "") + "><span>" + p[1] + "</span></label>"; }).join("") + '</div><div class="ad-lab2">Device names <small>(up to 3)</small></div><div class="ad-grid3">' + [0, 1, 2].map(function (i) { return '<input class="ac-in" data-dn="' + i + '" maxlength="30" placeholder="Device ' + (i + 1) + '" value="' + esc((d.names || [])[i] || "") + '" autocomplete="off">'; }).join("") + '</div><div class="ad-lab2">Device login limit <small>(optional)</small></div><input class="ac-in ad-lim" data-a="dev_limit" type="number" min="1" max="20" placeholder="e.g. 3" value="' + esc(d.limit || "") + '"></div>' : "") +
+      (stream ? '<div class="ad-sec" data-only="login"><div class="ad-lab">Devices <small>(optional, shown to the customer, up to 3)</small></div><div class="ad-devs">' + [0, 1, 2].map(function (i) { var x = devs[i] || {}; return '<div class="ad-dev"><select class="ac-in" data-dt="' + i + '" aria-label="Device ' + (i + 1) + ' type"><option value="">Type</option>' + PLATS.map(function (p) { return '<option value="' + p[0] + '"' + (x.type === p[0] ? " selected" : "") + ">" + p[1] + "</option>"; }).join("") + '</select><input class="ac-in" data-dn="' + i + '" maxlength="30" placeholder="Device name" value="' + esc(x.name || "") + '" autocomplete="off"></div>'; }).join("") + '</div><div class="ad-lab2">Device login limit <small>(optional)</small></div><input class="ac-in ad-lim" data-a="dev_limit" type="number" min="1" max="20" placeholder="e.g. 3" value="' + esc(d.limit || "") + '"></div>' : "") +
       '<div class="ad-sec" data-only="gift" hidden><div class="ad-lab">Gift card' + (multi ? "s <small>(one order can hold several cards with different amounts)</small>" : "") + "</div>" +
         (multi ? '<div class="ad-glist">' + giftRow({}, 1) + '</div><button type="button" class="ac-btn ac-ghost ac-sm" data-gadd>+ Add another card</button><div style="margin-top:14px;max-width:260px"><label>Region</label><select class="ac-in" data-a="gift_region">' + cOpts(g.region || "US") + "</select></div>"
                : '<div class="ad-grid2"><div class="ad-wide"><label>Redeem code</label><input class="ac-in" data-a="gift_code" value="' + esc(g.code) + '" autocomplete="off"></div><div><label>Region</label><select class="ac-in" data-a="gift_region">' + cOpts(g.region || "US") + '</select></div><div><label>Amount</label><input class="ac-in" data-a="gift_amount" value="' + esc(g.amount) + '" placeholder="$10" autocomplete="off"></div></div>') +
@@ -70,9 +71,9 @@
     var m = (root.querySelector("input[type=radio]:checked") || {}).value || "email_pass", em = m === "email_pass" || m === "email_otp", ph = m === "phone_otp", own = m === "own", pw = m === "email_pass", lg = !own;
     var local = q("acct_local").replace(/\D/g, "").replace(/^0/, ""), cc = q("acct_cc") === "IN" ? "+91" : "+880", ov = q("own_val");
     var out = { acct_mode: m, acct_email: em ? q("acct_email") : own && ov.indexOf("@") > -1 ? ov : "", acct_phone: ph ? (local ? cc + local : "") : own && ov && ov.indexOf("@") < 0 ? ov : "", acct_pass: pw ? q("acct_pass") : "", acct_profile: lg ? q("acct_profile") : "", acct_pin: lg ? q("acct_pin") : "", acct_family: own ? q("acct_family") : "", vpn_required: q("vpn_required"), vpn_country: q("vpn_required") ? q("vpn_country") : "" };
-    if (/netflix/i.test(root.dataset.svc)) {
-      var lim = parseInt(q("dev_limit"), 10);
-      out.acct_devices = { platforms: [].map.call(root.querySelectorAll("[data-p]:checked"), function (c) { return c.dataset.p; }), names: [].map.call(root.querySelectorAll("[data-dn]"), function (i) { return i.value.trim(); }).filter(Boolean).slice(0, 3), limit: lim >= 1 && lim <= 20 ? lim : null };
+    if (isStream(root.dataset.svc)) {
+      var lim = parseInt(q("dev_limit"), 10), items = [0, 1, 2].map(function (i) { return { type: root.querySelector('[data-dt="' + i + '"]').value, name: root.querySelector('[data-dn="' + i + '"]').value.trim() }; }).filter(function (x) { return x.type || x.name; }).map(function (x) { return { type: x.type || "web", name: x.name }; });
+      out.acct_devices = { items: items, limit: lim >= 1 && lim <= 20 ? lim : null };
     }
     return out;
   }
@@ -106,7 +107,7 @@
   }
   function list() {
     api("?q=" + encodeURIComponent($("#q").value.trim())).then(function (d) {
-      $("#gate").hidden = true; $("#panel").hidden = false; $("#lock").hidden = false; orders();
+      $("#gate").hidden = true; $("#panel").hidden = false; $("#lock").hidden = false; orders(); notices();
       SUBS = d.rows;
       $("#rows").innerHTML = d.rows.map(function (s, i) {
         var left = days(today, s.end_date), c = left < 0 ? "#ef4444" : left <= 7 ? "#f59e0b" : "#22c55e";
@@ -121,6 +122,30 @@
     var act = SUBS.filter(function (s) { return days(today, s.end_date) >= 0; }).length, soon = SUBS.filter(function (s) { var l = days(today, s.end_date); return l >= 0 && l <= 7; }).length;
     $("#s1").textContent = p; $("#s2").textContent = dn; $("#s3").textContent = act; $("#s4").textContent = soon; $("#tc1").textContent = p; $("#tc2").textContent = SUBS.length;
   }
+  /* ---------- Notice board ---------- */
+  var KIND = { info: "Update", offer: "Offer", maintenance: "Maintenance", important: "Important" };
+  function notices() {
+    api("?view=notices").then(function (j) {
+      var r = j.rows || [], now = Date.now(); $("#tc3").textContent = r.length;
+      $("#nlist").innerHTML = r.length ? r.map(function (n) {
+        var gone = n.expires_at && Date.parse(n.expires_at) < now;
+        return '<div class="ad-nr' + (gone ? " old" : "") + '"><span class="ad-nk k-' + esc(n.kind) + '">' + esc(KIND[n.kind] || "Update") + '</span><div><b>' + esc(n.title) + "</b>" + (n.message ? "<p>" + esc(n.message) + "</p>" : "") + "<small>" + esc(new Date(n.created_at).toLocaleString("en-GB", { timeZone: "Asia/Dhaka", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })) + (n.expires_at ? " · " + (gone ? "expired " : "hides ") + esc(n.expires_at.slice(0, 10)) : "") + '</small></div><button class="ad-x" data-ndel="' + n.id + '" aria-label="Delete notice">✕</button></div>';
+      }).join("") : '<p class="ac-note">No notices yet.</p>';
+    }).catch(function (e) { $("#nlist").innerHTML = '<p class="ac-msg err" style="display:block">' + esc(e.message.indexOf("notices") > -1 || e.message.indexOf("DB") > -1 ? "Notice board is not set up yet. Run the new SQL in Supabase first." : e.message) + "</p>"; });
+  }
+  document.addEventListener("submit", function (e) {
+    if (e.target.id !== "nf") return; e.preventDefault();
+    var f = e.target, m = $("#nm"), b = f.querySelector("button"); m.className = "ac-msg"; m.textContent = "";
+    if (!f.title.value.trim()) { m.className = "ac-msg err"; m.textContent = "Please add a title."; return; }
+    b.disabled = true;
+    api("?notice=new", { method: "POST", body: JSON.stringify({ title: f.title.value, message: f.message.value, kind: f.kind.value, expires_at: f.expires_at.value ? f.expires_at.value + "T23:59:59+06:00" : "" }) })
+      .then(function () { f.reset(); toast("Notice posted"); notices(); })
+      .catch(function (er) { m.className = "ac-msg err"; m.textContent = er.message; }).then(function () { b.disabled = false; });
+  });
+  document.addEventListener("click", function (e) {
+    var d = e.target.closest("[data-ndel]"); if (!d || !confirm("Delete this notice?")) return;
+    api("?notice=" + d.dataset.ndel, { method: "DELETE" }).then(function () { toast("Notice deleted"); notices(); }).catch(function (er) { toast(er.message, true); });
+  });
   function toast(m, bad) { var t = $("#toast"); t.textContent = m; t.className = "ad-toast on" + (bad ? " err" : ""); clearTimeout(toast.t); toast.t = setTimeout(function () { t.className = "ad-toast"; }, 3200); }
   document.querySelectorAll(".ad-tab").forEach(function (b) { b.addEventListener("click", function () { document.querySelectorAll(".ad-tab").forEach(function (x) { x.setAttribute("aria-selected", x === b ? "true" : "false"); }); document.querySelectorAll(".ad-pane").forEach(function (p) { p.hidden = p.dataset.p !== b.dataset.t; }); }); });
   function orders() {

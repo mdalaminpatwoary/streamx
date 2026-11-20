@@ -27,9 +27,13 @@ function devicesOf(d) {
   if (typeof d === "string") { try { d = JSON.parse(d); } catch (e) { d = null; } }
   d = d && typeof d === "object" ? d : {};
   const lim = parseInt(d.limit, 10);
+  let items = Array.isArray(d.items) ? d.items : null;
+  if (!items) { // older format: separate platform and name lists
+    const pl = Array.isArray(d.platforms) ? d.platforms : [], nm = Array.isArray(d.names) ? d.names : [];
+    items = Array.from({ length: Math.max(pl.length, nm.length) }, (_, i) => ({ type: pl[i], name: nm[i] }));
+  }
   return {
-    platforms: (Array.isArray(d.platforms) ? d.platforms : []).filter((p) => PLATFORMS.includes(p)).filter((p, i, a) => a.indexOf(p) === i),
-    names: (Array.isArray(d.names) ? d.names : []).map((n) => clean(n, 30)).filter(Boolean).slice(0, 3),
+    items: items.map((x) => ({ type: PLATFORMS.includes(x && x.type) ? x.type : "web", name: clean(x && x.name, 30) })).filter((x, i) => x.name || (items[i] && PLATFORMS.includes(items[i].type))).slice(0, 3),
     limit: lim >= 1 && lim <= 20 ? lim : null,
   };
 }
@@ -60,7 +64,7 @@ function toRow(b) {
   if (has("vpn_country")) o.vpn_country = ["IN", "US"].includes(String(b.vpn_country || "").toUpperCase()) ? String(b.vpn_country).toUpperCase() : "";
   if (has("gift_region")) o.gift_region = clean(b.gift_region, 40);
   if (has("gift_amount")) o.gift_amount = clean(b.gift_amount, 20);
-  if (has("acct_devices")) { const d = devicesOf(b.acct_devices); o.acct_devices = d.platforms.length || d.names.length || d.limit ? d : null; }
+  if (has("acct_devices")) { const d = devicesOf(b.acct_devices); o.acct_devices = d.items.length || d.limit ? d : null; }
   for (const [k, n] of [["acct_pass", 120], ["acct_pin", 20], ["gift_code", 120]]) {
     if (!has(k)) continue;
     const v = clean(b[k], n);
@@ -74,7 +78,7 @@ function toRow(b) {
 function describeChange(row, b) {
   const old = fromRow(row), L = [], has = (k) => b[k] !== undefined, s = (k, n) => clean(b[k], n || 200);
   const cn = (c) => (c === "IN" ? "India" : c === "US" ? "United States" : c);
-  const hadAny = old.mode !== "none" || old.email || old.phone || old.password || old.pin || old.profile || old.family || old.gift.code || old.vpn.required || old.devices.platforms.length || old.devices.names.length || old.devices.limit;
+  const hadAny = old.mode !== "none" || old.email || old.phone || old.password || old.pin || old.profile || old.family || old.gift.code || old.vpn.required || old.devices.items.length || old.devices.limit;
   if (has("acct_mode") && s("acct_mode") !== old.mode && s("acct_mode") !== "none") L.push("Login type: " + MODE_LABEL[s("acct_mode")]);
   if (has("acct_email") && s("acct_email") && s("acct_email") !== old.email) L.push(old.email ? "Account email was changed" : "Account email was added");
   if (has("acct_phone") && s("acct_phone") && s("acct_phone") !== old.phone) L.push(old.phone ? "Account number was changed" : "Account number was added");
@@ -91,7 +95,7 @@ function describeChange(row, b) {
     const d = devicesOf(b.acct_devices);
     if (JSON.stringify(d) !== JSON.stringify(old.devices)) {
       if (d.limit !== old.devices.limit && d.limit) L.push("Device limit: " + d.limit);
-      if (JSON.stringify(d.platforms) !== JSON.stringify(old.devices.platforms) || JSON.stringify(d.names) !== JSON.stringify(old.devices.names)) L.push("Signed-in devices were updated");
+      if (JSON.stringify(d.items) !== JSON.stringify(old.devices.items)) L.push("Signed-in devices were updated");
     }
   }
   if (L.length && !hadAny && !L.some((x) => /^Redeem/.test(x))) L.unshift("Your login details are now available");

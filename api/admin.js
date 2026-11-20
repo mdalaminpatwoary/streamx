@@ -22,6 +22,25 @@ module.exports = async (req, res) => {
     const body = typeof req.body === "string" ? JSON.parse(req.body || "{}") : req.body || {};
     const id = parseInt((req.query && req.query.id) || "", 10);
 
+    // Notice board: announcements for every customer (they only raise the bell count)
+    if (req.query && (req.query.view === "notices" || req.query.notice)) {
+      if (req.method === "GET") return res.status(200).json({ rows: await db.rest("GET", "notices?select=*&order=created_at.desc&limit=100") });
+      if (req.method === "POST") {
+        const title = clean(body.title, 80), message = clean(body.message, 500);
+        const kind = ["info", "offer", "maintenance", "important"].includes(body.kind) ? body.kind : "info";
+        if (!title) return res.status(400).json({ error: "Please add a title." });
+        let exp = null;
+        if (body.expires_at) { const d = new Date(body.expires_at); if (isNaN(d)) return res.status(400).json({ error: "Invalid expiry date." }); exp = d.toISOString(); }
+        const row = (await db.rest("POST", "notices", { title, message, kind, expires_at: exp }, "return=representation"))[0];
+        return res.status(200).json({ row });
+      }
+      if (req.method === "DELETE") {
+        const nid = parseInt(req.query.notice, 10);
+        if (!(nid > 0)) return res.status(400).json({ error: "Invalid notice." });
+        await db.rest("DELETE", `notices?id=eq.${nid}`);
+        return res.status(200).json({ ok: true });
+      }
+    }
     const ord = clean(req.query && req.query.order, 40).replace(/[^0-9A-Za-z]/g, "");
     if (req.method === "GET" && req.query && req.query.view === "orders")
       return res.status(200).json({ rows: await db.rest("GET", "orders?select=*&paid=eq.true&order=created_at.desc&limit=200") });

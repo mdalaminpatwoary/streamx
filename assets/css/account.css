@@ -309,3 +309,20 @@ h1{margin:10px 0 8px;font-size:clamp(30px,5vw,46px);line-height:1.1;letter-spaci
 .ac-toast.on{transform:translate(-50%,0);opacity:1}
 .ac-toast svg{width:18px;height:18px;color:#8fa2ff;flex:none}
 @media(prefers-reduced-motion:reduce){.ac-ov,.ac-sh{transition:opacity .2s}.ac-sh{transform:none!important}.ac-shi b,.ac-shi svg,.ac-tl,.ac-tl li,.ac-tl ol::before,.ac-nd,.ac-go::after,.ac-bell.has,.ac-bell.has svg,.ac-tip{animation:none}.ac-tip{opacity:1}}
+/* devices: one row per device (icon + name) */
+.ac-dh{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;font:800 11px Manrope,system-ui,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#9aa3c7}
+.ac-dl{font-style:normal;text-transform:none;letter-spacing:0;font:700 12px Manrope,system-ui,sans-serif;padding:4px 11px;border-radius:99px;border:1px solid rgba(74,222,128,.35);background:rgba(74,222,128,.09);color:#86efac}
+.ac-dl b{color:#fff}.ac-dl.full{border-color:rgba(251,191,36,.45);background:rgba(251,191,36,.1);color:#fcd34d}
+.ac-dlist{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.ac-dlist li{display:flex;align-items:center;gap:12px;padding:9px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.1);background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.025));animation:acDev .5s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i)*70ms)}
+.ac-dic{flex:none;width:32px;height:32px;display:grid;place-items:center;border-radius:9px;background:rgba(143,162,255,.14);color:#a9b8ff}.ac-dic svg{width:18px;height:18px}
+.ac-dn{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font:700 14px Manrope,system-ui,sans-serif;color:#f1f4ff}
+.ac-dt{flex:none;font:700 11px Manrope,system-ui,sans-serif;color:#9aa3c7;padding:3px 9px;border-radius:99px;background:rgba(255,255,255,.06)}
+.ac-dnote{margin:0;font-size:13px;color:#9aa3c7}
+@keyframes acDev{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:none}}
+/* announcements */
+.ac-ann{margin-top:18px}.ac-annh{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:rgba(165,180,252,.14);color:#a5b4fc}.ac-annh svg{width:20px;height:20px}
+.ac-new{display:inline-block;margin-left:7px;padding:2px 8px;border-radius:99px;font:800 10px Manrope,system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase;background:#ff5a4d;color:#fff;box-shadow:0 0 12px rgba(255,90,77,.55);vertical-align:1px}
+.ac-msgt{white-space:pre-line;color:#c3cae8}.ac-cc small{display:block;margin-top:6px;color:#8089ab;font-size:12px}
+@media(prefers-reduced-motion:reduce){.ac-dlist li{animation:none}}
+.ac-val.ac-msgt{display:block;background:none;border:0;padding:4px 0 0;font-weight:500;font-size:13.5px;line-height:1.5}

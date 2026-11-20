@@ -79,3 +79,16 @@ alter table public.login_codes   enable row level security;
 grant usage on schema public to service_role;
 grant select, insert, update, delete on public.subscriptions, public.orders, public.login_links, public.login_codes to service_role;
 grant usage, select on all sequences in schema public to service_role;
+
+-- Notice board (admin announcements shown to every customer; only raises the bell count, never pops up)
+create table if not exists public.notices (
+  id         bigint generated always as identity primary key,
+  title      text not null,
+  message    text not null default '',
+  kind       text not null default 'info',   -- info | offer | maintenance | important
+  expires_at timestamptz,
+  created_at timestamptz not null default now()
+);
+alter table public.notices enable row level security;
+grant select, insert, update, delete on public.notices to service_role;
+grant usage, select on all sequences in schema public to service_role;

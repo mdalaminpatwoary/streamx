@@ -70,10 +70,11 @@
   function waLink(s, lg, issue) { return "https://wa.me/" + WA + "?text=" + encodeURIComponent(supportMsg(s, lg, issue)); }
 
   function devBlock(lg) {
-    var d = lg.devices || {}, h = "";
-    if (d.platforms && d.platforms.length) h += lrow("Signed in on", '<span class="ac-plats">' + d.platforms.map(function (p) { return PLAT[p] ? '<span class="ac-plat">' + PLAT[p][1] + PLAT[p][0] + "</span>" : ""; }).join("") + "</span>");
-    if (d.names && d.names.length) h += lrow("Devices", '<span class="ac-devs">' + d.names.map(function (n) { return '<span class="ac-dev">' + esc(n) + "</span>"; }).join("") + "</span>");
-    if (d.limit) h += lrow("Device limit", "<b>" + d.limit + "</b> " + (d.limit === 1 ? "device" : "devices") + (d.names && d.names.length ? ' <em>(' + d.names.length + " in use)</em>" : ""));
+    var d = lg.devices || {}, it = d.items || [];
+    if (!it.length && !d.limit) return "";
+    var h = '<div class="ac-dh"><span>Signed-in devices</span>' + (d.limit ? '<em class="ac-dl' + (it.length >= d.limit ? " full" : "") + '"><b>' + it.length + "</b> / " + d.limit + " in use</em>" : "") + "</div>";
+    if (it.length) h += '<ul class="ac-dlist">' + it.map(function (x, i) { var p = PLAT[x.type] || PLAT.web; return '<li style="--i:' + i + '"><span class="ac-dic">' + p[1] + '</span><span class="ac-dn">' + esc(x.name || p[0]) + '</span><span class="ac-dt">' + p[0] + "</span></li>"; }).join("") + "</ul>";
+    else h += '<p class="ac-dnote">Up to ' + d.limit + (d.limit === 1 ? " device" : " devices") + " can be signed in at once.</p>";
     return h;
   }
 
@@ -115,7 +116,7 @@
     else {
       topics = ["I cannot sign in"];
       topics.push(lg.otp ? "I need my login code" : "My password is not working");
-      if (lg.devices && (lg.devices.limit || lg.devices.names.length) || /netflix/i.test(s.service)) topics.push("Device limit reached");
+      if ((lg.devices && (lg.devices.limit || (lg.devices.items || []).length)) || PROD.some(function (p) { return p.name === s.service && p.cat === "Streaming"; })) topics.push("Device limit reached");
       if (lg.vpn && lg.vpn.required) topics.push("VPN is not working");
       topics.push("Something else");
     }
@@ -162,12 +163,16 @@
   function when(iso) { var d = new Date(Date.parse(iso) + 6 * 3600000); return fmt(d.toISOString().slice(0, 10)) + ", " + d.toISOString().slice(11, 16); }
 
   /* ---- Update pop-up: shown before anything else when the owner changed account details ---- */
-  var PENDING = [], paintLater = null, modal = null, lastFocus = null;
-  function setBell() { var n = PENDING.length, b = $("#bn"); if (b) { b.hidden = !n; b.textContent = n; } var bl = $("#bell"); if (bl) bl.classList.toggle("has", !!n); }
+  var PENDING = [], ANN = [], paintLater = null, modal = null, lastFocus = null;
+  var SEEN_KEY = "sx_ann_seen";
+  function seenIds() { try { return JSON.parse(localStorage.getItem(SEEN_KEY) || "[]"); } catch (e) { return []; } }
+  function unread() { var s = seenIds(); return ANN.filter(function (n) { return s.indexOf(n.id) < 0; }); }
+  var KT = { info: ["gen", "Update", "spark"], offer: ["gift", "Offer", "gift"], maintenance: ["net", "Maintenance", "devices"], important: ["sec", "Important", "shield"] };
+  function setBell() { var n = PENDING.length + unread().length, b = $("#bn"); if (b) { b.hidden = !n; b.textContent = n; } var bl = $("#bell"); if (bl) bl.classList.toggle("has", !!n); }
   var TAGS = { sec: "Security", net: "Network", dev: "Devices", acc: "Access", gift: "Gift card", gen: "Update" };
   function tagOf(l) { return /^login type/i.test(l) || (/email|number|mail|family|profile name/i.test(l) && !/password|PIN/i.test(l)) ? "acc" : /password|PIN/i.test(l) ? "sec" : /VPN/i.test(l) ? "net" : /device/i.test(l) ? "dev" : /code/i.test(l) ? "gift" : /profile/i.test(l) ? "acc" : "gen"; }
   function openNotice() {
-    if (!PENDING.length) return;
+    if (!PENDING.length && !ANN.length) return;
     if (!modal) {
       modal = document.createElement("div"); modal.className = "ac-ov"; document.body.appendChild(modal);
       modal.addEventListener("click", function (e) { if (e.target === modal || e.target.closest("[data-nclose]")) closeNotice(); });
@@ -178,17 +183,21 @@
       modal.addEventListener("touchend", function () { if (y0 == null) return; var s = modal.querySelector(".ac-sh"); s.style.transition = ""; s.style.transform = ""; if (dy > 90) closeNotice(); y0 = null; });
     }
     var total = PENDING.reduce(function (n, p) { return n + p.lines.length; }, 0), at = PENDING.reduce(function (a, p) { return p.at > a ? p.at : a; }, "");
-    var k = 0;
+    var k = 0, fresh = unread(), sn = seenIds();
     modal.innerHTML = '<aside class="ac-sh" role="dialog" aria-modal="true" aria-labelledby="acnt"><div class="ac-grab"><i></i></div>' +
-      '<header class="ac-shh"><span class="ac-shi">' + BELL + '<b></b></span><div><h3 id="acnt">What changed in your account</h3><p>' + total + (total === 1 ? " update" : " updates") + " from StreamX · " + when(at) + '</p></div><button class="ac-mx" type="button" data-nclose aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></header>' +
+      '<header class="ac-shh"><span class="ac-shi">' + BELL + '<b></b></span><div><h3 id="acnt">' + (PENDING.length ? "What changed in your account" : "Notice board") + "</h3><p>" + (PENDING.length ? total + (total === 1 ? " update" : " updates") + " from StreamX · " + when(at) : fresh.length ? fresh.length + " new from StreamX" : "Latest from StreamX") + '</p></div><button class="ac-mx" type="button" data-nclose aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></header>' +
       '<div class="ac-shb">' + PENDING.map(function (p) {
         return '<section class="ac-tl"><div class="ac-tlh">' + p.tile + '<div><b>' + esc(p.name) + "</b><small>" + p.lines.length + (p.lines.length === 1 ? " change" : " changes") + "</small></div></div><ol>" +
           p.lines.map(function (l) {
             var t = tagOf(l), m = l.split(": "), n = k++;
             return '<li style="--i:' + n + '"><span class="ac-nd t-' + t + '">' + lineIcon(l) + '</span><div class="ac-cc"><span class="ac-tag t-' + t + '">' + TAGS[t] + "</span><b>" + esc(m.length > 1 ? m[0] : l) + "</b>" + (m.length > 1 ? '<span class="ac-val">' + esc(m.slice(1).join(": ")) + "</span>" : "") + "</div></li>";
           }).join("") + "</ol></section>";
-      }).join("") + "</div>" +
-      '<footer class="ac-shf"><p>Your details are already updated below. Nothing else to do.</p><button class="ac-go" type="button" data-nclose><span>Got it</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg></button></footer></aside>';
+      }).join("") + (ANN.length ? '<section class="ac-tl ac-ann"><div class="ac-tlh"><span class="ac-annh">' + BELL + '</span><div><b>Announcements</b><small>' + ANN.length + (ANN.length === 1 ? " notice" : " notices") + "</small></div></div><ol>" +
+        ANN.map(function (n) {
+          var kt = KT[n.kind] || KT.info, isNew = sn.indexOf(n.id) < 0, n2 = k++;
+          return '<li style="--i:' + n2 + '"><span class="ac-nd t-' + kt[0] + '">' + LINEI[kt[2]] + '</span><div class="ac-cc"><span class="ac-tag t-' + kt[0] + '">' + kt[1] + "</span>" + (isNew ? '<span class="ac-new">New</span>' : "") + "<b>" + esc(n.title) + "</b>" + (n.message ? '<span class="ac-val ac-msgt">' + esc(n.message) + "</span>" : "") + "<small>" + esc(when(n.at)) + "</small></div></li>";
+        }).join("") + "</ol></section>" : "") + "</div>" +
+      '<footer class="ac-shf"><p>' + (PENDING.length ? "Your details are already updated below. Nothing else to do." : "You are all caught up after this.") + '</p><button class="ac-go" type="button" data-nclose><span>Got it</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg></button></footer></aside>';
     lastFocus = document.activeElement; document.documentElement.style.overflow = "hidden";
     requestAnimationFrame(function () { modal.classList.add("on"); var b = modal.querySelector(".ac-go"); if (b) b.focus({ preventScroll: true }); });
   }
@@ -196,6 +205,7 @@
     if (!modal || !modal.classList.contains("on")) return;
     var ids = []; PENDING.forEach(function (p) { p.ids.forEach(function (i) { ids.push(i); var s = subById(i); if (s && s.login) s.login.notice = null; }); });
     var t = get(); if (t && ids.length) api("seen", { method: "POST", headers: { Authorization: "Bearer " + t, "Content-Type": "application/json" }, body: JSON.stringify({ ids: ids }) }).catch(function () {});
+    try { localStorage.setItem(SEEN_KEY, JSON.stringify(ANN.map(function (n) { return n.id; }).slice(-60))); } catch (e) {}
     PENDING = []; setBell(); modal.classList.remove("on"); modal.classList.add("off"); document.documentElement.style.overflow = "";
     setTimeout(function () { if (modal) modal.classList.remove("off"); }, 400);
     if (lastFocus && lastFocus.focus) try { lastFocus.focus({ preventScroll: true }); } catch (e) {}
@@ -203,7 +213,7 @@
   }
   function flash(msg) { var t = document.createElement("div"); t.className = "ac-toast"; t.innerHTML = BELL + "<span>" + esc(msg) + "</span>"; document.body.appendChild(t); requestAnimationFrame(function () { t.classList.add("on"); }); setTimeout(function () { t.classList.remove("on"); setTimeout(function () { t.remove(); }, 400); }, 2200); }
   document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeNotice(); });
-  document.addEventListener("click", function (e) { if (e.target.closest("#bell")) { if (PENDING.length) openNotice(); else flash("You are all caught up. No new updates."); } });
+  document.addEventListener("click", function (e) { if (e.target.closest("#bell")) { if (PENDING.length || ANN.length) openNotice(); else flash("You are all caught up. No new updates."); } });
 
   function render(d) {
     $("#login").hidden = true; $("#app").hidden = false; $("#who").textContent = d.email;
@@ -215,7 +225,7 @@
     var live = groupRows(rows.filter(function (s) { return s._left >= 0; }).sort(function (a, b) { return a._left - b._left; }));
     var gone = groupRows(rows.filter(function (s) { return s._left < 0; }).sort(function (a, b) { return b._left - a._left; }));
     $("#sub").textContent = live.length ? live.length + " active " + (live.length === 1 ? "subscription" : "subscriptions") + ". Expiry dates are in Bangladesh time." : "You have no active subscription right now.";
-    PENDING = []; paintLater = null;
+    PENDING = []; paintLater = null; ANN = Array.isArray(d.notices) ? d.notices : [];
     var idx = 0, html;
     if (!rows.length) html = '<div class="ac-card ac-empty">No subscriptions found for this email yet.<br><a class="ac-btn ac-sm" style="margin-top:14px" href="/#pricing">Browse plans</a></div>';
     else html = live.concat(gone).map(function (s) {
