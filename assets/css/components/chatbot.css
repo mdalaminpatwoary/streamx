@@ -182,3 +182,11 @@ button.bt-btn{appearance:none}
 .bt-rwa{align-self:center;font:600 11.5px Manrope,system-ui,sans-serif;color:#8e99c0;text-decoration:underline;text-underline-offset:3px}
 .bt-rwa:hover{color:#6ee7b7}
 .bt-tile.bt-logo{width:30px;height:30px;border-radius:9px}.bt-tile.bt-logo svg{width:60%;height:60%;fill:currentColor}
+/* clear, jitter-free hover for action buttons (no movement, whole button reacts) */
+.bt-btn{transition:background .2s,box-shadow .2s,border-color .2s}
+.bt-btn:hover,.bt-ag-wa:hover{transform:none!important;filter:none!important}
+.bt-btn.bt-go:hover{background:linear-gradient(135deg,#ff6a4d,#e5301f);box-shadow:0 10px 26px -8px rgba(237,49,36,.95),0 0 0 3px rgba(237,49,36,.28)}
+.bt-btn.bt-go:hover::after{animation:none;opacity:0}
+.bt-btn.bt-wa:hover{background:linear-gradient(135deg,#34e078,#17a88f);box-shadow:0 0 0 3px rgba(37,211,102,.28)}
+.bt-ag-wa:hover{box-shadow:0 10px 24px -8px rgba(37,211,102,.95),0 0 0 3px rgba(37,211,102,.28)}
+.bt-rwa{padding:4px 8px;transition:color .2s}
