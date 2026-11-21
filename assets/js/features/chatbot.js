@@ -80,7 +80,7 @@
   const I_WA='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97s-.47-.15-.67.15-.77.97-.94 1.16-.35.22-.64.08c-.3-.15-1.26-.46-2.4-1.48-.88-.79-1.48-1.76-1.65-2.06s-.02-.46.13-.6c.13-.13.3-.35.45-.52s.2-.3.3-.5.05-.37-.02-.52c-.08-.15-.67-1.61-.92-2.2-.24-.58-.49-.5-.67-.5h-.57c-.2 0-.52.07-.8.37s-1.04 1.02-1.04 2.48 1.07 2.88 1.21 3.08c.15.2 2.1 3.2 5.08 4.49.71.3 1.26.49 1.7.63.71.23 1.36.2 1.87.12.57-.08 1.76-.72 2-1.41s.25-1.29.17-1.41c-.07-.13-.27-.2-.57-.35M12.05 21.8a9.9 9.9 0 0 1-5.03-1.38l-.36-.21-3.74.98 1-3.65-.24-.37a9.86 9.86 0 0 1-1.51-5.26c0-5.45 4.44-9.89 9.9-9.89 2.64 0 5.12 1.03 6.99 2.9a9.82 9.82 0 0 1 2.9 7c0 5.46-4.44 9.9-9.9 9.9M20.5 3.49A11.8 11.8 0 0 0 12.05 0C5.5 0 .16 5.34.16 11.89c0 2.1.55 4.14 1.59 5.95L.06 24l6.3-1.65a11.88 11.88 0 0 0 5.68 1.45c6.55 0 11.9-5.34 11.9-11.9 0-3.18-1.24-6.17-3.48-8.41"/></svg>';
   const I_MS='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3C6.9 3 3 6.8 3 11.5c0 2.6 1.2 4.8 3.1 6.3V21l3-1.7c.9.2 1.8.4 2.9.4 5.1 0 9-3.8 9-8.5S17.1 3 12 3z"/><path d="m7.5 13.5 3.2-3.3 2.2 2 3.6-2.7"/></svg>';
   const I_IG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r=".6"/></svg>';
-  const agentHtml=()=>`<p>Sure. A real person is ready to help you.</p><div class="bt-agent"><div class="bt-ag-top"><span class="bt-ag-av"><img src="/assets/img/brand/al-amin.webp" alt="${NAME}" width="52" height="52"><i></i></span><div><b>${NAME}</b><small>StreamX &middot; available for help</small></div></div><a class="bt-ag-wa" href="${esc(wa("Hi Muhammad Al-Amin! I need help."))}" target="_blank" rel="noopener">${I_WA}<span>Chat on WhatsApp<small>+880 1312-850241 &middot; 24/7</small></span></a><div class="bt-ag-row"><a href="https://m.me/streamx.com.bd" target="_blank" rel="noopener">${I_MS}Messenger</a><a href="https://instagram.com/streamx.com.bd" target="_blank" rel="noopener">${I_IG}Instagram</a></div><a class="bt-ag-mail" href="mailto:streamx.com.bd@gmail.com">streamx.com.bd@gmail.com</a></div>`;
+  const agentHtml=()=>`<p>Sure. A real person is ready to help you.</p><div class="bt-agent"><div class="bt-ag-top"><span class="bt-ag-av"><img src="/assets/img/brand/al-amin.webp" alt="${NAME}" width="52" height="52"><i></i></span><div><b>${NAME}</b><small>StreamX &middot; available for help</small></div></div><a class="bt-ag-wa" href="${esc(wa("Hi Muhammad Al-Amin! I need help."))}" target="_blank" rel="noopener">${I_WA}<span>Chat on WhatsApp<small>+880 1312-850241 &middot; 24/7</small></span></a><div class="bt-ag-row"><a href="https://m.me/streamx.com.bd" target="_blank" rel="noopener">${I_MS}Messenger</a><a href="https://instagram.com/streamx.com.bd" target="_blank" rel="noopener">${I_IG}Instagram</a></div><button type="button" class="bt-ag-chat" data-act="sendchat">Send this chat to support</button><a class="bt-ag-mail" href="mailto:streamx.com.bd@gmail.com">streamx.com.bd@gmail.com</a></div>`;
   const catsHtml=()=>{const m={};LIST.forEach(p=>{m[p.cat]=(m[p.cat]||0)+1});return `<p>We have ${LIST.length} services. Pick a group or type a service name:</p>`+chips(Object.keys(m).map(c=>c==="Bundle"?"Bundles":c).concat(["Help me choose"]))};
   const byCat=c=>{const a=LIST.filter(p=>p.cat===c||(c==="Bundles"&&p.cat==="Bundle"));return a.length?`<p>${esc(c)}:</p>${mini(a.map(p=>[p,minOf(p)]))}`:""};
   const payHtml=()=>`<p>You can pay online or manually. Online is the fastest.</p>
@@ -103,6 +103,33 @@
     return `<div class="bt-card bt-sum"><div class="bt-ct">${esc(p.name)}<em>${esc(x.v)}</em></div><p class="bt-cd">${p.variants.length>1?esc(v.n)+" · ":""}${esc(v.line)}</p><div class="bt-big">${taka(x.p)}</div>`+
       ((v.notes||[]).length?`<ul class="bt-notes">${v.notes.map(n=>`<li>${esc(n)}</li>`).join("")}</ul>`:"")+
       `<div class="bt-row">${act("Pay online","buy",d," bt-go")}${act("Add to cart","cart",d)}${btn("WhatsApp",wa(`Hi StreamX! I want ${p.name}${p.variants.length>1?" – "+v.n:""} (${x.v}) - ${taka(x.p)}.`),"  bt-wa")}</div><p class="bt-pn"><i></i>Secure payment on EPS: bKash, Nagad, Rocket, Upay or card</p></div>`;
+  }
+
+  /* ---------- cart, best value and feature finder ---------- */
+  function cartReply(){
+    const c=typeof cart!=="undefined"?cart:[];
+    if(!c.length)return{h:`<p>Your cart is empty. Pick a plan and I will add it for you.</p><div class="bt-row">${btn("Browse plans","/#pricing"," bt-go")}</div>`,c:["Prices & plans","Help me choose"]};
+    const tot=c.reduce((n,x)=>n+x.q*x.p,0);
+    return{h:`<p>Here is your cart:</p><div class="bt-card"><ul>${c.map(x=>`<li><span>${esc(x.name)}${x.vr?" · "+esc(x.vr):""}<small class="bt-sm"> ${esc(x.v)} ×${x.q}</small></span><b>${taka(x.p*x.q)}</b></li>`).join("")}</ul><div class="bt-big">${taka(tot)}</div><div class="bt-row">${act("Pay online","paycart","",
+" bt-go")}${act("Open cart","opencart","")}</div><p class="bt-pn"><i></i>Secure payment on EPS: bKash, Nagad, Rocket, Upay or card</p></div>`,c:["Payment methods","Talk to a human"]};
+  }
+  function valueHtml(p){
+    const rows=p.variants.map(v=>{const a=v.plans||[];if(a.length<2)return"";const f=a[0],l=a[a.length-1],m1=l.p/l.m,sv=Math.round((1-m1/(f.p/f.m))*100);return sv>=3?`<li><span>${esc(v.n)}<small class="bt-sm"> ${esc(l.v)}</small></span><b>${taka(Math.round(m1))}/mo <small>save ${sv}%</small></b></li>`:""}).join("");
+    return rows?`<div class="bt-card"><div class="bt-ct">${esc(p.name)}<em>Best value</em></div><ul>${rows}</ul><p class="bt-cd">The longest plan has the lowest price per month.</p><div class="bt-row">${canPick(p)?act("Choose plan &amp; pay online","pick",`data-i="${idx(p)}"`," bt-go"):""}${btn("View plans","#plan="+slug(p.name))}</div></div>`:"";
+  }
+  function valueReply(t){
+    const p=findProducts(norm(t))[0]||ctx.p;
+    if(p){ctx.p=p;const h=valueHtml(p);return{h:h||`<p>${esc(p.name)} has one price, so there is no longer-plan discount.</p>`+productCard(p),c:ctxChips(p)}}
+    const S=LIST.filter(x=>x.cat==="Streaming").slice(0,3).map(x=>x.name);
+    return{h:`<p>Longer plans cost less per month. Tell me the service and I will show you the best value.</p>`,c:S.concat(["Bundles"])};
+  }
+  const FEATS=[["TV support",/\btv\b/i,["tv support","support tv","work on tv","works on tv","on my tv","smart tv","tv plan"]],["Private profile",/private/i,["private profile","private account","own profile"]],["4K quality",/4k/i,["4k"]],["Multi-device access",/multi-device/i,["multi device","multi-device","multiple devices","more than one device","more devices"]],["Ad-free",/ad-free/i,["ad free","ad-free","no ads","without ads"]],["Offline downloads",/offline/i,["offline"]],["Automatic renewal",/automatic renewal/i,["auto renew","automatic renewal","auto-renew","autorenew"]],["Activation on your own email",/own email/i,["own email","your own email","on my email"]],["Works in any country",/any country/i,["any country","global region","work abroad","works abroad"]]];
+  function featRoute(q,ql){
+    if(!/\b(which|what|any|list|show|find)\b.{0,40}\b(plans?|services?|subscriptions?|ones?)\b|\b(plans?|services?) (with|that|which|having)\b/.test(ql))return null;
+    const F=FEATS.find(x=>x[2].some(k=>ql.indexOf(k)>-1));if(!F)return null;
+    const hits=[];LIST.filter(p=>!p.gift).forEach(p=>{const vs=p.variants.filter(v=>F[1].test((v.f||[]).concat([v.line||"",v.tag||""]).join(" | ")));if(vs.length)hits.push([p,vs])});
+    if(!hits.length)return{h:`<p>I could not find a plan with ${esc(F[0].toLowerCase())} listed. Tell us what you need and we will suggest one.</p>`+waBtn("Hi StreamX! I am looking for a plan with "+F[0].toLowerCase()+"."),c:["Help me choose","Talk to a human"]};
+    return{h:`<p>Plans with <b>${esc(F[0].toLowerCase())}</b>:</p><ul class="bt-mini">${hits.slice(0,8).map(x=>`<li><a href="/#plan=${slug(x[0].name)}" data-close>${esc(x[0].name)}</a><b>${esc(x[1].slice(0,2).map(v=>v.n).join(", "))}</b></li>`).join("")}</ul>${hits.length>8?`<p class="bt-cd">Showing 8 of ${hits.length} services.</p>`:""}<p class="bt-cd">Open a service to see its exact plans and prices.</p>`,c:["Prices & plans","Help me choose","Talk to a human"]};
   }
 
   /* ---------- guided recommendation ---------- */
@@ -136,30 +163,32 @@
    ["reviews",["reviews","testimonials","customers say","customer feedback","ratings"],()=>({h:`<p>Real customer reviews are in the Reviews section of the site.</p><div class="bt-row">${btn("Read reviews","/#reviews"," bt-go")}</div>`,c:["Is it safe?","Prices & plans"]})],
    ["bulk",["bulk","wholesale","reseller price","resell","agency","many accounts","large order"],()=>({h:`<p>For bulk orders or reseller pricing, message us on WhatsApp with what you need.</p>`+waBtn("Hi StreamX! I want to ask about bulk or reseller pricing."),c:["Talk to a human"]})],
    ["policy",["policy","terms","refund","money back","return","replace","replacement","warranty","guarantee"],()=>({h:`<p>${esc(POL.return[1][0])}</p><p>${esc(POL.return[1][1])}</p><div class="bt-row">${btn("Return policy","/return-policy/")}${btn("Terms","/terms/")}${waBtn("Hi StreamX! I need help with a refund or replacement. Order details: ")}</div>`,c:["It is not working","Talk to a human"]})]
+   ,["cartview",["my cart","show cart","view cart","open cart","in my cart","cart items","what is in my cart","checkout now","go to checkout","pay my cart"],()=>cartReply()],
+   ["value",["best value","best deal","cheapest per month","per month cost","save more","most savings","long term","yearly discount","longer plan","which duration"],t=>valueReply(t)]
   ];
 
   /* ---------- intents ---------- */
   const INT=[
-   ["greet",["hi","hello","hey","salam","assalamu","assalamualaikum","good morning","good evening","হাই","হ্যালো","সালাম","আসসালামু"],()=>({h:`<p>Hi! I'm the StreamX assistant. Ask me about prices, plans, payment, delivery or your account, or let me help you choose.</p>`,c:["Prices & plans","Help me choose","Payment methods","My login details"]})],
-   ["thanks",["thanks","thank","thx","shukriya","ধন্যবাদ","থ্যাংক"],()=>({h:`<p>You're welcome! Anything else I can help with?</p>`,c:["Prices & plans","Talk to a human"]})],
+   ["greet",["hi","hello","hey","salam","assalamu","assalamualaikum","good morning","good evening","kemon acho","kemon achen","apni kemon","হাই","হ্যালো","সালাম","আসসালামু"],()=>({h:`<p>Hi! I'm the StreamX assistant. Ask me about prices, plans, payment, delivery or your account, or let me help you choose.</p>`,c:["Prices & plans","Help me choose","Payment methods","My login details"]})],
+   ["thanks",["thanks","thank","thx","shukriya","dhonnobad","dhonyobad","ধন্যবাদ","থ্যাংক"],()=>({h:`<p>You're welcome! Anything else I can help with?</p>`,c:["Prices & plans","Talk to a human"]})],
    ["about_bot",["chat assistant","chatbot","this chat","this bot","what can you do","what can you help","how can you help","can you help"],()=>({h:`<p>I can answer questions about prices, plans, payment and delivery, compare plans, help you choose and take you to checkout. If you are signed in, I can also show your subscriptions, days left, login details and orders. For anything else, a real person is one tap away.</p>`,c:["Prices & plans","Help me choose","My subscriptions","Talk to a human"]})],
-   ["human",["human","admin","real person","real assistant","talk to","speak to","speak with","contact","customer support","need support","get support","call","phone number","whatsapp number","messenger","instagram","email","owner","manager","যোগাযোগ","সাপোর্ট","নাম্বার","এডমিন","অ্যাডমিন"],()=>({h:agentHtml(),c:["Prices & plans","Payment methods"]})],
+   ["human",["human","admin","real person","real assistant","talk to","speak to","speak with","contact","customer support","need support","get support","call","phone number","whatsapp number","messenger","instagram","email","owner","manager","kotha bolbo","kotha bolte","helpline","jogajog","যোগাযোগ","সাপোর্ট","নাম্বার","এডমিন","অ্যাডমিন"],()=>({h:agentHtml(),c:["Prices & plans","Payment methods"]})],
    ["choose",["help me choose","recommend","suggest","which service","what should i","not sure","confused","best for","suggestion","help me pick","which one should"],()=>({h:`<p>Happy to help. What will you mostly use it for?</p>`,c:Object.keys(INTERESTS)})],
-   ["order",["order","buy","purchase","checkout","cart","how to get","কিভাবে","কীভাবে","অর্ডার","কিনব","কিনতে"],()=>({h:faq(0)+`<div class="bt-row">${btn("Browse plans","/#pricing"," bt-go")}</div>`,c:["Payment methods","Delivery time","Prices & plans"]})],
-   ["delivery",["deliver","how long","how fast","instant","when will","wait","ডেলিভারি","কতক্ষণ","কত সময়"],()=>({h:faq(1),c:["How do I order?","Payment methods","My login details"]})],
+   ["order",["order","buy","purchase","checkout","cart","how to get","কিভাবে","কীভাবে","অর্ডার","কিনব","কিনতে","kinbo","kinte chai","kivabe kinbo","kibhabe kinbo","kivabe order"],()=>({h:faq(0)+`<div class="bt-row">${btn("Browse plans","/#pricing"," bt-go")}</div>`,c:["Payment methods","Delivery time","Prices & plans"]})],
+   ["delivery",["deliver","how long","how fast","instant","when will","wait","ডেলিভারি","কতক্ষণ","কত সময়","koto somoy","kokhon pabo","koto khon"],()=>({h:faq(1),c:["How do I order?","Payment methods","My login details"]})],
    ["login",["login","log in","sign in","password","pin","otp","login code","verification code","my account","account details","days left","where do i find","লগইন","পাসওয়ার্ড","পিন","কোড"],()=>({h:faq(2)+`<p>You sign in with a one-time code sent to your email, and you can renew in one tap from there.</p><div class="bt-row">${btn("Open My account","/account/"," bt-go")}</div>`,c:["It is not working","Renew my plan","Talk to a human"]})],
-   ["payment",["pay","payment","bkash","nagad","rocket","upay","visa","mastercard","debit card","credit card","bank","transfer","eps","online payment","পেমেন্ট","বিকাশ","নগদ","রকেট","উপায়","টাকা পাঠ"],()=>({h:payHtml(),c:["Is it safe?","How do I order?","Delivery time"]})],
+   ["payment",["pay","payment","bkash","nagad","rocket","upay","visa","mastercard","debit card","credit card","bank","transfer","eps","online payment","পেমেন্ট","বিকাশ","নগদ","রকেট","উপায়","টাকা পাঠ","taka pathabo","kivabe pay","kibhabe pay","payment kivabe"],()=>({h:payHtml(),c:["Is it safe?","How do I order?","Delivery time"]})],
    ["safe",["safe","secure","trust","legit","scam","fake","real","genuine","reliable","নিরাপদ","বিশ্বাস","ভুয়া"],()=>({h:faq(4),c:["Can I try before paying?","Payment methods","Read reviews"]})],
    ["trial",["trial","try","test","before pay","before paying","demo","delivery before"],()=>({h:faq(5)+waBtn("Hi StreamX! Can I get delivery before payment?"),c:["Is it safe?","Payment methods"]})],
-   ["problem",["not working","doesn't work","does not work","stopped","problem","issue","error","wrong password","cannot","can't","cant","failed","expired","কাজ করছে না","সমস্যা","কাজ করে না"],q=>({h:faq(6)+`<p>Send us the service name, your email and a screenshot and we will sort it out.</p>`+waBtn("Hi StreamX! I need help: "+q),c:["My login details","Return policy","Renew my plan"]})],
+   ["problem",["not working","doesn't work","does not work","stopped","problem","issue","error","wrong password","cannot","can't","cant","failed","expired","কাজ করছে না","সমস্যা","কাজ করে না","kaj korche na","kaj kore na","hocche na"],q=>({h:faq(6)+`<p>Send us the service name, your email and a screenshot and we will sort it out.</p>`+waBtn("Hi StreamX! I need help: "+q),c:["My login details","Return policy","Renew my plan"]})],
    ["vpn",["vpn","location block","geo"],()=>({h:faq(7),c:["NordVPN","Surfshark","ExpressVPN"]})],
    ["gift",["gift","redeem","itunes","app store","apple card","গিফট"],()=>({h:faq(8),c:["Apple Gift Card","How to redeem","Gift card price"]})],
    ["renew",["renew","renewal","extend","duration","validity","expire","how many month","1 year","6 month","long plan","auto","নবায়ন","রিনিউ","মেয়াদ"],()=>({h:faq(9)+`<p>Most plans do not renew by themselves. Plans that include automatic renewal say so on their plan card.</p><div class="bt-row">${btn("Open My account","/account/")}</div>`,c:["Prices & plans","Talk to a human"]})],
    ["devices",["device","tv","phone","mobile","tablet","laptop","android","ios","iphone","ipad","web","screen","smart tv","firestick","ডিভাইস","টিভি","মোবাইল"],()=>({h:`<p>Every plan lists the devices it supports, for example mobile, tablet, web or TV. Tell me the service and I'll show it.</p>`,c:["Netflix devices","Prime Video devices","Spotify devices"]})],
    ["bundle",["bundle","combo","together","discount","offer","deal","coupon","promo","ডিসকাউন্ট","অফার","কম্বো"],()=>({h:`<p>Bundles cost less than buying each service alone.</p>`+(byCat("Bundles")||"")+`<p>Looking for a custom combo? Message us.</p>`+waBtn("Hi StreamX! Can you suggest a combo for me?"),c:["Prices & plans","Talk to a human"]})],
    ["cheap",["cheap","cheapest","lowest","affordable","budget","under","below","less than","within","price list","দাম কম","সস্তা","বাজেট"],q=>{const m=q.match(/(\d{2,5})/);return{h:budgetList(m?+m[1]:0),c:["Under 200","Under 500","Bundles"]}}],
-   ["catalog",["price","prices","cost","how much","plans","plan","services","service","products","product","what do you","list","দাম","প্রাইস","কত","প্ল্যান"],()=>({h:catsHtml()})],
-   ["about",["who are you","about","who is","where are you","dhaka","located","company","owner","founder"],()=>({h:`<p>${esc(POL.about[1][0])}</p><p>${esc(POL.about[1][1])}</p>`,c:["Is it safe?","Talk to a human"]})]
+   ["catalog",["price","prices","cost","how much","plans","plan","services","service","products","product","what do you","list","দাম","প্রাইস","কত","প্ল্যান","dam koto","koto taka","price koto","koto dam","dam ki"],()=>({h:catsHtml()})],
+   ["about",["who are you","about streamx","about you","about us","about the company","about your company","who is streamx","who is behind","who is the owner","who owns","where are you","dhaka","located","company","owner","founder"],()=>({h:`<p>${esc(POL.about[1][0])}</p><p>${esc(POL.about[1][1])}</p>`,c:["Is it safe?","Talk to a human"]})]
   ];
   const RULES=KB.concat(INT);
   const CATNAMES={"streaming":"Streaming","ai tools":"AI Tools","music & audio":"Music & Audio","music":"Music & Audio","productivity":"Productivity","learning":"Learning","gift cards":"Gift Cards","virtual cards":"Virtual Cards","bundles":"Bundles"};
@@ -182,6 +211,7 @@
     let ps=findProducts(q);
     const wr=watchRoute(q,ql,t);if(wr)return wr;
     const ar=acctRoute(q,ql,ps);if(ar)return ar;
+    const fr=featRoute(q,ql);if(fr)return fr;
     const scored=RULES.map(r=>[r,any(q,r[1])]).filter(x=>x[1]>0).sort((a,b)=>b[1]-a[1]);
     const best=scored.length?scored[0][0]:null;
     const explain=any(q,["difference","which plan","best plan","plan types","plan type","which one","better","what is the best","which is best"])>0;
@@ -221,7 +251,7 @@
   }
   /* Nothing on StreamX matched: look the question up online (Wikipedia), show a short answer with its source, else hand over to the team. */
   function webSearch(t){
-    const unsure={h:`<p>I'm not sure about that one. Send your question to our team and we will reply on WhatsApp.</p>`+waBtn("Hi StreamX! "+t),c:["Prices & plans","Help me choose","How do I order?","Payment methods"]};
+    const unsure={h:`<p>I'm not sure about that one. Send your question to our team and we will reply on WhatsApp.</p><div class="bt-row">${waBtn("Hi StreamX! "+t)}${act("Send this chat","sendchat","")}</div>`,c:["Prices & plans","Help me choose","How do I order?","Payment methods"]};
     const q=t.replace(/^\s*(please\s+)?(what('?s| is| are| was)|who('?s| is| was)|where is|when (is|was)|tell me about|explain|define|meaning of|about)\s+(an? |the )?/i,"").replace(/[?!.]+$/,"").trim();
     if(q.length<3||q.length>100||/@|\d{7,}/.test(q)||/^(ok|okay|thanks?|thank you|hmm+|yes|no|bye)$/i.test(q))return unsure;
     return {p:getJ("/api/catalog?a=web&q="+encodeURIComponent(q)).then(d=>{
@@ -239,6 +269,24 @@
   root.insertBefore(panel,root.firstChild);
   const log=panel.querySelector("#btLog"),inp=panel.querySelector("#btI"),stat=panel.querySelector("#btS");
   const IDLE="<span>Instant answers. Real people on WhatsApp.</span>";
+  /* voice input where the browser supports it */
+  (function(){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR)return;
+    const form=panel.querySelector("#btF"),PH=inp.placeholder;let rec=null;
+    const mic=document.createElement("button");mic.type="button";mic.className="bt-mic";mic.setAttribute("aria-label","Speak your question");
+    mic.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>';
+    form.insertBefore(mic,form.lastElementChild);
+    mic.onclick=()=>{if(rec){rec.stop();return}
+      try{rec=new SR();rec.lang=/^bn/i.test(navigator.language)?"bn-BD":"en-US";rec.interimResults=true;let fin="";mic.classList.add("on");inp.placeholder="Listening...";
+        rec.onresult=e=>{let t="";for(let i=0;i<e.results.length;i++)t+=e.results[i][0].transcript;inp.value=t;fin=t};
+        rec.onend=()=>{rec=null;mic.classList.remove("on");inp.placeholder=PH;if(fin.trim())ask(fin)};rec.onerror=()=>{};rec.start()}
+      catch(e){rec=null;mic.classList.remove("on");inp.placeholder=PH}};
+  })();
+  /* arrow up / down brings back earlier questions */
+  let hist=-1;
+  inp.addEventListener("keydown",e=>{if(e.key!=="ArrowUp"&&e.key!=="ArrowDown")return;
+    const us=[].slice.call(log.querySelectorAll(".bt-u")).map(n=>n.textContent.trim()).filter(Boolean);if(!us.length)return;e.preventDefault();
+    hist=e.key==="ArrowUp"?Math.min(us.length-1,hist+1):Math.max(-1,hist-1);inp.value=hist<0?"":us[us.length-1-hist]});
+  inp.addEventListener("input",()=>{hist=-1});
   let started=false,busy=false,lastBtn=$("#cwBtn");
 
   /* ---------- signed-in customers: their own subscriptions, details and orders (secrets stay hidden until the customer taps Show) ---------- */
@@ -306,8 +354,12 @@
   function ordersHtml(d){
     const os=(d.orders||[]).slice(0,3);if(!os.length)return `<p>I do not see any online orders on your account yet.</p><div class="bt-row">${btn("Browse services","/services/"," bt-go")}</div>`;
     const dt=iso=>fdate(new Date(Date.parse(iso)+6*3600000).toISOString().slice(0,10));
+    /* the receipt maker (shared with My account) is loaded the first time orders are shown */
+    window.sxOrders=d.orders;window.sxWho={name:(d.profile&&d.profile.name)||"",email:d.email||"",phone:(d.profile&&d.profile.phone)||""};
+    if(!window.sxReceiptLoaded){window.sxReceiptLoaded=1;const sc=document.createElement("script");sc.src="/assets/js/features/receipt.js?v=1";sc.async=true;document.head.appendChild(sc)}
+    const RCI='<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m0 0l-4.5-4.5M12 15l4.5-4.5M5 21h14"/></svg>';
     return `<p>Your latest orders:</p>`+os.map(o=>{const ok=o.delivery==="delivered",pr=o.lines.length&&o.lines.every(l=>l.price>0),tot=pr?o.lines.reduce((t,l)=>t+l.price*(l.q||1),0):0;
-      return `<div class="bt-card"><div class="bt-ct">Order #${esc(String(o.id).slice(-8).toUpperCase())}<em class="bt-st ${ok?"ok":"warn"}">${ok?"Delivered":"Processing"}</em></div><p class="bt-cd">${dt(o.date)}${ok&&o.delivered_at?" · delivered "+dt(o.delivered_at):""}</p><ul class="bt-ul">${o.lines.map(l=>`<li>${esc(l.name)}${l.plan?` <span class="bt-cd">${esc(l.plan)}</span>`:""} ×${l.q||1}</li>`).join("")}</ul>${tot?`<p class="bt-pr">Total ${taka(tot)}</p>`:""}</div>`}).join("")+`<div class="bt-row">${btn("All orders in My account","/account/")}</div>`;
+      return `<div class="bt-card"><div class="bt-ct">Order #${esc(String(o.id).slice(-8).toUpperCase())}<em class="bt-st ${ok?"ok":"warn"}">${ok?"Delivered":"Processing"}</em></div><p class="bt-cd">${dt(o.date)}${ok&&o.delivered_at?" · delivered "+dt(o.delivered_at):""}</p><ul class="bt-ul">${o.lines.map(l=>`<li>${esc(l.name)}${l.plan?` <span class="bt-cd">${esc(l.plan)}</span>`:""} ×${l.q||1}</li>`).join("")}</ul><div class="bt-br">${tot?`<p class="bt-pr">Total ${taka(tot)}</p>`:"<span></span>"}<button type="button" class="bt-rc" data-rc="${d.orders.indexOf(o)}" aria-label="Download receipt for order ${esc(String(o.id).slice(-8).toUpperCase())}"><span>Receipt</span>${RCI}</button></div></div>`}).join("")+`<div class="bt-row">${btn("All orders in My account","/account/")}</div>`;
   }
   function daysHtml(d){
     const a=d.subscriptions.slice().sort((x,y)=>x._left-y._left);if(!a.length)return listHtml(d);
@@ -435,16 +487,20 @@
   /* returns {p:Promise<reply>} for signed-in account questions, a sign-in prompt when signed out, or null */
   function acctRoute(q,ql,ps){
     const A=ks=>any(q,ks)>0;
-    if(/forgot|reset|how (do|to|can)|change (my )?(password|email)/.test(ql))return null;
+    if(/forgot|reset|how (do|to|can)|change (my )?(password|email)|\bcart\b|checkout/.test(ql))return null;
     const SUBS=A(["my subscription","my subscriptions","my plans","my plan","my services","active subscription","what do i have","my account","my active","my accounts"])||/^my subscriptions?$/.test(ql);
     const LOGIN=A(["login details","my login","my password","password","my pin","credentials","show my","copy my","my profile","login code","my email","my number","my devices","signed in devices"]);
     const DAYS=A(["days left","how many days","expire","expiry","when does","how long left","end date","valid until","time left"]);
     const ORD=A(["my order","my orders","order status","order history","purchase history","receipt","invoice","track my"]);
     const REN=A(["renew"])&&!A(["how"]);
-    if(!(SUBS||LOGIN||DAYS||ORD||REN))return null;
+    const SPEND=A(["how much did i spend","how much have i spent","total spent","my spending","spent so far","total spend","how much have i paid","how much i paid","money spent"]);
+    if(!(SUBS||LOGIN||DAYS||ORD||REN||SPEND))return null;
     if(!token())return{h:signIn(),c:["Prices & plans","Talk to a human"]};
     const ch=["My subscriptions","My orders","Renew my plan","Talk to a human"];
     const run=f=>({p:loadAcc().then(f,e=>({h:`<p>${e.status===401?"Your session ended. Please sign in again to see your account here.":"I could not load your account just now. Please try again in a moment."}</p><div class="bt-row">${btn("Open My account","/account/"," bt-go")}</div>`}))});
+    if(SPEND)return run(d=>{const os=d.orders||[],priced=os.filter(o=>o.lines.length&&o.lines.every(l=>l.price>0)),tot=priced.reduce((n,o)=>n+o.lines.reduce((m,l)=>m+l.price*(l.q||1),0),0),live=d.subscriptions.filter(x=>x._left>=0).length;
+      if(!os.length)return{h:`<p>I do not see any online orders on your account yet.</p><div class="bt-row">${btn("Browse services","/services/"," bt-go")}</div>`,c:["Prices & plans","Help me choose"]};
+      return{h:`<div class="bt-card"><div class="bt-ct">Your spending<em>Online orders</em></div><div class="bt-big">${taka(tot)}</div><ul><li><span>Orders</span><b>${os.length}</b></li><li><span>Active plans</span><b>${live}</b></li></ul><p class="bt-cd">Adds up the online orders in your account. Orders paid on WhatsApp are not included.</p></div>`,c:["My orders","My subscriptions","Renew my plan"]}});
     if(ORD)return run(d=>({h:ordersHtml(d),c:["My subscriptions","Renew my plan","Talk to a human"]}));
     if(REN)return run(d=>({h:renewHtml(d),c:ch}));
     if(DAYS&&!LOGIN)return run(d=>({h:daysHtml(d),c:["My subscriptions","Renew my plan","My orders"]}));
@@ -507,6 +563,7 @@
   function doAct(el){
     const a=el.dataset.act,i=+el.dataset.i,v=+el.dataset.v,k=+el.dataset.k,p=PRODUCTS[i];
     if(a==="eye"||a==="cp"){secretAct(el);return}
+    if(a==="sendchat"){const us=[].slice.call(log.querySelectorAll(".bt-u")).map(n=>n.textContent.trim()).filter(Boolean).slice(-5);window.open(wa(us.length?"Hi StreamX! I need help. My recent questions in the chat:\n"+us.map((x,j)=>(j+1)+". "+x).join("\n"):"Hi StreamX! I need help."),"_blank","noopener");return}
     if(a==="lw"||a==="lv"||a==="lf"||a==="ld"){listAct(el);return}
     if(busy)return;
     if(a==="sub"){loadAcc().then(()=>{const x=subById(el.dataset.sid);if(x)reply(x.service,{h:detailHtml(x),c:["My subscriptions","Renew my plan","My orders"]})});return}
@@ -516,6 +573,7 @@
     if(a==="dur"){reply(p.variants[v].plans[k].v,{h:sumHtml(i,v,k)});return}
     if(a==="cart"){addToCart(i,v,k);el.classList.add("done");el.textContent="Added ✓";strip();bot({h:`<p>Added to your cart. Ready to pay?</p><div class="bt-row">${act("Open cart","opencart","")}${act("Pay online","buy",`data-i="${i}" data-v="${v}" data-k="${k}"`," bt-go")}</div>`,c:["Prices & plans","Talk to a human"]});return}
     if(a==="opencart"){close();openCart(true);return}
+    if(a==="paycart"){close();setTimeout(()=>{const b=document.getElementById("payBtn");if(b)b.click()},260);return}
     if(a==="buy"){close();setTimeout(()=>buyNow(i,v,k),260)}
   }
   function open(){
@@ -523,7 +581,7 @@
     const u=root.querySelector(".cw-unread");if(u)u.remove();try{sessionStorage.setItem("sx_bot_seen","1")}catch(e){}
     if(!started){started=true;let s=null;try{s=JSON.parse(sessionStorage.getItem("sx_bot")||"null")}catch(e){}
       if(s&&s.h){log.innerHTML=s.h;log.querySelectorAll(".bt-m").forEach(m=>m.classList.add("rest"));if(s.p)ctx.p=LIST.find(x=>x.name===s.p)||null;down()}
-      else if(token()){bot({p:loadAcc().then(d=>{const live=d.subscriptions.filter(x=>x._left>=0).length,nm=((d.profile&&d.profile.name)||"").trim();return{h:`<p>Hi${nm?" "+esc(nm):""}! You are signed in${live?` and have ${live} active subscription${live>1?"s":""}`:""}. I can show your plans, days left, login details and orders right here, and I can also help you buy.</p>`,c:live?["My subscriptions","My orders","Renew my plan","Prices & plans","Talk to a human"]:["Prices & plans","Help me choose","My orders","Talk to a human"]}},()=>({h:`<p>Hi, I'm the StreamX assistant. Ask me anything about prices, plans, payment, delivery or your account.</p>`,c:["Prices & plans","Help me choose","How do I pay online?","Delivery time","My login details","Talk to a human"]}))})}
+      else if(token()){bot({p:loadAcc().then(d=>{const soon=d.subscriptions.filter(x=>x._left>=0&&x._left<=7).sort((a,b)=>a._left-b._left),live=d.subscriptions.filter(x=>x._left>=0).length,nm=((d.profile&&d.profile.name)||"").trim();return{h:`<p>Hi${nm?" "+esc(nm):""}! You are signed in${live?` and have ${live} active subscription${live>1?"s":""}`:""}. I can show your plans, days left, login details and orders right here, and I can also help you buy.</p>`+(soon.length?`<p><b>Heads up:</b> ${esc(soon[0].service)} ${soon[0]._left===0?"ends today":"ends in "+soon[0]._left+(soon[0]._left===1?" day":" days")}${soon.length>1?", and "+(soon.length-1)+" more plan"+(soon.length>2?"s":"")+" end soon":""}. Renew online to keep it going.</p>`:""),c:live?(soon.length?["Renew my plan","My subscriptions","My orders","Prices & plans","Talk to a human"]:["My subscriptions","My orders","Renew my plan","Prices & plans","Talk to a human"]):["Prices & plans","Help me choose","My orders","Talk to a human"]}},()=>({h:`<p>Hi, I'm the StreamX assistant. Ask me anything about prices, plans, payment, delivery or your account.</p>`,c:["Prices & plans","Help me choose","How do I pay online?","Delivery time","My login details","Talk to a human"]}))})}
       else show({h:`<p>Hi, I'm the StreamX assistant. Ask me anything about prices, plans, payment, delivery or your account.</p>`,c:["Prices & plans","Help me choose","How do I pay online?","Delivery time","My login details","Talk to a human"]})}
     setTimeout(()=>{down();inp.focus({preventScroll:true})},250)}
   function close(){maskAll();panel.classList.remove("on");root.classList.remove("cw-open");setTimeout(()=>{if(!panel.classList.contains("on"))panel.hidden=true},250)}
