@@ -351,7 +351,40 @@
       return{h,c:which==="wish"?["My watched list","Top rated"]:which==="watched"?["My wishlist","Top rated"]:["Top rated","Talk to a human"]};
     }).catch(e=>({h:failH(e),c:["Talk to a human"]}))};
   }
+  /* Questions about a movie or series itself (director, cast, plot, release, length, rating): answered from TMDB; Wikipedia is the backup. */
+  function infoQ(t){
+    const P=[["dir",/^(?:who (?:directed|made|created|produced)|who is the (?:director|creator) of|who(?:'s| is) the (?:director|creator) of|director of|creator of)\s+(?:the (?:movie|film|series|show)\s+)?(.{2,70})$/i],
+      ["cast",/^(?:who (?:stars|acted|plays?|is|are) (?:in|the (?:cast|actors) (?:of|in))|who(?:'s| is) in|cast of|actors? (?:of|in)|starring in|the cast of)\s+(?:the (?:movie|film|series|show)\s+)?(.{2,70})$/i],
+      ["plot",/^(?:what(?:'s| is| was) (?:the )?(?:plot|story|synopsis|summary) of|plot of|synopsis of|summary of|story of|what(?:'s| is) (?:the )?(?:movie|film|series|show)\s+)?(.{2,70}?)\s+about$|^(?:plot|story|synopsis|summary) of\s+(?:the (?:movie|film|series|show)\s+)?(.{2,70})$|^tell me about (?:the )?(?:movie|film|series|show)\s+(.{2,70})$/i],
+      ["rel",/^(?:when (?:was|did|is|will) (?:the )?(?:movie |film |series |show )?(.{2,70}?) (?:released?|come out|coming out|premiere[ds]?|out)|release date of (?:the )?(?:movie |film |series |show )?(.{2,70}))$/i],
+      ["len",/^(?:how long is|runtime of|how many (?:seasons|episodes) (?:does|in|of)|length of|how many seasons (?:does )?)\s*(?:the (?:movie|film|series|show)\s+)?(.{2,70}?)(?: have)?$/i],
+      ["rate",/^(?:imdb rating (?:of|for)|rating of|how good is|is (?:the )?(?:movie |film |series |show )?(.{2,70}?) (?:good|worth watching|worth it))\s*(?:(?:the )?(?:movie |film |series |show )?(.{2,70}))?$/i]];
+    const x=t.replace(/[?!.]+$/,"").trim();
+    for(const [k,re] of P){const m=re.exec(x);if(m){const name=(m.slice(1).find(Boolean)||"").replace(/^what(?:'s| is| was)\s+(?:the\s+)?(?:(?:movie|film|series|show)\s+)?/i,"").trim();if(name.length>=2)return[k,name]}}
+    return null;
+  }
+  function titleInfo(kind,name){
+    const known=findProducts(norm(name)).length||PLAT.some(x=>x[1].test(name.toLowerCase()));
+    if(known)return null;
+    return {p:getJ("/api/catalog?a=find&q="+encodeURIComponent(name)).then(f=>{
+      const m=f.list&&f.list[0];if(!m){const w=webSearch(name);return w.p?w.p:w}
+      return getJ("/api/title?id="+m.id+"&k="+m.k).then(d=>{
+        const dirTxt=d.dir?esc(d.dir):"",cast=(d.cast||[]).slice(0,5).map(c=>esc(c.n)).join(", ");
+        const kindW=d.k==="tv"?"series":"movie",yr=d.y?" ("+esc(d.y)+")":"";
+        const run=d.k==="tv"?(d.seasons?d.seasons+" season"+(d.seasons>1?"s":""):""):(d.rt?Math.floor(d.rt/60)+"h "+(d.rt%60)+"m":"");
+        let lead={dir:dirTxt?`<p><b>${esc(d.t)}</b>${yr} ${d.k==="tv"?"was created by":"was directed by"} <b>${dirTxt}</b>.</p>`:"",
+          cast:cast?`<p>The main cast of <b>${esc(d.t)}</b>${yr}: ${cast}.</p>`:"",
+          rel:d.y?`<p><b>${esc(d.t)}</b> ${d.status==="Released"||d.status==="Ended"||d.status==="Returning Series"?"came out":"is due"} in <b>${esc(d.y)}</b>.</p>`:"",
+          len:run?`<p><b>${esc(d.t)}</b> runs about <b>${esc(run)}</b>.</p>`:"",
+          rate:d.v?`<p><b>${esc(d.t)}</b> is rated <b>★ ${d.v}</b> by ${Number(d.vc).toLocaleString()} TMDB users.</p>`:"",plot:""}[kind]||"";
+        const ov=d.o?esc(d.o.length>300?d.o.slice(0,300).replace(/[^.!?]*$/,"")||d.o.slice(0,300)+"…":d.o):"";
+        const card=`<div class="bt-card bt-title">${d.p?`<img class="bt-po" src="https://image.tmdb.org/t/p/w154${esc(d.p)}" alt="" width="54" height="81" loading="lazy">`:""}<div class="bt-tb"><span class="bt-tt"><b>${esc(d.t)}</b><small>${[d.y,(d.g||[]).slice(0,2).join(", "),d.v?"★ "+d.v:"",kindW==="series"?"Series":"Movie"].filter(Boolean).join(" · ")}</small></span>${ov?`<p class="bt-wt">${ov}</p>`:""}${kind!=="dir"&&dirTxt?`<p class="bt-cd">${d.k==="tv"?"Created by ":"Directed by "}${dirTxt}</p>`:""}${kind!=="cast"&&cast?`<p class="bt-cd">Cast: ${cast}</p>`:""}<div class="bt-row"><button type="button" class="bt-btn" data-act="lf" data-find="${esc(d.t)}">Where to watch</button>${d.imdb?`<a class="bt-btn" href="https://www.imdb.com/title/${esc(d.imdb)}/" target="_blank" rel="noopener">IMDb</a>`:""}</div></div></div>`;
+        return{h:(lead||`<p>Here is what I found:</p>`)+card+`<p class="bt-cd">Details come from TMDB.</p>`,c:["Top rated","What streaming services do you have?","Talk to a human"]};
+      });
+    }).catch(e=>({h:failH(e),c:["Talk to a human"]}))};
+  }
   function watchRoute(q,ql,t){
+    const iq=infoQ(t);if(iq){const r=titleInfo(iq[0],iq[1]);if(r)return r}
     if(/\b(wishlist|wish list|watchlist|watch list|want to watch|saved titles?)\b/.test(ql)&&!/\b(how|what is)\b/.test(ql))return myLists("wish");
     if(/\b(watched|already seen|seen list|my seen|what have i (watched|seen))\b/.test(ql)&&/\b(my|i|list|have)\b/.test(ql)&&!/where|which platform/.test(ql))return myLists("watched");
     if(/(which|what|any|list).{0,25}(streaming|ott|movie|series).{0,20}(platforms?|services?|apps?)|(platforms?|services?) (do you|you) (have|provide|offer|sell)|(streaming|ott) (platforms?|services?) (on|at|in) streamx|which ott/.test(ql))return streamingList();
