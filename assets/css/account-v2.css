@@ -75,7 +75,6 @@ button.ac-stat{cursor:pointer}button.ac-stat:hover{background:rgba(255,255,255,.
 /* Profile setup (first sign-in) */
 .pf-lead{margin:-4px 0 16px;color:var(--mut);font-size:14px;line-height:1.55}
 .pf-req{margin-left:6px;padding:2px 7px;border-radius:99px;background:rgba(255,138,126,.14);color:#ff9d92;font:800 10px Manrope,sans-serif;letter-spacing:.08em;text-transform:uppercase;vertical-align:middle}
-#pm.must [data-pclose]{display:none}
 .pf-so{display:block;margin:12px auto 0;padding:6px 10px;border:0;background:none;color:var(--mut);font:700 13px Manrope,sans-serif;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
 .pf-so:hover{color:#fff}.pf-so[hidden]{display:none}
 
@@ -107,3 +106,25 @@ button.ac-stat{cursor:pointer}button.ac-stat:hover{background:rgba(255,255,255,.
 .pp-m li em{color:var(--mut);font-style:normal;font-variant-numeric:tabular-nums}
 .pp-m li.none{cursor:default;color:var(--mut);justify-content:center}
 @media(prefers-reduced-motion:reduce){.pp-m,.pp-m li,.pp-f.pop{animation:none;transition:none;opacity:1;transform:none}}
+
+/* Setup popup: calm, minimal, a little motion */
+#pm.setup .pf-ph,#pm.setup .pf-more{display:none}
+#pm:not(.setup) .pf-hero{display:none}
+#pm:not([hidden]){animation:pmFade .28s ease-out}
+#pm:not([hidden]) .pf{animation:pmUp .5s cubic-bezier(.16,1,.3,1)}
+@keyframes pmFade{from{opacity:0}}
+@keyframes pmUp{from{opacity:0;transform:translateY(26px) scale(.96)}}
+#pm.setup:not([hidden]) .pf>*:not(.ac-x){opacity:0;transform:translateY(10px);animation:pmIn .5s cubic-bezier(.16,1,.3,1) forwards}
+#pm.setup .pf>:nth-child(3){animation-delay:.08s!important}#pm.setup .pf>:nth-child(4){animation-delay:.14s!important}#pm.setup .pf>:nth-child(5){animation-delay:.2s!important}#pm.setup .pf>:nth-child(n+7){animation-delay:.28s!important}#pm.setup .pf>:nth-child(n+9){animation-delay:.36s!important}
+@keyframes pmIn{to{opacity:1;transform:none}}
+.pf-hero{display:grid;place-items:center;width:54px;height:54px;margin:0 0 14px;border-radius:18px;background:linear-gradient(135deg,#ed3124,#ff7a52);color:#fff;box-shadow:0 14px 30px -10px rgba(237,49,36,.7);animation:pmBob 3.2s ease-in-out infinite}
+.pf-hero svg{width:26px;height:26px}
+@keyframes pmBob{50%{transform:translateY(-4px) rotate(-3deg)}}
+.pf-lead{max-width:34ch}
+.pf-so{margin-top:10px;padding:10px 14px;width:100%;border-radius:12px;text-decoration:none;font-weight:700;transition:background .2s,color .2s}
+.pf-so:hover{background:rgba(255,255,255,.07)}
+.pf .ac-x{transition:transform .3s cubic-bezier(.16,1,.3,1),background .2s}.pf .ac-x:hover{transform:rotate(90deg)}
+#psave{position:relative;overflow:hidden}
+#psave::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.35) 50%,transparent 70%);transform:translateX(-120%);transition:transform .7s}
+#psave:hover::after{transform:translateX(120%)}
+@media(prefers-reduced-motion:reduce){#pm .pf,#pm .pf>*,.pf-hero{animation:none!important;opacity:1!important;transform:none!important}}
