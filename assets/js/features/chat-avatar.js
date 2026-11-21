@@ -29,7 +29,21 @@
     "Renew in one tap from My account, or ask me to help.",
     "Need a login code for an OTP-based service? Ask me here.",
     "If your login details change, you get a notice in My account.",
-    "See how many days are left on every subscription in My account."
+    "See how many days are left on every subscription in My account.",
+    "Tip: a 6 month or 1 year plan costs less per month than renewing monthly.",
+    "Tip: never share your account password or PIN with anyone outside your household.",
+    "Tip: keep your profile name and PIN private so nobody else uses your profile.",
+    "Tip: renew a few days early so your service never pauses.",
+    "Tip: if a service asks for a VPN, connect to the country shown in My account first.",
+    "Tip: pay with bKash or Nagad and keep the Transaction ID handy for faster help.",
+    "Tip: for a login code, tell us the service name and your account email.",
+    "Tip: on a shared profile, avoid changing the name, PIN or email so it keeps working.",
+    "Tip: check your order status any time in My account.",
+    "Tip: buying a few services? Ask about bundles, they cost less together.",
+    "Advice: use the same email you ordered with so My account finds your plans.",
+    "Advice: tell me which device you watch on, and I will suggest the right plan.",
+    "Advice: if something stops working, send a screenshot with your message to get faster help.",
+    "Advice: gift cards are valid for 6 months, so redeem yours early."
   ];
   // Start at a random question, then go through the rest without repeating.
   const order=QUESTIONS.map((q,i)=>i).sort(()=>Math.random()-.5);

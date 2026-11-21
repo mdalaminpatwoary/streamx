@@ -214,7 +214,7 @@
 
 /* ---------- Rolling word ---------- */
 .hx-roll{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 22px;font:600 clamp(17px,1.6vw,21px)/1.3 Manrope,sans-serif;color:var(--mut)}
-.hx-roll .rl-win{position:relative;display:inline-block;height:1.7em;min-width:11ch;overflow:hidden;vertical-align:middle;padding:2px 14px;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1)}
+.hx-roll .rl-win{position:relative;display:inline-block;height:1.7em;min-width:9.5ch;overflow:hidden;vertical-align:middle;padding:2px 0;border-radius:0;background:none;border:0}
 .hx-roll .rl-list{display:block;transition:transform .7s cubic-bezier(.77,0,.18,1)}
 .hx-roll .rl-list b{display:flex;align-items:center;gap:8px;height:1.7em;white-space:nowrap;color:var(--c,#fff);filter:brightness(1.25)}
 .hx-roll .rl-list svg{height:.95em;width:auto;fill:currentColor}
