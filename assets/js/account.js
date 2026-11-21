@@ -306,9 +306,10 @@
 
   function renderOrders(os) {
     var box = $("#hist"); box.hidden = !os.length; if (!os.length) return;
+    window.sxOrders = os; window.sxWho = { name: (DATA && DATA.profile && DATA.profile.name) || "", email: (DATA && DATA.email) || "", phone: (DATA && DATA.profile && DATA.profile.phone) || "" };
     $("#hn").textContent = "· " + os.length + (os.length === 1 ? " purchase" : " purchases");
     var dt = function (iso) { return fmt(new Date(Date.parse(iso) + 6 * 3600000).toISOString().slice(0, 10)); };
-    $("#orders").innerHTML = os.map(function (o) {
+    $("#orders").innerHTML = os.map(function (o, oi) {
       var off = o.kind === "offline", ok = o.delivery === "delivered", priced = o.lines.length && o.lines.every(function (l) { return l.price > 0; }),
         tot = o.lines.reduce(function (t, l) { return t + (l.price > 0 ? l.price * (l.q || 1) : 0); }, 0);
       if (!off && !priced) tot = 0;
@@ -316,7 +317,8 @@
         : (ok && o.delivered_at ? "Delivered " + dt(o.delivered_at) : "We deliver to your email and WhatsApp");
       return '<article class="ac-ord"><div class="ac-oh"><div><b>' + (off ? "Purchase" : "Order") + " #" + esc(String(o.id).slice(-8).toUpperCase()) + '</b><small>' + dt(o.date) + (off ? (o.channel ? " · via " + esc(o.channel) : "") : " · Online") + '</small></div><span class="ac-os ' + (ok ? "ok" : "wait") + '">' + (off ? "Completed" : ok ? "Delivered" : "Processing") + '</span></div>' +
         '<ul class="ac-ol">' + o.lines.map(function (l) { return "<li><span>" + esc(l.name) + (l.plan ? "<small>" + esc(l.plan) + "</small>" : "") + '</span><em>×' + (l.q || 1) + "</em>" + (l.price > 0 ? "<b>" + taka(l.price * (l.q || 1)) + "</b>" : "") + "</li>"; }).join("") + "</ul>" +
-        '<div class="ac-of"><span>' + foot + "</span>" + (tot ? "<b>Total " + taka(tot) + "</b>" : "") + "</div></article>";
+        '<div class="ac-of"><span>' + foot + "</span>" + (tot ? "<b>Total " + taka(tot) + "</b>" : "") + "</div>" +
+        '<div class="ac-rcw"><button type="button" class="ac-rc" data-rc="' + oi + '" aria-label="Download receipt"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m0 0l-4.5-4.5M12 15l4.5-4.5M5 21h14"/></svg><span>Download receipt</span></button></div></article>';
     }).join("");
   }
 

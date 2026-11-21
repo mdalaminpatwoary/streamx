@@ -142,3 +142,12 @@ button.ac-stat{cursor:pointer}button.ac-stat:hover{background:rgba(255,255,255,.
 
 .ac-pulse{animation:acPulse 1s ease-in-out 2}
 @keyframes acPulse{0%,100%{box-shadow:0 0 0 0 rgba(237,49,36,.0)}50%{box-shadow:0 0 0 8px rgba(237,49,36,.35)}}
+
+/* download receipt */
+.ac-rcw{margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.07);display:flex;justify-content:flex-end}
+.ac-rc{appearance:none;display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:99px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.05);color:#e8ebff;font:700 12.5px Manrope,system-ui,sans-serif;cursor:pointer;transition:background .2s,border-color .2s,transform .2s}
+.ac-rc:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.34)}
+.ac-rc:active{transform:scale(.97)}
+.ac-rc svg{transition:transform .25s}.ac-rc:hover svg{transform:translateY(2px)}
+.ac-rc[disabled]{opacity:.7;cursor:progress}
+.ac-rc.ok{background:rgba(53,208,127,.16);border-color:rgba(53,208,127,.5);color:#6fe3a9}
