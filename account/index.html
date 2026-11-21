@@ -11,6 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
 <script>try{if(localStorage.getItem("sx_session"))document.documentElement.classList.add("hs")}catch(e){}</script>
 <link rel="stylesheet" href="/assets/css/account.css?v=27">
+<link rel="stylesheet" href="/assets/css/title-sheet.css?v=1">
 </head>
 <body>
 <div class="ac-top"><a href="/"><img src="/assets/img/brand/logo.png" alt="StreamX" width="40" height="40"></a><a class="back" href="/">← Back to StreamX</a></div>
@@ -59,6 +60,7 @@
     </header>
     <h2 class="ac-h2">Subscriptions</h2>
     <div class="ac-list" id="list"></div>
+    <div id="mylist"><h2 class="ac-h2">My list <small></small></h2><div class="ml-tabs"><button type="button" data-t="wish" class="on">Wishlist<i>0</i></button><button type="button" data-t="watched">Watched<i>0</i></button></div><div class="ml-grid"></div></div>
     <div id="hist" hidden>
       <h2 class="ac-h2">Purchase history <small id="hn"></small></h2>
       <div class="ac-orders" id="orders"></div>
@@ -120,5 +122,8 @@
 <script src="/assets/js/data/logos.js?v=20261121a"></script>
 <script src="/assets/js/data/countries.js?v=1"></script>
 <script src="/assets/js/account.js?v=23"></script>
+<script src="/assets/js/features/mylist.js?v=1"></script>
+<script src="/assets/js/features/title-sheet.js?v=1"></script>
+<script src="/assets/js/features/account-list.js?v=1"></script>
 </body>
 </html>

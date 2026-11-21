@@ -1,5 +1,6 @@
 /* GET /api/title?id=<tmdb id>&k=movie|tv : details, cast, IMDb link and trailer for one title (TMDB). */
 const API = "https://api.themoviedb.org/3";
+const { mapProviders } = require("./_providers");
 
 async function tmdb(path, params = {}) {
   const key = (process.env.TMDB_API_KEY || "").trim();
@@ -22,7 +23,7 @@ module.exports = async (req, res) => {
     const k = req.query.k === "tv" ? "tv" : "movie";
     if (!/^\d{1,9}$/.test(id)) return res.status(400).json({ error: "Bad id" });
 
-    const d = await tmdb(`/${k}/${id}`, { append_to_response: "videos,credits,external_ids", language: "en-US", include_video_language: "en,null" });
+    const d = await tmdb(`/${k}/${id}`, { append_to_response: "videos,credits,external_ids,watch/providers", language: "en-US", include_video_language: "en,null" });
     const vids = ((d.videos && d.videos.results) || []).filter((v) => v.site === "YouTube");
     const pick =
       vids.find((v) => v.type === "Trailer" && v.official) || vids.find((v) => v.type === "Trailer") || vids.find((v) => v.type === "Teaser") || vids[0];
@@ -31,7 +32,8 @@ module.exports = async (req, res) => {
     const crew = (d.credits && d.credits.crew) || [];
     const director = k === "movie" ? (crew.find((c) => c.job === "Director") || {}).name || "" : ((d.created_by || [])[0] || {}).name || "";
 
-    res.setHeader("Cache-Control", "public, s-maxage=86400, stale-while-revalidate=604800");
+    const wp = mapProviders(d["watch/providers"] && d["watch/providers"].results, 8);
+    res.setHeader("Cache-Control", "public, s-maxage=43200, stale-while-revalidate=604800");
     return res.status(200).json({
       id: d.id,
       k,
@@ -52,6 +54,7 @@ module.exports = async (req, res) => {
       status: d.status || "",
       dir: director,
       cast,
+      pl: wp.list, reg: wp.reg,
     });
   } catch (e) {
     return res.status(424).json({ error: e.config ? "Not configured" : "Details are unavailable right now" });

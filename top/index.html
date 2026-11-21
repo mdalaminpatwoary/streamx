@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Top 250 movies and series | StreamX</title>
+<meta name="description" content="The 250 highest-rated movies and series, upcoming releases, and which StreamX service you can get each one on. Save a wishlist and track what you have watched.">
+<link rel="canonical" href="https://streamx.bd/top/">
+<link rel="icon" href="/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/account.css?v=8">
+<link rel="stylesheet" href="/assets/css/sections/toplist.css?v=3">
+<link rel="stylesheet" href="/assets/css/title-sheet.css?v=1">
+<style>
+body{background:var(--bg)}
+.tpg{width:min(1240px,100% - 32px);margin:0 auto;padding:30px 0 80px}
+.tpg h1{margin:6px 0 10px;font-size:clamp(30px,5vw,48px);letter-spacing:-.02em}
+.tpg .lead{max-width:640px;margin:0 0 30px;color:var(--mut);font-size:16px;line-height:1.7}
+.tp-bar{position:sticky;top:0;z-index:20;margin:0 -16px 30px;padding:12px 16px;background:linear-gradient(180deg,var(--bg) 70%,transparent)}
+</style>
+</head>
+<body>
+<div class="ac-top"><a href="/"><img src="/assets/img/brand/logo.png" alt="StreamX" width="40" height="40"></a><a class="back" href="/">← Back to StreamX</a></div>
+<main class="tpg">
+<section id="toplist" data-mode="page" hidden>
+  <div class="ac-eyebrow">Charts</div>
+  <h1>Top 250 &amp; coming soon</h1>
+  <p class="lead">The highest-rated movies and series of all time, and what releases next. Tap any poster for the trailer, cast and where to watch. Sign in to keep a wishlist and mark what you have seen.</p>
+  <div class="tp-bar">
+    <div class="tp-seg" id="tlKind" role="group" aria-label="Chart"><span class="tp-thumb" aria-hidden="true"></span><button type="button" data-l="top" class="on">Top 250</button><button type="button" data-l="soon">Coming soon</button></div>
+    <div class="tp-seg" id="tlType" role="group" aria-label="Show"><span class="tp-thumb" aria-hidden="true"></span><button type="button" data-k="movie" class="on">Movies</button><button type="button" data-k="tv">Series</button></div>
+    <div class="tp-tools"><input class="tp-q" id="tlQ" type="search" placeholder="Search this list" aria-label="Search this list" autocomplete="off"><label class="tp-chk"><input type="checkbox" id="tlHide"> Hide watched</label><span class="tp-count" id="tlCount" aria-live="polite"></span></div>
+  </div>
+  <div class="tp-grid" id="tlGrid" aria-live="polite"><div class="tp-sk"><i></i><i></i><i></i><i></i><i></i></div></div>
+  <div class="tp-foot"><button class="tp-more" type="button" id="tlMore" hidden>Show 50 more</button></div>
+  <p class="note" style="margin-top:34px;color:var(--mut);font-size:13px;text-align:center">Ranked by TMDB user ratings, not IMDb. Platform availability is shown for Bangladesh first, then the US, and can change.</p>
+</section>
+</main>
+<script src="/assets/js/data/logos.js?v=20261121a"></script>
+<script src="/assets/js/data/catalog.js?v=20261120k"></script>
+<script src="/assets/js/features/mylist.js?v=1"></script>
+<script src="/assets/js/features/title-sheet.js?v=1"></script>
+<script src="/assets/js/features/toplist.js?v=3"></script>
+</body>
+</html>

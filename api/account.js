@@ -3,6 +3,8 @@
    POST /api/account?a=code     {email,code} -> exchanges the 6-digit emailed code for a session token (5 tries, 10 minutes, single use)
    POST /api/account?a=session  {token}  -> exchanges the link token for a 30-day session token
    GET  /api/account?a=me                -> the signed-in customer's subscriptions   (Authorization: Bearer <session>)
+   GET  /api/account?a=list              -> the customer's wishlist and watched titles
+   POST /api/account?a=list {k,id,s,t,p,y,v} -> sets one title's status: s = "wish" | "watched" | "" (remove)
    POST /api/account?a=profile {name,picture} -> saves the customer's display name and profile photo (picture: small image data URL, or "" to remove) */
 const crypto = require("crypto");
 const db = require("./_db");
@@ -91,6 +93,29 @@ module.exports = async (req, res) => {
       try { await db.rest("POST", "profiles?on_conflict=email", [row], "resolution=merge-duplicates,return=minimal"); }
       catch (e) { console.error("profile not saved", e && e.message); return res.status(424).json({ error: "Profile editing is not available yet. Please try again later." }); }
       return res.status(200).json({ ok: true, profile: { name, picture: row.picture !== undefined ? row.picture : undefined } });
+    }
+    if (a === "list") {
+      const o = verify(bearer(req), "sess");
+      if (!o) return res.status(401).json({ error: "Please sign in to use your lists." });
+      const email = normEmail(o.e);
+      if (req.method === "GET") {
+        try {
+          const rows = await db.rest("GET", `watchlist?email=eq.${db.q(email)}&select=kind,tmdb_id,status,title,poster,year,rating,added_at&order=added_at.desc&limit=500`) || [];
+          return res.status(200).json({ items: rows.map((r) => ({ k: r.kind, id: r.tmdb_id, s: r.status, t: r.title || "", p: r.poster || "", y: r.year || "", v: Number(r.rating) || 0, at: r.added_at })) });
+        } catch (e) { console.error("watchlist read", e && e.message); return res.status(424).json({ error: "Lists are not available yet." }); }
+      }
+      if (req.method === "POST") {
+        const k = body.k === "tv" ? "tv" : body.k === "movie" ? "movie" : "", id = String(body.id || ""), st = String(body.s || "");
+        if (!k || !/^\d{1,9}$/.test(id) || !["wish", "watched", ""].includes(st)) return res.status(400).json({ error: "Bad request." });
+        try {
+          if (!st) { await db.rest("DELETE", `watchlist?email=eq.${db.q(email)}&kind=eq.${k}&tmdb_id=eq.${id}`); return res.status(200).json({ ok: true, s: "" }); }
+          const poster = /^\/[A-Za-z0-9_-]{5,60}\.(jpg|png|webp)$/.test(String(body.p || "")) ? String(body.p) : "";
+          const v = Math.max(0, Math.min(10, Number(body.v) || 0));
+          const row = { email, kind: k, tmdb_id: Number(id), status: st, title: String(body.t || "").replace(/[\u0000-\u001f<>]/g, "").trim().slice(0, 140), poster, year: /^\d{4}$/.test(String(body.y || "")) ? String(body.y) : "", rating: Math.round(v * 10) / 10, added_at: new Date().toISOString() };
+          await db.rest("POST", "watchlist?on_conflict=email,kind,tmdb_id", [row], "resolution=merge-duplicates,return=minimal");
+          return res.status(200).json({ ok: true, s: st });
+        } catch (e) { console.error("watchlist write", e && e.message); return res.status(424).json({ error: "Lists are not available yet. Please try again later." }); }
+      }
     }
     if (a === "me" && req.method === "GET") {
       const o = verify(bearer(req), "sess");

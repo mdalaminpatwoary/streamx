@@ -102,3 +102,21 @@ create table if not exists public.profiles (
 );
 alter table public.profiles enable row level security; -- no policies: only the server (service key) can read or write
 grant select, insert, update, delete on public.profiles to service_role;
+
+-- Wishlist and watched titles (one status per title per customer). Run this once in the Supabase SQL Editor.
+create table if not exists public.watchlist (
+  email text not null,
+  kind text not null check (kind in ('movie','tv')),
+  tmdb_id integer not null,
+  status text not null check (status in ('wish','watched')),
+  title text,
+  poster text,
+  year text,
+  rating numeric,
+  added_at timestamptz not null default now(),
+  primary key (email, kind, tmdb_id)
+);
+create index if not exists watchlist_email_idx on public.watchlist (email, added_at desc);
+alter table public.watchlist enable row level security; -- no policies: only the server (service key) can read or write
+grant select, insert, update, delete on public.watchlist to service_role;
+notify pgrst, 'reload schema';
