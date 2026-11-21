@@ -278,3 +278,18 @@ nav a:hover {
 @keyframes mnIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.navbar nav.open a{animation:none;opacity:1;transform:none}}
 @media (max-width:860px){.navbar nav .mi svg{fill:none!important;stroke:currentColor!important}}
+
+/* Desktop nav: icon + label on one line, even padding, same width before and after scrolling */
+@media (min-width:861px){
+  .nav.scrolled .navbar{max-width:1140px}
+  .navbar nav{gap:2px}
+  .navbar nav a{display:inline-flex;align-items:center;justify-content:center;gap:7px;height:38px;padding:0 13px;line-height:1;white-space:nowrap;font-size:13.5px}
+  .navbar nav .mi{display:grid;place-items:center;flex:none;width:16px;height:16px;padding:0;gap:0;background:none;border:0;opacity:.8;transition:opacity .25s,color .25s}
+  .navbar nav .mi svg{width:16px;height:16px;fill:none!important;stroke:currentColor!important}
+  .navbar nav a.on .mi{opacity:1;color:#ff8a7e}
+  .navbar nav a:hover .mi{opacity:1}
+}
+@media (min-width:861px) and (max-width:1180px){
+  .navbar nav .mi{display:none}
+  .navbar nav a{padding:0 11px}
+}

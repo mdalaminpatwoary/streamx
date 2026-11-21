@@ -13,7 +13,7 @@
     {id:"hulu",name:"Hulu",logo:"hulu",shop:"Hulu"},
     {id:"appletv",name:"Apple TV+",mono:"tv+",bg:"#1d1d1f",shop:"Apple TV+"},
     {id:"peacock",name:"Peacock",mono:"P",bg:"#111",shop:"Peacock"},
-    {id:"zee5",name:"ZEE5",mono:"Z5",bg:"#6a1b9a",shop:"ZEE5"},
+    {id:"zee5",name:"ZEE5",logo:"zee5",shop:"ZEE5"},
     {id:"sonyliv",name:"SonyLIV",mono:"SL",bg:"#1b2a49",shop:"SonyLIV"},
     {id:"viki",name:"Rakuten Viki",mono:"V",bg:"#0b8fe0",shop:"Viki"},
     {id:"mubi",name:"MUBI",mono:"M",bg:"#0a0a0a",shop:"MUBI"}
