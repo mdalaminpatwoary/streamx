@@ -1,5 +1,5 @@
 /* Customer account API (passwordless).
-   POST /api/account?a=login    {email}  -> emails a sign-in link (only if that email has subscriptions; the reply is always the same)
+   POST /api/account?a=login    {email}  -> emails a sign-in link to any valid email, so first-time visitors can create an account (rate limited to one per minute per email)
    POST /api/account?a=code     {email,code} -> exchanges the 6-digit emailed code for a session token (5 tries, 10 minutes, single use)
    POST /api/account?a=session  {token}  -> exchanges the link token for a 30-day session token
    GET  /api/account?a=me                -> the signed-in customer's subscriptions   (Authorization: Bearer <session>)
@@ -44,8 +44,7 @@ module.exports = async (req, res) => {
     if (a === "login" && req.method === "POST") {
       const email = normEmail(body.email);
       if (!EMAIL.test(email)) return res.status(400).json({ error: "Please enter a valid email address." });
-      const has = await db.rest("GET", `subscriptions?email=eq.${db.q(email)}&select=id&limit=1`);
-      if (has && has.length) {
+      {
         const last = await db.rest("GET", `login_links?email=eq.${db.q(email)}&select=sent_at`);
         if (!(last && last[0] && Date.now() - Date.parse(last[0].sent_at) < 60000)) {
           await db.rest("POST", "login_links?on_conflict=email", [{ email, sent_at: new Date().toISOString() }], "resolution=merge-duplicates");

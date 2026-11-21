@@ -249,7 +249,7 @@
     try { var act = rows.filter(function (s) { return s._left >= 0; }), nx = act.length ? Math.min.apply(null, act.map(function (s) { return s._left; })) : null; document.dispatchEvent(new CustomEvent("ac:data", { detail: { live: live.length, next: nx, hasOrders: (d.orders || []).length } })); } catch (e) {}
     PENDING = []; paintLater = null; ANN = Array.isArray(d.notices) ? d.notices : [];
     var idx = 0, html;
-    if (!rows.length) html = '<div class="ac-card ac-empty">No subscriptions found for this email yet.<br><a class="ac-btn ac-sm" style="margin-top:14px" href="/#pricing">Browse plans</a></div>';
+    if (!rows.length) html = '<div class="ac-card ac-empty">Welcome to StreamX. You have no subscriptions yet.<br><a class="ac-btn ac-sm" style="margin-top:14px" href="/#pricing">Browse plans</a></div>';
     else html = live.concat(gone).map(function (s) {
       var st = s._left < 0 ? ["Expired", "#ef4444"] : s._left <= 7 ? ["Expires soon", "#f59e0b"] : ["Active", "#22c55e"];
       var total = Math.max(1, days(s.start_date, s.end_date)), left = Math.min(100, Math.max(0, Math.round(s._left / total * 100)));
@@ -336,7 +336,7 @@
     var m = $("#lm"), b = $("#lb"); b.disabled = true; m.className = "ac-msg"; m.textContent = "";
     return post("login", { email: em }).then(function () {
       curEmail = em; $("#lf").hidden = true; $("#cf").hidden = false; $("#cd").value = ""; $("#cm").textContent = "";
-      $("#cs").textContent = "If " + em + " has subscriptions with us, a 6-digit code is on its way. Check spam too.";
+      $("#cs").textContent = "A 6-digit code is on its way to " + em + ". Check spam too.";
       resendLock(60); setTimeout(function () { $("#cd").focus(); }, 50);
     }).catch(function (er) { (quiet ? $("#cm") : m).className = "ac-msg"; (quiet ? $("#cm") : m).textContent = er.message; })
       .then(function () { b.disabled = false; });
