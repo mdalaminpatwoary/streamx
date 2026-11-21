@@ -298,3 +298,5 @@ button.ac-stat{cursor:pointer}button.ac-stat:hover{background:rgba(255,255,255,.
 @keyframes pfTr{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 @media(prefers-reduced-motion:reduce){.pf-tr li{animation:none}}
 #pm.phone .pf-t{margin-bottom:14px}
+.pp-m ul{max-height:220px}
+.pp-m li{animation-delay:calc(var(--i,0)*18ms)}
