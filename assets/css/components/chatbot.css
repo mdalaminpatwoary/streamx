@@ -69,7 +69,7 @@
 .rest,.rest *{animation:none!important;opacity:1!important}
 .bt-tw::after{content:"";display:inline-block;width:2px;height:1em;margin-left:2px;vertical-align:-2px;background:#ffb3aa;animation:btCur .7s steps(1) infinite}
 @keyframes btCur{50%{opacity:0}}
-.bt-chip{opacity:0;animation:btRv .4s cubic-bezier(.2,.9,.3,1.1) forwards;animation-delay:calc(var(--i,0)*70ms)}
+.bt-chip{animation:btRv .4s cubic-bezier(.2,.9,.3,1.1) backwards;animation-delay:calc(var(--i,0)*70ms)}
 .bt-rv .bt-chip{animation-delay:calc(var(--i,0)*70ms + .1s)}
 .bt-chip:hover{transform:translateY(-2px)}
 .bt-card li{animation:btRv .4s both;animation-delay:.25s}
@@ -167,3 +167,12 @@ button.bt-btn{appearance:none}
 .bt-st-t{flex:1;min-width:0;display:flex;flex-direction:column}.bt-st-t b{font-size:13.5px}.bt-st-t small{font-size:11.5px;color:#8e99c0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .bt-sm{color:#8e99c0;font-size:11.5px}
 .bt-dl{font-size:12px}.bt-dl.ok{color:#6ee7b7}.bt-dl.warn{color:#fcd34d}.bt-dl.bad{color:#fca5a5}
+
+/* hover: whole control reacts, text and icons never swallow the pointer */
+.bt-chip *,.bt-btn *,.bt-opt *,.bt-sub *,.bt-ag-wa *,.bt-ag-row a *,.bt-ib button *{pointer-events:none}
+.bt-chip,.bt-btn,.bt-opt,.bt-sub,.bt-ag-wa,.bt-ag-row a,.bt-ib button{cursor:pointer;-webkit-tap-highlight-color:transparent}
+.bt-chip:hover,.bt-opt:hover,.bt-sub:hover{transform:none}
+.bt-btn.bt-wa:hover,.bt-btn.bt-go:hover,.bt-ag-wa:hover{filter:brightness(1.12)}
+.bt-btn:hover{border-color:rgba(255,255,255,.4)}
+.bt-chip:active,.bt-btn:active,.bt-opt:active,.bt-sub:active{transform:scale(.97)}
+.bt-btn.bt-go::after{pointer-events:none}
