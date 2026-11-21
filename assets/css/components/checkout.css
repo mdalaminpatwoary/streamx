@@ -15,7 +15,7 @@
 .pay-err { min-height: 20px; margin: 2px 0 10px; font-size: 14px; color: #ff7a70; }
 .pay-go { width: 100%; text-align: center; }
 .pay-go:disabled { opacity: .6; cursor: progress; }
-.pay-eps { display: block; width: 100%; height: auto; margin: 16px 0 8px; border-radius: 12px; }
+.pay-eps { display: block; width: 100%; height: auto; box-sizing: border-box; margin: 16px 0 8px; padding: 10px 14px; border-radius: 14px; background: #fff; }
 .pay-fine { display: block; text-align: center; font-size: 12.5px; color: var(--mut); }
 @media (max-width: 560px) { .pay-row { grid-template-columns: 1fr; } .pay-m .mdlb { padding: 26px 20px; } }
 .df .btn.alt { margin-top: 10px; background: transparent; border: 1px solid var(--line); color: #fff; box-shadow: none; }

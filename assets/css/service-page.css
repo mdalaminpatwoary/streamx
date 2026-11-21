@@ -286,7 +286,7 @@ h1,h2,h3{line-height:1.12;margin:0;letter-spacing:-.02em}
 .co-go{width:100%;padding:14px;border:0;border-radius:99px;background:linear-gradient(90deg,#ed3124,#ff4f3f);color:#fff;font:700 15px Manrope,system-ui,sans-serif;text-align:center;cursor:pointer;box-shadow:0 14px 30px -14px rgba(237,49,36,.9);transition:transform .25s}
 .co-go:hover{transform:translateY(-2px)}
 .co-go:disabled{opacity:.6;cursor:progress;transform:none}
-.co-eps{display:block;width:100%;height:auto;margin:16px 0 8px;border-radius:12px}
+.co-eps{display:block;width:100%;height:auto;box-sizing:border-box;margin:16px 0 8px;padding:10px 14px;border-radius:14px;background:#fff}
 .co-fine{display:block;text-align:center;font-size:12.5px;color:var(--mut)}
 .co-wa{margin-top:8px}.co-wa a{color:#fff;font-weight:700;text-decoration:underline}
 .co-x{position:absolute;top:16px;right:16px;width:36px;height:36px;border-radius:50%;border:1px solid #2a3258;background:none;color:#fff;cursor:pointer;transition:.3s}

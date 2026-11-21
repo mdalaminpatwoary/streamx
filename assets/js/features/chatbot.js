@@ -317,8 +317,36 @@
   const I_LK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
   const planPrice=x=>{const p=PRODUCTS.find(q=>q.name===x.service);if(!p||p.gift)return 0;const lb=x.plan.indexOf(" · ")>-1?x.plan.split(" · ")[0]:"",vr=lb?p.variants.find(v=>v.n===lb):p.variants[0],pl=vr&&vr.plans.find(y=>y.m===x.months);return pl?pl.p:0};
   const renewWa=x=>wa(`Hi StreamX! I want to renew ${x.service} (${x.plan}).\nMy StreamX email: ${ACC.email}`);
-  const renewBtns=x=>{const pr=planPrice(x);return `<div class="bt-rn"><a class="bt-btn bt-go" href="/account/#renew=${x.id}" data-close>Renew online${pr?" · "+taka(pr):""}</a><a class="bt-rwa" href="${esc(renewWa(x))}" target="_blank" rel="noopener">or renew on WhatsApp</a></div>`};
+  const renewBtns=x=>{const pr=planPrice(x);return `<div class="bt-rn"><button type="button" class="bt-btn bt-go" data-act="renew" data-sid="${x.id}">Renew online${pr?" · "+taka(pr):""}</button><a class="bt-rwa" href="${esc(renewWa(x))}" target="_blank" rel="noopener">or renew on WhatsApp</a></div>`};
   const helpWa=x=>wa(`Hi StreamX! I need help with ${x.service} (${x.plan}).\nMy StreamX email: ${ACC.email}\nSubscription ID: #${x.id}`);
+  /* renew right here: pay on EPS straight from the chat (no trip to My account) */
+  const planOfSub=x=>{const p=PRODUCTS.find(q=>q.name===x.service);if(!p)return null;const lb=x.plan.indexOf(" · ")>-1?x.plan.split(" · ")[0]:"",vr=lb?p.variants.find(v=>v.n===lb):p.variants[0],pl=vr&&vr.plans.find(y=>y.m===x.months);return pl?{name:p.name,vr:lb||undefined,v:pl.v,price:pl.p}:null};
+  const BDPH=/^(?:\+?88)?01[3-9]\d{8}$/;
+  function renewForm(x,pl,name,phone){return `<div class="bt-card bt-rf"><div class="bt-ct">Renew ${esc(x.service)}<em>${taka(pl.price)}</em></div><p class="bt-cd">${esc(x.plan)}. Confirm your details, then pay on EPS's secure page. Your plan is extended after your current expiry.</p><input class="bt-in" type="text" data-f="name" placeholder="Your name" value="${esc(name)}" autocomplete="name" maxlength="80"><input class="bt-in" type="tel" data-f="phone" placeholder="01XXXXXXXXX" value="${esc(phone)}" autocomplete="tel" inputmode="tel" maxlength="16"><p class="bt-er" role="alert"></p><div class="bt-row">${act("Pay "+taka(pl.price)+" securely","renewgo",`data-sid="${x.id}"`," bt-go")}</div></div>`}
+  function payRenew(x,name,phone){
+    const pl=planOfSub(x);
+    reply("Renew "+x.service,{p:fetch("/api/checkout",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+token()},body:JSON.stringify({renew:true,name:name,phone:phone,items:[{name:pl.name,vr:pl.vr,v:pl.v,q:1}]})})
+      .then(r=>r.json().catch(()=>({})).then(j=>{
+        if(r.status===401)return{h:`<p>Your session ended. Please sign in again.</p><div class="bt-row">${btn("Sign in","/account/"," bt-go")}</div>`};
+        if(!r.ok||!j.redirectUrl)throw 0;
+        setTimeout(()=>{location.href=j.redirectUrl},900);
+        return{h:`<p>Opening the secure EPS payment page for ${esc(x.service)}. Your plan is extended automatically once payment is confirmed.</p>`}}))
+      .catch(()=>({h:`<p>Online payment is unavailable right now. You can renew on WhatsApp instead.</p><div class="bt-row">${btn("Renew on WhatsApp",renewWa(x),"  bt-wa")}</div>`,c:["Talk to a human"]}))});
+  }
+  function renewAct(el){
+    loadAcc().then(()=>{const x=subById(el.dataset.sid),pl=x&&planOfSub(x);
+      if(!x||!pl){window.open(renewWa(x||{service:"my plan",plan:""}),"_blank","noopener");return}
+      const c=ACC.contact||{},nm=(c.name||"").trim(),ph=(c.phone||"").replace(/[\s-]/g,"");
+      if(nm.length>=2&&BDPH.test(ph))payRenew(x,nm,ph);
+      else reply("Renew "+x.service,{h:renewForm(x,pl,nm,ph),c:null})
+    }).catch(()=>{})
+  }
+  function renewGo(el){
+    const card=el.closest(".bt-rf"),er=card.querySelector(".bt-er"),nm=card.querySelector('[data-f=name]').value.trim(),ph=card.querySelector('[data-f=phone]').value.replace(/[\s-]/g,"");
+    if(nm.length<2){er.textContent="Please enter your name.";return}
+    if(!BDPH.test(ph)){er.textContent="Enter a valid mobile number, e.g. 01712345678.";return}
+    er.textContent="";const x=subById(el.dataset.sid);if(!x)return;el.disabled=true;payRenew(x,nm,ph);
+  }
   const signIn=()=>`<p>Sign in to My account and I can show your subscriptions, days left, login details and orders right here in the chat.</p><div class="bt-row">${btn("Sign in","/account/"," bt-go")}</div>`;
   function rowHtml(label,val,sid,key,secret){
     const mask="••••••••••";
@@ -563,6 +591,8 @@
   function doAct(el){
     const a=el.dataset.act,i=+el.dataset.i,v=+el.dataset.v,k=+el.dataset.k,p=PRODUCTS[i];
     if(a==="eye"||a==="cp"){secretAct(el);return}
+    if(a==="renew"){if(!busy)renewAct(el);return}
+    if(a==="renewgo"){if(!busy)renewGo(el);return}
     if(a==="sendchat"){const us=[].slice.call(log.querySelectorAll(".bt-u")).map(n=>n.textContent.trim()).filter(Boolean).slice(-5);window.open(wa(us.length?"Hi StreamX! I need help. My recent questions in the chat:\n"+us.map((x,j)=>(j+1)+". "+x).join("\n"):"Hi StreamX! I need help."),"_blank","noopener");return}
     if(a==="lw"||a==="lv"||a==="lf"||a==="ld"){listAct(el);return}
     if(busy)return;

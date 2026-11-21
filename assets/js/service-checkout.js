@@ -12,7 +12,7 @@
     '<label><span class="co-l">Email</span><input id="co-e" type="email" autocomplete="email" placeholder="you@example.com" maxlength="100"></label></div>' +
     '<label><span class="co-l">Note for us <em>(optional)</em></span><textarea id="co-c" rows="2" maxlength="300" placeholder="Anything we should know about your order?"></textarea></label>' +
     '<p class="co-er" role="alert"></p><button class="co-go" type="submit"></button>' +
-    '<img class="co-eps" src="/assets/img/pay/eps-checkout.webp" alt="Pay with EPS: Visa, Mastercard, American Express, bKash, Nagad, Rocket and more" loading="lazy" width="1100" height="190">' +
+    '<img class="co-eps" src="/assets/img/pay/eps-renew.webp" alt="Pay with EPS: Visa, Mastercard, American Express, bKash, Nagad, Rocket and more" loading="lazy" width="1012" height="162">' +
     '<small class="co-fine">You will be taken to the EPS payment page. We never see your card or wallet PIN.</small>' +
     '<small class="co-fine co-wa">Prefer to order by chat? <a target="_blank" rel="noopener">Order on WhatsApp instead ↗</a></small></form>';
   document.body.appendChild(m);
