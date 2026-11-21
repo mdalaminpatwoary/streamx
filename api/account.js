@@ -42,6 +42,17 @@ function cleanPhone(v) {
   return "";
 }
 
+/* Push the customer's number to the "Customers" sheet of the StreamX Live Data Google Sheet (Apps Script web app, see docs/google-sheets-sync.gs).
+   Optional and best-effort: it never blocks or fails a profile save. */
+async function sheetSync(email, name, phone) {
+  const url = process.env.SHEETS_WEBHOOK_URL; if (!url || !phone) return;
+  try {
+    const ac = new AbortController(), t = setTimeout(() => ac.abort(), 5000);
+    const r = await fetch(url, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify({ secret: process.env.SHEETS_WEBHOOK_SECRET || "", email, name: name || "", phone }), signal: ac.signal, redirect: "follow" });
+    clearTimeout(t); if (!r.ok) console.error("sheet sync HTTP", r.status);
+  } catch (e) { console.error("sheet sync failed", e && e.message); }
+}
+
 module.exports = async (req, res) => {
   res.setHeader("Cache-Control", "no-store");
   const a = String((req.query && req.query.a) || "");
@@ -113,6 +124,7 @@ module.exports = async (req, res) => {
       }
       try { await db.rest("POST", "profiles?on_conflict=email", [row], "resolution=merge-duplicates,return=minimal"); }
       catch (e) { console.error("profile not saved", e && e.message); return res.status(424).json({ error: "Profile editing is not available yet. Please try again later." }); }
+      await sheetSync(row.email, name, phone);
       return res.status(200).json({ ok: true, profile: { name, phone, picture: row.picture !== undefined ? row.picture : undefined } });
     }
     if (a === "list") {

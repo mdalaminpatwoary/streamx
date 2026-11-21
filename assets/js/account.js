@@ -235,7 +235,7 @@
   document.addEventListener("click", function (e) { if (e.target.closest("#bell")) { if (PENDING.length || ANN.length) openNotice(); else flash("You are all caught up. No new updates."); } });
 
   /* /account/#renew=<id> (from the chat assistant) opens that subscription's renew popup */
-  function render(d) { renderCore(d); var pq = d.profile || {}; if (pq.editable !== false && !(pq.name && pq.phone) && !snoozed()) setTimeout(function () { openProfile(true); }, 350); setTimeout(function () { var m = /renew=(\d+)/.exec(location.hash), b = m && document.querySelector('[data-renew="' + m[1] + '"]'); if (b) { try { history.replaceState(null, "", location.pathname); } catch (e) {} b.click(); } }, 0); }
+  function render(d) { renderCore(d); var pq = d.profile || {}; if (pq.editable !== false && !pq.phone && !snoozed()) setTimeout(function () { openProfile(true); }, 350); setTimeout(function () { var m = /renew=(\d+)/.exec(location.hash), b = m && document.querySelector('[data-renew="' + m[1] + '"]'); if (b) { try { history.replaceState(null, "", location.pathname); } catch (e) {} b.click(); } }, 0); }
   function greet() { var h = new Date().getHours(); return h >= 5 && h < 12 ? "Good morning" : h >= 12 && h < 17 ? "Good afternoon" : "Good evening"; }
   var ARW = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
   /* Renew bar: what renewing costs and how long the offer lasts, one main action and a quiet WhatsApp option. */
@@ -284,8 +284,8 @@
       var ref = s.order_ref ? "#" + esc(String(s.order_ref).slice(-8).toUpperCase()) : "#" + s.id;
       return pre + '<article class="ac-sub-card ac-v3' + (s._left < 0 ? " is-off" : "") + '" style="--st:' + st[1] + ';--i:' + (idx++) + '"><div class="ac-hd">' + tile(s) +
         '<div class="ac-id"><div class="ac-name">' + esc(s.service) + '<span class="ac-chip">' + st[0] + '</span></div><div class="ac-plan">' + esc(s.plan) + '</div></div>' + ring + '</div>' +
-        '<div class="ac-m3"><span>Started<b>' + fmt(s.start_date) + '</b></span><span>Expires<b>' + fmt(s.end_date) + '</b></span><span>Order<b>' + ref + '</b></span></div>' +
         renewBar(s, msg) +
+        '<div class="ac-m3"><span>Started<b>' + fmt(s.start_date) + '</b></span><span>Expires<b>' + fmt(s.end_date) + '</b></span><span>Order<b>' + ref + '</b></span></div>' +
         (s._left >= 0 ? loginBox(s) + helpBox(s) : "") + '</article>';
     }).join("");
     if (arch.length) html = (html || "") + '<details class="ac-arch"><summary><span class="ac-archi">' + ic('<path d="M4 7h16M5 7v11a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7M9 11h6M6 4h12l1 3H5z"/>') + '</span><span class="ac-archt"><b>Subscription history</b><small>Past plans, kept for your records</small></span><em>' + arch.length + '</em><svg class="ac-archc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><ul class="ac-archl">' +
@@ -396,7 +396,7 @@
 
 
   /* Edit profile: display name and a small profile photo, saved to the customer's account. */
-  var pm = $("#pm"), pPic = null, setup = false; // pPic: undefined = keep, "" = remove, data URL = new photo
+  var pm = $("#pm"), pPic = null, setup = false, phoneMode = false; // pPic: undefined = keep, "" = remove, data URL = new photo
   function paint(el, pic, nm) { el.innerHTML = ""; if (pic) { var im = new Image(); im.alt = ""; im.referrerPolicy = "no-referrer"; im.src = pic; el.appendChild(im); } else el.textContent = ((nm || (DATA && DATA.email) || "?")[0] || "?").toUpperCase(); }
   /* Country-code picker for the mobile number */
   var CCS = [["bd","Bangladesh","880"],["in","India","91"],["pk","Pakistan","92"],["np","Nepal","977"],["lk","Sri Lanka","94"],["bt","Bhutan","975"],["mv","Maldives","960"],["ae","United Arab Emirates","971"],["sa","Saudi Arabia","966"],["qa","Qatar","974"],["kw","Kuwait","965"],["om","Oman","968"],["bh","Bahrain","973"],["my","Malaysia","60"],["sg","Singapore","65"],["gb","United Kingdom","44"],["us","United States","1"],["ca","Canada","1"],["au","Australia","61"],["nz","New Zealand","64"],["de","Germany","49"],["fr","France","33"],["it","Italy","39"],["es","Spain","34"],["nl","Netherlands","31"],["se","Sweden","46"],["ie","Ireland","353"],["tr","Turkey","90"],["jp","Japan","81"],["kr","South Korea","82"],["cn","China","86"],["hk","Hong Kong","852"],["th","Thailand","66"],["id","Indonesia","62"],["ph","Philippines","63"],["mm","Myanmar","95"],["eg","Egypt","20"],["za","South Africa","27"],["ng","Nigeria","234"],["br","Brazil","55"],["ru","Russia","7"]];
@@ -414,13 +414,13 @@
   document.addEventListener("click", function (e) { if (!$("#ppm").hidden && !e.target.closest(".pp-w")) ppOpen(false); });
   $("#pm").addEventListener("keydown", function (e) { if (e.key === "Escape" && !$("#ppm").hidden) { e.stopPropagation(); ppOpen(false); } }, true);
   var SNZ = "sx_pf_snooze";
-  function snooze() { try { localStorage.setItem(SNZ, String(Date.now() + 7 * 86400000)); } catch (e) {} }
+  function snooze() { try { localStorage.setItem(SNZ, String(Date.now() + 86400000)); } catch (e) {} }
   function snoozed() { try { return Number(localStorage.getItem(SNZ) || 0) > Date.now(); } catch (e) { return false; } }
-  function openProfile(force) { if (!DATA) return; var pf = DATA.profile || {}; setup = force === true; pPic = undefined; $("#pname").value = pf.name || ""; ppFill(pf.phone); ppOpen(false); $("#ppm").hidden = true; $("#pemail").textContent = DATA.email; $("#pe").textContent = ""; paint($("#pav"), pf.picture, pf.name); $("#prm").hidden = !pf.picture; pm.classList.toggle("setup", setup); $("#plead").hidden = !setup; $("#phero").hidden = !setup; $("#pskip").hidden = !setup; $("#peb").textContent = setup ? "Welcome to StreamX" : "Your profile"; $("#pmt").textContent = setup ? "Let\u2019s get you set up" : "Edit profile"; $("#psave").textContent = setup ? "Save" : "Save changes"; pm.hidden = false; document.documentElement.style.overflow = "hidden"; setTimeout(function () { $((DATA.profile && DATA.profile.name ? "#pphone" : "#pname")).focus(); }, 380); }
+  function openProfile(force) { if (!DATA) return; var pf = DATA.profile || {}; setup = force === true; pPic = undefined; $("#pname").value = pf.name || ""; ppFill(pf.phone); ppOpen(false); $("#ppm").hidden = true; $("#pemail").textContent = DATA.email; $("#pe").textContent = ""; paint($("#pav"), pf.picture, pf.name); $("#prm").hidden = !pf.picture; phoneMode = setup && !pf.phone; pm.classList.toggle("setup", setup); pm.classList.toggle("phone", phoneMode); $("#plead").hidden = !setup || phoneMode; $("#ptr").hidden = !phoneMode; $("#phero").hidden = !setup; $("#pskip").hidden = !setup; $("#pskip").textContent = phoneMode ? "Remind me later" : "Skip for now"; $("#peb").textContent = phoneMode ? "One quick step" : setup ? "Welcome to StreamX" : "Your profile"; $("#pmt").textContent = phoneMode ? "Add your WhatsApp number" : setup ? "Let\u2019s get you set up" : "Edit profile"; $("#psave").textContent = phoneMode ? "Save number" : setup ? "Save" : "Save changes"; pm.hidden = false; document.documentElement.style.overflow = "hidden"; setTimeout(function () { $((phoneMode || (DATA.profile && DATA.profile.name) ? "#pphone" : "#pname")).focus(); }, 380); }
   function closeProfile() { if (setup) snooze(); pm.hidden = true; document.documentElement.style.overflow = ""; }
   $("#pedit").addEventListener("click", function () { openProfile(); }); $("#pedit2").addEventListener("click", function () { openProfile(); }); $("#pskip").addEventListener("click", closeProfile);
-  pm.addEventListener("click", function (e) { if (e.target === pm || e.target.closest("[data-pclose]")) closeProfile(); });
-  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !pm.hidden) closeProfile(); });
+  pm.addEventListener("click", function (e) { if (phoneMode) return; if (e.target === pm || e.target.closest("[data-pclose]")) closeProfile(); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !pm.hidden && !phoneMode) closeProfile(); });
   $("#pfile").addEventListener("change", function () {
     var f = this.files && this.files[0]; this.value = ""; if (!f) return; var er = $("#pe"); er.textContent = "";
     if (!/^image\/(jpeg|png|webp)$/.test(f.type)) { er.textContent = "Please choose a JPG or PNG photo."; return; }
@@ -438,6 +438,7 @@
     e.preventDefault(); var nm = $("#pname").value.trim(), er = $("#pe"), b = $("#psave");
     var pv = ppValue(), ph = pv.v || "";
     if (nm && nm.length < 2) { er.textContent = "Your name needs at least 2 letters."; $("#pname").focus(); return; }
+    if (phoneMode && !ph) { er.textContent = "Please enter your WhatsApp number so we can reach you about your orders."; $("#pphone").focus(); return; }
     if (pv.err) { er.textContent = pv.err; $("#pphone").focus(); return; }
     er.textContent = ""; b.disabled = true; b.textContent = "Saving…";
     var body = { name: nm, phone: ph }; if (pPic !== undefined) body.picture = pPic;
@@ -445,11 +446,11 @@
       .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { if (r.status === 401) { set(null); closeProfile(); showLogin("Your session ended. Please sign in again."); throw new Error("signed out"); } if (!r.ok) throw new Error(j.error || "Could not save. Please try again."); return j; }); })
       .then(function () {
         try { sessionStorage.removeItem("sx_acc_pre"); } catch (x) {}
-        DATA.profile = Object.assign({}, DATA.profile, { name: nm, phone: ph }); var wasSetup = setup; setup = false; try { localStorage.removeItem(SNZ); } catch (x) {} if (pPic !== undefined) DATA.profile.picture = pPic;
-        paint($("#av"), DATA.profile.picture, nm); $("#gr").textContent = greet(); $("#hi").textContent = nm || DATA.email.split("@")[0]; closeProfile(); flash(wasSetup && nm ? "Welcome aboard, " + nm.split(" ")[0] + "!" : "Profile updated");
+        DATA.profile = Object.assign({}, DATA.profile, { name: nm, phone: ph }); var wasSetup = setup, wasPhone = phoneMode && ph; setup = false; phoneMode = false; try { localStorage.removeItem(SNZ); } catch (x) {} if (pPic !== undefined) DATA.profile.picture = pPic;
+        paint($("#av"), DATA.profile.picture, nm); $("#gr").textContent = greet(); $("#hi").textContent = nm || DATA.email.split("@")[0]; closeProfile(); flash(wasPhone ? "WhatsApp number saved" : wasSetup && nm ? "Welcome aboard, " + nm.split(" ")[0] + "!" : "Profile updated");
       })
       .catch(function (x) { if (x.message !== "signed out") er.textContent = x.message; })
-      .then(function () { b.disabled = false; b.textContent = setup ? "Save" : "Save changes"; });
+      .then(function () { b.disabled = false; b.textContent = phoneMode ? "Save number" : setup ? "Save" : "Save changes"; });
   });
   /* Renew: confirm the contact details, then open the EPS payment page. Expiry is extended automatically once payment is confirmed. */
   var rm = $("#rm"), cur = null;
