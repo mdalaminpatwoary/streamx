@@ -24,6 +24,12 @@ async function sendLink(req, email, link, code) {
   await mail.send({ to: email, subject: m.subject, html: m.html, text: m.text });
 }
 
+// One row per successful sign-in (email, method, time). Best effort: a missing table never blocks signing in.
+async function logLogin(email, method) {
+  try { await db.rest("POST", "login_events", [{ email: normEmail(email), method: String(method).slice(0, 20) }], "return=minimal"); }
+  catch (e) { console.error("login not logged", e && e.message); }
+}
+
 module.exports = async (req, res) => {
   res.setHeader("Cache-Control", "no-store");
   const a = String((req.query && req.query.a) || "");
@@ -64,11 +70,13 @@ module.exports = async (req, res) => {
       const want = Buffer.from(row.code_hash), got = Buffer.from(hashCode(email, code));
       if (want.length !== got.length || !crypto.timingSafeEqual(want, got)) return bad();
       await db.rest("DELETE", `login_codes?email=eq.${db.q(email)}`);
+      await logLogin(email, "email-code");
       return res.status(200).json({ session: sign({ t: "sess", e: email, n: "", pic: "", pv: "", exp: Date.now() + 30 * 86400000 }), email });
     }
     if (a === "session" && req.method === "POST") {
       const o = verify(body.token, "link");
       if (!o) return res.status(401).json({ error: "This link has expired. Please request a new one." });
+      await logLogin(o.e, o.pv || "email-link");
       return res.status(200).json({ session: sign({ t: "sess", e: o.e, n: o.n || "", pic: o.pic || "", pv: o.pv || "", exp: Date.now() + 30 * 86400000 }), email: o.e });
     }
     if (a === "seen" && req.method === "POST") { // the customer has read the "your login details changed" notice

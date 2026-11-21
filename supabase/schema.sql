@@ -120,3 +120,16 @@ create index if not exists watchlist_email_idx on public.watchlist (email, added
 alter table public.watchlist enable row level security; -- no policies: only the server (service key) can read or write
 grant select, insert, update, delete on public.watchlist to service_role;
 notify pgrst, 'reload schema';
+
+-- Sign-in log (one row per successful sign-in). Run once in the Supabase SQL Editor.
+create table if not exists public.login_events (
+  id bigint generated always as identity primary key,
+  email text not null,
+  method text not null,
+  created_at timestamptz not null default now()
+);
+create index if not exists login_events_email_idx on public.login_events (email, created_at desc);
+alter table public.login_events enable row level security; -- no policies: only the server (service key) can read or write
+grant select, insert on public.login_events to service_role;
+grant usage, select on all sequences in schema public to service_role;
+notify pgrst, 'reload schema';
