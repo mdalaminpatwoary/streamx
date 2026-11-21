@@ -40,7 +40,7 @@
 <link rel="stylesheet" href="assets/css/components/modal.css?v=20261119zz">
 <link rel="stylesheet" href="assets/css/components/toast.css?v=20261119zz">
 <link rel="stylesheet" href="assets/css/components/chat-widget.css?v=20261121c">
-<link rel="stylesheet" href="assets/css/components/chatbot.css?v=8">
+<link rel="stylesheet" href="assets/css/components/chatbot.css?v=9">
 <link rel="stylesheet" href="assets/css/components/cart.css?v=20261119zz">
 <link rel="stylesheet" href="assets/css/components/checkout.css?v=20261119zz">
 <link rel="stylesheet" href="assets/css/sections/hero.css?v=20261119zz">
@@ -162,17 +162,6 @@
   <p class="note tr-credit"><span class="tr-live"><i></i><span id="trLive">Live</span></span> Rankings update automatically throughout the day, so this list is always fresh.</p>
 </section>
 
-<section id="toplist" class="wrap sec" hidden>
-  <div class="hhead rv"><div><span class="eyebrow">Charts</span><h2>Top rated <span class="grad">&amp; coming soon.</span></h2></div><p>The best-rated movies and series of all time, which StreamX service carries them, and what releases next.</p></div>
-  <div class="tp-bar">
-    <div class="tp-seg" id="tlKind" role="group" aria-label="Chart"><span class="tp-thumb" aria-hidden="true"></span><button type="button" data-l="top" class="on">Top rated</button><button type="button" data-l="soon">Coming soon</button></div>
-    <div class="tp-seg" id="tlType" role="group" aria-label="Show"><span class="tp-thumb" aria-hidden="true"></span><button type="button" data-k="movie" class="on">Movies</button><button type="button" data-k="tv">Series</button></div>
-    <span class="tp-count" id="tlCount" aria-live="polite"></span>
-  </div>
-  <div class="tp-grid" id="tlGrid" aria-live="polite"></div>
-  <div class="tp-foot"><button class="tp-more" type="button" id="tlMore" hidden>Show 20 more</button><a class="tp-all" id="tlAll" href="/top/" hidden>Explore all 250 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
-  <p class="note tr-credit" id="tlNote">Ranked by TMDB user ratings, not IMDb. Platform availability is shown for Bangladesh first, then the US, and can change.</p>
-</section>
 
 <section id="pricing" class="wrap sec">
   <div class="hhead rv">
@@ -189,6 +178,18 @@
 <section id="bundles" class="wrap sec">
   <div class="hhead rv"><div><span class="eyebrow">Premium bundles</span><h2>Save more, <span class="grad">together.</span></h2></div><p>Popular services packed into one plan, at a lower price per month.</p></div>
   <div id="bundleGrid" class="grid"></div>
+</section>
+
+<section id="toplist" class="wrap sec" hidden>
+  <div class="hhead rv"><div><span class="eyebrow">Charts</span><h2>Top rated <span class="grad">&amp; coming soon.</span></h2></div><p>The best-rated movies and series of all time, which StreamX service carries them, and what releases next.</p></div>
+  <div class="tp-bar">
+    <div class="tp-seg" id="tlKind" role="group" aria-label="Chart"><span class="tp-thumb" aria-hidden="true"></span><button type="button" data-l="top" class="on">Top rated</button><button type="button" data-l="soon">Coming soon</button><button type="button" data-l="wish">Wishlist</button><button type="button" data-l="watched">Watched</button></div>
+    <div class="tp-seg" id="tlType" role="group" aria-label="Show"><span class="tp-thumb" aria-hidden="true"></span><button type="button" data-k="movie" class="on">Movies</button><button type="button" data-k="tv">Series</button></div>
+    <span class="tp-count" id="tlCount" aria-live="polite"></span>
+  </div>
+  <div class="tp-grid" id="tlGrid" aria-live="polite"></div>
+  <div class="tp-foot"><button class="tp-more" type="button" id="tlMore" hidden>Show 20 more</button><a class="tp-all" id="tlAll" href="/top/" hidden>Explore all 250 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
+  <p class="note tr-credit" id="tlNote">Ranked by TMDB user ratings, not IMDb. Platform availability is shown for Bangladesh first, then the US, and can change.</p>
 </section>
 
 <section id="how" class="wrap sec">
@@ -534,11 +535,11 @@
 <script src="assets/js/layout/page-effects.js?v=20261119zz"></script>
 <script src="assets/js/features/front-logos.js?v=20261120d"></script>
 <script src="assets/js/features/hero-motion.js?v=20261121l"></script>
-<script src="assets/js/features/trending.js?v=20261121c"></script>
+<script src="assets/js/features/trending.js?v=20261121d"></script>
 <script src="assets/js/features/mylist.js?v=1"></script>
 <script src="assets/js/features/title-sheet.js?v=1"></script>
 <script src="assets/js/features/toplist.js?v=3"></script>
-<script src="assets/js/features/chatbot.js?v=11"></script>
+<script src="assets/js/features/chatbot.js?v=12"></script>
 <script src="assets/js/features/chat-avatar.js?v=20261121j"></script>
 <script src="assets/js/layout/premium-motion.js?v=20261119zz"></script>
 <script src="assets/js/features/stats.js?v=20261121b"></script>

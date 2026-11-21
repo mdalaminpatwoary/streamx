@@ -1,10 +1,13 @@
 /* GET /api/catalog?l=top|soon&k=movie|tv : the 250 highest-rated titles (TMDB user rating, IMDb-style chart) or upcoming releases.
    GET /api/catalog?a=pv&k=movie|tv&ids=1,2,3 : streaming platforms for up to 12 titles (the chart loads them as rows come into view).
+   GET /api/catalog?a=find&q=text : up to 4 matching titles, each with the platforms it streams on (used by the chat assistant).
+   GET /api/catalog?a=on&p=netflix&k=movie|tv : popular titles currently on one platform (US catalogue), for "what is on Netflix".
    Where a platform is one StreamX sells, the reply carries its service page so the site can offer "Get <service>". */
 const API = "https://api.themoviedb.org/3";
 const HOUR = 3600 * 1000;
 
 const { mapProviders } = require("./_providers");
+const PROV_ID = { netflix: 8, "prime-video": 9, "amazon-prime-video": 9, disneyplus: 337, hulu: 15, "hbo-max": 1899, crunchyroll: 283, paramountplus: 531, "apple-tv": 350, peacock: 386, jiohotstar: 122 };
 const cache = new Map(); // key -> { at, body }
 const pvCache = new Map(); // "k:id" -> { at, v }
 let genres = null;
@@ -86,6 +89,24 @@ module.exports = async (req, res) => {
       await Promise.all(ids.map(async (id) => { out[id] = await platformsCached(k, id); }));
       res.setHeader("Cache-Control", "public, s-maxage=21600, stale-while-revalidate=86400");
       return res.status(200).json({ k, pv: out });
+    }
+    if (req.query.a === "find") {
+      const q = String(req.query.q || "").replace(/\s+/g, " ").trim().slice(0, 80);
+      if (q.length < 2) return res.status(400).json({ error: "Type a title to search." });
+      const r = await tmdb("/search/multi", { query: q, include_adult: "false", language: "en-US" });
+      const g = await genreMap();
+      const rows = (r.results || []).filter((x) => (x.media_type === "movie" || x.media_type === "tv") && x.poster_path).sort((a, b) => (b.popularity || 0) - (a.popularity || 0)).slice(0, 4);
+      const list = await Promise.all(rows.map(async (x) => { const it = item(x, x.media_type, g); const pv = await platformsCached(it.k, it.id); return { ...it, pl: pv.list, reg: pv.reg }; }));
+      res.setHeader("Cache-Control", "public, s-maxage=3600, stale-while-revalidate=86400");
+      return res.status(200).json({ q, list });
+    }
+    if (req.query.a === "on") {
+      const id = PROV_ID[String(req.query.p || "").toLowerCase()];
+      if (!id) return res.status(400).json({ error: "Unknown platform" });
+      const g = await genreMap();
+      const r = await tmdb(`/discover/${k}`, { with_watch_providers: id, watch_region: "US", with_watch_monetization_types: "flatrate", sort_by: "popularity.desc", "vote_count.gte": 200, language: "en-US" });
+      res.setHeader("Cache-Control", "public, s-maxage=21600, stale-while-revalidate=86400");
+      return res.status(200).json({ p: req.query.p, k, list: (r.results || []).filter((x) => x.poster_path).slice(0, 6).map((x) => item(x, k, g)) });
     }
     const l = req.query.l === "soon" ? "soon" : "top", key = l + k;
     const hit = cache.get(key);

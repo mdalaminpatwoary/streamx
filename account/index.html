@@ -12,6 +12,7 @@
 <script>try{if(localStorage.getItem("sx_session"))document.documentElement.classList.add("hs")}catch(e){}</script>
 <link rel="stylesheet" href="/assets/css/account.css?v=27">
 <link rel="stylesheet" href="/assets/css/title-sheet.css?v=1">
+<link rel="stylesheet" href="/assets/css/account-v2.css?v=1">
 </head>
 <body>
 <div class="ac-top"><a href="/"><img src="/assets/img/brand/logo.png" alt="StreamX" width="40" height="40"></a><a class="back" href="/">← Back to StreamX</a></div>
@@ -57,13 +58,37 @@
       <div class="ac-av" id="av" aria-hidden="true"></div>
       <div class="ac-pi"><div class="ac-hi" id="hi">Welcome back</div><div class="ac-em" id="who"></div><span class="ac-pv" id="pv" hidden></span><button class="ac-edit" id="pedit" type="button" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>Edit profile</button></div>
       <button class="ac-bell" id="bell" type="button" aria-label="Notifications"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9a6 6 0 1 1 12 0c0 5 2 6 2 6H4s2-1 2-6zM10 19a2 2 0 0 0 4 0"/></svg><i id="bn" hidden></i></button>
+    
+      <div class="ac-stats" id="stats" aria-label="Account summary">
+        <div class="ac-stat"><b id="stA">0</b><span>Active plans</span></div>
+        <div class="ac-stat"><b id="stN">&ndash;</b><span id="stNl">Next expiry</span></div>
+        <button class="ac-stat" type="button" data-go="list" data-t="wish"><b id="stW">0</b><span>Wishlist</span></button>
+        <button class="ac-stat" type="button" data-go="list" data-t="watched"><b id="stV">0</b><span>Watched</span></button>
+      </div>
     </header>
-    <h2 class="ac-h2">Subscriptions</h2>
-    <div class="ac-list" id="list"></div>
-    <div id="mylist"><h2 class="ac-h2">My list <small></small></h2><div class="ml-tabs"><button type="button" data-t="wish" class="on">Wishlist<i>0</i></button><button type="button" data-t="watched">Watched<i>0</i></button></div><div class="ml-grid"></div></div>
-    <div id="hist" hidden>
-      <h2 class="ac-h2">Purchase history <small id="hn"></small></h2>
-      <div class="ac-orders" id="orders"></div>
+    <nav class="ac-tabs" id="tabs" role="tablist" aria-label="Account sections">
+      <button type="button" role="tab" class="on" data-tab="subs" aria-selected="true"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3 10h18"/></svg>Subscriptions</button>
+      <button type="button" role="tab" data-tab="list" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg>My list</button>
+      <button type="button" role="tab" data-tab="orders" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/></svg>Orders</button>
+    </nav>
+    <div class="ac-pn" id="pn-subs" role="tabpanel">
+      <p class="ac-lede" id="subl"></p>
+      <div class="ac-list" id="list"></div>
+    </div>
+    <div class="ac-pn" id="pn-list" role="tabpanel" hidden>
+      <div id="mylist">
+        <div class="ml-head"><div class="ml-tabs"><button type="button" data-t="wish" class="on">Wishlist<i>0</i></button><button type="button" data-t="watched">Watched<i>0</i></button></div>
+        <div class="ml-kind" role="group" aria-label="Type"><button type="button" data-k="" class="on">All</button><button type="button" data-k="movie">Movies</button><button type="button" data-k="tv">Series</button></div></div>
+        <div class="ml-grid"></div>
+        <a class="ml-more" href="/top/">Discover titles in the Top 250 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </div>
+    </div>
+    <div class="ac-pn" id="pn-orders" role="tabpanel" hidden>
+      <div id="hist" hidden>
+        <h2 class="ac-h2">Purchase history <small id="hn"></small></h2>
+        <div class="ac-orders" id="orders"></div>
+      </div>
+      <div class="ac-card ac-empty" id="noord">No online orders yet.<br><a class="ac-btn ac-sm" style="margin-top:14px" href="/#pricing">Browse plans</a></div>
     </div>
     <footer class="ac-foot"><div class="ac-fi"><span class="ac-fav" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4.5-6 8-6s7 2 8 6"/></svg></span><div><small>Signed in as</small><b id="fwho"></b></div></div>
       <button class="ac-out" id="out" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5M21 12H9"/></svg><span>Sign out</span></button>
@@ -121,9 +146,9 @@
 <script src="/assets/js/data/catalog.js"></script>
 <script src="/assets/js/data/logos.js?v=20261121a"></script>
 <script src="/assets/js/data/countries.js?v=1"></script>
-<script src="/assets/js/account.js?v=23"></script>
+<script src="/assets/js/account.js?v=24"></script>
 <script src="/assets/js/features/mylist.js?v=1"></script>
 <script src="/assets/js/features/title-sheet.js?v=1"></script>
-<script src="/assets/js/features/account-list.js?v=1"></script>
+<script src="/assets/js/features/account-list.js?v=2"></script>
 </body>
 </html>

@@ -43,21 +43,24 @@
       fetch(`/api/catalog?a=pv&k=${st.k}&ids=${ch.map(m=>m.id).join(",")}`).then(r=>r.ok?r.json():null).then(d=>{if(d&&d.pv)Object.keys(d.pv).forEach(id=>{pv[d.k+":"+id]=d.pv[id]});ch.forEach(m=>{if(!pv[m.k+":"+m.id])pv[m.k+":"+m.id]={reg:"",list:[]}});fillPl()}).catch(()=>{ch.forEach(m=>{pv[m.k+":"+m.id]={reg:"",list:[]}});fillPl()})}
   }
   function paint(){
-    const d=cache[st.l+st.k];if(!d)return;
+    const mine=st.l==="wish"||st.l==="watched";
+    const d=mine?{list:(window.sxList&&sxList.authed()?sxList.all().filter(x=>x.s===st.l&&x.k===st.k):[])}:cache[st.l+st.k];if(!d)return;
     const soon=st.l==="soon";
+    if(mine&&!(window.sxList&&sxList.authed())){grid.className="tp-grid";grid.innerHTML=`<div class="tp-msg"><b>Sign in to see your ${st.l==="wish"?"wishlist":"watched list"}</b>Save titles from any poster and they will be here on every device.<br><a class="tp-all" style="margin-top:16px" href="/account/">Sign in</a></div>`;more.hidden=true;if(all)all.hidden=true;if(cnt)cnt.textContent="";sec.hidden=false;return}
     let rows=(d.list||[]).map((m,i)=>({m,r:i+1}));
     if(PAGE){const q=st.q.trim().toLowerCase();if(q)rows=rows.filter(x=>x.m.t.toLowerCase().includes(q));if(st.hide&&window.sxList)rows=rows.filter(x=>sxList.get(x.m.k,x.m.id)!=="watched")}
     grid.className="tp-grid"+(soon?" soon":"");
-    if(!rows.length){grid.innerHTML=`<div class="tp-msg"><b>${st.q||st.hide?"No titles match":"Nothing to show right now"}</b>${st.q||st.hide?"Try a different search or turn off the filter.":"Please check back soon."}</div>`;more.hidden=true;if(all)all.hidden=PAGE;if(cnt)cnt.textContent="";return}
+    if(!rows.length){grid.innerHTML=`<div class="tp-msg"><b>${st.q||st.hide?"No titles match":mine?(st.l==="wish"?"Your wishlist is empty":"Nothing marked as watched yet"):"Nothing to show right now"}</b>${st.q||st.hide?"Try a different search or turn off the filter.":mine?"Tap the "+(st.l==="wish"?"bookmark":"tick")+" on any poster to add titles here.":"Please check back soon."}</div>`;more.hidden=true;if(all)all.hidden=PAGE;if(cnt)cnt.textContent="";return}
     const shown=rows.slice(0,st.n);
     grid.innerHTML=shown.map((x,i)=>card(x.m,x.r,i,soon)).join("");
     const left=rows.length-shown.length;
     more.hidden=left<=0;more.textContent=`Show ${Math.min(STEP,left)} more`;
-    if(all){all.hidden=false;all.href=soon?"/top/#soon":"/top/";all.firstChild.textContent=soon?"Explore all upcoming ":"Explore all 250 "}
+    if(all){all.hidden=mine;all.href=soon?"/top/#soon":"/top/";all.firstChild.textContent=soon?"Explore all upcoming ":"Explore all 250 "}
     if(cnt)cnt.textContent=`Showing ${shown.length} of ${rows.length}`;
     wantPl(shown.map(x=>x.m));paintStates();
   }
   function load(first){
+    if(st.l==="wish"||st.l==="watched"){const go=()=>{sec.hidden=false;paint()};return window.sxList?sxList.load().then(go,go):(go(),Promise.resolve())}
     const key=st.l+st.k;if(cache[key]){paint();return Promise.resolve()}
     if(!first){grid.className="tp-grid";grid.innerHTML=`<div class="tp-sk">${"<i></i>".repeat(PAGE?10:5)}</div>`;more.hidden=true}
     return fetch(`/api/catalog?l=${st.l}&k=${st.k}`).then(r=>{if(!r.ok)throw 0;return r.json()}).then(d=>{cache[key]=d;if(st.l==="soon")(d.list||[]).forEach(m=>{pv[m.k+":"+m.id]={reg:m.reg,list:m.pl||[]}});if(first)sec.hidden=false;if(key===st.l+st.k)paint()})
@@ -78,9 +81,9 @@
     if(a){e.preventDefault();if(window.sxList&&m)sxList.toggle({k:m.k,id:m.id,t:m.t,p:m.p,y:m.y,v:m.v},a.dataset.act);return}
     if(e.target.closest(".tp-open")||e.target.closest("h3")){if(window.sxSheet)sxSheet.open(c.dataset.id,c.dataset.k,e.target.closest(".tp-open")||c,m)}
   });
-  if(window.sxList){sxList.onChange(()=>{paintStates();if(PAGE&&st.hide)paint()});sxList.load().then(paintStates)}
+  if(window.sxList){sxList.onChange(()=>{paintStates();if((st.l==="wish"||st.l==="watched")||(PAGE&&st.hide))paint()});sxList.load().then(paintStates)}
   const boot=()=>load(true).then(()=>{syncSegs()});
   if(PAGE){syncSegs();boot()}
-  else{const io=new IntersectionObserver(es=>{if(es[0].isIntersecting){io.disconnect();boot()}},{rootMargin:"600px"});io.observe(document.getElementById("pricing")||sec)}
+  else{const io=new IntersectionObserver(es=>{if(es[0].isIntersecting){io.disconnect();boot()}},{rootMargin:"600px"});io.observe(document.getElementById("bundles")||sec)}
   addEventListener("resize",syncSegs);
 })();

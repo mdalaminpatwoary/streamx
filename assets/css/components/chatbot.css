@@ -190,3 +190,17 @@ button.bt-btn{appearance:none}
 .bt-btn.bt-wa:hover{background:linear-gradient(135deg,#34e078,#17a88f);box-shadow:0 0 0 3px rgba(37,211,102,.28)}
 .bt-ag-wa:hover{box-shadow:0 10px 24px -8px rgba(37,211,102,.95),0 0 0 3px rgba(37,211,102,.28)}
 .bt-rwa{padding:4px 8px;transition:color .2s}
+
+/* movies & series cards */
+.bt-title{display:flex;gap:11px;align-items:flex-start}
+.bt-po{flex:none;width:54px;height:81px;border-radius:9px;object-fit:cover;background:#141935}
+.bt-tb{min-width:0;flex:1}
+.bt-tt{display:block}.bt-tt b{display:block;font-size:14px;line-height:1.25}.bt-tt small{display:block;margin-top:2px;color:rgba(255,255,255,.6);font-size:11.5px}
+.bt-pfs{display:flex;flex-wrap:wrap;gap:6px;margin:9px 0 2px}
+.bt-pf{display:block;padding:6px 10px;border-radius:11px;text-decoration:none;color:#fff;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05)}
+.bt-pf b{display:block;font-size:12.5px}.bt-pf small{display:block;font-size:10.5px;opacity:.75}
+.bt-pf.on{border-color:rgba(25,181,107,.55);background:rgba(25,181,107,.14)}
+.bt-pf.on small{color:#6fe0a8;opacity:1}
+.bt-pf.off small{color:#ffb4ad;opacity:1}
+.bt-title .bt-row{margin-top:8px}
+.bt-btn.ok{background:#19b56b!important;color:#fff!important}

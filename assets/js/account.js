@@ -244,6 +244,8 @@
     var live = groupRows(rows.filter(function (s) { return s._left >= 0; }).sort(function (a, b) { return a._left - b._left; }));
     var gone = groupRows(rows.filter(function (s) { return s._left < 0; }).sort(function (a, b) { return b._left - a._left; }));
     $("#sub").textContent = live.length ? live.length + " active " + (live.length === 1 ? "subscription" : "subscriptions") + ". Expiry dates are in Bangladesh time." : "You have no active subscription right now.";
+    var sl = $("#subl"); if (sl) sl.textContent = $("#sub").textContent;
+    try { var act = rows.filter(function (s) { return s._left >= 0; }), nx = act.length ? Math.min.apply(null, act.map(function (s) { return s._left; })) : null; document.dispatchEvent(new CustomEvent("ac:data", { detail: { live: live.length, next: nx, hasOrders: (d.orders || []).length } })); } catch (e) {}
     PENDING = []; paintLater = null; ANN = Array.isArray(d.notices) ? d.notices : [];
     var idx = 0, html;
     if (!rows.length) html = '<div class="ac-card ac-empty">No subscriptions found for this email yet.<br><a class="ac-btn ac-sm" style="margin-top:14px" href="/#pricing">Browse plans</a></div>';

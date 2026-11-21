@@ -180,6 +180,7 @@
     if(ql==="return policy")return KB.find(k=>k[0]==="policy")[2]();
     if(CATNAMES[ql]){const h=byCat(CATNAMES[ql]);if(h)return{h,c:["Help me choose","Prices & plans","Talk to a human"]}}
     let ps=findProducts(q);
+    const wr=watchRoute(q,ql,t);if(wr)return wr;
     const ar=acctRoute(q,ql,ps);if(ar)return ar;
     const scored=RULES.map(r=>[r,any(q,r[1])]).filter(x=>x[1]>0).sort((a,b)=>b[1]-a[1]);
     const best=scored.length?scored[0][0]:null;
@@ -291,6 +292,79 @@
     if(!a.length)return `<p>None of your plans is close to ending. You can still renew any time from My account. The new period is added after your current expiry, so no days are lost.</p><div class="bt-row">${btn("Open My account","/account/")}</div>`;
     return `<p>${a.length>1?"These plans are":"This plan is"} ending soon. Renew online and your plan is extended automatically once payment is confirmed. You do not need to do anything else.</p>`+a.map(x=>`<div class="bt-card"><div class="bt-ct">${tileOf(x.service)}${esc(x.service)}<em class="bt-st ${stOf(x)[1]}">${leftTxt(x)}</em></div><p class="bt-cd">${esc(x.plan)}</p>${renewBtns(x)}</div>`).join("");
   }
+
+  /* ---------- movies and series: where to watch, wishlist and watched ---------- */
+  const SLUGNAME={netflix:"Netflix","amazon-prime-video":"Amazon Prime Video",disneyplus:"Disney+","hbo-max":"HBO Max",hulu:"Hulu",crunchyroll:"Crunchyroll",paramountplus:"Paramount+",jiohotstar:"JioHotstar",zee5:"ZEE5"};
+  const PLAT=[["netflix",/\bnetflix\b/,"Netflix","netflix"],["prime-video",/\b(prime video|amazon prime|prime)\b/,"Prime Video","amazon-prime-video"],["disneyplus",/\b(disney\+?|disney plus)\b/,"Disney+","disneyplus"],["hulu",/\bhulu\b/,"Hulu","hulu"],["hbo-max",/\b(hbo max|hbo|max)\b/,"HBO Max","hbo-max"],["crunchyroll",/\bcrunchyroll\b/,"Crunchyroll","crunchyroll"],["paramountplus",/\bparamount\+?\b/,"Paramount+","paramountplus"],["jiohotstar",/\b(jiohotstar|hotstar)\b/,"JioHotstar","jiohotstar"],["apple-tv",/\bapple tv\+?\b/,"Apple TV+",null],["peacock",/\bpeacock\b/,"Peacock",null]];
+  const prodBy=slg=>LIST.find(p=>p.name===SLUGNAME[slg]);
+  const lbl=m=>`<span class="bt-tt"><b>${esc(m.t)}</b><small>${[m.y,m.v?"★ "+Number(m.v).toFixed(1):"",m.k==="tv"?"Series":"Movie"].filter(Boolean).join(" · ")}</small></span>`;
+  function titleCard(m){
+    const own=(m.pl||[]).filter(x=>x.s),oth=(m.pl||[]).filter(x=>!x.s);
+    const ownH=own.map(x=>{const pr=prodBy(x.s),from=pr?minOf(pr):0;return `<a class="bt-pf on" href="/services/${esc(x.s)}/" data-close><b>${esc(x.n)}</b><small>On StreamX${from?" · from "+taka(from):""}</small></a>`}).join("");
+    const othH=oth.slice(0,4).map(x=>`<a class="bt-pf off" href="${esc(wa("Hi StreamX! Please add "+x.n+" so I can watch "+m.t))}" target="_blank" rel="noopener"><b>${esc(x.n)}</b><small>Not on StreamX · Request</small></a>`).join("");
+    const data=`data-k="${m.k}" data-id="${m.id}" data-t="${esc(m.t)}" data-p="${esc(m.p||"")}" data-y="${esc(m.y||"")}" data-v="${m.v||0}"`;
+    return `<div class="bt-card bt-title">${m.p?`<img class="bt-po" src="https://image.tmdb.org/t/p/w154${esc(m.p)}" alt="" width="54" height="81" loading="lazy">`:""}<div class="bt-tb">${lbl(m)}`+
+      (ownH||othH?`<div class="bt-pfs">${ownH}${othH}</div>`:`<p class="bt-cd">No streaming platform is listed for this title right now.</p>`)+
+      `<div class="bt-row"><button type="button" class="bt-btn" data-act="lw" ${data}>Wishlist</button><button type="button" class="bt-btn" data-act="lv" ${data}>Watched</button></div></div></div>`;
+  }
+  function listItems(items,empty){
+    if(!items.length)return empty;
+    return `<div class="bt-sublist">${items.slice(0,8).map(m=>`<div class="bt-card bt-title">${m.p?`<img class="bt-po" src="https://image.tmdb.org/t/p/w154${esc(m.p)}" alt="" width="54" height="81" loading="lazy">`:""}<div class="bt-tb">${lbl(m)}<div class="bt-row"><button type="button" class="bt-btn" data-act="lf" data-find="${esc(m.t)}">Where to watch</button></div></div></div>`).join("")}</div>${items.length>8?`<p class="bt-cd">Showing 8 of ${items.length}. Open the full list in My account.</p>`:""}<div class="bt-row">${btn("Open My account","/account/#mylist")}</div>`;
+  }
+  const getJ=u=>fetch(u,{headers:token()&&/account/.test(u)?{Authorization:"Bearer "+token()}:{}}).then(r=>r.json().then(j=>{if(!r.ok){const e=new Error(j.error||"error");e.status=r.status;throw e}return j}));
+  const failH=e=>`<p>${e&&e.status===401?"Your session ended. Please sign in again.":"I could not look that up just now. Please try again in a moment."}</p>`;
+  function findTitle(name){
+    return {p:getJ("/api/catalog?a=find&q="+encodeURIComponent(name)).then(d=>{
+      if(!d.list.length)return{h:`<p>I could not find a movie or series called "${esc(name)}". Check the spelling, or ask us on WhatsApp.</p><div class="bt-row">${waBtn("Hi StreamX! Where can I watch "+name+"?")}</div>`,c:["What streaming services do you have?","Talk to a human"]};
+      return{h:`<p>Here is where ${d.list.length>1?"these titles stream":"it streams"}. Green means you can get that service on StreamX; others you can request.</p>`+d.list.slice(0,3).map(titleCard).join("")+`<p class="bt-cd">Availability comes from TMDB and mostly reflects Bangladesh and the US. It can change.</p>`,c:["My wishlist","Top rated","Talk to a human"]};
+    }).catch(e=>({h:failH(e),c:["Talk to a human"]}))};
+  }
+  function onPlatform(pl,k){
+    const name=pl[2],own=!!pl[3]&&!!prodBy(pl[3]);
+    return {p:getJ("/api/catalog?a=on&k="+k+"&p="+pl[0]).then(d=>{
+      const head=own?`<p>${esc(name)} is available on StreamX. Popular ${k==="tv"?"series":"movies"} on it right now:</p>`:`<p>${esc(name)} is not on StreamX yet, but you can request it. Popular ${k==="tv"?"series":"movies"} on it right now:</p>`;
+      const foot=own?`<div class="bt-row">${btn("Get "+name,"/services/"+pl[3]+"/"," bt-go")}</div>`:`<div class="bt-row">${btn("Request "+name,wa("Hi StreamX! Please add "+name+" to your services."),"  bt-wa")}</div>`;
+      return{h:head+`<div class="bt-sublist">${d.list.slice(0,6).map(m=>`<div class="bt-card bt-title">${m.p?`<img class="bt-po" src="https://image.tmdb.org/t/p/w154${esc(m.p)}" alt="" width="54" height="81" loading="lazy">`:""}<div class="bt-tb">${lbl(m)}<div class="bt-row"><button type="button" class="bt-btn" data-act="lw" data-k="${m.k}" data-id="${m.id}" data-t="${esc(m.t)}" data-p="${esc(m.p||"")}" data-y="${esc(m.y||"")}" data-v="${m.v||0}">Wishlist</button></div></div></div>`).join("")}</div>`+foot,c:["What streaming services do you have?","My wishlist"]};
+    }).catch(e=>({h:failH(e),c:["Talk to a human"]}))};
+  }
+  function streamingList(){
+    const S=LIST.filter(p=>p.cat==="Streaming"&&p.name!=="IPTV");
+    return {h:`<p>These streaming services are available on StreamX, with fixed prices in Taka:</p><ul class="bt-mini">${S.map(p=>`<li><a href="/#plan=${slug(p.name)}" data-close>${esc(p.name)}</a><b>${minOf(p)?"from "+taka(minOf(p)):"ask us"}</b></li>`).join("")}</ul><p>Want one that is not listed, such as Apple TV+ or Peacock? Send us a request and we will check.</p><div class="bt-row">${btn("Request a platform",wa("Hi StreamX! Please add this streaming platform: "),"  bt-wa")}</div>`,c:["Where can I watch Dune?","My wishlist"]};
+  }
+  function myLists(which){
+    if(!token())return{h:`<p>Sign in to My account and I can show your wishlist and watched titles right here.</p><div class="bt-row">${btn("Sign in","/account/"," bt-go")}</div>`,c:["Top rated","Talk to a human"]};
+    return {p:getJ("/api/account?a=list").then(d=>{
+      const all=d.items||[],pick=s=>all.filter(x=>x.s===s).map(x=>({k:x.k,id:x.id,t:x.t,p:x.p,y:x.y,v:x.v}));
+      const w=pick("wish"),v=pick("watched");
+      const sec=(t,a,e)=>`<p><b>${t}</b> (${a.length})</p>`+listItems(a,`<p class="bt-cd">${e}</p>`);
+      let h=which==="wish"?sec("Your wishlist",w,"Your wishlist is empty. Ask me where to watch a title and tap Wishlist."):which==="watched"?sec("Watched",v,"You have not marked anything as watched yet."):sec("Your wishlist",w,"Your wishlist is empty.")+sec("Watched",v,"Nothing marked as watched yet.");
+      return{h,c:which==="wish"?["My watched list","Top rated"]:which==="watched"?["My wishlist","Top rated"]:["Top rated","Talk to a human"]};
+    }).catch(e=>({h:failH(e),c:["Talk to a human"]}))};
+  }
+  function watchRoute(q,ql,t){
+    if(/\b(wishlist|wish list|watchlist|watch list|want to watch|saved titles?)\b/.test(ql)&&!/\b(how|what is)\b/.test(ql))return myLists("wish");
+    if(/\b(watched|already seen|seen list|my seen|what have i (watched|seen))\b/.test(ql)&&/\b(my|i|list|have)\b/.test(ql)&&!/where|which platform/.test(ql))return myLists("watched");
+    if(/(which|what|any|list).{0,25}(streaming|ott|movie|series).{0,20}(platforms?|services?|apps?)|(platforms?|services?) (do you|you) (have|provide|offer|sell)|(streaming|ott) (platforms?|services?) (on|at|in) streamx|which ott/.test(ql))return streamingList();
+    if(/^(top rated|top 250|best (movies|series|shows)|highest rated)\b/.test(ql))return{h:`<p>The Top 250 movies and series, with where to watch each one, are on our Top rated page. You can also save titles to your wishlist there.</p><div class="bt-row">${btn("Open Top 250","/top/"," bt-go")}</div>`,c:["My wishlist","What streaming services do you have?"]};
+    const pl=PLAT.find(x=>x[1].test(ql));
+    const k=/\b(series|shows?|tv)\b/.test(ql)?"tv":"movie";
+    if(pl&&/\b(what|which|show|best|popular|top|good|new|recommend|suggest|latest|trending)\b/.test(ql)&&/\b(on|in)\b/.test(ql)&&(/\b(movies?|series|shows?|watch|titles?|content|films?)\b/.test(ql)||/\b(what|which)('?s| is| are)? (on|in)\b/.test(ql))&&!/\b(price|cost|plans?|buy|subscribe|login)\b/.test(ql))return onPlatform(pl,k);
+    const m=t.match(/(?:where (?:can|do|could|to) (?:i|we|you)?\s*(?:watch|stream|find|see)|where to (?:watch|stream|see)|which platform(?:s)? (?:has|have|is|streams?|for)|what platform(?:s)? (?:has|have|is|streams?|for)|is|available platforms? for|streaming|watch|stream)\s+(.{2,70})$/i);
+    if(m&&/\b(where|which platform|what platform|stream(?:ing)?|available|watch|on (?:netflix|prime|disney|hulu|hbo|crunchyroll|hotstar|paramount|apple))\b/i.test(t)){
+      let name=m[1].replace(/\b(on|in|at|from)\s+(which|what|any)\s+\w+.*$/i,"").replace(/\b(available|streaming|online|for free|free|in bangladesh|in bd|now)\b.*$/i,"").replace(/[?!.]+$/,"").replace(/^(the movie|the series|the show|movie|series|show)\s+/i,"").replace(/\s+(on|in)\s+\w+(\s+\w+)?$/i,x=>PLAT.some(y=>y[1].test(x.toLowerCase()))?"":x).trim();
+      if(name.length>=2&&!/^(it|this|that|netflix|prime|prime video|disney|hulu|youtube)$/i.test(name))return findTitle(name);
+    }
+    return null;
+  }
+  function listAct(el){
+    const a=el.dataset.act;
+    if(a==="lf"){reply("Where to watch "+el.dataset.find,findTitle(el.dataset.find));return}
+    if(!token()){reply(a==="lw"?"Add to wishlist":"Mark as watched",{h:signIn(),c:["Top rated"]});return}
+    const k=el.dataset.k,id=el.dataset.id,s=a==="lw"?"wish":"watched";
+    el.disabled=true;
+    fetch("/api/account?a=list",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+token()},body:JSON.stringify({k,id,s,t:el.dataset.t,p:el.dataset.p,y:el.dataset.y,v:+el.dataset.v||0})}).then(r=>{if(!r.ok)throw r;
+      el.classList.add("ok");el.textContent=s==="wish"?"In wishlist":"Watched";if(window.sxList&&sxList.load)sxList.load().catch(()=>{})}).catch(()=>{el.disabled=false;el.textContent="Try again"});
+  }
   /* returns {p:Promise<reply>} for signed-in account questions, a sign-in prompt when signed out, or null */
   function acctRoute(q,ql,ps){
     const A=ks=>any(q,ks)>0;
@@ -366,6 +440,7 @@
   function doAct(el){
     const a=el.dataset.act,i=+el.dataset.i,v=+el.dataset.v,k=+el.dataset.k,p=PRODUCTS[i];
     if(a==="eye"||a==="cp"){secretAct(el);return}
+    if(a==="lw"||a==="lv"||a==="lf"){listAct(el);return}
     if(busy)return;
     if(a==="sub"){loadAcc().then(()=>{const x=subById(el.dataset.sid);if(x)reply(x.service,{h:detailHtml(x),c:["My subscriptions","Renew my plan","My orders"]})});return}
     if(a==="pick"){ctx.p=p;reply("Choose a plan for "+p.name,{h:typeHtml(p)});return}
