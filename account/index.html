@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
 <script>try{if(localStorage.getItem("sx_session"))document.documentElement.classList.add("hs")}catch(e){}</script>
-<link rel="stylesheet" href="/assets/css/account.css?v=25">
+<link rel="stylesheet" href="/assets/css/account.css?v=26">
 </head>
 <body>
 <div class="ac-top"><a href="/"><img src="/assets/img/brand/logo.png" alt="StreamX" width="40" height="40"></a><a class="back" href="/">← Back to StreamX</a></div>
@@ -70,26 +70,34 @@
   <div class="ac-skel" aria-hidden="true"><div class="ac-sk-prof"><i class="ac-sk c"></i><div><i class="ac-sk l1"></i><i class="ac-sk l2"></i></div></div><i class="ac-sk h"></i><div class="ac-sk-card"><i class="ac-sk t"></i><div><i class="ac-sk l1"></i><i class="ac-sk l2"></i><i class="ac-sk bar"></i></div></div><div class="ac-sk-card"><i class="ac-sk t"></i><div><i class="ac-sk l1"></i><i class="ac-sk l2"></i><i class="ac-sk bar"></i></div></div></div>
 </main>
 <div class="ac-modal" id="rm" hidden role="dialog" aria-modal="true" aria-labelledby="rt">
-  <form class="ac-card ac-mbox" id="rf" novalidate>
+  <form class="ac-card ac-mbox rn" id="rf" novalidate>
     <button class="ac-x" type="button" data-close aria-label="Close">✕</button>
-    <div class="ac-eyebrow">Renew</div>
-    <h2 id="rt" class="ac-mt"></h2>
-    <div class="ac-price" id="rp"></div>
-    <p class="ac-note" id="rn" style="margin:0 0 14px"></p>
-    <label for="remail">Account email</label><input class="ac-in" id="remail" type="email" readonly autocomplete="email" aria-describedby="remailn">
-    <p class="ac-hint" id="remailn">Your renewal is applied to this email automatically, and your payment confirmation is sent here.</p>
-    <label for="rname" style="margin-top:12px">Your name</label><input class="ac-in" id="rname" autocomplete="name">
-    <label for="rphone" style="margin-top:12px">Mobile number</label><input class="ac-in" id="rphone" type="tel" inputmode="tel" autocomplete="tel" placeholder="01XXXXXXXXX">
+    <div class="ac-eyebrow">Renew subscription</div>
+    <div class="rn-sum">
+      <span id="rtile"></span>
+      <div class="rn-st"><h2 id="rt" class="rn-t"></h2><p class="rn-n" id="rn"></p></div>
+      <div class="ac-price rn-p" id="rp"></div>
+    </div>
+    <p class="rn-until" id="rnn"></p>
+    <div class="rn-f">
+      <div class="rn-fl"><label for="remail">Account email</label><input class="ac-in" id="remail" type="email" readonly autocomplete="email" aria-describedby="remailn"><p class="rn-h" id="remailn">Your renewal is applied to this email automatically, and your payment confirmation is sent here.</p></div>
+      <div class="rn-two">
+        <div class="rn-fl"><label for="rname">Your name</label><input class="ac-in" id="rname" autocomplete="name" placeholder="Full name"></div>
+        <div class="rn-fl"><label for="rphone">Mobile number</label><input class="ac-in" id="rphone" type="tel" inputmode="tel" autocomplete="tel" placeholder="01XXXXXXXXX"></div>
+      </div>
+    </div>
     <p class="ac-msg" id="re" role="alert"></p>
-    <button class="ac-btn" id="rgo" type="submit" style="width:100%"></button>
-    <img class="ac-eps" src="/assets/img/pay/eps-checkout.webp" alt="Pay with EPS: Visa, Mastercard, American Express, bKash, Nagad, Rocket and more" loading="lazy" width="1100" height="190">
-    <small class="ac-fine">You will be taken to the EPS payment page. We never see your card or wallet PIN.</small>
-    <small class="ac-fine">Your plan is extended automatically as soon as payment is confirmed. No further steps.</small>
+    <button class="ac-btn rn-go" id="rgo" type="submit"></button>
+    <div class="rn-eps"><img src="/assets/img/pay/eps-checkout.webp" alt="Pay with EPS: Visa, Mastercard, American Express, bKash, Nagad, Rocket and more" loading="lazy" width="1100" height="190"></div>
+    <ul class="rn-fine">
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span>You will be taken to the EPS payment page. We never see your card or wallet PIN.</span></li>
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg><span>Your plan is extended automatically as soon as payment is confirmed. No further steps.</span></li>
+    </ul>
   </form>
 </div>
 <script src="/assets/js/data/catalog.js"></script>
 <script src="/assets/js/data/logos.js?v=20261121a"></script>
 <script src="/assets/js/data/countries.js?v=1"></script>
-<script src="/assets/js/account.js?v=20"></script>
+<script src="/assets/js/account.js?v=21"></script>
 </body>
 </html>
