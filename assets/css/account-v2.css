@@ -232,3 +232,53 @@ button.ac-stat{cursor:pointer}button.ac-stat:hover{background:rgba(255,255,255,.
 .ac-rwa svg{width:14px;height:14px;color:#3ddc84}
 .ac-rwa:hover{background:none;border:0;color:#fff;text-decoration:underline;text-underline-offset:3px}
 @media(max-width:640px){.ac-rnb{min-width:0}.ac-rp{flex:none;width:100%}.ac-rwa{justify-content:center;flex:none;padding:4px 0}}
+
+/* renew bar v3: changes with how close the expiry is */
+.ac-rn{position:relative;overflow:hidden;gap:18px;padding:14px 14px 14px 18px}
+.ac-rn::before{content:"";position:absolute;left:0;top:12px;bottom:12px;width:3px;border-radius:0 3px 3px 0;background:var(--rc,rgba(255,255,255,.2))}
+.ac-rn.t-calm{--rc:rgba(255,255,255,.18)}
+.ac-rn.t-soon{--rc:#f59e0b}.ac-rn.t-today{--rc:#fb7a28}.ac-rn.t-late{--rc:#ef4444}
+.ac-rn.t-calm,.ac-rn.t-soon,.ac-rn.t-today,.ac-rn.t-late{border-color:var(--line)}
+.ac-rn.t-soon{background:linear-gradient(90deg,rgba(245,158,11,.10),rgba(255,255,255,.03) 70%);border-color:color-mix(in srgb,#f59e0b 34%,var(--line))}
+.ac-rn.t-today{background:linear-gradient(90deg,rgba(251,122,40,.14),rgba(255,255,255,.03) 70%);border-color:color-mix(in srgb,#fb7a28 45%,var(--line))}
+.ac-rn.t-late{background:linear-gradient(90deg,rgba(239,68,68,.12),rgba(255,255,255,.03) 70%);border-color:color-mix(in srgb,#ef4444 40%,var(--line))}
+.ac-rni{gap:4px}
+.ac-rnt{display:inline-flex;align-items:center;gap:7px;justify-self:start;padding:3px 10px;border-radius:99px;font:800 11px Manrope,system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--rc);background:color-mix(in srgb,var(--rc) 14%,transparent);border:1px solid color-mix(in srgb,var(--rc) 35%,transparent)}
+.t-calm .ac-rnt{color:#aab3d6}
+.ac-rni>b{font-size:18px;letter-spacing:-.01em;margin-top:2px}
+.ac-rni>small{font-size:13px;line-height:1.4;max-width:42ch}
+.ac-rn.t-calm .ac-rp{background:rgba(255,255,255,.07);box-shadow:none;border:1px solid rgba(255,255,255,.2);color:#fff}
+.ac-rn.t-calm .ac-rp:hover{background:linear-gradient(135deg,#ff4a36,#d92a1c);border-color:transparent;box-shadow:0 12px 28px -10px rgba(237,49,36,1)}
+.ac-rn.t-today .ac-rp,.ac-rn.t-late .ac-rp{animation:acRnPulse 2.6s ease-in-out infinite}
+@keyframes acRnPulse{0%,100%{box-shadow:0 10px 24px -12px rgba(237,49,36,.9),0 0 0 0 rgba(237,49,36,.35)}50%{box-shadow:0 10px 24px -12px rgba(237,49,36,.9),0 0 0 7px rgba(237,49,36,0)}}
+@media(prefers-reduced-motion:reduce){.ac-rn .ac-rp{animation:none!important}}
+@media(max-width:640px){.ac-rn{padding:14px 14px 14px 18px}.ac-rni>small{max-width:none}}
+
+/* help panel v2 */
+.ac-help{margin-top:0;padding:0;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.03);overflow:hidden;transition:border-color .25s,background .25s}
+.ac-help[open]{border-color:rgba(255,255,255,.16);background:rgba(255,255,255,.04)}
+.ac-help summary{gap:14px;padding:13px 14px;border-radius:0;color:#fff}
+.ac-help summary::after{display:none}
+.ac-hi{display:grid;place-items:center;width:40px;height:40px;border-radius:12px;flex:none;background:linear-gradient(135deg,rgba(237,49,36,.22),rgba(237,49,36,.08));border:1px solid rgba(237,49,36,.3);color:#ff9d92}
+.ac-hi svg{width:20px;height:20px;color:inherit}
+.ac-ht{flex:1;min-width:0;display:grid;gap:2px}
+.ac-ht b{font-size:14.5px;font-weight:800}
+.ac-ht small{font-size:12.5px;font-weight:500;color:var(--mut)}
+.ac-hc{display:grid;place-items:center;width:30px;height:30px;border-radius:99px;flex:none;background:rgba(255,255,255,.06);color:#c9d0ee;transition:transform .3s,background .2s}
+.ac-hc svg{width:16px;height:16px}
+.ac-help summary:hover .ac-hc{background:rgba(255,255,255,.12)}
+.ac-help[open] .ac-hc{transform:rotate(180deg)}
+.ac-help .ac-hb{padding:16px 16px 16px;border-top:1px solid var(--line)}
+.ac-hs{display:flex;align-items:center;gap:10px;margin:0 0 10px}
+.ac-hs:not(:first-child){margin-top:18px}
+.ac-hs b{font-size:13.5px}
+.ac-hs small{margin-left:auto;font-size:12px;color:var(--mut)}
+.ac-hn{display:grid;place-items:center;width:22px;height:22px;border-radius:99px;font:800 12px Manrope,system-ui,sans-serif;background:rgba(237,49,36,.18);color:#ff9d92;border:1px solid rgba(237,49,36,.35)}
+.ac-help .ac-topic{padding:9px 14px;border-radius:12px;font-weight:600}
+.ac-help .ac-ta-w{margin-top:0}
+.ac-help .ac-ta{border-radius:14px}
+.ac-help .ac-send{border-radius:14px;padding:14px 18px;font-size:14.5px}
+.ac-hnote{margin:10px 0 0!important;text-align:center;font-size:12px!important;color:var(--mut)}
+.ac-help .ac-alt{margin-top:16px;padding-top:14px;border-top:1px dashed rgba(255,255,255,.12);justify-content:center}
+.ac-help .ac-alt>span{width:100%;text-align:center;margin:0 0 2px}
+@media(max-width:560px){.ac-hs small{display:none}.ac-help .ac-hb{padding:14px}}

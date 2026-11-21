@@ -127,12 +127,14 @@
       topics.push("I want to change my login email");
     }
     var sub = encodeURIComponent("Help with " + s.service + " (#" + s.id + ")"), mark = "__ISSUE__", url = waLink(s, lg, mark).replace(encodeURIComponent(mark), "");
-    return '<details class="ac-help"><summary>' + HELPI + "<span>Need help with this subscription?</span></summary>" +
-      '<div class="ac-hb" data-u="' + esc(url) + '" data-sub="' + sub + '"><p>Tap a common question or type your own. We open WhatsApp with your subscription details already attached.</p>' +
+    return '<details class="ac-help"><summary><span class="ac-hi">' + HELPI + '</span><span class="ac-ht"><b>Need help with this subscription?</b><small>Quick fixes, or chat with our team on WhatsApp</small></span><span class="ac-hc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></summary>' +
+      '<div class="ac-hb" data-u="' + esc(url) + '" data-sub="' + sub + '"><div class="ac-hs"><span class="ac-hn">1</span><b>What is the problem?</b></div>' +
       '<div class="ac-topics">' + topics.map(function (t) { return '<button type="button" class="ac-topic" data-t="' + esc(t) + '">' + esc(t) + "</button>"; }).join("") + "</div>" +
+      '<div class="ac-hs"><span class="ac-hn">2</span><b>Add details</b><small>Optional if you picked a topic</small></div>' +
       '<div class="ac-ta-w"><textarea class="ac-ta" rows="3" maxlength="500" placeholder="Describe your issue, in English or Bangla" aria-label="Describe your issue"></textarea><small class="ac-ccn">0 / 500</small></div>' +
       '<button type="button" class="ac-send">' + WAI + "<span>Send on WhatsApp</span></button>" +
-      '<div class="ac-alt"><span>Or reach us on</span><a href="https://m.me/streamx.com.bd" target="_blank" rel="noopener">' + MSI + 'Messenger</a><a href="https://instagram.com/streamx.com.bd" target="_blank" rel="noopener">' + IGI + 'Instagram</a><a data-mail href="mailto:streamx.com.bd@gmail.com?subject=' + sub + '">' + MLI + "Email</a></div></div></details>";
+      '<p class="ac-hnote">Your subscription details are attached automatically, so you do not need to repeat them.</p>' +
+      '<div class="ac-alt"><span>Prefer another channel?</span><a href="https://m.me/streamx.com.bd" target="_blank" rel="noopener">' + MSI + 'Messenger</a><a href="https://instagram.com/streamx.com.bd" target="_blank" rel="noopener">' + IGI + 'Instagram</a><a data-mail href="mailto:streamx.com.bd@gmail.com?subject=' + sub + '">' + MLI + "Email</a></div></div></details>";
   }
   document.addEventListener("click", function (e) {
     var box = e.target.closest && e.target.closest(".ac-hb[data-u]"); if (!box) return;
@@ -240,11 +242,16 @@
   function renewBar(s, msg) {
     var L = s._left, wa = "https://wa.me/" + WA + "?text=" + encodeURIComponent(msg);
     if (isGift(s)) return '<div class="ac-rn"><div class="ac-rni"><span>Need another?</span><b>Gift cards are one-time</b></div><div class="ac-rnb"><a class="ac-rp" href="/#pricing"><span>Buy another</span>' + ARW + "</a></div></div>";
-    var pl = planOf(s), mo = s.months === 12 ? "1 year" : s.months + (s.months === 1 ? " month" : " months");
-    var tag = L < 0 ? "Renewal open" : L <= 7 ? "Expiring soon" : "Renew anytime";
-    var note = L < 0 ? "Closes " + (7 + L === 0 ? "today" : "in " + (7 + L) + (7 + L === 1 ? " day" : " days")) : L === 0 ? "Ends today" : L <= 7 ? "Ends in " + L + (L === 1 ? " day" : " days") : "Next period " + mo;
+    var pl = planOf(s), mo = s.months === 12 ? "1 year" : s.months + (s.months === 1 ? " month" : " months"), dd = function (n) { return n + (n === 1 ? " day" : " days"); };
+    var tier = L < 0 ? "late" : L === 0 ? "today" : L <= 7 ? "soon" : "calm", cost = pl ? " " + taka(pl.price) + " for " + mo + "." : "";
+    var T = {
+      calm: ["Renew anytime", "Keep your plan going", "Renew early whenever you like." + cost],
+      soon: [dd(L) + " left", "Renew before it ends", "Ends in " + dd(L) + "." + cost],
+      today: ["Last day", "Your plan ends today", "Renew now to keep access." + cost],
+      late: ["Expired " + dd(-L) + " ago", "Your plan has ended", "Renewal closes in " + (7 + L === 0 ? "less than a day" : dd(7 + L)) + "." + cost]
+    }[tier];
     var main = pl ? '<button type="button" class="ac-rp" data-renew="' + s.id + '"><span>Pay online</span>' + ARW + "</button>" : '<a class="ac-rp" href="' + renewLink(s) + '"><span>Pay online</span>' + ARW + "</a>";
-    return '<div class="ac-rn' + (L < 0 ? " late" : L <= 7 ? " soon" : "") + '"><div class="ac-rni"><span>' + tag + "</span>" + (pl ? "<b>" + taka(pl.price) + "<em> / " + mo + "</em></b>" : "<b>" + esc(mo) + "</b>") + "<small>" + note + '</small></div><div class="ac-rnb">' + main +
+    return '<div class="ac-rn t-' + tier + '"><div class="ac-rni"><span class="ac-rnt">' + T[0] + "</span><b>" + T[1] + "</b><small>" + T[2] + '</small></div><div class="ac-rnb">' + main +
       '<a class="ac-rwa" target="_blank" rel="noopener" href="' + wa + '"><span>Renew on WhatsApp</span></a></div></div>';
   }
   function renderCore(d) {
@@ -273,7 +280,7 @@
       var msg = "Hi StreamX! I want to renew my " + s.service + " (" + s.plan + "), " + (s._left < 0 ? "expired on " : "expires on ") + fmt(s.end_date) + ". My email: " + d.email;
       var nt = s._left >= 0 ? noticeOf(s) : null;
       if (nt) PENDING.push({ name: s.service, tile: tile(s), lines: nt.lines, at: nt.at, ids: s.members.map(function (m) { return m.id; }) });
-      var ring = '<div class="ac-ring"><svg viewBox="0 0 64 64" aria-hidden="true"><circle class="bg" cx="32" cy="32" r="27"/><circle class="fg" cx="32" cy="32" r="27" data-p="' + left + '"/></svg><div class="ac-left"><b' + (L >= 0 ? ' data-n="' + L + '"' : "") + ">" + esc(big) + "</b><small>" + esc(small) + "</small></div></div>";
+      var ring = '<div class="ac-ring"><svg viewBox="0 0 64 64" aria-hidden="true"><circle class="bg" cx="32" cy="32" r="27"/><circle class="fg" cx="32" cy="32" r="27" data-p="' + left + '"/></svg><div class="ac-left"><b' + (L > 0 ? ' data-n="' + L + '"' : "") + ">" + esc(big) + "</b><small>" + esc(small) + "</small></div></div>";
       var ref = s.order_ref ? "#" + esc(String(s.order_ref).slice(-8).toUpperCase()) : "#" + s.id;
       return pre + '<article class="ac-sub-card ac-v3' + (s._left < 0 ? " is-off" : "") + '" style="--st:' + st[1] + ';--i:' + (idx++) + '"><div class="ac-hd">' + tile(s) +
         '<div class="ac-id"><div class="ac-name">' + esc(s.service) + '<span class="ac-chip">' + st[0] + '</span></div><div class="ac-plan">' + esc(s.plan) + '</div></div>' + ring + '</div>' +
