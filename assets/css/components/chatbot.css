@@ -235,3 +235,28 @@ button.bt-btn{appearance:none}
 .bt-in{display:block;width:100%;box-sizing:border-box;height:40px;margin:8px 0 0;padding:0 12px;border-radius:12px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.05);color:#fff;font:500 14px Manrope,system-ui,sans-serif}
 .bt-in:focus{outline:0;border-color:rgba(237,49,36,.6);box-shadow:0 0 0 3px rgba(237,49,36,.15)}
 .bt-er{margin:6px 0 0;min-height:0;font-size:12.5px;color:#ff8a78}.bt-er:empty{display:none}
+/* Renew / pay button hover: stays brand red, no white border, shimmer keeps running; no sticky hover on touch */
+.bt-btn.bt-go:hover{background:linear-gradient(135deg,#f23a2b,#cf281c);border-color:transparent;box-shadow:0 10px 24px -9px rgba(237,49,36,.9),0 0 0 3px rgba(237,49,36,.2)}
+.bt-btn.bt-go:hover::after{animation:btSh 3.4s ease-in-out infinite;opacity:1}
+.bt-btn.bt-go:active{transform:scale(.98)!important}
+@media(hover:none){.bt-btn.bt-go:hover{background:linear-gradient(135deg,#ed3124,#c4241a);box-shadow:0 8px 20px -10px rgba(237,49,36,.8)}}
+/* renew popup (opens over the page, then sends the customer to EPS) */
+.bt-rm{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;padding:16px;background:rgba(4,6,16,.72);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);font-family:Manrope,system-ui,sans-serif}
+.bt-rm[hidden]{display:none}
+.bt-rm-b{position:relative;width:100%;max-width:440px;max-height:92vh;overflow:auto;padding:26px 22px 20px;border-radius:22px;background:#0d1124;border:1px solid rgba(255,255,255,.12);box-shadow:0 30px 80px -20px rgba(0,0,0,.8);color:#fff;animation:btRv .35s cubic-bezier(.2,.9,.3,1.1)}
+.bt-rm-x{position:absolute;top:12px;right:12px;width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.06);color:#fff;font-size:20px;line-height:1;cursor:pointer}
+.bt-rm-ey{display:inline-flex;align-items:center;gap:8px;font:800 11px Manrope,system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#ed3124}.bt-rm-ey::before{content:"";width:22px;height:2px;background:#ed3124}
+.bt-rm-b h3{margin:8px 0 14px;font:800 24px Manrope,system-ui,sans-serif}
+.bt-rm-sum{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:16px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1)}
+.bt-rm-st{flex:1;min-width:0}.bt-rm-st b{display:block;font-size:15px}.bt-rm-st small{color:#9aa4c7;font-size:12.5px}
+.bt-rm-pr{font:800 18px Manrope,system-ui,sans-serif}
+.bt-rm-un{margin:12px 0 4px;font-size:12.5px;color:#9aa4c7;line-height:1.5}
+.bt-rm-l{display:block;margin-top:12px;font:700 12.5px Manrope,system-ui,sans-serif;color:#aab3d4}
+.bt-rm-l .bt-in{margin-top:6px}
+.bt-rm-two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:420px){.bt-rm-two{grid-template-columns:1fr}}
+.bt-in.is-lock{opacity:.75;cursor:not-allowed}
+.bt-rm-h{margin:6px 0 0;font-size:12px;color:#8b95b8}
+.bt-rm-go{width:100%;justify-content:center;margin-top:16px;padding:13px 16px;font-size:14px}
+.bt-rm-eps{margin-top:14px;padding:8px 12px;border-radius:14px;background:#fff}.bt-rm-eps img{display:block;width:100%;height:auto;max-height:58px;object-fit:contain}
+.bt-rm-f{display:block;margin-top:10px;text-align:center;font-size:12px;color:#8b95b8}

@@ -322,30 +322,53 @@
   /* renew right here: pay on EPS straight from the chat (no trip to My account) */
   const planOfSub=x=>{const p=PRODUCTS.find(q=>q.name===x.service);if(!p)return null;const lb=x.plan.indexOf(" · ")>-1?x.plan.split(" · ")[0]:"",vr=lb?p.variants.find(v=>v.n===lb):p.variants[0],pl=vr&&vr.plans.find(y=>y.m===x.months);return pl?{name:p.name,vr:lb||undefined,v:pl.v,price:pl.p}:null};
   const BDPH=/^(?:\+?88)?01[3-9]\d{8}$/;
-  function renewForm(x,pl,name,phone){return `<div class="bt-card bt-rf"><div class="bt-ct">Renew ${esc(x.service)}<em>${taka(pl.price)}</em></div><p class="bt-cd">${esc(x.plan)}. Confirm your details, then pay on EPS's secure page. Your plan is extended after your current expiry.</p><input class="bt-in" type="text" data-f="name" placeholder="Your name" value="${esc(name)}" autocomplete="name" maxlength="80"><input class="bt-in" type="tel" data-f="phone" placeholder="01XXXXXXXXX" value="${esc(phone)}" autocomplete="tel" inputmode="tel" maxlength="16"><p class="bt-er" role="alert"></p><div class="bt-row">${act("Pay "+taka(pl.price)+" securely","renewgo",`data-sid="${x.id}"`," bt-go")}</div></div>`}
-  function payRenew(x,name,phone){
-    const pl=planOfSub(x);
-    reply("Renew "+x.service,{p:fetch("/api/checkout",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+token()},body:JSON.stringify({renew:true,name:name,phone:phone,items:[{name:pl.name,vr:pl.vr,v:pl.v,q:1}]})})
+  /* Renew popup: confirm the details on this page, then go to the secure EPS payment page. The account email is fixed. */
+  let rm=null,rmX=null;
+  function rmClose(){if(rm){rm.hidden=true;document.documentElement.style.overflow=""}}
+  function rmBuild(){
+    rm=document.createElement("div");rm.className="bt-rm";rm.hidden=true;rm.setAttribute("role","dialog");rm.setAttribute("aria-modal","true");rm.setAttribute("aria-labelledby","btRmT");
+    rm.innerHTML=`<div class="bt-rm-b"><button type="button" class="bt-rm-x" data-rmx aria-label="Close">&times;</button><span class="bt-rm-ey">Secure renewal</span><h3 id="btRmT">Renew online</h3>
+      <div class="bt-rm-sum"><span id="btRmTile"></span><div class="bt-rm-st"><b id="btRmS"></b><small id="btRmP"></small></div><div class="bt-rm-pr" id="btRmA"></div></div>
+      <p class="bt-rm-un" id="btRmU"></p>
+      <label class="bt-rm-l">Account email<input class="bt-in is-lock" id="btRmE" type="email" readonly></label>
+      <p class="bt-rm-h">Fixed to the account you are signed in with.</p>
+      <div class="bt-rm-two"><label class="bt-rm-l">Your name<input class="bt-in" id="btRmN" type="text" autocomplete="name" maxlength="60" placeholder="Full name"></label><label class="bt-rm-l">Mobile number<input class="bt-in" id="btRmM" type="tel" inputmode="tel" autocomplete="tel" maxlength="16" placeholder="01XXXXXXXXX"></label></div>
+      <p class="bt-er" id="btRmR" role="alert"></p>
+      <button type="button" class="bt-btn bt-go bt-rm-go" id="btRmG"></button>
+      <div class="bt-rm-eps"><img src="/assets/img/pay/eps-renew.webp" alt="Pay with EPS: Visa, Mastercard, American Express, bKash, Nagad, Rocket and more" width="1012" height="162" loading="lazy"></div>
+      <small class="bt-rm-f">You will be taken to the EPS payment page. We never see your card or wallet PIN.</small></div>`;
+    document.body.appendChild(rm);
+    rm.addEventListener("click",e=>{if(e.target===rm||e.target.closest("[data-rmx]"))rmClose()});
+    addEventListener("keydown",e=>{if(e.key==="Escape"&&!rm.hidden)rmClose()});
+    rm.querySelector("#btRmG").addEventListener("click",rmPay);
+  }
+  function rmOpen(x,pl){
+    if(!rm)rmBuild();rmX=x;
+    const c=ACC.contact||{},base=x.end_date>ACC.today?x.end_date:ACC.today,end=new Date(Date.parse(base+"T00:00:00Z"));end.setUTCMonth(end.getUTCMonth()+x.months);
+    rm.querySelector("#btRmTile").innerHTML=tileOf(x.service);rm.querySelector("#btRmS").textContent=x.service;rm.querySelector("#btRmP").textContent=x.plan;rm.querySelector("#btRmA").textContent=taka(pl.price);
+    rm.querySelector("#btRmU").textContent="Your plan will run until about "+fdate(end.toISOString().slice(0,10))+". It is added after your current expiry, so no days are lost.";
+    rm.querySelector("#btRmE").value=ACC.email||"";rm.querySelector("#btRmN").value=(c.name||"").trim();rm.querySelector("#btRmM").value=(c.phone||"").replace(/[\s-]/g,"");
+    rm.querySelector("#btRmR").textContent="";const g=rm.querySelector("#btRmG");g.disabled=false;g.textContent="Pay "+taka(pl.price)+" securely";
+    rm.hidden=false;document.documentElement.style.overflow="hidden";
+    setTimeout(()=>{const n=rm.querySelector("#btRmN");(n.value?rm.querySelector("#btRmM"):n).focus({preventScroll:true})},60);
+  }
+  function rmPay(){
+    const x=rmX,pl=x&&planOfSub(x);if(!pl)return;
+    const er=rm.querySelector("#btRmR"),g=rm.querySelector("#btRmG"),nm=rm.querySelector("#btRmN").value.trim(),ph=rm.querySelector("#btRmM").value.replace(/[\s-]/g,"");
+    if(nm.length<2){er.textContent="Please enter your name.";return}
+    if(!BDPH.test(ph)){er.textContent="Enter a valid mobile number, e.g. 01712345678.";return}
+    er.textContent="";g.disabled=true;g.textContent="Opening secure payment…";
+    fetch("/api/checkout",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+token()},body:JSON.stringify({renew:true,name:nm,phone:ph,items:[{name:pl.name,vr:pl.vr,v:pl.v,q:1}]})})
       .then(r=>r.json().catch(()=>({})).then(j=>{
-        if(r.status===401)return{h:`<p>Your session ended. Please sign in again.</p><div class="bt-row">${btn("Sign in","/account/"," bt-go")}</div>`};
-        if(!r.ok||!j.redirectUrl)throw 0;
-        setTimeout(()=>{location.href=j.redirectUrl},900);
-        return{h:`<p>Opening the secure EPS payment page for ${esc(x.service)}. Your plan is extended automatically once payment is confirmed.</p>`}}))
-      .catch(()=>({h:`<p>Online payment is unavailable right now. You can renew on WhatsApp instead.</p><div class="bt-row">${btn("Renew on WhatsApp",renewWa(x),"  bt-wa")}</div>`,c:["Talk to a human"]}))});
+        if(r.status===401){rmClose();reply("Renew "+x.service,{h:`<p>Your session ended. Please sign in again.</p><div class="bt-row">${btn("Sign in","/account/"," bt-go")}</div>`});return}
+        if(!r.ok||!j.redirectUrl)throw new Error(j.error||"");
+        location.href=j.redirectUrl}))
+      .catch(e=>{er.textContent=(e&&e.message)||"Online payment is unavailable right now. Please renew on WhatsApp.";g.disabled=false;g.textContent="Pay "+taka(pl.price)+" securely"});
   }
   function renewAct(el){
     loadAcc().then(()=>{const x=subById(el.dataset.sid),pl=x&&planOfSub(x);
       if(!x||!pl){window.open(renewWa(x||{service:"my plan",plan:""}),"_blank","noopener");return}
-      const c=ACC.contact||{},nm=(c.name||"").trim(),ph=(c.phone||"").replace(/[\s-]/g,"");
-      if(nm.length>=2&&BDPH.test(ph))payRenew(x,nm,ph);
-      else reply("Renew "+x.service,{h:renewForm(x,pl,nm,ph),c:null})
-    }).catch(()=>{})
-  }
-  function renewGo(el){
-    const card=el.closest(".bt-rf"),er=card.querySelector(".bt-er"),nm=card.querySelector('[data-f=name]').value.trim(),ph=card.querySelector('[data-f=phone]').value.replace(/[\s-]/g,"");
-    if(nm.length<2){er.textContent="Please enter your name.";return}
-    if(!BDPH.test(ph)){er.textContent="Enter a valid mobile number, e.g. 01712345678.";return}
-    er.textContent="";const x=subById(el.dataset.sid);if(!x)return;el.disabled=true;payRenew(x,nm,ph);
+      rmOpen(x,pl)}).catch(()=>{})
   }
   const signIn=()=>`<p>Sign in to My account and I can show your subscriptions, days left, login details and orders right here in the chat.</p><div class="bt-row">${btn("Sign in","/account/"," bt-go")}</div>`;
   function rowHtml(label,val,sid,key,secret){
@@ -591,8 +614,7 @@
   function doAct(el){
     const a=el.dataset.act,i=+el.dataset.i,v=+el.dataset.v,k=+el.dataset.k,p=PRODUCTS[i];
     if(a==="eye"||a==="cp"){secretAct(el);return}
-    if(a==="renew"){if(!busy)renewAct(el);return}
-    if(a==="renewgo"){if(!busy)renewGo(el);return}
+    if(a==="renew"){renewAct(el);return}
     if(a==="sendchat"){const us=[].slice.call(log.querySelectorAll(".bt-u")).map(n=>n.textContent.trim()).filter(Boolean).slice(-5);window.open(wa(us.length?"Hi StreamX! I need help. My recent questions in the chat:\n"+us.map((x,j)=>(j+1)+". "+x).join("\n"):"Hi StreamX! I need help."),"_blank","noopener");return}
     if(a==="lw"||a==="lv"||a==="lf"||a==="ld"){listAct(el);return}
     if(busy)return;

@@ -25,3 +25,4 @@
 .eps-strip img { display: block; width: 100%; height: auto; }
 .pay-wa{display:block;margin-top:8px;text-align:center}.pay-wa a{color:#fff;font-weight:700;text-decoration:underline}
 .pay-m textarea{resize:vertical;min-height:64px;line-height:1.5}.pay-m form>label{display:block;margin-top:14px}.pay-m .pay-row{margin-top:14px}.pay-m form>label.pay-wa-f{margin-top:14px}
+#payEmail.is-lock{opacity:.75;cursor:not-allowed}.pay-lock{display:block;margin-top:6px;font-size:12px;color:#8b95b8}

@@ -18,12 +18,19 @@
   document.body.appendChild(m);
   var f = $("form", m), er = $(".co-er", m), go = $(".co-go", m), cur = null;
   function close() { m.hidden = true; document.documentElement.style.overflow = ""; }
+function sessEmail(){try{var t=localStorage.getItem("sx_session");if(!t)return "";var o=JSON.parse(atob(t.split(".")[0].replace(/-/g,"+").replace(/_/g,"/")));return o&&o.t==="sess"&&o.exp>Date.now()&&o.e?String(o.e):""}catch(e){return ""}}
+  function lockEmail() {
+    var el = $("#co-e"), se = sessEmail(), h = $("#co-lock");
+    if (se) { el.value = se; el.readOnly = true; el.classList.add("is-lock"); if (!h) { h = document.createElement("small"); h.id = "co-lock"; h.className = "co-lock"; el.parentNode.appendChild(h); } h.textContent = "You are signed in, so your order uses your account email."; }
+    else { el.readOnly = false; el.classList.remove("is-lock"); if (h) h.remove(); }
+    return se;
+  }
   function show(items, totalTxt, label) {
     cur = { items: items.map(function (x) { return { name: x.name, vr: x.vr || undefined, v: x.v, q: x.q || 1 }; }), price: totalTxt, label: label };
     $("#co-s").innerHTML = items.map(function (x) { return '<div><span>' + esc(x.label) + ' <em>×' + (x.q || 1) + '</em></span><b>' + esc(x.priceTxt) + '</b></div>'; }).join("") + '<div class="co-tot"><span>Total</span><b>' + esc(totalTxt) + "</b></div>"; $("#co-c").value = "";
     var s = {}; try { s = JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (e) {}
     $("#co-n").value = s.n || ""; $("#co-p").value = s.p || ""; $("#co-e").value = s.e || "";
-    er.textContent = ""; go.disabled = false; go.textContent = "Pay " + totalTxt + " securely";
+    lockEmail(); er.textContent = ""; go.disabled = false; go.textContent = "Pay " + totalTxt + " securely";
     $(".co-wa a", m).href = "https://wa.me/" + WA + "?text=" + encodeURIComponent("Hi StreamX! I want to order:\n" + items.map(function (x, j) { return (j + 1) + ". " + x.label + " x" + (x.q || 1) + " - " + x.priceTxt; }).join("\n") + "\nTotal: " + totalTxt);
     m.hidden = false; document.documentElement.style.overflow = "hidden"; setTimeout(function () { ($("#co-n").value ? $("#co-p") : $("#co-n")).focus(); }, 50); return true;
   }
@@ -41,13 +48,13 @@
   document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !m.hidden) close(); });
   f.addEventListener("submit", function (e) {
     e.preventDefault(); if (!cur) return;
-    var name = $("#co-n").value.trim(), phone = $("#co-p").value.replace(/[\s-]/g, ""), email = $("#co-e").value.trim();
+    var name = $("#co-n").value.trim(), phone = $("#co-p").value.replace(/[\s-]/g, ""), se = sessEmail(), email = se || $("#co-e").value.trim();
     if (name.length < 2) { er.textContent = "Please enter your name."; return; }
     if (!PHONE.test(phone)) { er.textContent = "Enter a valid mobile number, e.g. 01712345678."; return; }
     if (!EMAIL.test(email)) { er.textContent = "Enter a valid email address."; return; }
     er.textContent = ""; go.disabled = true; go.textContent = "Opening secure payment…";
-    try { localStorage.setItem(KEY, JSON.stringify({ n: name, p: phone, e: email })); } catch (x) {}
-    fetch("/api/checkout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: name, phone: phone, email: email, tip: 0, comment: $("#co-c").value.trim().slice(0, 300), items: cur.items }) })
+    try { localStorage.setItem(KEY, JSON.stringify({ n: name, p: phone, e: se ? "" : email })); } catch (x) {}
+    fetch("/api/checkout", { method: "POST", headers: se ? { "Content-Type": "application/json", Authorization: "Bearer " + localStorage.getItem("sx_session") } : { "Content-Type": "application/json" }, body: JSON.stringify({ name: name, phone: phone, email: email, tip: 0, comment: $("#co-c").value.trim().slice(0, 300), items: cur.items }) })
       .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { if (!r.ok || !j.redirectUrl) throw new Error(j.error || "Online payment is unavailable right now. Please order on WhatsApp."); location.href = j.redirectUrl; }); })
       .catch(function (x) { er.textContent = x.message; go.disabled = false; go.textContent = "Pay " + cur.price + " securely"; });
   });

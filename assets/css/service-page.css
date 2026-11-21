@@ -359,3 +359,4 @@ body.sp-adult:not(.ok) .sp-age{display:grid}
 .sp-poster:hover .sp-ov i,.sp-poster:focus-visible .sp-ov i{transform:none}
 .sp-poster:hover .sp-ov b,.sp-poster:focus-visible .sp-ov b{transform:none}
 .sp-poster{cursor:pointer}
+#co-e.is-lock{opacity:.75;cursor:not-allowed}.co-lock{display:block;margin-top:6px;font-size:12px;color:#8b95b8}
