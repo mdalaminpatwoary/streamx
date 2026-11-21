@@ -6,16 +6,17 @@
    Env: GOOGLE_CLIENT_ID/_SECRET, MS_CLIENT_ID/_SECRET, APPLE_CLIENT_ID (Services ID), APPLE_TEAM_ID, APPLE_KEY_ID, APPLE_PRIVATE_KEY. */
 const crypto = require("crypto");
 const { secret, sign, verify } = require("./_auth");
+const db = require("./_db");
 
 const env = (k) => process.env[k] || "";
 const site = (req) => (env("SITE_URL") || "https://" + (req.headers["x-forwarded-host"] || req.headers.host)).replace(/\/$/, "");
 const b64 = (o) => Buffer.from(typeof o === "string" ? o : JSON.stringify(o)).toString("base64url");
 
 const P = {
-  google: { name: "Google", auth: "https://accounts.google.com/o/oauth2/v2/auth", token: "https://oauth2.googleapis.com/token", scope: "openid email", iss: ["https://accounts.google.com", "accounts.google.com"],
+  google: { name: "Google", auth: "https://accounts.google.com/o/oauth2/v2/auth", token: "https://oauth2.googleapis.com/token", scope: "openid email profile", iss: ["https://accounts.google.com", "accounts.google.com"],
     id: () => env("GOOGLE_CLIENT_ID"), sec: () => env("GOOGLE_CLIENT_SECRET") },
   // "consumers" = personal Microsoft accounts only (Outlook, Hotmail, Live), whose email is verified by Microsoft.
-  microsoft: { name: "Microsoft", auth: "https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize", token: "https://login.microsoftonline.com/consumers/oauth2/v2.0/token", scope: "openid email profile", iss: ["https://login.live.com", "https://sts.windows.net/9188040d-6c67-4c5b-b112-36a304b66dad/", "https://login.microsoftonline.com/9188040d-6c67-4c5b-b112-36a304b66dad/v2.0"],
+  microsoft: { name: "Microsoft", auth: "https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize", token: "https://login.microsoftonline.com/consumers/oauth2/v2.0/token", scope: "openid email profile User.Read", iss: ["https://login.live.com", "https://sts.windows.net/9188040d-6c67-4c5b-b112-36a304b66dad/", "https://login.microsoftonline.com/9188040d-6c67-4c5b-b112-36a304b66dad/v2.0"],
     id: () => env("MS_CLIENT_ID"), sec: () => env("MS_CLIENT_SECRET") },
   apple: { name: "Apple", auth: "https://appleid.apple.com/auth/authorize", token: "https://appleid.apple.com/auth/token", scope: "email", iss: ["https://appleid.apple.com"], post: true,
     id: () => env("APPLE_CLIENT_ID"), sec: () => appleSecret() },
@@ -30,6 +31,20 @@ const ready = (k) => !!(P[k].id() && P[k].sec());
 const back = (res, hash) => { res.statusCode = 302; res.setHeader("Location", "/account/#" + hash); res.setHeader("Set-Cookie", "sx_oauth=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=None"); res.end(); };
 const fail = (res, msg) => back(res, "e=" + encodeURIComponent(msg));
 const cookie = (req, n) => ((req.headers.cookie || "").split(/;\s*/).map((c) => c.split("=")).find((c) => c[0] === n) || [])[1] || "";
+
+// Microsoft: fetch the account photo once and keep it as the profile photo, unless the customer already chose (or removed) their own.
+async function saveMsPhoto(email, accessToken) {
+  try {
+    const cur = ((await db.rest("GET", `profiles?email=eq.${db.q(email)}&select=picture&limit=1`)) || [])[0];
+    if (cur && cur.picture !== null && cur.picture !== undefined) return;
+    const r = await fetch("https://graph.microsoft.com/v1.0/me/photo/$value", { headers: { Authorization: "Bearer " + accessToken } });
+    const type = (r.headers.get("content-type") || "").split(";")[0];
+    if (!r.ok || !/^image\/(jpeg|png|webp)$/.test(type)) return;
+    const buf = Buffer.from(await r.arrayBuffer());
+    if (!buf.length || buf.length > 42000) return;
+    await db.rest("POST", "profiles?on_conflict=email", [{ email, picture: "data:" + type + ";base64," + buf.toString("base64"), updated_at: new Date().toISOString() }], "resolution=merge-duplicates,return=minimal");
+  } catch (e) { console.error("ms photo", e && e.message); }
+}
 
 module.exports = async (req, res) => {
   res.setHeader("Cache-Control", "no-store");
@@ -66,6 +81,7 @@ module.exports = async (req, res) => {
       const email = String(c.email || "").trim().toLowerCase();
       const verified = c.email_verified === true || c.email_verified === "true" || k === "microsoft";
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email) || !verified) return fail(res, "Your " + prov.name + " account has no verified email.");
+      if (k === "microsoft" && tj.access_token) await saveMsPhoto(email, tj.access_token); // Microsoft does not put the photo in the id_token
       const pic = typeof c.picture === "string" && /^https:\/\//.test(c.picture) ? c.picture.slice(0, 300) : "";
       return back(res, "t=" + sign({ t: "link", e: email, n: String(c.name || "").slice(0, 80), pic, pv: k, exp: Date.now() + 2 * 60000 }));
     }
