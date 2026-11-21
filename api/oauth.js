@@ -27,7 +27,7 @@ function appleSecret() {
   return h + "." + p + "." + crypto.sign("sha256", Buffer.from(h + "." + p), { key, dsaEncoding: "ieee-p1363" }).toString("base64url");
 }
 const ready = (k) => !!(P[k].id() && P[k].sec());
-const back = (res, hash) => { res.statusCode = 302; res.setHeader("Location", "/account/#" + hash); res.setHeader("Set-Cookie", "sx_oauth=; Path=/api/oauth; Max-Age=0; HttpOnly; Secure; SameSite=None"); res.end(); };
+const back = (res, hash) => { res.statusCode = 302; res.setHeader("Location", "/account/#" + hash); res.setHeader("Set-Cookie", "sx_oauth=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=None"); res.end(); };
 const fail = (res, msg) => back(res, "e=" + encodeURIComponent(msg));
 const cookie = (req, n) => ((req.headers.cookie || "").split(/;\s*/).map((c) => c.split("=")).find((c) => c[0] === n) || [])[1] || "";
 
