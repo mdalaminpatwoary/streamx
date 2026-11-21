@@ -237,6 +237,9 @@
   const I_CP='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>';
   const I_OK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg>';
   const I_LK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
+  const planPrice=x=>{const p=PRODUCTS.find(q=>q.name===x.service);if(!p||p.gift)return 0;const lb=x.plan.indexOf(" · ")>-1?x.plan.split(" · ")[0]:"",vr=lb?p.variants.find(v=>v.n===lb):p.variants[0],pl=vr&&vr.plans.find(y=>y.m===x.months);return pl?pl.p:0};
+  const renewWa=x=>wa(`Hi StreamX! I want to renew ${x.service} (${x.plan}).\nMy StreamX email: ${ACC.email}`);
+  const renewBtns=x=>{const pr=planPrice(x);return `<div class="bt-rn"><a class="bt-btn bt-go" href="/account/#renew=${x.id}" data-close>Renew online${pr?" · "+taka(pr):""}</a><a class="bt-rwa" href="${esc(renewWa(x))}" target="_blank" rel="noopener">or renew on WhatsApp</a></div>`};
   const helpWa=x=>wa(`Hi StreamX! I need help with ${x.service} (${x.plan}).\nMy StreamX email: ${ACC.email}\nSubscription ID: #${x.id}`);
   const signIn=()=>`<p>Sign in to My account and I can show your subscriptions, days left, login details and orders right here in the chat.</p><div class="bt-row">${btn("Sign in","/account/"," bt-go")}</div>`;
   function rowHtml(label,val,sid,key,secret){
@@ -263,7 +266,7 @@
     return `<div class="bt-card bt-acct"><div class="bt-ct"><span class="bt-tile" style="background:${colorOf(x.service)}">${esc(x.service[0])}</span>${esc(x.service)}<em class="bt-st ${st[1]}">${st[0]}</em></div><p class="bt-cd">${esc(x.plan)} · ${fdate(x.start_date)} to ${fdate(x.end_date)}</p>`+
       `<div class="bt-prog" title="${leftTxt(x)}"><i style="width:${x._left<0?0:pct}%"></i></div><p class="bt-left"><b>${x._left<0?"Expired":x._left}</b> ${x._left<0?leftTxt(x):x._left===0?"last day":x._left===1?"day left":"days left"}</p>`+
       `<div class="bt-kvs">${rows.join("")}</div><p class="bt-lock">${I_LK}<span>Only you can see this on this device. Secrets are hidden again after 20 seconds.</span></p>`+
-      `<div class="bt-row">${btn("Renew","/account/"," bt-go")}${btn("Need help",helpWa(x),"  bt-wa")}</div></div>`;
+      `${renewBtns(x)}<div class="bt-row">${btn("Need help",helpWa(x),"  bt-wa")}</div></div>`;
   }
   function listHtml(d,title){
     const live=d.subscriptions.filter(x=>x._left>=0).sort((a,b)=>a._left-b._left),gone=d.subscriptions.filter(x=>x._left<0);
@@ -282,8 +285,8 @@
   }
   function renewHtml(d){
     const a=d.subscriptions.filter(x=>x._left<=30).sort((x,y)=>x._left-y._left);
-    if(!a.length)return `<p>None of your plans is close to ending. You can renew from My account any time, and the new period is added after your current expiry, so no days are lost.</p><div class="bt-row">${btn("Open My account","/account/")}</div>`;
-    return `<p>These plans are ending soon. Renew in one tap from My account, or ask us on WhatsApp:</p><ul class="bt-mini">${a.map(x=>`<li><span>${esc(x.service)} <small class="bt-sm">${leftTxt(x)}</small></span><a href="${esc(wa(`Hi StreamX! I want to renew ${x.service} (${x.plan}).\nMy StreamX email: ${d.email}`))}" target="_blank" rel="noopener" class="bt-btn bt-wa">Renew</a></li>`).join("")}</ul><div class="bt-row">${btn("Renew in My account","/account/"," bt-go")}</div>`;
+    if(!a.length)return `<p>None of your plans is close to ending. You can still renew any time from My account. The new period is added after your current expiry, so no days are lost.</p><div class="bt-row">${btn("Open My account","/account/")}</div>`;
+    return `<p>${a.length>1?"These plans are":"This plan is"} ending soon. Renew online and your plan is extended automatically once payment is confirmed. You do not need to do anything else.</p>`+a.map(x=>`<div class="bt-card"><div class="bt-ct"><span class="bt-tile" style="background:${colorOf(x.service)}">${esc(x.service[0])}</span>${esc(x.service)}<em class="bt-st ${stOf(x)[1]}">${leftTxt(x)}</em></div><p class="bt-cd">${esc(x.plan)}</p>${renewBtns(x)}</div>`).join("");
   }
   /* returns {p:Promise<reply>} for signed-in account questions, a sign-in prompt when signed out, or null */
   function acctRoute(q,ql,ps){

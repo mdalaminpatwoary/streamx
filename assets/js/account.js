@@ -232,7 +232,9 @@
   document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeNotice(); });
   document.addEventListener("click", function (e) { if (e.target.closest("#bell")) { if (PENDING.length || ANN.length) openNotice(); else flash("You are all caught up. No new updates."); } });
 
-  function render(d) {
+  /* /account/#renew=<id> (from the chat assistant) opens that subscription's renew popup */
+  function render(d) { renderCore(d); setTimeout(function () { var m = /renew=(\d+)/.exec(location.hash), b = m && document.querySelector('[data-renew="' + m[1] + '"]'); if (b) { try { history.replaceState(null, "", location.pathname); } catch (e) {} b.click(); } }, 0); }
+  function renderCore(d) {
     $("#login").hidden = true; $("#app").hidden = false; $("#who").textContent = d.email; var fw = $("#fwho"); if (fw) fw.textContent = d.email;
     var pf = d.profile || {}, nm = pf.name || "", av = $("#av"); av.innerHTML = "";
     if (pf.picture) { var im = new Image(); im.alt = ""; im.referrerPolicy = "no-referrer"; im.onerror = function () { av.textContent = (nm || d.email)[0].toUpperCase(); }; im.src = pf.picture; av.appendChild(im); } else av.textContent = (nm || d.email)[0].toUpperCase();
