@@ -25,9 +25,13 @@ async function sendLink(req, email, link, code) {
 }
 
 // One row per successful sign-in (email, method, time). Best effort: a missing table never blocks signing in.
-async function logLogin(email, method) {
-  try { await db.rest("POST", "login_events", [{ email: normEmail(email), method: String(method).slice(0, 20) }], "return=minimal"); }
-  catch (e) { console.error("login not logged", e && e.message); }
+async function logLogin(email, method, name) {
+  const row = { email: normEmail(email), method: String(method).slice(0, 20) };
+  const nm = String(name || "").replace(/[\u0000-\u001f<>]/g, "").trim().slice(0, 80);
+  try { await db.rest("POST", "login_events", [nm ? { ...row, name: nm } : row], "return=minimal"); }
+  catch (e) { // the name column may not exist yet: log without it
+    try { await db.rest("POST", "login_events", [row], "return=minimal"); } catch (e2) { console.error("login not logged", e2 && e2.message); }
+  }
 }
 
 module.exports = async (req, res) => {
@@ -76,7 +80,7 @@ module.exports = async (req, res) => {
     if (a === "session" && req.method === "POST") {
       const o = verify(body.token, "link");
       if (!o) return res.status(401).json({ error: "This link has expired. Please request a new one." });
-      await logLogin(o.e, o.pv || "email-link");
+      await logLogin(o.e, o.pv || "email-link", o.n);
       return res.status(200).json({ session: sign({ t: "sess", e: o.e, n: o.n || "", pic: o.pic || "", pv: o.pv || "", exp: Date.now() + 30 * 86400000 }), email: o.e });
     }
     if (a === "seen" && req.method === "POST") { // the customer has read the "your login details changed" notice

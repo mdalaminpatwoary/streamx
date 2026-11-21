@@ -133,3 +133,6 @@ alter table public.login_events enable row level security; -- no policies: only 
 grant select, insert on public.login_events to service_role;
 grant usage, select on all sequences in schema public to service_role;
 notify pgrst, 'reload schema';
+
+alter table public.login_events add column if not exists name text;
+notify pgrst, 'reload schema';
