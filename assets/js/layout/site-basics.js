@@ -23,6 +23,6 @@ document.querySelectorAll("[data-bn]").forEach(e=>e.dataset.en=e.innerHTML);
 /* Warm up My account: fetch the signed-in customer's data in the background so the page opens instantly. */
 (function(){var K="sx_session",P="sx_acc_pre",busy=false;
 function pre(){var t;try{t=localStorage.getItem(K)}catch(e){}if(!t||busy)return;try{var j=JSON.parse(sessionStorage.getItem(P)||"null");if(j&&j.t===t&&Date.now()-j.at<60000)return}catch(e){}
-busy=true;fetch("/api/account?a=me",{headers:{Authorization:"Bearer "+t}}).then(function(r){return r.ok?r.json():null}).then(function(d){if(d)try{sessionStorage.setItem(P,JSON.stringify({t:t,at:Date.now(),d:d}))}catch(e){}}).catch(function(){}).then(function(){busy=false})}
+busy=true;fetch("/api/account?a=me",{headers:{Authorization:"Bearer "+t}}).then(function(r){return r.ok?r.json():null}).then(function(d){if(d)try{sessionStorage.setItem(P,JSON.stringify({t:t,at:Date.now(),d:d}));var pf=d.profile||{};if(pf.picture)localStorage.setItem("sx_av",JSON.stringify({p:pf.picture}));else localStorage.removeItem("sx_av")}catch(e){}}).catch(function(){}).then(function(){busy=false})}
 var b=document.getElementById("acctBtn");if(b)["pointerenter","touchstart","focus"].forEach(function(e){b.addEventListener(e,pre,{passive:true})});
 (window.requestIdleCallback||function(f){setTimeout(f,2500)})(pre)})();

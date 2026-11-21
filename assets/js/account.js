@@ -12,7 +12,7 @@
   var fmt = function (iso) { var d = new Date(iso + "T00:00:00Z"); return d.getUTCDate() + " " + ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][d.getUTCMonth()] + " " + d.getUTCFullYear(); };
   var days = function (a, b) { return Math.round((Date.parse(b + "T00:00:00Z") - Date.parse(a + "T00:00:00Z")) / 86400000); };
 
-  function showLogin(msg) { document.documentElement.classList.remove("hs"); try { sessionStorage.removeItem("sx_acc_pre"); } catch (e) {} $("#app").hidden = true; $("#login").hidden = false; $("#cf").hidden = true; $("#lf").hidden = false; $("#sub").textContent = "See what is active, when it ends, and renew in one tap."; if (msg) { var m = $("#lm"); m.textContent = msg; m.className = "ac-msg"; } }
+  function showLogin(msg) { try { localStorage.removeItem("sx_av"); } catch (e) {} document.documentElement.classList.remove("hs"); try { sessionStorage.removeItem("sx_acc_pre"); } catch (e) {} $("#app").hidden = true; $("#login").hidden = false; $("#cf").hidden = true; $("#lf").hidden = false; $("#sub").textContent = "See what is active, when it ends, and renew in one tap."; if (msg) { var m = $("#lm"); m.textContent = msg; m.className = "ac-msg"; } }
 
   function renewLink(s) {
     var p = PROD.filter(function (x) { return x.name === s.service; })[0];
@@ -236,7 +236,7 @@
   function render(d) { renderCore(d); setTimeout(function () { var m = /renew=(\d+)/.exec(location.hash), b = m && document.querySelector('[data-renew="' + m[1] + '"]'); if (b) { try { history.replaceState(null, "", location.pathname); } catch (e) {} b.click(); } }, 0); }
   function renderCore(d) {
     $("#login").hidden = true; $("#app").hidden = false; $("#who").textContent = d.email; var fw = $("#fwho"); if (fw) fw.textContent = d.email;
-    var pf = d.profile || {}, nm = pf.name || "", av = $("#av"); av.innerHTML = "";
+    var pf = d.profile || {}, nm = pf.name || "", av = $("#av"); av.innerHTML = ""; try { if (pf.picture) localStorage.setItem("sx_av", JSON.stringify({ p: pf.picture })); else localStorage.removeItem("sx_av"); } catch (e) {}
     if (pf.picture) { var im = new Image(); im.alt = ""; im.referrerPolicy = "no-referrer"; im.onerror = function () { av.textContent = (nm || d.email)[0].toUpperCase(); }; im.src = pf.picture; av.appendChild(im); } else av.textContent = (nm || d.email)[0].toUpperCase();
     $("#hi").textContent = nm ? "Welcome back, " + nm : "Welcome back";
     var pe = $("#pedit"); if (pe) pe.hidden = pf.editable === false; var pvEl = $("#pv"); pvEl.hidden = !pf.provider; if (pf.provider) pvEl.textContent = "Signed in with " + (NM[pf.provider] || pf.provider);
