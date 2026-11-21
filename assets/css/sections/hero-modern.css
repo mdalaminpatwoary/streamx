@@ -301,3 +301,18 @@
   .hero-text>.hx-lead{order:5}
 }
 .hx-flag{display:block;width:30px;height:30px;border-radius:50%;overflow:hidden;box-shadow:0 0 0 2px rgba(255,255,255,.16)}
+
+/* Mobile: the trust tag sits right before the description */
+@media(max-width:960px){
+  .hero-text>.hx-tag{order:4;margin-top:4px}
+  .hero-text>.hx-lead{order:5}
+}
+/* Flag: soft ripple ring, breathing sun, gentle sway */
+.hx-flag{animation:hxRip 3s ease-out infinite}
+.hx-flag .hx-sun{transform-box:fill-box;transform-origin:center;animation:hxSun 3s ease-in-out infinite}
+.hx-tag{overflow:visible}
+@keyframes hxRip{0%{box-shadow:0 0 0 2px rgba(255,255,255,.16),0 0 0 0 rgba(53,208,127,.5)}70%,100%{box-shadow:0 0 0 2px rgba(255,255,255,.16),0 0 0 10px rgba(53,208,127,0)}}
+@keyframes hxSun{0%,100%{transform:scale(1)}50%{transform:scale(1.14)}}
+.hx-chk{animation:hxChk 3s ease-in-out infinite}
+@keyframes hxChk{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+@media(prefers-reduced-motion:reduce){.hx-flag,.hx-flag .hx-sun,.hx-chk{animation:none}}
