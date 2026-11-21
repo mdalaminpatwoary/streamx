@@ -1,7 +1,7 @@
 /* POST /api/chat {messages:[{role:"user"|"assistant",content}]} -> {reply}
    Free AI answers for the chat assistant, used only when the site's own answers do not fit.
    Providers (OpenAI-compatible, both have a free tier): Groq first, Cerebras as the backup. Keys live in Vercel env vars:
-     GROQ_API_KEY      (optional GROQ_MODEL, default llama-3.1-8b-instant)
+     GROQ_API_KEY      (optional GROQ_MODEL, default openai/gpt-oss-20b)
      CEREBRAS_API_KEY  (optional CEREBRAS_MODEL, default llama3.1-8b)
    The model only sees StreamX's own catalog, FAQ and return policy (loaded here, never from the browser), no account data. */
 const fs = require("fs");
@@ -10,7 +10,7 @@ const vm = require("vm");
 const { products } = require("./_eps");
 
 const PROVIDERS = [
-  { name: "groq", url: "https://api.groq.com/openai/v1/chat/completions", key: () => process.env.GROQ_API_KEY, model: () => process.env.GROQ_MODEL || "llama-3.1-8b-instant" },
+  { name: "groq", url: "https://api.groq.com/openai/v1/chat/completions", key: () => process.env.GROQ_API_KEY, model: () => process.env.GROQ_MODEL || "openai/gpt-oss-20b" },
   { name: "cerebras", url: "https://api.cerebras.ai/v1/chat/completions", key: () => process.env.CEREBRAS_API_KEY, model: () => process.env.CEREBRAS_MODEL || "llama3.1-8b" },
 ];
 
@@ -72,7 +72,7 @@ async function ask(pr, msgs) {
   const r = await fetch(pr.url, {
     method: "POST",
     headers: { "content-type": "application/json", authorization: "Bearer " + pr.key() },
-    body: JSON.stringify({ model: pr.model(), messages: msgs, temperature: 0.3, max_tokens: 220 }),
+    body: JSON.stringify(Object.assign({ model: pr.model(), messages: msgs, temperature: 0.3, max_tokens: 220 }, /gpt-oss/.test(pr.model()) ? { max_tokens: 700, reasoning_effort: "low" } : {})),
     signal: AbortSignal.timeout(12000),
   });
   if (!r.ok) throw new Error(pr.name + " HTTP " + r.status);
