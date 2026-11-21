@@ -9,7 +9,7 @@
 <link rel="icon" href="/favicon.ico">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/css/account.css?v=20">
+<link rel="stylesheet" href="/assets/css/account.css?v=21">
 </head>
 <body>
 <div class="ac-top"><a href="/"><img src="/assets/img/brand/logo.png" alt="StreamX" width="40" height="40"></a><a class="back" href="/">← Back to StreamX</a></div>
@@ -55,7 +55,6 @@
       <div class="ac-av" id="av" aria-hidden="true"></div>
       <div class="ac-pi"><div class="ac-hi" id="hi">Welcome back</div><div class="ac-em" id="who"></div><span class="ac-pv" id="pv" hidden></span></div>
       <button class="ac-bell" id="bell" type="button" aria-label="Notifications"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9a6 6 0 1 1 12 0c0 5 2 6 2 6H4s2-1 2-6zM10 19a2 2 0 0 0 4 0"/></svg><i id="bn" hidden></i></button>
-      <button class="ac-out" id="out" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5M21 12H9"/></svg><span>Sign out</span></button>
     </header>
     <h2 class="ac-h2">Subscriptions</h2>
     <div class="ac-list" id="list"></div>
@@ -63,6 +62,9 @@
       <h2 class="ac-h2">Purchase history <small id="hn"></small></h2>
       <div class="ac-orders" id="orders"></div>
     </div>
+    <footer class="ac-foot"><div class="ac-fi"><span class="ac-fav" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4.5-6 8-6s7 2 8 6"/></svg></span><div><small>Signed in as</small><b id="fwho"></b></div></div>
+      <button class="ac-out" id="out" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5M21 12H9"/></svg><span>Sign out</span></button>
+    </footer>
   </section>
 </main>
 <div class="ac-modal" id="rm" hidden role="dialog" aria-modal="true" aria-labelledby="rt">
@@ -82,6 +84,6 @@
 <script src="/assets/js/data/catalog.js"></script>
 <script src="/assets/js/data/logos.js?v=20261121a"></script>
 <script src="/assets/js/data/countries.js?v=1"></script>
-<script src="/assets/js/account.js?v=15"></script>
+<script src="/assets/js/account.js?v=16"></script>
 </body>
 </html>

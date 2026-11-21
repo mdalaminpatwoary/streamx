@@ -49,7 +49,7 @@
   var PLAT = {
     web: ["Web", ic('<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/>')],
     ios: ["iOS", ic('<rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/>')],
-    android: ["Android", ic('<rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><path d="M10 5.5h4M11 18.5h2"/>')],
+    android: ["Android", ic('<path d="M5.5 14a6.5 6.5 0 0 1 13 0z"/><path d="m8 5.5 1.6 2.3M16 5.5l-1.6 2.3"/><circle cx="9.6" cy="11.2" r=".55"/><circle cx="14.4" cy="11.2" r=".55"/><path d="M6.5 16.5H17.5V19a1.5 1.5 0 0 1-1.5 1.5H8A1.5 1.5 0 0 1 6.5 19z"/>')],
     tablet: ["Tablet", ic('<rect x="3.5" y="5" width="17" height="14" rx="2.5"/><path d="M11 16.5h2"/>')],
     tv: ["TV", ic('<rect x="3" y="5" width="18" height="12" rx="2"/><path d="M8 21h8M12 17v4"/>')]
   };
@@ -110,21 +110,38 @@
 
   /* "Need help?" panel: every topic opens WhatsApp with the subscription details already filled in. */
   var HELPI = ic('<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.6 2.2c-.7.4-1.1.9-1.1 1.8M12 17h.01"/>');
+  var WAI = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97s-.47-.15-.67.15-.77.97-.94 1.16-.35.22-.64.08c-.3-.15-1.26-.46-2.4-1.48-.88-.79-1.48-1.76-1.65-2.06s-.02-.46.13-.6c.13-.13.3-.35.45-.52s.2-.3.3-.5.05-.37-.02-.52c-.08-.15-.67-1.61-.92-2.2-.24-.58-.49-.5-.67-.5h-.57c-.2 0-.52.07-.8.37s-1.04 1.02-1.04 2.48 1.07 2.88 1.21 3.08c.15.2 2.1 3.2 5.08 4.49.71.3 1.26.49 1.7.63.71.23 1.36.2 1.87.12.57-.08 1.76-.72 2-1.41s.25-1.29.17-1.41c-.07-.13-.27-.2-.57-.35M12.05 21.8a9.9 9.9 0 0 1-5.03-1.38l-.36-.21-3.74.98 1-3.65-.24-.37a9.86 9.86 0 0 1-1.51-5.26c0-5.45 4.44-9.89 9.9-9.89 2.64 0 5.12 1.03 6.99 2.9a9.82 9.82 0 0 1 2.9 7c0 5.46-4.44 9.9-9.9 9.9M20.5 3.49A11.8 11.8 0 0 0 12.05 0C5.5 0 .16 5.34.16 11.89c0 2.1.55 4.14 1.59 5.95L.06 24l6.3-1.65a11.88 11.88 0 0 0 5.68 1.45c6.55 0 11.9-5.34 11.9-11.9 0-3.18-1.24-6.17-3.48-8.41"/></svg>';
+  var MSI = ic('<path d="M12 3C6.9 3 3 6.8 3 11.5c0 2.6 1.2 4.8 3.1 6.3V21l3-1.7c.9.2 1.8.4 2.9.4 5.1 0 9-3.8 9-8.5S17.1 3 12 3z"/><path d="m7.5 13.5 3.2-3.3 2.2 2 3.6-2.7"/>');
+  var IGI = ic('<rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r=".6"/>');
+  var MLI = ic('<rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="m3.5 7 8.5 6.5L20.5 7"/>');
   function helpBox(s) {
-    var lg = s.login || {}, topics;
-    if (isGift(s)) topics = ["My redeem code is not working", "I have not received my code", "Something else"];
+    var lg = s.login || {}, topics, stream = PROD.some(function (p) { return p.name === s.service && p.cat === "Streaming"; });
+    if (isGift(s)) topics = ["My redeem code is not working", "I have not received my code", "The code says it was already used"];
     else {
       topics = ["I cannot sign in"];
       topics.push(lg.otp ? "I need my login code" : "My password is not working");
-      if ((lg.devices && (lg.devices.limit || (lg.devices.items || []).length)) || PROD.some(function (p) { return p.name === s.service && p.cat === "Streaming"; })) topics.push("Device limit reached");
+      if ((lg.devices && (lg.devices.limit || (lg.devices.items || []).length)) || stream) topics.push("Device limit reached");
+      if (stream) topics.push("Video quality or buffering problem");
       if (lg.vpn && lg.vpn.required) topics.push("VPN is not working");
-      topics.push("Something else");
+      if (s._left <= 7) topics.push("My plan is about to expire. How do I renew?");
+      topics.push("I want to change my login email");
     }
-    var sub = encodeURIComponent("Help with " + s.service + " (#" + s.id + ")");
-    return '<details class="ac-help"><summary>' + HELPI + "<span>Need help with this subscription?</span></summary><div class=\"ac-hb\"><p>Pick what is happening. We open WhatsApp with your subscription details filled in, so you do not have to explain it again.</p><div class=\"ac-topics\">" +
-      topics.map(function (t) { return '<a class="ac-topic" href="' + waLink(s, lg, t) + '" target="_blank" rel="noopener">' + esc(t) + "</a>"; }).join("") +
-      '</div><div class="ac-alt"><a href="https://m.me/streamx.com.bd" target="_blank" rel="noopener">Message us on Messenger</a><a href="mailto:streamx.com.bd@gmail.com?subject=' + sub + '">Email support</a></div></div></details>';
+    var sub = encodeURIComponent("Help with " + s.service + " (#" + s.id + ")"), mark = "__ISSUE__", url = waLink(s, lg, mark).replace(encodeURIComponent(mark), "");
+    return '<details class="ac-help"><summary>' + HELPI + "<span>Need help with this subscription?</span></summary>" +
+      '<div class="ac-hb" data-u="' + esc(url) + '" data-sub="' + sub + '"><p>Tap a common question or type your own. We open WhatsApp with your subscription details already attached.</p>' +
+      '<div class="ac-topics">' + topics.map(function (t) { return '<button type="button" class="ac-topic" data-t="' + esc(t) + '">' + esc(t) + "</button>"; }).join("") + "</div>" +
+      '<div class="ac-ta-w"><textarea class="ac-ta" rows="3" maxlength="500" placeholder="Describe your issue, in English or Bangla" aria-label="Describe your issue"></textarea><small class="ac-cc">0 / 500</small></div>' +
+      '<button type="button" class="ac-send">' + WAI + "<span>Send on WhatsApp</span></button>" +
+      '<div class="ac-alt"><span>Or reach us on</span><a href="https://m.me/streamx.com.bd" target="_blank" rel="noopener">' + MSI + 'Messenger</a><a href="https://instagram.com/streamx.com.bd" target="_blank" rel="noopener">' + IGI + 'Instagram</a><a data-mail href="mailto:streamx.com.bd@gmail.com?subject=' + sub + '">' + MLI + "Email</a></div></div></details>";
   }
+  document.addEventListener("click", function (e) {
+    var box = e.target.closest && e.target.closest(".ac-hb[data-u]"); if (!box) return;
+    var ta = box.querySelector(".ac-ta"), cc = box.querySelector(".ac-cc"), t;
+    if ((t = e.target.closest(".ac-topic"))) { ta.value = t.dataset.t + ". "; cc.textContent = ta.value.length + " / 500"; box.querySelectorAll(".ac-topic").forEach(function (x) { x.classList.toggle("on", x === t); }); ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); return; }
+    if (e.target.closest(".ac-send")) { var v = ta.value.trim(); if (!v) { ta.classList.remove("shake"); void ta.offsetWidth; ta.classList.add("shake"); ta.focus(); return; } window.open(box.dataset.u + encodeURIComponent(v), "_blank", "noopener"); return; }
+    var m = e.target.closest("a[data-mail]"); if (m && ta.value.trim()) m.href = "mailto:streamx.com.bd@gmail.com?subject=" + box.dataset.sub + "&body=" + encodeURIComponent(ta.value.trim());
+  });
+  document.addEventListener("input", function (e) { var ta = e.target; if (ta.classList && ta.classList.contains("ac-ta")) ta.parentNode.querySelector(".ac-cc").textContent = ta.value.length + " / 500"; });
 
   /* Gift cards bought together (same order) are shown as one card with several codes. */
   function groupRows(list) {
@@ -216,7 +233,7 @@
   document.addEventListener("click", function (e) { if (e.target.closest("#bell")) { if (PENDING.length || ANN.length) openNotice(); else flash("You are all caught up. No new updates."); } });
 
   function render(d) {
-    $("#login").hidden = true; $("#app").hidden = false; $("#who").textContent = d.email;
+    $("#login").hidden = true; $("#app").hidden = false; $("#who").textContent = d.email; var fw = $("#fwho"); if (fw) fw.textContent = d.email;
     var pf = d.profile || {}, nm = pf.name || "", av = $("#av"); av.innerHTML = "";
     if (pf.picture) { var im = new Image(); im.alt = ""; im.referrerPolicy = "no-referrer"; im.onerror = function () { av.textContent = (nm || d.email)[0].toUpperCase(); }; im.src = pf.picture; av.appendChild(im); } else av.textContent = (nm || d.email)[0].toUpperCase();
     $("#hi").textContent = nm ? "Welcome back, " + nm : "Welcome back";

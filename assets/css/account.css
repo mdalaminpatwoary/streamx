@@ -122,7 +122,7 @@ h1{margin:10px 0 8px;font-size:clamp(30px,5vw,46px);line-height:1.1;letter-spaci
 .ac-ol li span{flex:1;min-width:0;font-weight:700}.ac-ol small{display:block;color:var(--mut);font-weight:500;font-size:12.5px}
 .ac-ol em{color:var(--mut);font-style:normal}.ac-ol b{font-weight:800}
 .ac-of{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:12px;color:var(--mut);font-size:13px}.ac-of b{color:#fff;font-size:15px}
-@media(max-width:560px){.ac-prof{flex-wrap:wrap;padding:16px}.ac-pi{flex:1 1 calc(100% - 80px)}.ac-out{width:100%;justify-content:center;order:3}}
+@media(max-width:560px){.ac-prof{flex-wrap:wrap;padding:16px}.ac-pi{flex:1 1 calc(100% - 80px)}}
 /* phones / tablets: sign in first, the "Your subscriptions" intro below it */
 @media(max-width:860px){.ac-login{order:-1}.ac-grid2{display:flex;flex-direction:column}}
 
@@ -328,3 +328,32 @@ h1{margin:10px 0 8px;font-size:clamp(30px,5vw,46px);line-height:1.1;letter-spaci
 .ac-val.ac-msgt{display:block;background:none;border:0;padding:4px 0 0;font-weight:500;font-size:13.5px;line-height:1.5}
 /* Sign-in on a phone: just the sign-in box, no subscriptions intro */
 @media(max-width:760px){body:has(#login:not([hidden])) .ac-intro{display:none}}
+
+/* Sign out lives at the bottom of the page */
+.ac-foot{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:38px;padding:16px 18px;border-radius:20px;border:1px solid rgba(255,255,255,.09);background:linear-gradient(180deg,rgba(20,25,53,.6),rgba(10,13,28,.6))}
+.ac-fi{display:flex;align-items:center;gap:12px;min-width:0}
+.ac-fav{flex:none;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#b9c2e2}
+.ac-fav svg{width:19px;height:19px}
+.ac-fi small{display:block;font-size:11.5px;color:var(--mut);letter-spacing:.04em;text-transform:uppercase;font-weight:700}
+.ac-fi b{display:block;font:700 14px Manrope,system-ui,sans-serif;color:#e9edf8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ac-foot .ac-out{padding:11px 20px}
+@media(max-width:560px){.ac-foot{flex-direction:column;align-items:stretch;text-align:left}.ac-foot .ac-out{width:100%;justify-content:center}}
+
+/* Help: write your own message */
+.ac-topic{cursor:pointer;font-family:inherit}
+.ac-topic.on{background:rgba(37,211,102,.16);border-color:rgba(37,211,102,.6);color:#fff}
+.ac-ta-w{position:relative;margin-top:12px}
+.ac-ta{display:block;width:100%;min-height:92px;resize:vertical;padding:12px 14px 26px;border-radius:14px;border:1px solid rgba(255,255,255,.16);background:rgba(6,9,22,.6);color:#f2f5ff;font:500 14px/1.5 Manrope,system-ui,sans-serif;transition:border-color .2s,box-shadow .2s}
+.ac-ta::placeholder{color:#7c86ac}
+.ac-ta:focus{outline:0;border-color:rgba(37,211,102,.7);box-shadow:0 0 0 3px rgba(37,211,102,.15)}
+.ac-ta.shake{animation:acShake .35s}
+@keyframes acShake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.ac-cc{position:absolute;right:12px;bottom:8px;font-size:11px;color:#7c86ac;pointer-events:none}
+.ac-send{margin-top:10px;width:100%;display:inline-flex;align-items:center;justify-content:center;gap:9px;padding:12px 18px;border:0;border-radius:99px;background:linear-gradient(135deg,#25d366,#128c7e);color:#fff;font:800 14px Manrope,system-ui,sans-serif;cursor:pointer;box-shadow:0 10px 26px -12px rgba(37,211,102,.7);transition:transform .2s,filter .2s}
+.ac-send:hover{transform:translateY(-1px);filter:brightness(1.08)}
+.ac-send svg{width:19px;height:19px}
+.ac-alt{align-items:center;gap:8px;margin-top:14px}
+.ac-alt>span{font-size:12.5px;color:var(--mut);margin-right:2px}
+.ac-alt a{display:inline-flex;align-items:center;gap:7px;padding:8px 13px;border-radius:99px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.04);color:#e6eaf7;text-decoration:none;font:700 12.5px Manrope,system-ui,sans-serif;transition:background .2s,border-color .2s}
+.ac-alt a:hover{background:rgba(255,255,255,.09);border-color:rgba(255,255,255,.3)}
+.ac-alt a svg{width:16px;height:16px;color:#ffb3aa}
