@@ -231,6 +231,9 @@
   const subById=id=>ACC&&ACC.subscriptions.find(x=>String(x.id)===String(id));
   const stOf=x=>x._left<0?["Expired","bad"]:x._left<=7?["Expires soon","warn"]:["Active","ok"];
   const colorOf=n=>{const p=PRODUCTS.find(x=>x.name===n);return p?p.color:"#1d2347"};
+  const tileOf=n=>{const L=typeof LOGOS!=="undefined"&&typeof LOGO_OF!=="undefined"&&LOGOS[LOGO_OF[n]],p=PRODUCTS.find(q=>q.name===n);
+    if(L&&L.p)return `<span class="bt-tile bt-logo" style="background:${esc(L.bg)};color:${esc(L.fg||"#fff")}"><svg viewBox="${esc(L.vb)}" aria-hidden="true"><path d="${L.p}"/></svg></span>`;
+    return `<span class="bt-tile" style="background:${colorOf(n)}">${esc(((p&&p.icon)||n[0]||"?").toString().slice(0,2))}</span>`};
   const leftTxt=x=>x._left<0?(-x._left)+(x._left===-1?" day ago":" days ago"):x._left===0?"last day":x._left+(x._left===1?" day left":" days left");
   const owns=(x,p)=>{const a=norm(x.service),b=norm(p.name);return a===b||a.indexOf(b)>-1||b.indexOf(a)>-1};
   const I_EYE='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>';
@@ -263,7 +266,7 @@
       const it=(lg.devices&&lg.devices.items)||[];if(it.length)rows.push(`<div class="bt-kv"><span class="bt-k">Devices</span><span class="bt-v">${it.map(d=>esc((d.name||d.type||"Device")+(d.type?" ("+d.type+")":""))).join(", ")}</span></div>`);
       if(!rows.length)rows.push(`<p class="bt-cd">Your login details will appear here once your account is ready. Need them now? Message us.</p>`);
     }
-    return `<div class="bt-card bt-acct"><div class="bt-ct"><span class="bt-tile" style="background:${colorOf(x.service)}">${esc(x.service[0])}</span>${esc(x.service)}<em class="bt-st ${st[1]}">${st[0]}</em></div><p class="bt-cd">${esc(x.plan)} · ${fdate(x.start_date)} to ${fdate(x.end_date)}</p>`+
+    return `<div class="bt-card bt-acct"><div class="bt-ct">${tileOf(x.service)}${esc(x.service)}<em class="bt-st ${st[1]}">${st[0]}</em></div><p class="bt-cd">${esc(x.plan)} · ${fdate(x.start_date)} to ${fdate(x.end_date)}</p>`+
       `<div class="bt-prog" title="${leftTxt(x)}"><i style="width:${x._left<0?0:pct}%"></i></div><p class="bt-left"><b>${x._left<0?"Expired":x._left}</b> ${x._left<0?leftTxt(x):x._left===0?"last day":x._left===1?"day left":"days left"}</p>`+
       `<div class="bt-kvs">${rows.join("")}</div><p class="bt-lock">${I_LK}<span>Only you can see this on this device. Secrets are hidden again after 20 seconds.</span></p>`+
       `${renewBtns(x)}<div class="bt-row">${btn("Need help",helpWa(x),"  bt-wa")}</div></div>`;
@@ -271,7 +274,7 @@
   function listHtml(d,title){
     const live=d.subscriptions.filter(x=>x._left>=0).sort((a,b)=>a._left-b._left),gone=d.subscriptions.filter(x=>x._left<0);
     if(!live.length)return `<p>You do not have an active subscription right now${gone.length?" ("+gone.length+" expired)":""}.</p><div class="bt-row">${btn("Browse services","/services/"," bt-go")}${btn("Open My account","/account/")}</div>`;
-    return `<p>${title||`You have ${live.length} active subscription${live.length>1?"s":""}. Tap one to see its details.`}</p><div class="bt-sublist">${live.map((x,i)=>{const st=stOf(x);return `<button type="button" class="bt-sub" style="--i:${i}" data-act="sub" data-sid="${x.id}"><span class="bt-tile" style="background:${colorOf(x.service)}">${esc(x.service[0])}</span><span class="bt-st-t"><b>${esc(x.service)}</b><small>${esc(x.plan)} · ${leftTxt(x)}</small></span><em class="bt-st ${st[1]}">${st[0]}</em></button>`}).join("")}</div>${gone.length?`<p class="bt-cd">${gone.length} expired subscription${gone.length>1?"s":""} are in My account.</p>`:""}`;
+    return `<p>${title||`You have ${live.length} active subscription${live.length>1?"s":""}. Tap one to see its details.`}</p><div class="bt-sublist">${live.map((x,i)=>{const st=stOf(x);return `<button type="button" class="bt-sub" style="--i:${i}" data-act="sub" data-sid="${x.id}">${tileOf(x.service)}<span class="bt-st-t"><b>${esc(x.service)}</b><small>${esc(x.plan)} · ${leftTxt(x)}</small></span><em class="bt-st ${st[1]}">${st[0]}</em></button>`}).join("")}</div>${gone.length?`<p class="bt-cd">${gone.length} expired subscription${gone.length>1?"s":""} are in My account.</p>`:""}`;
   }
   function ordersHtml(d){
     const os=(d.orders||[]).slice(0,3);if(!os.length)return `<p>I do not see any online orders on your account yet.</p><div class="bt-row">${btn("Browse services","/services/"," bt-go")}</div>`;
@@ -286,7 +289,7 @@
   function renewHtml(d){
     const a=d.subscriptions.filter(x=>x._left<=30).sort((x,y)=>x._left-y._left);
     if(!a.length)return `<p>None of your plans is close to ending. You can still renew any time from My account. The new period is added after your current expiry, so no days are lost.</p><div class="bt-row">${btn("Open My account","/account/")}</div>`;
-    return `<p>${a.length>1?"These plans are":"This plan is"} ending soon. Renew online and your plan is extended automatically once payment is confirmed. You do not need to do anything else.</p>`+a.map(x=>`<div class="bt-card"><div class="bt-ct"><span class="bt-tile" style="background:${colorOf(x.service)}">${esc(x.service[0])}</span>${esc(x.service)}<em class="bt-st ${stOf(x)[1]}">${leftTxt(x)}</em></div><p class="bt-cd">${esc(x.plan)}</p>${renewBtns(x)}</div>`).join("");
+    return `<p>${a.length>1?"These plans are":"This plan is"} ending soon. Renew online and your plan is extended automatically once payment is confirmed. You do not need to do anything else.</p>`+a.map(x=>`<div class="bt-card"><div class="bt-ct">${tileOf(x.service)}${esc(x.service)}<em class="bt-st ${stOf(x)[1]}">${leftTxt(x)}</em></div><p class="bt-cd">${esc(x.plan)}</p>${renewBtns(x)}</div>`).join("");
   }
   /* returns {p:Promise<reply>} for signed-in account questions, a sign-in prompt when signed out, or null */
   function acctRoute(q,ql,ps){
