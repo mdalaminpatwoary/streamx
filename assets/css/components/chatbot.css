@@ -61,7 +61,7 @@
 .bt-rs{margin-left:auto;width:32px;height:32px;border-radius:50%;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.05);color:#cfd6f0;display:grid;place-items:center;cursor:pointer;transition:transform .4s,background .2s}
 .bt-rs svg{width:15px;height:15px}.bt-rs:hover{background:rgba(255,255,255,.12);transform:rotate(-200deg)}
 .bt-rs+.bt-x{margin-left:0}
-.bt-h small{min-height:16px}
+.bt-h small{min-height:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.bt-h small span{overflow:hidden;text-overflow:ellipsis}.bt-h>div{min-width:0;flex:1}
 .bt-ty{color:#35d07f;font-weight:700}.bt-ty i{display:inline-block;width:4px;height:4px;margin-left:3px;border-radius:50%;background:currentColor;animation:btDot 1s infinite}
 .bt-ty i:nth-child(2){animation-delay:.15s}.bt-ty i:nth-child(3){animation-delay:.3s}
 .bt-rv{opacity:0;animation:btRv .5s cubic-bezier(.2,.9,.3,1.1) forwards}
@@ -95,9 +95,9 @@ button.bt-btn{appearance:none}
 .bt-pay{margin:2px 0 8px;padding:12px;border-radius:14px;border:1px solid rgba(255,255,255,.1);background:rgba(6,9,22,.55)}
 .bt-pt{display:flex;align-items:center;justify-content:space-between;font:800 13.5px Manrope,system-ui,sans-serif;color:#fff}
 .bt-pt em{font-style:normal;font-size:10px;letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;border-radius:99px;background:rgba(53,208,127,.18);color:#6ee7a8}
-.bt-logos{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:10px 0}
-.bt-logos img,.bt-logos span{height:24px;padding:5px 10px;border-radius:8px;background:#fff;box-sizing:content-box;color:#222;font-size:11px;font-weight:700;opacity:0;animation:btRv .4s forwards}
-.bt-logos img[src$=".svg"]{background:#1a2147;border:1px solid rgba(255,255,255,.14)}
+.bt-logos{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:10px 0}
+.bt-logos img,.bt-logos span{height:22px;width:auto;max-width:62px;padding:0;background:none;border:0;border-radius:0;box-sizing:border-box;color:#cfd6f0;font-size:12px;font-weight:700;filter:drop-shadow(0 4px 10px rgba(0,0,0,.4));opacity:0;animation:btRv .4s forwards}
+.bt-logos img{object-fit:contain}.bt-logos img[src*="visa"]{height:16px;max-width:50px}.bt-logos img[src*="mastercard"]{height:24px;max-width:38px}
 .bt-logos img:nth-child(2){animation-delay:.08s}.bt-logos img:nth-child(3){animation-delay:.16s}.bt-logos img:nth-child(4){animation-delay:.24s}.bt-logos img:nth-child(5){animation-delay:.32s}.bt-logos img:nth-child(6){animation-delay:.4s}
 .bt-steps{margin:0 0 4px;padding:0;list-style:none;counter-reset:s}
 .bt-steps li{counter-increment:s;display:flex;gap:10px;align-items:flex-start;padding:5px 0;font-size:12.5px;color:#cfd6f0;border:0!important;animation:none!important}
@@ -256,7 +256,28 @@ button.bt-btn{appearance:none}
 .bt-rm-two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 @media(max-width:420px){.bt-rm-two{grid-template-columns:1fr}}
 .bt-in.is-lock{opacity:.75;cursor:not-allowed}
-.bt-rm-h{margin:6px 0 0;font-size:12px;color:#8b95b8}
+.bt-rm-h{margin:6px 0 0;font-size:13px;line-height:1.45;color:#b4bddb}
 .bt-rm-go{width:100%;justify-content:center;margin-top:16px;padding:13px 16px;font-size:14px}
 .bt-rm-eps{margin-top:14px;padding:8px 12px;border-radius:14px;background:#fff}.bt-rm-eps img{display:block;width:100%;height:auto;max-height:58px;object-fit:contain}
-.bt-rm-f{display:block;margin-top:10px;text-align:center;font-size:12px;color:#8b95b8}
+.bt-rm-f{display:block;margin-top:10px;text-align:center;font-size:13px;line-height:1.45;color:#b4bddb}
+/* hover accuracy: after their intro animation, items must not stay as stale animated layers (that can make the card above keep the hover) */
+.bt-sublist .bt-sub{position:relative;z-index:0}.bt-sublist .bt-sub:hover{z-index:1}
+
+/* unified hover: one shared transition + one shared surface for every secondary chat control */
+.bt-chip,.bt-btn,.bt-opt,.bt-sub,.bt-rc,.bt-ag-chat,.bt-ag-row a,.bt-ib button{transition:background-color .2s ease,border-color .2s ease,box-shadow .2s ease,color .2s ease}
+@media(hover:hover){.bt-btn:not(.bt-go):not(.bt-wa):hover,.bt-rc:hover,.bt-ag-chat:hover,.bt-ag-row a:hover,.bt-sub:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.3)}
+.bt-chip:hover,.bt-opt:hover{background:rgba(237,49,36,.14);border-color:rgba(237,49,36,.55)}}
+@media(hover:none){.bt-chip:hover,.bt-opt:hover,.bt-sub:hover,.bt-btn:not(.bt-go):not(.bt-wa):hover{background:inherit}}
+
+/* one clear main action per card: secondary buttons read as quiet ghost buttons */
+.bt-row{gap:8px;align-items:center}
+.bt-row .bt-btn:not(.bt-go):not(.bt-wa){background:transparent;border-color:rgba(255,255,255,.16);font-weight:700;color:#cfd6f0}
+/* suggestion chips: one swipeable row on phones instead of 3-4 wrapped rows */
+@media(max-width:520px){.bt-chips{flex-wrap:nowrap;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none;margin-right:-14px;padding:2px 14px 4px 0;-webkit-mask-image:linear-gradient(90deg,#000 88%,transparent);mask-image:linear-gradient(90deg,#000 88%,transparent)}
+.bt-chips::-webkit-scrollbar{display:none}.bt-chip{flex:none;white-space:nowrap}}
+
+/* keyboard focus: clear ring on every chat control */
+.bt button:focus-visible,.bt a:focus-visible,.bt input:focus-visible,.bt-rm button:focus-visible,.bt-rm input:focus-visible{outline:2px solid #ff8a7e;outline-offset:2px}
+.bt-chips{scroll-padding:0 14px}
+.bt-ag-row>*{min-width:0}.bt-ag-row a{padding:10px 6px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+@media(max-width:380px){.bt-ag-row{grid-template-columns:1fr}}

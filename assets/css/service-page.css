@@ -276,7 +276,7 @@ h1,h2,h3{line-height:1.12;margin:0;letter-spacing:-.02em}
 .co-sum em{font-style:normal;color:#fff;opacity:.7}
 .co-sum .co-tot{margin-top:4px;padding-top:10px;border-top:1px solid var(--line);font-size:16px;color:#fff}
 .co-box label{display:block;margin:14px 0 0}
-.co-l{display:block;margin-bottom:6px;font-size:13px;font-weight:600;color:var(--mut)}
+.co-l{display:block;margin-bottom:6px;font-size:14px;font-weight:600;color:#c3cae3}
 .co-l em{font-weight:400;font-style:normal;opacity:.75}
 .co-box input,.co-box textarea{width:100%;padding:13px 14px;font:inherit;font-size:15px;color:#fff;background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:12px;outline:0;transition:border-color .2s,box-shadow .2s;box-sizing:border-box}
 .co-box input:focus,.co-box textarea:focus{border-color:#ed3124;box-shadow:0 0 0 3px rgba(237,49,36,.18)}
@@ -287,7 +287,7 @@ h1,h2,h3{line-height:1.12;margin:0;letter-spacing:-.02em}
 .co-go:hover{transform:translateY(-2px)}
 .co-go:disabled{opacity:.6;cursor:progress;transform:none}
 .co-eps{display:block;width:100%;height:auto;box-sizing:border-box;margin:16px 0 8px;padding:10px 14px;border-radius:14px;background:#fff}
-.co-fine{display:block;text-align:center;font-size:12.5px;color:var(--mut)}
+.co-fine{display:block;text-align:center;font-size:13.5px;line-height:1.5;color:#b4bddb}
 .co-wa{margin-top:8px}.co-wa a{color:#fff;font-weight:700;text-decoration:underline}
 .co-x{position:absolute;top:16px;right:16px;width:36px;height:36px;border-radius:50%;border:1px solid #2a3258;background:none;color:#fff;cursor:pointer;transition:.3s}
 .co-x:hover{border-color:#ed3124;transform:rotate(90deg)}
@@ -359,4 +359,4 @@ body.sp-adult:not(.ok) .sp-age{display:grid}
 .sp-poster:hover .sp-ov i,.sp-poster:focus-visible .sp-ov i{transform:none}
 .sp-poster:hover .sp-ov b,.sp-poster:focus-visible .sp-ov b{transform:none}
 .sp-poster{cursor:pointer}
-#co-e.is-lock{opacity:.75;cursor:not-allowed}.co-lock{display:block;margin-top:6px;font-size:12px;color:#8b95b8}
+#co-e.is-lock{opacity:.75;cursor:not-allowed}.co-lock{display:block;margin-top:6px;font-size:13px;line-height:1.45;color:#b4bddb}

@@ -83,9 +83,9 @@
   const agentHtml=()=>`<p>Sure. A real person is ready to help you.</p><div class="bt-agent"><div class="bt-ag-top"><span class="bt-ag-av"><img src="/assets/img/brand/al-amin.webp" alt="${NAME}" width="52" height="52"><i></i></span><div><b>${NAME}</b><small>StreamX &middot; available for help</small></div></div><a class="bt-ag-wa" href="${esc(wa("Hi Muhammad Al-Amin! I need help."))}" target="_blank" rel="noopener">${I_WA}<span>Chat on WhatsApp<small>+880 1312-850241 &middot; 24/7</small></span></a><div class="bt-ag-row"><a href="https://m.me/streamx.com.bd" target="_blank" rel="noopener">${I_MS}Messenger</a><a href="https://instagram.com/streamx.com.bd" target="_blank" rel="noopener">${I_IG}Instagram</a></div><button type="button" class="bt-ag-chat" data-act="sendchat">Send this chat to support</button><a class="bt-ag-mail" href="mailto:streamx.com.bd@gmail.com">streamx.com.bd@gmail.com</a></div>`;
   const catsHtml=()=>{const m={};LIST.forEach(p=>{m[p.cat]=(m[p.cat]||0)+1});return `<p>We have ${LIST.length} services. Pick a group or type a service name:</p>`+chips(Object.keys(m).map(c=>c==="Bundle"?"Bundles":c).concat(["Help me choose"]))};
   const byCat=c=>{const a=LIST.filter(p=>p.cat===c||(c==="Bundles"&&p.cat==="Bundle"));return a.length?`<p>${esc(c)}:</p>${mini(a.map(p=>[p,minOf(p)]))}`:""};
-  const payHtml=()=>`<p>You can pay online or manually. Online is the fastest.</p>
+  const payHtml=()=>`<p>Pay online (fastest) or manually.</p>
     <div class="bt-pay"><div class="bt-pt">Pay online<em>Recommended</em></div><div class="bt-logos">${logo("bkash.png","bKash")}${logo("nagad.png","Nagad")}${logo("rocket.png","Rocket")}${logo("upay.png","Upay")}${logo("visa.svg","Visa")}${logo("mastercard.svg","Mastercard")}</div>
-    <ol class="bt-steps"><li>Choose a plan and tap <b>Pay online</b></li><li>Pick bKash, Nagad, Rocket, Upay or a card on EPS's secure page</li><li>Your payment is confirmed automatically</li><li>We send your delivery details</li></ol><div class="bt-row">${btn("Browse &amp; pay online","/#pricing"," bt-go")}</div></div>
+    <ol class="bt-steps"><li><span>Choose a plan, tap <b>Pay online</b></span></li><li>Pick bKash, Nagad, Rocket, Upay or card on EPS</li><li>Confirmed automatically, details sent to you</li></ol><div class="bt-row">${btn("Browse &amp; pay online","/#pricing"," bt-go")}</div></div>
     <div class="bt-pay"><div class="bt-pt">Pay manually</div><p class="bt-cd">Send money by bKash, Nagad, Rocket, Upay or bank transfer, then share the Transaction ID on WhatsApp.</p><div class="bt-row">${waBtn("Hi StreamX! I want to pay manually.")}</div></div>`;
 
   /* ---------- plan picker: type, duration, then pay online / cart / WhatsApp ---------- */
@@ -263,12 +263,12 @@
   /* acct block is added after the UI elements exist */
   /* ---------- UI ---------- */
   const panel=document.createElement("section");panel.className="bt";panel.id="bt";panel.setAttribute("aria-label","StreamX assistant");panel.hidden=true;
-  panel.innerHTML=`<header class="bt-h"><span class="bt-av"><img src="/assets/img/brand/al-amin.webp" alt="" width="40" height="40"><i></i></span><div><b>StreamX assistant</b><small id="btS"><span>Instant answers. Real people on WhatsApp.</span></small></div><button type="button" class="bt-rs" aria-label="Start over" title="Start over"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5"/></svg></button><button type="button" class="bt-x" aria-label="Close chat">&times;</button></header>
+  panel.innerHTML=`<header class="bt-h"><span class="bt-av"><img src="/assets/img/brand/al-amin.webp" alt="" width="40" height="40"><i></i></span><div><b>StreamX assistant</b><small id="btS"><span>Instant answers · 24/7 on WhatsApp</span></small></div><button type="button" class="bt-rs" aria-label="Start over" title="Start over"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5"/></svg></button><button type="button" class="bt-x" aria-label="Close chat">&times;</button></header>
   <div class="bt-log" id="btLog" aria-live="polite"></div>
   <form class="bt-f" id="btF" autocomplete="off"><input id="btI" type="text" maxlength="200" placeholder="Ask about prices, plans, payment..." aria-label="Type your question"><button type="submit" aria-label="Send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg></button></form>`;
   root.insertBefore(panel,root.firstChild);
   const log=panel.querySelector("#btLog"),inp=panel.querySelector("#btI"),stat=panel.querySelector("#btS");
-  const IDLE="<span>Instant answers. Real people on WhatsApp.</span>";
+  const IDLE="<span>Instant answers · 24/7 on WhatsApp</span>";
   /* voice input where the browser supports it */
   (function(){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR)return;
     const form=panel.querySelector("#btF"),PH=inp.placeholder;let rec=null;
