@@ -12,7 +12,7 @@
   var fmt = function (iso) { var d = new Date(iso + "T00:00:00Z"); return d.getUTCDate() + " " + ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][d.getUTCMonth()] + " " + d.getUTCFullYear(); };
   var days = function (a, b) { return Math.round((Date.parse(b + "T00:00:00Z") - Date.parse(a + "T00:00:00Z")) / 86400000); };
 
-  function showLogin(msg) { $("#app").hidden = true; $("#login").hidden = false; $("#cf").hidden = true; $("#lf").hidden = false; $("#sub").textContent = "See what is active, when it ends, and renew in one tap."; if (msg) { var m = $("#lm"); m.textContent = msg; m.className = "ac-msg"; } }
+  function showLogin(msg) { document.documentElement.classList.remove("hs"); try { sessionStorage.removeItem("sx_acc_pre"); } catch (e) {} $("#app").hidden = true; $("#login").hidden = false; $("#cf").hidden = true; $("#lf").hidden = false; $("#sub").textContent = "See what is active, when it ends, and renew in one tap."; if (msg) { var m = $("#lm"); m.textContent = msg; m.className = "ac-msg"; } }
 
   function renewLink(s) {
     var p = PROD.filter(function (x) { return x.name === s.service; })[0];
@@ -72,7 +72,7 @@
   function devBlock(lg) {
     var d = lg.devices || {}, it = d.items || [];
     if (!it.length && !d.limit) return "";
-    var h = '<div class="ac-dh"><span>Signed-in devices</span>' + (d.limit ? '<em class="ac-dl' + (it.length >= d.limit ? " full" : "") + '"><b>' + it.length + "</b> / " + d.limit + " in use</em>" : "") + "</div>";
+    var h = '<div class="ac-dh"><span>Signed-in devices</span></div>';
     if (it.length) h += '<ul class="ac-dlist">' + it.map(function (x, i) { var p = PLAT[x.type] || PLAT.web; return '<li style="--i:' + i + '"><span class="ac-dic">' + p[1] + '</span><span class="ac-dn">' + esc(x.name || p[0]) + '</span><span class="ac-dt">' + p[0] + "</span></li>"; }).join("") + "</ul>";
     else h += '<p class="ac-dnote">Up to ' + d.limit + (d.limit === 1 ? " device" : " devices") + " can be signed in at once.</p>";
     return h;
@@ -311,8 +311,11 @@
     }).join("");
   }
 
+  /* The home page fetches the account data in the background (on idle and when the account icon is touched), so it is often ready here. */
+  function takePre(t) { try { var j = JSON.parse(sessionStorage.getItem("sx_acc_pre") || "null"); sessionStorage.removeItem("sx_acc_pre"); if (j && j.t === t && Date.now() - j.at < 90000) return j.d; } catch (e) {} return null; }
   function load() {
     var t = get(); if (!t) return showLogin();
+    var pre = takePre(t); if (pre) { render(pre); return; }
     api("me", { headers: { Authorization: "Bearer " + t } }).then(render).catch(function (e) {
       if (e.status === 401) { set(null); showLogin("Your session ended. Please sign in again."); } else { showLogin(e.message); }
     });

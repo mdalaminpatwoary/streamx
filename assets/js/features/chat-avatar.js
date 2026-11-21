@@ -43,7 +43,17 @@
     "Advice: use the same email you ordered with so My account finds your plans.",
     "Advice: tell me which device you watch on, and I will suggest the right plan.",
     "Advice: if something stops working, send a screenshot with your message to get faster help.",
-    "Advice: gift cards are valid for 6 months, so redeem yours early."
+    "Advice: gift cards are valid for 6 months, so redeem yours early.",
+    "New: you can place an order right here in the chat. Tap me and ask for any service.",
+    "New: ask me 'Netflix vs Prime' and I'll compare them side by side.",
+    "New: type 'help me choose' and I'll suggest a service for your budget.",
+    "New: pay online straight from the chat. Pick a plan, tap Pay online, done.",
+    "Tip: tell me your budget, like 'under 300', and I'll list what fits.",
+    "Tip: ask me for the price of any service, I answer instantly.",
+    "Update: the Notice board in My account now shows our offers and updates.",
+    "Update: My account now lists the devices signed in to your streaming plans.",
+    "Tip: stuck? Type your problem in the Need help box in My account and send it on WhatsApp.",
+    "Trick: tap a service name in my answers to open its plans straight away."
   ];
   // Start at a random question, then go through the rest without repeating.
   const order=QUESTIONS.map((q,i)=>i).sort(()=>Math.random()-.5);
@@ -77,5 +87,6 @@
   run(true);
   addEventListener("pointerover",e=>{if(e.target.closest&&e.target.closest("#cw"))paused=true});
   addEventListener("pointerout",e=>{if(e.target.closest&&e.target.closest("#cw"))paused=false});
+  bubble.addEventListener("click",e=>{if(e.target.closest("#cwX"))return;if(window.sxBot)window.sxBot.open()});
   $("#cwX").onclick=e=>{e.preventDefault();bubble.classList.remove("show");closed=true;try{sessionStorage.setItem("sx_cw_x","1")}catch(x){}};
 })();

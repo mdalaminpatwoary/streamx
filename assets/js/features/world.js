@@ -40,7 +40,8 @@
     root.querySelector('.wd-c[data-c="' + c[0] + '"]').classList.add("on"); root.querySelector('.wd-cn[data-c="' + c[0] + '"]').classList.add("on");
     var ch = root.querySelector('.wd-chip[data-c="' + c[0] + '"]'); root.querySelectorAll('.wd-chip[data-c="' + c[0] + '"]').forEach(function (n) { n.classList.add("on"); });
     tImg.src = flag(c[0]); tB.textContent = c[1];
-        tag.classList.add("on");
+        tag.style.left = p[0] / 10 + "%"; tag.style.top = p[1] / 4.5 + "%";
+    tag.classList.toggle("below", p[1] < 120); tag.classList.toggle("el", p[0] < 130); tag.classList.toggle("er", p[0] > 870); tag.classList.add("on");
     if (!user && ch.scrollIntoView && root.querySelector(".wd-chips").scrollWidth > root.querySelector(".wd-chips").clientWidth + 2) { /* chips wrap, nothing to scroll */ }
   }
   var calm = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;

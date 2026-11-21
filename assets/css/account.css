@@ -357,3 +357,16 @@ h1{margin:10px 0 8px;font-size:clamp(30px,5vw,46px);line-height:1.1;letter-spaci
 .ac-alt a{display:inline-flex;align-items:center;gap:7px;padding:8px 13px;border-radius:99px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.04);color:#e6eaf7;text-decoration:none;font:700 12.5px Manrope,system-ui,sans-serif;transition:background .2s,border-color .2s}
 .ac-alt a:hover{background:rgba(255,255,255,.09);border-color:rgba(255,255,255,.3)}
 .ac-alt a svg{width:16px;height:16px;color:#ffb3aa}
+
+/* Instant skeleton while the account loads */
+.hs #login{display:none}
+.ac-skel{display:none}
+.hs #app[hidden]~.ac-skel{display:block}
+.ac-sk{display:block;border-radius:10px;background:linear-gradient(100deg,rgba(255,255,255,.05) 30%,rgba(255,255,255,.12) 50%,rgba(255,255,255,.05) 70%);background-size:220% 100%;animation:acSk 1.3s linear infinite}
+@keyframes acSk{to{background-position:-220% 0}}
+.ac-sk-prof{display:flex;align-items:center;gap:14px;padding:18px;border-radius:22px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03)}
+.ac-sk.c{width:54px;height:54px;border-radius:50%;flex:none}.ac-sk.l1{width:180px;max-width:60vw;height:14px;margin-bottom:9px}.ac-sk.l2{width:120px;height:11px}
+.ac-sk.h{width:150px;height:20px;margin:26px 0 14px}
+.ac-sk-card{display:flex;gap:14px;align-items:center;padding:18px;margin-bottom:14px;border-radius:22px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03)}
+.ac-sk-card>div{flex:1}.ac-sk.t{width:54px;height:54px;border-radius:14px;flex:none}.ac-sk.bar{height:6px;margin-top:14px}
+@media(prefers-reduced-motion:reduce){.ac-sk{animation:none}}
