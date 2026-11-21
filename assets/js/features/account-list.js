@@ -10,13 +10,16 @@
     ["subs","list","orders"].forEach(n=>{const el=$("#pn-"+n);if(el)el.hidden=n!==name});
     if(push)try{history.replaceState(null,"",name==="subs"?location.pathname:"#"+(name==="list"?"mylist":name))}catch(e){}
   }
+  let want=false;
+  /* "Renew" in the header menu: bring the renew button of the soonest-ending plan into view */
+  function pulse(){if(!want)return;const b=document.querySelector('#list [data-renew]');if(!b)return;want=false;try{b.scrollIntoView({behavior:'smooth',block:'center'})}catch(e){}b.classList.add('ac-pulse');setTimeout(()=>b.classList.remove('ac-pulse'),2600)}
   if(tabs){
     tabs.addEventListener("click",e=>{const b=e.target.closest("button");if(b)go(b.dataset.tab,true)});
-    const fromHash=()=>{const h=location.hash;if(/mylist|list/.test(h))go("list");else if(/orders/.test(h))go("orders")};
+    const fromHash=()=>{const h=location.hash;if(/mylist|list/.test(h))go("list");else if(/orders/.test(h))go("orders");else if(/#(subs|renew)\b/.test(h)){go("subs");if(/#renew\b/.test(h))want=true;if(/#subs\b/.test(h)||want)try{history.replaceState(null,"",location.pathname)}catch(e){}pulse()}};
     fromHash();addEventListener("hashchange",fromHash);
   }
   /* ---- stats from the account data ---- */
-  document.addEventListener("ac:data",e=>{
+  document.addEventListener("ac:data",e=>{setTimeout(pulse,120);
     const d=e.detail||{};$("#stA").textContent=d.live||0;
     const n=$("#stN"),l=$("#stNl");
     if(d.next==null){n.textContent="–";l.textContent="Next expiry"}else{n.textContent=d.next;l.textContent=d.next===1?"Day until expiry":"Days until expiry"}

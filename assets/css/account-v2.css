@@ -139,3 +139,6 @@ button.ac-stat{cursor:pointer}button.ac-stat:hover{background:rgba(255,255,255,.
 .pp-m{position:relative;top:auto;left:auto;right:auto;margin-top:8px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}
 .pp-m ul{max-height:168px}
 .ac-pv[hidden],.ac-meta [hidden]{display:none!important}
+
+.ac-pulse{animation:acPulse 1s ease-in-out 2}
+@keyframes acPulse{0%,100%{box-shadow:0 0 0 0 rgba(237,49,36,.0)}50%{box-shadow:0 0 0 8px rgba(237,49,36,.35)}}

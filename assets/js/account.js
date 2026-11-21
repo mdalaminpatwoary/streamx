@@ -241,6 +241,7 @@
     if (pf.picture) { var im = new Image(); im.alt = ""; im.referrerPolicy = "no-referrer"; im.onerror = function () { av.textContent = (nm || d.email)[0].toUpperCase(); }; im.src = pf.picture; av.appendChild(im); } else av.textContent = (nm || d.email)[0].toUpperCase();
     $("#gr").textContent = greet(); $("#hi").textContent = nm || d.email.split("@")[0];
     var pe = $("#pedit"), pe2 = $("#pedit2"); if (pe) pe.hidden = pf.editable === false; if (pe2) pe2.hidden = pf.editable === false; var pvEl = $("#pv"); pvEl.hidden = !pf.provider; pvEl.textContent = ""; if (pf.provider) pvEl.textContent = "Signed in with " + (NM[pf.provider] || pf.provider);
+    try { localStorage.setItem("sx_me", JSON.stringify({ n: pf.name || "", e: d.email, today: d.today, subs: (d.subscriptions || []).map(function (x) { return x.end_date; }) })); } catch (e) {}
     DATA = d; var today = d.today, rows = d.subscriptions.map(function (s) { s._left = days(today, s.end_date); return s; });
     var live = groupRows(rows.filter(function (s) { return s._left >= 0; }).sort(function (a, b) { return a._left - b._left; }));
     var gone = groupRows(rows.filter(function (s) { return s._left < 0; }).sort(function (a, b) { return b._left - a._left; }));
