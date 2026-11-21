@@ -1,0 +1,53 @@
+/* StreamX assistant panel (see assets/js/features/chatbot.js) */
+.cw-open .cw-bubble{display:none}
+.bt{width:min(370px,calc(100vw - 24px));height:min(540px,calc(100vh - 120px));height:min(540px,calc(100dvh - 120px));display:flex;flex-direction:column;border-radius:22px;overflow:hidden;border:1px solid rgba(255,255,255,.12);background:linear-gradient(180deg,rgba(18,23,50,.98),rgba(8,11,24,.99));box-shadow:0 30px 80px -20px rgba(0,0,0,.85),0 0 0 1px rgba(237,49,36,.14);opacity:0;transform:translateY(14px) scale(.96);transform-origin:bottom right;transition:opacity .25s,transform .35s cubic-bezier(.2,.9,.3,1.1)}
+.bt[hidden]{display:none}
+.bt.on{opacity:1;transform:none}
+.bt-h{display:flex;align-items:center;gap:11px;padding:13px 14px;border-bottom:1px solid rgba(255,255,255,.08);background:linear-gradient(120deg,rgba(79,107,255,.14),rgba(237,49,36,.14))}
+.bt-av{flex:none;width:40px;height:40px;border-radius:50%;overflow:hidden;border:2px solid rgba(255,255,255,.2)}
+.bt-av img{width:100%;height:100%;object-fit:cover;display:block}
+.bt-h b{display:block;font:800 14.5px Manrope,system-ui,sans-serif;color:#fff}
+.bt-h small{display:flex;align-items:center;gap:6px;margin-top:2px;font-size:11.5px;color:#a9b3d6}
+.bt-h small i{width:7px;height:7px;border-radius:50%;background:#35d07f;box-shadow:0 0 8px #35d07f}
+.bt-x{margin-left:auto;width:32px;height:32px;border-radius:50%;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.05);color:#fff;font-size:20px;line-height:1;cursor:pointer}
+.bt-x:hover{background:rgba(237,49,36,.2)}
+.bt-log{flex:1;overflow-y:auto;padding:14px 12px;display:flex;flex-direction:column;gap:10px;scroll-behavior:smooth;overscroll-behavior:contain}
+.bt-m{max-width:92%;font:500 13.5px/1.5 Manrope,system-ui,sans-serif;animation:btIn .3s cubic-bezier(.2,.9,.3,1.1) both}
+@keyframes btIn{from{opacity:0;transform:translateY(8px)}}
+.bt-b{align-self:flex-start;padding:11px 13px;border-radius:16px 16px 16px 4px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.08);color:#e6eaf7}
+.bt-b p{margin:0 0 8px}.bt-b p:last-child{margin-bottom:0}
+.bt-u{align-self:flex-end;padding:10px 13px;border-radius:16px 16px 4px 16px;background:linear-gradient(135deg,#ed3124,#c4241a);color:#fff;word-break:break-word}
+.bt-typing{display:flex;gap:4px;padding:13px 15px}
+.bt-typing i{width:6px;height:6px;border-radius:50%;background:#9aa6d0;animation:btDot 1s infinite}
+.bt-typing i:nth-child(2){animation-delay:.15s}.bt-typing i:nth-child(3){animation-delay:.3s}
+@keyframes btDot{0%,80%,100%{opacity:.3;transform:none}40%{opacity:1;transform:translateY(-3px)}}
+.bt-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.bt-chip{padding:7px 12px;border-radius:99px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.05);color:#e6eaf7;font:700 12.5px Manrope,system-ui,sans-serif;cursor:pointer;transition:background .2s,border-color .2s}
+.bt-chip:hover{background:rgba(237,49,36,.16);border-color:rgba(237,49,36,.55)}
+.bt-row{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px}
+.bt-btn{display:inline-flex;align-items:center;padding:8px 13px;border-radius:99px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.06);color:#fff;text-decoration:none;font:700 12.5px Manrope,system-ui,sans-serif;transition:background .2s}
+.bt-btn:hover{background:rgba(255,255,255,.12)}
+.bt-btn.bt-wa{background:linear-gradient(135deg,#25d366,#128c7e);border-color:transparent}
+.bt-card{margin:2px 0 8px;padding:11px 12px;border-radius:14px;border:1px solid rgba(255,255,255,.1);background:rgba(6,9,22,.55)}
+.bt-card:last-child{margin-bottom:0}
+.bt-ct{display:flex;align-items:center;gap:8px;font:800 14px Manrope,system-ui,sans-serif;color:#fff}
+.bt-ct em{font-style:normal;font-weight:700;font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:#ffb3aa}
+.bt-cd{margin:6px 0 0!important;font-size:12.5px;color:#a9b3d6}
+.bt-card ul{list-style:none;margin:8px 0 0;padding:0}
+.bt-card li{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-top:1px solid rgba(255,255,255,.07);font-size:12.5px}
+.bt-card li b{color:#fff;white-space:nowrap}.bt-card li small{font-weight:500;color:#8e99c0}
+.bt-ul{list-style:none;margin:8px 0 0;padding:0}
+.bt-ul li{display:block!important}
+.bt-mini{list-style:none;margin:8px 0 0;padding:0}
+.bt-mini li{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-top:1px solid rgba(255,255,255,.07);font-size:13px}
+.bt-mini a{color:#fff;text-decoration:none;font-weight:700}.bt-mini a:hover{color:#ffb3aa}
+.bt-mini b{color:#ffb3aa;white-space:nowrap}
+.bt-f{display:flex;gap:8px;padding:10px 12px 12px;border-top:1px solid rgba(255,255,255,.08);background:rgba(6,9,22,.6)}
+.bt-f input{flex:1;min-width:0;height:42px;padding:0 14px;border-radius:99px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.05);color:#fff;font:500 14px Manrope,system-ui,sans-serif}
+.bt-f input::placeholder{color:#7c86ac}
+.bt-f input:focus{outline:0;border-color:rgba(237,49,36,.6);box-shadow:0 0 0 3px rgba(237,49,36,.15)}
+.bt-f button{flex:none;width:42px;height:42px;border-radius:50%;border:0;background:linear-gradient(135deg,#ed3124,#c4241a);color:#fff;display:grid;place-items:center;cursor:pointer;transition:transform .2s}
+.bt-f button:hover{transform:scale(1.06)}
+.bt-f button svg{width:18px;height:18px}
+@media(max-width:600px){.cw-open{right:10px;bottom:10px}.bt{width:calc(100vw - 20px)}}
+@media(prefers-reduced-motion:reduce){.bt,.bt-m{transition:none;animation:none}}
