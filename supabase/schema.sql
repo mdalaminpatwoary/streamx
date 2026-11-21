@@ -101,3 +101,4 @@ create table if not exists public.profiles (
   updated_at timestamptz not null default now()
 );
 alter table public.profiles enable row level security; -- no policies: only the server (service key) can read or write
+grant select, insert, update, delete on public.profiles to service_role;
