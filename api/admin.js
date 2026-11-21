@@ -13,6 +13,17 @@ const access = require("./_access");
 const h = (s) => crypto.createHash("sha256").update(String(s)).digest();
 const clean = (v, n) => String(v == null ? "" : v).replace(/[\u0000-\u001f]/g, " ").trim().slice(0, n);
 
+// Optional payment details for hand-added purchases (price, method, transaction id). Returns a warning text if the columns are missing.
+async function savePay(row, body) {
+  const price = Number(String(body.price || "").replace(/[^0-9.]/g, "")), pay = {};
+  if (price > 0 && price < 10000000) pay.price = Math.round(price * 100) / 100;
+  const pm = clean(body.pay_method, 30); if (pm) pay.pay_method = pm;
+  const tx = clean(body.txn_id, 60); if (tx) pay.txn_id = tx;
+  if (!Object.keys(pay).length || !row || !row.id) return "";
+  try { await db.rest("PATCH", `subscriptions?id=eq.${row.id}`, pay); return ""; }
+  catch (e) { console.error("payment details not saved", e && e.message); return "the payment details could not be saved. Run the latest SQL in Supabase."; }
+}
+
 module.exports = async (req, res) => {
   res.setHeader("Cache-Control", "no-store");
   try {
@@ -79,13 +90,15 @@ module.exports = async (req, res) => {
           rows.push(row);
           if (row && row.id) { try { const lg = access.toRow({ gift_code: cards[i].code, gift_region: body.gift_region || "US", gift_amount: cards[i].amount }); await db.rest("PATCH", `subscriptions?id=eq.${row.id}`, lg); } catch (e) { console.error("gift details not saved", e && e.message); warn = "Added, but the gift card details could not be saved. Run the latest SQL in Supabase."; } }
         }
+        { const pw = await savePay(rows[0], body); if (pw) warn = warn || "Added, but " + pw; }
         return res.status(200).json(warn ? { row: rows[0], rows, warn } : { row: rows[0], rows });
       }
       if (!svc || !clean(body.plan, 80) || !(months >= 1 && months <= 60)) return res.status(400).json({ error: "Choose a service and plan." });
       const row = await addSub(Object.assign({}, base, { plan: clean(body.plan, 80) }));
       const lg = access.toRow(body);
       if (lg && row && row.id) { try { await db.rest("PATCH", `subscriptions?id=eq.${row.id}`, lg); } catch (e) { console.error("login details not saved", e && e.message); return res.status(200).json({ row, warn: "Added, but the login details could not be saved. Run the latest SQL in Supabase." }); } }
-      return res.status(200).json({ row });
+      const payWarn = await savePay(row, body);
+      return res.status(200).json(payWarn ? { row, warn: "Added, but " + payWarn } : { row });
     }
     if (!(id > 0)) return res.status(400).json({ error: "Missing id." });
     if (req.method === "PATCH") {

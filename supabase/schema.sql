@@ -136,3 +136,9 @@ notify pgrst, 'reload schema';
 
 alter table public.login_events add column if not exists name text;
 notify pgrst, 'reload schema';
+
+-- Payment details for purchases the admin adds by hand (shown in the customer's Orders tab). Run once.
+alter table public.subscriptions add column if not exists price numeric;
+alter table public.subscriptions add column if not exists pay_method text;
+alter table public.subscriptions add column if not exists txn_id text;
+notify pgrst, 'reload schema';

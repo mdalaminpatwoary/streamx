@@ -304,14 +304,17 @@
 
   function renderOrders(os) {
     var box = $("#hist"); box.hidden = !os.length; if (!os.length) return;
-    $("#hn").textContent = "· " + os.length + (os.length === 1 ? " order" : " orders");
+    $("#hn").textContent = "· " + os.length + (os.length === 1 ? " purchase" : " purchases");
     var dt = function (iso) { return fmt(new Date(Date.parse(iso) + 6 * 3600000).toISOString().slice(0, 10)); };
     $("#orders").innerHTML = os.map(function (o) {
-      var ok = o.delivery === "delivered", priced = o.lines.length && o.lines.every(function (l) { return l.price > 0; }),
-        tot = priced ? o.lines.reduce(function (t, l) { return t + l.price * (l.q || 1); }, 0) : 0;
-      return '<article class="ac-ord"><div class="ac-oh"><div><b>Order #' + esc(String(o.id).slice(-8).toUpperCase()) + '</b><small>' + dt(o.date) + '</small></div><span class="ac-os ' + (ok ? "ok" : "wait") + '">' + (ok ? "Delivered" : "Processing") + '</span></div>' +
+      var off = o.kind === "offline", ok = o.delivery === "delivered", priced = o.lines.length && o.lines.every(function (l) { return l.price > 0; }),
+        tot = o.lines.reduce(function (t, l) { return t + (l.price > 0 ? l.price * (l.q || 1) : 0); }, 0);
+      if (!off && !priced) tot = 0;
+      var foot = off ? [o.pay_method ? "Paid with " + esc(o.pay_method) : "", o.txn_id ? "Transaction " + esc(o.txn_id) : "", o.end ? "Valid until " + fmt(o.end) : ""].filter(Boolean).join(" · ") || "Added by StreamX"
+        : (ok && o.delivered_at ? "Delivered " + dt(o.delivered_at) : "We deliver to your email and WhatsApp");
+      return '<article class="ac-ord"><div class="ac-oh"><div><b>' + (off ? "Purchase" : "Order") + " #" + esc(String(o.id).slice(-8).toUpperCase()) + '</b><small>' + dt(o.date) + (off ? " · In-store / WhatsApp" : " · Online") + '</small></div><span class="ac-os ' + (ok ? "ok" : "wait") + '">' + (off ? "Completed" : ok ? "Delivered" : "Processing") + '</span></div>' +
         '<ul class="ac-ol">' + o.lines.map(function (l) { return "<li><span>" + esc(l.name) + (l.plan ? "<small>" + esc(l.plan) + "</small>" : "") + '</span><em>×' + (l.q || 1) + "</em>" + (l.price > 0 ? "<b>" + taka(l.price * (l.q || 1)) + "</b>" : "") + "</li>"; }).join("") + "</ul>" +
-        '<div class="ac-of"><span>' + (ok && o.delivered_at ? "Delivered " + dt(o.delivered_at) : "We deliver to your email and WhatsApp") + "</span>" + (tot ? "<b>Total " + taka(tot) + "</b>" : "") + "</div></article>";
+        '<div class="ac-of"><span>' + foot + "</span>" + (tot ? "<b>Total " + taka(tot) + "</b>" : "") + "</div></article>";
     }).join("");
   }
 

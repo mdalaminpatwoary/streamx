@@ -142,6 +142,16 @@ module.exports = async (req, res) => {
       try {
         orders = await db.rest("GET", `orders?email=eq.${db.q(o.e)}&paid=eq.true&select=mtid,lines,paid_at,created_at,delivery,delivered_at&order=created_at.desc&limit=50`) || [];
       } catch (e) { console.error("orders history", e && e.message); }
+      // Purchases the admin added by hand (offline): shown beside online orders, grouped by order reference.
+      let offline = [];
+      try {
+        let adm;
+        try { adm = await db.rest("GET", `subscriptions?email=eq.${db.q(o.e)}&source=eq.admin&select=id,service,plan,start_date,end_date,order_ref,created_at,price,pay_method,txn_id&order=created_at.desc&limit=100`); }
+        catch (e) { adm = await db.rest("GET", `subscriptions?email=eq.${db.q(o.e)}&source=eq.admin&select=id,service,plan,start_date,end_date,order_ref,created_at&order=created_at.desc&limit=100`); } // payment columns not added yet
+        const g = new Map();
+        (adm || []).forEach((r) => { const k = r.order_ref || "ADM" + r.id; if (!g.has(k)) g.set(k, { id: k, date: r.created_at, kind: "offline", delivery: "delivered", delivered_at: r.created_at, pay_method: r.pay_method || "", txn_id: r.txn_id || "", start: r.start_date, end: r.end_date, lines: [] }); const x = g.get(k); x.lines.push({ name: r.service, plan: r.plan, q: 1, price: Number(r.price) || 0 }); if (r.pay_method && !x.pay_method) x.pay_method = r.pay_method; if (r.txn_id && !x.txn_id) x.txn_id = r.txn_id; });
+        offline = [...g.values()];
+      } catch (e) { console.error("offline purchases", e && e.message); }
       let notices = [];
       try {
         notices = ((await db.rest("GET", "notices?select=id,title,message,kind,created_at,expires_at&order=created_at.desc&limit=20")) || [])
@@ -153,7 +163,7 @@ module.exports = async (req, res) => {
         notices, email: o.e, today: dhakaToday(), contact: { name: c.name || "", phone: c.phone || "" },
         profile: { name: (custom && custom.name) || o.n || c.name || "", picture: custom && custom.picture !== null && custom.picture !== undefined ? custom.picture : (o.pic || ""), provider: o.pv || "", editable, custom: !!(custom && custom.picture) },
         subscriptions: (rows || []).map((r) => ({ id: r.id, service: r.service, plan: r.plan, months: r.months, start_date: r.start_date, end_date: r.end_date, order_ref: r.order_ref || null, login: access.fromRow(r) })),
-        orders: orders.map((r) => ({ id: r.mtid, date: r.paid_at || r.created_at, delivery: r.delivery || "pending", delivered_at: r.delivered_at || null, lines: Array.isArray(r.lines) ? r.lines : [] })),
+        orders: orders.map((r) => ({ id: r.mtid, date: r.paid_at || r.created_at, kind: "online", delivery: r.delivery || "pending", delivered_at: r.delivered_at || null, lines: Array.isArray(r.lines) ? r.lines : [] })).concat(offline).sort((a, b) => Date.parse(b.date) - Date.parse(a.date)),
       });
     }
     return res.status(404).json({ error: "Not found" });

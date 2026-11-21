@@ -60,6 +60,11 @@
           <div id="pwrap"><label>Plan *</label><select class="ac-in" name="plan" id="pln"></select></div>
           <div><label>Start date <small>(optional)</small></label><input class="ac-in" name="start" type="date"></div>
         </div></div>
+        <div class="ad-sec"><div class="ad-lab">Payment <small>(optional, shown to the customer in My account → Orders)</small></div><div class="ad-grid2">
+          <div><label>Amount paid (৳)</label><input class="ac-in" name="price" inputmode="decimal" placeholder="e.g. 450"></div>
+          <div><label>Paid with</label><select class="ac-in" name="pay_method"><option value="">Not recorded</option><option>Cash</option><option>bKash</option><option>Nagad</option><option>Rocket</option><option>Upay</option><option>Bank transfer</option><option>Other</option></select></div>
+          <div><label>Transaction ID</label><input class="ac-in" name="txn_id" placeholder="e.g. bKash TrxID"></div>
+        </div></div>
         <div class="ad-sec"><div class="ad-lab">3 · Account access <small>(what the customer sees in My account)</small></div><div id="accbox"></div></div>
         <button class="ac-btn" type="submit" style="min-width:180px">Add subscription</button>
       </form>
@@ -85,6 +90,6 @@
 <div class="ad-toast" id="toast" role="status"></div>
 <script src="/assets/js/data/catalog.js"></script>
 <script src="/assets/js/data/countries.js?v=1"></script>
-<script src="/assets/js/admin.js?v=12"></script>
+<script src="/assets/js/admin.js?v=13"></script>
 </body>
 </html>
