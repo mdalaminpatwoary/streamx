@@ -2,6 +2,7 @@
    GET /api/catalog?a=pv&k=movie|tv&ids=1,2,3 : streaming platforms for up to 12 titles (the chart loads them as rows come into view).
    GET /api/catalog?a=find&q=text : up to 4 matching titles, each with the platforms it streams on (used by the chat assistant).
    GET /api/catalog?a=on&p=netflix&k=movie|tv : popular titles currently on one platform (US catalogue), for "what is on Netflix".
+   GET /api/catalog?a=web&q=text : a short answer searched online (Wikipedia), used by the chat assistant when none of its own answers fit.
    Where a platform is one StreamX sells, the reply carries its service page so the site can offer "Get <service>". */
 const API = "https://api.themoviedb.org/3";
 const HOUR = 3600 * 1000;
@@ -11,6 +12,33 @@ const PROV_ID = { netflix: 8, "prime-video": 9, "amazon-prime-video": 9, disneyp
 const cache = new Map(); // key -> { at, body }
 const pvCache = new Map(); // "k:id" -> { at, v }
 let genres = null;
+
+
+// Online answer for the chat assistant: top Wikipedia match plus a short summary. No key needed; cached for 6 hours.
+const webCache = new Map();
+async function webAnswer(q) {
+  const hit = webCache.get(q);
+  if (hit && Date.now() - hit.at < 6 * HOUR) return hit.v;
+  const H = { accept: "application/json", "user-agent": "StreamXBot/1.0 (https://streamx.com.bd)" };
+  const s = await fetch("https://en.wikipedia.org/w/api.php?action=query&list=search&srlimit=1&format=json&srsearch=" + encodeURIComponent(q), { headers: H, signal: AbortSignal.timeout(5000) });
+  if (!s.ok) throw new Error("search HTTP " + s.status);
+  const first = (((await s.json()).query || {}).search || [])[0];
+  let v = null;
+  if (first) {
+    const r = await fetch("https://en.wikipedia.org/api/rest_v1/page/summary/" + encodeURIComponent(first.title.replace(/ /g, "_")), { headers: H, signal: AbortSignal.timeout(5000) });
+    if (r.ok) {
+      const j = await r.json();
+      const text = String(j.extract || "").replace(/\s+/g, " ").trim();
+      if (text && j.type !== "disambiguation") {
+        const cut = text.length > 420 ? text.slice(0, 420).replace(/[^.!?]*$/, "") || text.slice(0, 420) + "…" : text;
+        v = { title: j.title || first.title, text: cut, url: (j.content_urls && j.content_urls.desktop && j.content_urls.desktop.page) || "https://en.wikipedia.org/wiki/" + encodeURIComponent(first.title.replace(/ /g, "_")), thumb: (j.thumbnail && j.thumbnail.source) || "" };
+      }
+    }
+  }
+  if (webCache.size > 300) webCache.clear();
+  webCache.set(q, { at: Date.now(), v });
+  return v;
+}
 
 async function tmdb(path, params = {}) {
   const key = (process.env.TMDB_API_KEY || "").trim();
@@ -99,6 +127,13 @@ module.exports = async (req, res) => {
       const list = await Promise.all(rows.map(async (x) => { const it = item(x, x.media_type, g); const pv = await platformsCached(it.k, it.id); return { ...it, pl: pv.list, reg: pv.reg }; }));
       res.setHeader("Cache-Control", "public, s-maxage=3600, stale-while-revalidate=86400");
       return res.status(200).json({ q, list });
+    }
+    if (req.query.a === "web") {
+      const q = String(req.query.q || "").replace(/[\u0000-\u001f<>]/g, " ").replace(/\s+/g, " ").trim().slice(0, 100);
+      if (q.length < 3 || /@|\d{7,}/.test(q)) return res.status(400).json({ error: "Please ask a longer question." });
+      const hit = await webAnswer(q.toLowerCase());
+      res.setHeader("Cache-Control", "public, s-maxage=21600, stale-while-revalidate=86400");
+      return res.status(200).json({ q, hit });
     }
     if (req.query.a === "on") {
       const id = PROV_ID[String(req.query.p || "").toLowerCase()];

@@ -204,3 +204,6 @@ button.bt-btn{appearance:none}
 .bt-pf.off small{color:#ffb4ad;opacity:1}
 .bt-title .bt-row{margin-top:8px}
 .bt-btn.ok{background:#19b56b!important;color:#fff!important}
+
+.bt-web .bt-wt{margin:6px 0 10px;font-size:13.5px;line-height:1.55;color:#d6dcf3}
+.bt-wl{display:inline-flex;font-weight:800;font-size:12.5px;color:#ff8a7e;text-decoration:none}.bt-wl:hover{text-decoration:underline}

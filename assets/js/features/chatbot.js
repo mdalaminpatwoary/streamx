@@ -201,7 +201,17 @@
     if(ps.length&&best&&best[0]==="problem")return best[2](t+" ("+ps[0].name+")");
     if(best)return best[2](t);
     if(ps.length){ctx.p=ps[0];return{h:ps.map(productCard).join(""),c:ctxChips(ps[0])}}
-    return{h:`<p>I'm not sure about that one. Send your question to our team and we will reply on WhatsApp.</p>`+waBtn("Hi StreamX! "+t),c:["Prices & plans","Help me choose","How do I order?","Payment methods"]};
+    return webSearch(t);
+  }
+  /* Nothing on StreamX matched: look the question up online (Wikipedia), show a short answer with its source, else hand over to the team. */
+  function webSearch(t){
+    const unsure={h:`<p>I'm not sure about that one. Send your question to our team and we will reply on WhatsApp.</p>`+waBtn("Hi StreamX! "+t),c:["Prices & plans","Help me choose","How do I order?","Payment methods"]};
+    const q=t.replace(/^\s*(please\s+)?(what('?s| is| are| was)|who('?s| is| was)|where is|when (is|was)|tell me about|explain|define|meaning of|about)\s+(an? |the )?/i,"").replace(/[?!.]+$/,"").trim();
+    if(q.length<3||q.length>100||/@|\d{7,}/.test(q)||/^(ok|okay|thanks?|thank you|hmm+|yes|no|bye)$/i.test(q))return unsure;
+    return {p:getJ("/api/catalog?a=web&q="+encodeURIComponent(q)).then(d=>{
+      if(!d.hit)return unsure;
+      return{h:`<div class="bt-card bt-web"><div class="bt-ct">${esc(d.hit.title)}</div><p class="bt-wt">${esc(d.hit.text)}</p><a class="bt-wl" href="${esc(d.hit.url)}" target="_blank" rel="noopener">Read more on Wikipedia</a></div><p class="bt-cd">Found online, not from StreamX. For prices, plans and orders, ask me or our team.</p>`,c:["Prices & plans","Help me choose","Talk to a human"]};
+    }).catch(()=>unsure)};
   }
 
   /* acct block is added after the UI elements exist */
