@@ -394,9 +394,12 @@
     if(pl&&/\b(what|which|show|best|popular|top|good|new|recommend|suggest|latest|trending)\b/.test(ql)&&/\b(on|in)\b/.test(ql)&&(/\b(movies?|series|shows?|watch|titles?|content|films?)\b/.test(ql)||/\b(what|which)('?s| is| are)? (on|in)\b/.test(ql))&&!/\b(price|cost|plans?|buy|subscribe|login)\b/.test(ql))return onPlatform(pl,k);
     const m=t.match(/(?:where (?:can|do|could|to) (?:i|we|you)?\s*(?:watch|stream|find|see)|where to (?:watch|stream|see)|which platform(?:s)? (?:has|have|is|streams?|for)|what platform(?:s)? (?:has|have|is|streams?|for)|is|available platforms? for|streaming|watch|stream)\s+(.{2,70})$/i);
     if(m&&/\b(where|which platform|what platform|stream(?:ing)?|available|watch|on (?:netflix|prime|disney|hulu|hbo|crunchyroll|hotstar|paramount|apple))\b/i.test(t)){
-      let name=m[1].replace(/\b(on|in|at|from)\s+(which|what|any)\s+\w+.*$/i,"").replace(/\b(available|streaming|online|for free|free|in bangladesh|in bd|now)\b.*$/i,"").replace(/[?!.]+$/,"").replace(/^(the movie|the series|the show|movie|series|show)\s+/i,"").replace(/\s+(on|in)\s+\w+(\s+\w+)?$/i,x=>PLAT.some(y=>y[1].test(x.toLowerCase()))?"":x).trim();
+      let name=m[1].replace(/\b(on|in|at|from)\s+(which|what|any)\s+\w+.*$/i,"").replace(/\b(available|streaming|online|for free|free|in bangladesh|in bd|now)\b.*$/i,"").replace(/[?!.]+$/,"").replace(/^(the movie|the series|the show|movie|series|show)\s+/i,"").replace(/\s+(movie|film|series|show|tv show|anime|cartoon)$/i,"").replace(/\s+(on|in)\s+\w+(\s+\w+)?$/i,x=>PLAT.some(y=>y[1].test(x.toLowerCase()))?"":x).trim();
       if(name.length>=2&&!/^(it|this|that|netflix|prime|prime video|disney|hulu|youtube)$/i.test(name))return findTitle(name);
     }
+    const m2=/^(?:is\s+|are\s+)?(?:the\s+)?(.{2,60}?)\s+(?:available|streaming|showing)\s+(?:on|in|at)\s+\w+/i.exec(t.replace(/[?!.]+$/,""));
+    if(m2){const nm=m2[1].replace(/\s+(movie|film|series|show|tv show|anime|cartoon)$/i,"").trim();
+      if(nm.length>=2&&!findProducts(norm(nm)).length&&!PLAT.some(y=>y[1].test(nm.toLowerCase()))&&!/^(it|this|that|you|streamx|they|we)$/i.test(nm))return findTitle(nm)}
     return null;
   }
   function listAct(el){

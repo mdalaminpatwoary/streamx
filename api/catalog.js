@@ -121,9 +121,13 @@ module.exports = async (req, res) => {
     if (req.query.a === "find") {
       const q = String(req.query.q || "").replace(/\s+/g, " ").trim().slice(0, 80);
       if (q.length < 2) return res.status(400).json({ error: "Type a title to search." });
-      const r = await tmdb("/search/multi", { query: q, include_adult: "false", language: "en-US" });
+      // "swapped movie" -> "swapped": drop words like movie/series, and fall back to the original text if the cleaned one finds nothing
+      const clean = q.replace(/\b(the\s+)?(movie|film|series|tv\s+show|tv\s+series|show|anime|cartoon|animation)\b/gi, " ").replace(/\s+/g, " ").trim();
+      const pick = (r) => (r.results || []).filter((x) => (x.media_type === "movie" || x.media_type === "tv") && x.poster_path).sort((a, b) => (b.popularity || 0) - (a.popularity || 0)).slice(0, 4);
       const g = await genreMap();
-      const rows = (r.results || []).filter((x) => (x.media_type === "movie" || x.media_type === "tv") && x.poster_path).sort((a, b) => (b.popularity || 0) - (a.popularity || 0)).slice(0, 4);
+      let rows = [];
+      if (clean.length >= 2) rows = pick(await tmdb("/search/multi", { query: clean, include_adult: "false", language: "en-US" }));
+      if (!rows.length && clean !== q) rows = pick(await tmdb("/search/multi", { query: q, include_adult: "false", language: "en-US" }));
       const list = await Promise.all(rows.map(async (x) => { const it = item(x, x.media_type, g); const pv = await platformsCached(it.k, it.id); return { ...it, pl: pv.list, reg: pv.reg }; }));
       res.setHeader("Cache-Control", "public, s-maxage=3600, stale-while-revalidate=86400");
       return res.status(200).json({ q, list });
