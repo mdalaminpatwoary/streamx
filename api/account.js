@@ -102,9 +102,9 @@ module.exports = async (req, res) => {
       if (!o) return res.status(401).json({ error: "Please sign in again." });
       const name = String(body.name || "").replace(/[\u0000-\u001f<>]/g, "").replace(/\s+/g, " ").trim().slice(0, 60);
       if (name.length < 2) return res.status(400).json({ error: "Please enter your name (at least 2 letters)." });
-      const phone = cleanPhone(body.phone);
-      if (!phone) return res.status(400).json({ error: "Please enter a valid mobile number, for example 01712345678." });
-      const row = { email: normEmail(o.e), name, phone, updated_at: new Date().toISOString() };
+      const phone = String(body.phone || "").trim() ? cleanPhone(body.phone) : ""; // the mobile number is optional
+      if (String(body.phone || "").trim() && !phone) return res.status(400).json({ error: "That mobile number does not look right. Check the country and the digits." });
+      const row = { email: normEmail(o.e), name, phone: phone || null, updated_at: new Date().toISOString() };
       if (body.picture !== undefined) {
         const pic = String(body.picture || "");
         if (pic && !/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(pic)) return res.status(400).json({ error: "That image could not be used. Please choose a JPG or PNG photo." });

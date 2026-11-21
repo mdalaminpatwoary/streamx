@@ -12,7 +12,7 @@
 <script>try{if(localStorage.getItem("sx_session"))document.documentElement.classList.add("hs")}catch(e){}</script>
 <link rel="stylesheet" href="/assets/css/account.css?v=27">
 <link rel="stylesheet" href="/assets/css/title-sheet.css?v=1">
-<link rel="stylesheet" href="/assets/css/account-v2.css?v=4">
+<link rel="stylesheet" href="/assets/css/account-v2.css?v=6">
 </head>
 <body>
 <div class="ac-top"><a href="/"><img src="/assets/img/brand/logo.png" alt="StreamX" width="40" height="40"></a><a class="back" href="/">← Back to StreamX</a></div>
@@ -102,7 +102,7 @@
     <button class="ac-x" type="button" data-pclose aria-label="Close">✕</button>
     <div class="ac-eyebrow" id="peb">Your profile</div>
     <h2 class="pf-t" id="pmt">Edit profile</h2>
-    <p class="pf-lead" id="plead" hidden>Add your name and mobile number to finish setting up your account. We use them for your orders and to reach you about your subscriptions.</p>
+    <p class="pf-lead" id="plead" hidden>Tell us your name to finish setting up your account. A mobile number is optional, but it helps us reach you about your orders.</p>
     <div class="pf-ph">
       <div class="ac-av pf-av" id="pav"></div>
       <div class="pf-pb">
@@ -114,9 +114,10 @@
     </div>
     <label for="pname">Full name <span class="pf-req">Required</span></label>
     <input class="ac-in" id="pname" maxlength="60" autocomplete="name" placeholder="Full name" required>
-    <label for="pphone">Mobile number <span class="pf-req">Required</span></label>
-    <input class="ac-in" id="pphone" type="tel" inputmode="tel" maxlength="20" autocomplete="tel" placeholder="01712345678" required>
-    <p class="rn-h">Bangladesh numbers like 01712345678. From another country? Start with + and your country code.</p>
+    <label for="pphone">Mobile number <span class="pf-opt">Optional</span></label>
+    <div class="pp-w"><div class="pp" id="pp"><button type="button" class="pp-c" id="ppc" aria-haspopup="listbox" aria-expanded="false" aria-label="Country code"><span class="pp-f" id="ppf"></span><b id="ppd">+880</b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><input id="pphone" type="tel" inputmode="tel" maxlength="16" autocomplete="tel-national" placeholder="1712 345678"></div>
+      <div class="pp-m" id="ppm" hidden><input class="pp-s" id="pps" type="search" placeholder="Search country or code" autocomplete="off" aria-label="Search country"><ul id="ppl" role="listbox"></ul></div></div>
+    <p class="rn-h" id="pph">We only use it to reach you about your orders.</p>
     <p class="rn-h">Your email <b id="pemail"></b> cannot be changed here.</p>
     <p class="ac-msg" id="pe" role="alert"></p>
     <button class="ac-btn rn-go" id="psave" type="submit">Save changes</button>
@@ -152,7 +153,7 @@
 <script src="/assets/js/data/catalog.js"></script>
 <script src="/assets/js/data/logos.js?v=20261121a"></script>
 <script src="/assets/js/data/countries.js?v=1"></script>
-<script src="/assets/js/account.js?v=29"></script>
+<script src="/assets/js/account.js?v=31"></script>
 <script src="/assets/js/features/mylist.js?v=1"></script>
 <script src="/assets/js/features/title-sheet.js?v=1"></script>
 <script src="/assets/js/features/account-list.js?v=2"></script>
