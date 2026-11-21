@@ -235,6 +235,18 @@
   /* /account/#renew=<id> (from the chat assistant) opens that subscription's renew popup */
   function render(d) { renderCore(d); var pq = d.profile || {}; if (pq.editable !== false && !(pq.name && pq.phone) && !snoozed()) setTimeout(function () { openProfile(true); }, 350); setTimeout(function () { var m = /renew=(\d+)/.exec(location.hash), b = m && document.querySelector('[data-renew="' + m[1] + '"]'); if (b) { try { history.replaceState(null, "", location.pathname); } catch (e) {} b.click(); } }, 0); }
   function greet() { var h = new Date().getHours(); return h >= 5 && h < 12 ? "Good morning" : h >= 12 && h < 17 ? "Good afternoon" : "Good evening"; }
+  var ARW = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+  /* Renew bar: what renewing costs and how long the offer lasts, one main action and a quiet WhatsApp option. */
+  function renewBar(s, msg) {
+    var L = s._left, wa = "https://wa.me/" + WA + "?text=" + encodeURIComponent(msg);
+    if (isGift(s)) return '<div class="ac-rn"><div class="ac-rni"><span>Need another?</span><b>Gift cards are one-time</b></div><div class="ac-rnb"><a class="ac-rp" href="/#pricing"><span>Buy another</span>' + ARW + "</a></div></div>";
+    var pl = planOf(s), mo = s.months === 12 ? "1 year" : s.months + (s.months === 1 ? " month" : " months");
+    var tag = L < 0 ? "Renewal open" : L <= 7 ? "Expiring soon" : "Renew anytime";
+    var note = L < 0 ? "Closes " + (7 + L === 0 ? "today" : "in " + (7 + L) + (7 + L === 1 ? " day" : " days")) : L === 0 ? "Ends today" : L <= 7 ? "Ends in " + L + (L === 1 ? " day" : " days") : "Next period " + mo;
+    var main = pl ? '<button type="button" class="ac-rp" data-renew="' + s.id + '"><span>Pay online</span>' + ARW + "</button>" : '<a class="ac-rp" href="' + renewLink(s) + '"><span>Pay online</span>' + ARW + "</a>";
+    return '<div class="ac-rn' + (L < 0 ? " late" : L <= 7 ? " soon" : "") + '"><div class="ac-rni"><span>' + tag + "</span>" + (pl ? "<b>" + taka(pl.price) + "<em> / " + mo + "</em></b>" : "<b>" + esc(mo) + "</b>") + "<small>" + note + '</small></div><div class="ac-rnb">' + main +
+      '<a class="ac-rwa" target="_blank" rel="noopener" href="' + wa + '"><span>Renew on WhatsApp</span></a></div></div>';
+  }
   function renderCore(d) {
     $("#login").hidden = true; $("#app").hidden = false; $("#who").textContent = d.email; var fw = $("#fwho"); if (fw) fw.textContent = d.email;
     var pf = d.profile || {}, nm = pf.name || "", av = $("#av"); av.innerHTML = ""; try { if (pf.picture) localStorage.setItem("sx_av", JSON.stringify({ p: pf.picture })); else localStorage.removeItem("sx_av"); } catch (e) {}
@@ -244,7 +256,9 @@
     try { localStorage.setItem("sx_me", JSON.stringify({ n: pf.name || "", e: d.email, today: d.today, subs: (d.subscriptions || []).map(function (x) { return x.end_date; }) })); } catch (e) {}
     DATA = d; var today = d.today, rows = d.subscriptions.map(function (s) { s._left = days(today, s.end_date); return s; });
     var live = groupRows(rows.filter(function (s) { return s._left >= 0; }).sort(function (a, b) { return a._left - b._left; }));
-    var gone = groupRows(rows.filter(function (s) { return s._left < 0; }).sort(function (a, b) { return b._left - a._left; }));
+    var GRACE = 7; /* expired plans stay renewable for 7 days, then move to the history archive */
+    var gone = groupRows(rows.filter(function (s) { return s._left < 0 && s._left >= -GRACE; }).sort(function (a, b) { return b._left - a._left; }));
+    var arch = groupRows(rows.filter(function (s) { return s._left < -GRACE; }).sort(function (a, b) { return b._left - a._left; }));
     $("#sub").textContent = live.length ? live.length + " active " + (live.length === 1 ? "subscription" : "subscriptions") + ". Expiry dates are in Bangladesh time." : "You have no active subscription right now.";
     var sl = $("#subl"); if (sl) sl.textContent = $("#sub").textContent;
     try { var act = rows.filter(function (s) { return s._left >= 0; }), nx = act.length ? Math.min.apply(null, act.map(function (s) { return s._left; })) : null; document.dispatchEvent(new CustomEvent("ac:data", { detail: { live: live.length, next: nx, hasOrders: (d.orders || []).length } })); } catch (e) {}
@@ -252,19 +266,27 @@
     var idx = 0, html;
     if (!rows.length) html = '<div class="ac-card ac-empty">Welcome to StreamX. You have no subscriptions yet.<br><a class="ac-btn ac-sm" style="margin-top:14px" href="/#pricing">Browse plans</a></div>';
     else html = live.concat(gone).map(function (s) {
+      var secH = function (t, n) { return '<h3 class="ac-sech"><span>' + t + '</span><em>' + n + '</em></h3>'; }, pre = idx === 0 && live.length ? secH("Active", live.length) : idx === live.length && gone.length ? secH("Expired", gone.length) : "";
       var st = s._left < 0 ? ["Expired", "#ef4444"] : s._left <= 7 ? ["Expires soon", "#f59e0b"] : ["Active", "#22c55e"];
       var total = Math.max(1, days(s.start_date, s.end_date)), left = Math.min(100, Math.max(0, Math.round(s._left / total * 100)));
-      var L = s._left, big = L < 0 ? "Expired" : L === 0 ? "Today" : String(L), small = L < 0 ? (-L) + (L === -1 ? " day ago" : " days ago") : L === 0 ? "last day" : (L === 1 ? "day left" : "days left");
+      var L = s._left, big = L < 0 ? "Ended" : L === 0 ? "Today" : String(L), small = L < 0 ? (-L) + "d ago" : L === 0 ? "last day" : (L === 1 ? "day left" : "days left");
       var msg = "Hi StreamX! I want to renew my " + s.service + " (" + s.plan + "), " + (s._left < 0 ? "expired on " : "expires on ") + fmt(s.end_date) + ". My email: " + d.email;
       var nt = s._left >= 0 ? noticeOf(s) : null;
       if (nt) PENDING.push({ name: s.service, tile: tile(s), lines: nt.lines, at: nt.at, ids: s.members.map(function (m) { return m.id; }) });
-      return '<article class="ac-sub-card" style="--st:' + st[1] + ';--i:' + (idx++) + '">' + tile(s) +
-        '<div><div class="ac-name">' + esc(s.service) + '<span class="ac-chip">' + st[0] + '</span></div><div class="ac-plan">' + esc(s.plan) + '</div>' +
-        '<div class="ac-dates"><span>Started<b>' + fmt(s.start_date) + '</b></span><span>Expires<b>' + fmt(s.end_date) + '</b></span></div><div class="ac-track" title="' + left + '% of this plan is left"><i data-p="' + left + '"></i></div></div>' +
-        '<div class="ac-act"><div class="ac-left"><b data-n="' + (L >= 0 ? L : "") + '">' + esc(big) + '</b>' + esc(small) + '</div>' +
-        (isGift(s) ? '<a class="ac-btn ac-sm" href="/#pricing">Buy another</a>' : (planOf(s) ? '<button class="ac-btn ac-sm" type="button" data-renew="' + s.id + '">Renew · ' + taka(planOf(s).price) + '</button>' : '<a class="ac-btn ac-sm" href="' + renewLink(s) + '">Renew</a>') + '<a class="ac-btn ac-ghost ac-sm" target="_blank" rel="noopener" href="https://wa.me/' + WA + "?text=" + encodeURIComponent(msg) + '">Renew on WhatsApp</a>') + '</div>' +
+      var ring = '<div class="ac-ring"><svg viewBox="0 0 64 64" aria-hidden="true"><circle class="bg" cx="32" cy="32" r="27"/><circle class="fg" cx="32" cy="32" r="27" data-p="' + left + '"/></svg><div class="ac-left"><b' + (L >= 0 ? ' data-n="' + L + '"' : "") + ">" + esc(big) + "</b><small>" + esc(small) + "</small></div></div>";
+      var ref = s.order_ref ? "#" + esc(String(s.order_ref).slice(-8).toUpperCase()) : "#" + s.id;
+      return pre + '<article class="ac-sub-card ac-v3' + (s._left < 0 ? " is-off" : "") + '" style="--st:' + st[1] + ';--i:' + (idx++) + '"><div class="ac-hd">' + tile(s) +
+        '<div class="ac-id"><div class="ac-name">' + esc(s.service) + '<span class="ac-chip">' + st[0] + '</span></div><div class="ac-plan">' + esc(s.plan) + '</div></div>' + ring + '</div>' +
+        '<div class="ac-m3"><span>Started<b>' + fmt(s.start_date) + '</b></span><span>Expires<b>' + fmt(s.end_date) + '</b></span><span>Order<b>' + ref + '</b></span></div>' +
+        renewBar(s, msg) +
         (s._left >= 0 ? loginBox(s) + helpBox(s) : "") + '</article>';
     }).join("");
+    if (arch.length) html = (html || "") + '<details class="ac-arch"><summary><span class="ac-archi">' + ic('<path d="M4 7h16M5 7v11a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7M9 11h6M6 4h12l1 3H5z"/>') + '</span><span class="ac-archt"><b>Subscription history</b><small>Past plans, kept for your records</small></span><em>' + arch.length + '</em><svg class="ac-archc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><ul class="ac-archl">' +
+      arch.map(function (s) {
+        var ag = -s._left, ref = s.order_ref ? "Order #" + esc(String(s.order_ref).slice(-8).toUpperCase()) : "";
+        return '<li>' + tile(s) + '<div class="ac-archn"><b>' + esc(s.service) + '</b><small>' + esc(s.plan) + (ref ? " · " + ref : "") + '</small></div><div class="ac-archd"><span>Ended ' + fmt(s.end_date) + '</span><small>' + (ag >= 60 ? Math.floor(ag / 30) + " months ago" : ag + " days ago") + "</small></div></li>";
+      }).join("") + "</ul></details>";
+    if (!html) html = '<div class="ac-card ac-empty">Welcome to StreamX. You have no subscriptions yet.<br><a class="ac-btn ac-sm" style="margin-top:14px" href="/#pricing">Browse plans</a></div>';
     var paint = function () { renderOrders(d.orders || []); $("#list").innerHTML = html; animateIn(); };
     setBell();
     if (PENDING.length) { $("#list").innerHTML = ""; $("#hist").hidden = true; paintLater = paint; openNotice(); } else paint();
@@ -272,8 +294,8 @@
 
   var calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
   function animateIn() {
-    var bars = document.querySelectorAll(".ac-track i"), nums = document.querySelectorAll(".ac-left b[data-n]");
-    requestAnimationFrame(function () { requestAnimationFrame(function () { bars.forEach(function (i) { i.style.width = i.dataset.p + "%"; }); }); });
+    var rings = document.querySelectorAll(".ac-ring .fg"), bars = document.querySelectorAll(".ac-track i"), nums = document.querySelectorAll(".ac-left b[data-n]");
+    requestAnimationFrame(function () { requestAnimationFrame(function () { bars.forEach(function (i) { i.style.width = i.dataset.p + "%"; }); rings.forEach(function (c) { c.style.strokeDashoffset = 169.6 * (1 - c.dataset.p / 100); }); }); });
     if (calm) return;
     nums.forEach(function (b) {
       var to = parseInt(b.dataset.n, 10); if (!(to > 0)) return;

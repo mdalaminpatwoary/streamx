@@ -151,3 +151,84 @@ button.ac-stat{cursor:pointer}button.ac-stat:hover{background:rgba(255,255,255,.
 .ac-rc svg{transition:transform .25s}.ac-rc:hover svg{transform:translateY(2px)}
 .ac-rc[disabled]{opacity:.7;cursor:progress}
 .ac-rc.ok{background:rgba(53,208,127,.16);border-color:rgba(53,208,127,.5);color:#6fe3a9}
+
+/* subscription cards v3 */
+.ac-sech{display:flex;align-items:center;gap:10px;margin:8px 2px 2px;font:800 12px Manrope,system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--mut)}
+.ac-sech em{font-style:normal;min-width:22px;padding:2px 8px;border-radius:99px;text-align:center;background:rgba(255,255,255,.07);color:#cfd5f2;letter-spacing:0}
+.ac-sech::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,rgba(255,255,255,.12),transparent)}
+.ac-sub-card.ac-v3{display:flex;flex-direction:column;align-items:stretch;gap:16px;padding:20px 22px 18px;border-radius:22px;background:radial-gradient(120% 90% at 0 0,color-mix(in srgb,var(--st) 12%,transparent),transparent 55%),linear-gradient(180deg,rgba(20,25,53,.75),rgba(12,15,32,.9))}
+.ac-v3::before{width:auto;height:2px;left:22px;right:22px;top:0;bottom:auto;border-radius:0 0 4px 4px;background:linear-gradient(90deg,var(--st),transparent 70%)}
+.ac-v3.is-off{opacity:.82;filter:saturate(.75)}
+.ac-v3 .ac-hd{display:flex;align-items:center;gap:16px}
+.ac-v3 .ac-tile{width:58px;height:58px;border-radius:16px;flex:none}
+.ac-v3 .ac-id{flex:1;min-width:0}
+.ac-v3 .ac-name{font-size:20px;letter-spacing:-.01em}
+.ac-v3 .ac-plan{margin-top:3px;font-size:14px}
+.ac-ring{position:relative;width:78px;height:78px;flex:none}
+.ac-ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ac-ring circle{fill:none;stroke-width:5.5;stroke-linecap:round}
+.ac-ring .bg{stroke:rgba(255,255,255,.09)}
+.ac-ring .fg{stroke:var(--st);stroke-dasharray:169.6;stroke-dashoffset:169.6;transition:stroke-dashoffset 1.3s cubic-bezier(.16,1,.3,1) .25s;filter:drop-shadow(0 0 6px color-mix(in srgb,var(--st) 55%,transparent))}
+.ac-ring .ac-left{position:absolute;inset:0;display:grid;place-content:center;text-align:center;gap:0;font-size:0}
+.ac-ring .ac-left b{display:block;font-size:22px;line-height:1;font-weight:800;color:#fff}
+.ac-ring .ac-left small{display:block;margin-top:3px;font-size:10.5px;font-weight:600;color:var(--mut);line-height:1.1;max-width:56px}
+.ac-ring .ac-left b:not([data-n]){font-size:14px}
+.ac-m3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.03);overflow:hidden}
+.ac-m3 span{display:block;padding:11px 14px;font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mut)}
+.ac-m3 span+span{border-left:1px solid var(--line)}
+.ac-m3 b{display:block;margin-top:3px;font-size:15px;letter-spacing:0;text-transform:none;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ac-v3 .ac-act{display:flex;gap:10px;flex-wrap:wrap;text-align:left}
+.ac-v3 .ac-act .ac-btn{flex:1 1 180px;justify-content:center;display:inline-flex;align-items:center;gap:8px}
+.ac-v3 .ac-act .ac-btn svg{width:16px;height:16px;flex:none}
+.ac-v3 .ac-lbx{margin-top:0}
+@media(max-width:640px){.ac-sub-card.ac-v3{padding:18px 16px 16px;gap:14px}.ac-v3 .ac-hd{gap:12px}.ac-v3 .ac-tile{width:50px;height:50px;border-radius:14px}.ac-v3 .ac-name{font-size:18px}.ac-ring{width:68px;height:68px}.ac-ring .ac-left b{font-size:19px}.ac-ring .ac-left small{font-size:9.5px}.ac-m3 span{padding:10px 10px;font-size:10px;letter-spacing:.05em}.ac-m3 b{font-size:13px}.ac-v3 .ac-act .ac-btn{flex:1 1 100%}}
+@media(prefers-reduced-motion:reduce){.ac-ring .fg{transition:none}}
+
+/* subscription history (archive) */
+.ac-arch{border:1px solid var(--line);border-radius:20px;background:linear-gradient(180deg,rgba(20,25,53,.5),rgba(12,15,32,.7));overflow:hidden;margin-top:6px}
+.ac-arch summary{display:flex;align-items:center;gap:14px;padding:16px 18px;cursor:pointer;list-style:none}
+.ac-arch summary::-webkit-details-marker{display:none}
+.ac-archi{display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:rgba(255,255,255,.06);color:#c9d0ee;flex:none}
+.ac-archi svg{width:20px;height:20px}
+.ac-archt{flex:1;min-width:0}.ac-archt b{display:block;font-size:15.5px}.ac-archt small{display:block;margin-top:2px;color:var(--mut);font-size:12.5px}
+.ac-arch summary>em{font-style:normal;min-width:26px;padding:3px 9px;border-radius:99px;text-align:center;font-weight:800;font-size:12.5px;background:rgba(255,255,255,.08);color:#d6dbf5}
+.ac-archc{width:18px;height:18px;color:var(--mut);transition:transform .3s}
+.ac-arch[open] .ac-archc{transform:rotate(180deg)}
+.ac-arch summary:hover .ac-archi{background:rgba(255,255,255,.1)}
+.ac-archl{list-style:none;margin:0;padding:4px 18px 8px;border-top:1px solid var(--line)}
+.ac-archl li{display:flex;align-items:center;gap:14px;padding:13px 0;border-top:1px solid rgba(255,255,255,.06);animation:acUp .45s cubic-bezier(.16,1,.3,1) both}
+.ac-archl li:first-child{border-top:0}
+.ac-archl .ac-tile{width:42px;height:42px;border-radius:12px;font-size:17px;flex:none;filter:grayscale(.55);opacity:.85}
+.ac-archn{flex:1;min-width:0}.ac-archn b{display:block;font-size:15px}.ac-archn small{display:block;margin-top:2px;color:var(--mut);font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ac-archd{text-align:right;flex:none;font-size:13px;font-weight:700;color:#cfd5f2}.ac-archd small{display:block;margin-top:2px;font-weight:500;color:var(--mut);font-size:12px}
+@media(max-width:560px){.ac-arch summary{padding:14px}.ac-archl{padding:2px 14px 6px}.ac-archl li{gap:11px}.ac-archd{font-size:12px}}
+
+/* renew bar */
+.ac-rn{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 12px 12px 16px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.035)}
+.ac-rn.soon{border-color:color-mix(in srgb,#f59e0b 38%,var(--line));background:linear-gradient(90deg,rgba(245,158,11,.09),rgba(255,255,255,.03))}
+.ac-rn.late{border-color:color-mix(in srgb,#ef4444 38%,var(--line));background:linear-gradient(90deg,rgba(239,68,68,.09),rgba(255,255,255,.03))}
+.ac-rni{min-width:0;display:grid;gap:1px}
+.ac-rni>span{font:800 11px Manrope,system-ui,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--mut)}
+.ac-rn.soon .ac-rni>span{color:#fbbf24}.ac-rn.late .ac-rni>span{color:#f87171}
+.ac-rni b{font-size:20px;font-weight:800;letter-spacing:-.01em;color:#fff;white-space:nowrap}
+.ac-rni b em{font-style:normal;font-size:13px;font-weight:600;color:var(--mut)}
+.ac-rni small{font-size:12.5px;color:var(--mut)}
+.ac-rnb{display:flex;align-items:center;gap:10px;flex:none}
+.ac-rp,.ac-rwa{appearance:none;display:inline-flex;align-items:center;justify-content:center;gap:8px;height:44px;padding:0 18px;border-radius:13px;font:800 14px Manrope,system-ui,sans-serif;text-decoration:none;cursor:pointer;white-space:nowrap;transition:transform .2s,box-shadow .25s,background .2s,border-color .2s,color .2s}
+.ac-rp{border:0;color:#fff;background:linear-gradient(135deg,#ff4a36,#d92a1c);box-shadow:0 10px 24px -12px rgba(237,49,36,.9)}
+.ac-rp svg{width:17px;height:17px;transition:transform .25s}
+.ac-rp:hover{box-shadow:0 12px 28px -10px rgba(237,49,36,1),0 0 0 3px rgba(237,49,36,.25)}.ac-rp:hover svg{transform:translateX(3px)}
+.ac-rp:active,.ac-rwa:active{transform:scale(.97)}
+.ac-rwa{border:1px solid rgba(37,211,102,.35);color:#6fe3a9;background:rgba(37,211,102,.08)}
+.ac-rwa svg{width:18px;height:18px;flex:none}
+.ac-rwa:hover{background:rgba(37,211,102,.16);border-color:rgba(37,211,102,.6);color:#9af0c3}
+.ac-v3.is-off .ac-rp{filter:none}
+@media(max-width:640px){.ac-rn{flex-direction:column;align-items:stretch;gap:12px;padding:14px}.ac-rnb{width:100%}.ac-rp{flex:1.7}.ac-rwa{flex:1;padding:0 12px}}
+
+/* renew bar v2: pay online is the main action, WhatsApp a quiet text link */
+.ac-rnb{flex-direction:column;align-items:stretch;gap:8px;min-width:200px}
+.ac-rp{height:48px;padding:0 24px;font-size:15px;border-radius:14px}
+.ac-rwa{height:auto;padding:2px 0;border:0;background:none;border-radius:6px;font-size:12px;font-weight:600;gap:6px;color:#9aa4c8}
+.ac-rwa svg{width:14px;height:14px;color:#3ddc84}
+.ac-rwa:hover{background:none;border:0;color:#fff;text-decoration:underline;text-underline-offset:3px}
+@media(max-width:640px){.ac-rnb{min-width:0}.ac-rp{flex:none;width:100%}.ac-rwa{justify-content:center;flex:none;padding:4px 0}}
