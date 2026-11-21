@@ -350,3 +350,12 @@ body.sp-adult:not(.ok) .sp-age{display:grid}
   .sp-tctl .sp-seg[data-seg=k]{margin-left:auto;flex:none}
   .sp-tctl .sp-seg button{padding:7px 11px;font-size:12.5px}
 }
+/* poster hover: "Watch trailer" overlay sits exactly over the poster image, title stays below */
+.sp-poster>.sp-ov{position:absolute;top:0;left:0;right:0;aspect-ratio:2/3;padding:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:linear-gradient(0deg,rgba(6,8,20,.84),rgba(6,8,20,.35) 70%);opacity:0;transition:opacity .3s;pointer-events:none;z-index:1}
+.sp-ov i{display:grid;place-items:center;width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#ff5a45,#ed3124);box-shadow:0 10px 28px rgba(237,49,36,.55),0 0 0 6px rgba(255,255,255,.12);transform:scale(.7);transition:transform .4s cubic-bezier(.34,1.56,.64,1)}
+.sp-ov i svg{width:21px;height:21px;margin-left:3px;fill:#fff}
+.sp-poster>.sp-ov b{display:block;-webkit-line-clamp:unset;overflow:visible;font-size:12px;letter-spacing:.3px;color:#fff;transform:translateY(6px);transition:transform .4s cubic-bezier(.16,1,.3,1)}
+.sp-poster:hover>.sp-ov,.sp-poster:focus-visible>.sp-ov{opacity:1}
+.sp-poster:hover .sp-ov i,.sp-poster:focus-visible .sp-ov i{transform:none}
+.sp-poster:hover .sp-ov b,.sp-poster:focus-visible .sp-ov b{transform:none}
+.sp-poster{cursor:pointer}

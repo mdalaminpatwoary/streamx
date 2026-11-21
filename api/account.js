@@ -2,7 +2,8 @@
    POST /api/account?a=login    {email}  -> emails a sign-in link (only if that email has subscriptions; the reply is always the same)
    POST /api/account?a=code     {email,code} -> exchanges the 6-digit emailed code for a session token (5 tries, 10 minutes, single use)
    POST /api/account?a=session  {token}  -> exchanges the link token for a 30-day session token
-   GET  /api/account?a=me                -> the signed-in customer's subscriptions   (Authorization: Bearer <session>) */
+   GET  /api/account?a=me                -> the signed-in customer's subscriptions   (Authorization: Bearer <session>)
+   POST /api/account?a=profile {name,picture} -> saves the customer's display name and profile photo (picture: small image data URL, or "" to remove) */
 const crypto = require("crypto");
 const db = require("./_db");
 const { secret, sign, verify, bearer } = require("./_auth");
@@ -75,6 +76,22 @@ module.exports = async (req, res) => {
       if (ids.length) { try { await db.rest("PATCH", `subscriptions?email=eq.${db.q(o.e)}&id=in.(${ids.join(",")})`, { acct_seen_at: new Date().toISOString() }); } catch (e) { console.error("seen not saved", e && e.message); } }
       return res.status(200).json({ ok: true });
     }
+    if (a === "profile" && req.method === "POST") {
+      const o = verify(bearer(req), "sess");
+      if (!o) return res.status(401).json({ error: "Please sign in again." });
+      const name = String(body.name || "").replace(/[\u0000-\u001f<>]/g, "").replace(/\s+/g, " ").trim().slice(0, 60);
+      if (name.length < 2) return res.status(400).json({ error: "Please enter your name (at least 2 letters)." });
+      const row = { email: normEmail(o.e), name, updated_at: new Date().toISOString() };
+      if (body.picture !== undefined) {
+        const pic = String(body.picture || "");
+        if (pic && !/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(pic)) return res.status(400).json({ error: "That image could not be used. Please choose a JPG or PNG photo." });
+        if (pic.length > 60000) return res.status(400).json({ error: "That photo is too large. Please choose a smaller one." });
+        row.picture = pic;
+      }
+      try { await db.rest("POST", "profiles?on_conflict=email", [row], "resolution=merge-duplicates,return=minimal"); }
+      catch (e) { console.error("profile not saved", e && e.message); return res.status(424).json({ error: "Profile editing is not available yet. Please try again later." }); }
+      return res.status(200).json({ ok: true, profile: { name, picture: row.picture !== undefined ? row.picture : undefined } });
+    }
     if (a === "me" && req.method === "GET") {
       const o = verify(bearer(req), "sess");
       if (!o) return res.status(401).json({ error: "Please sign in again." });
@@ -93,9 +110,11 @@ module.exports = async (req, res) => {
         notices = ((await db.rest("GET", "notices?select=id,title,message,kind,created_at,expires_at&order=created_at.desc&limit=20")) || [])
           .filter((n) => !n.expires_at || new Date(n.expires_at) > new Date()).map((n) => ({ id: n.id, title: n.title, message: n.message, kind: n.kind, at: n.created_at }));
       } catch (e) { /* notices table not created yet */ }
+      let custom = null, editable = true; // the customer's own name and photo (profiles table; may not exist yet)
+      try { custom = ((await db.rest("GET", `profiles?email=eq.${db.q(normEmail(o.e))}&select=name,picture&limit=1`)) || [])[0] || null; } catch (e) { editable = false; }
       return res.status(200).json({
         notices, email: o.e, today: dhakaToday(), contact: { name: c.name || "", phone: c.phone || "" },
-        profile: { name: o.n || c.name || "", picture: o.pic || "", provider: o.pv || "" },
+        profile: { name: (custom && custom.name) || o.n || c.name || "", picture: custom && custom.picture !== null && custom.picture !== undefined ? custom.picture : (o.pic || ""), provider: o.pv || "", editable, custom: !!(custom && custom.picture) },
         subscriptions: (rows || []).map((r) => ({ id: r.id, service: r.service, plan: r.plan, months: r.months, start_date: r.start_date, end_date: r.end_date, order_ref: r.order_ref || null, login: access.fromRow(r) })),
         orders: orders.map((r) => ({ id: r.mtid, date: r.paid_at || r.created_at, delivery: r.delivery || "pending", delivered_at: r.delivered_at || null, lines: Array.isArray(r.lines) ? r.lines : [] })),
       });

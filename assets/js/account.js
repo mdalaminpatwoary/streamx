@@ -239,7 +239,7 @@
     var pf = d.profile || {}, nm = pf.name || "", av = $("#av"); av.innerHTML = "";
     if (pf.picture) { var im = new Image(); im.alt = ""; im.referrerPolicy = "no-referrer"; im.onerror = function () { av.textContent = (nm || d.email)[0].toUpperCase(); }; im.src = pf.picture; av.appendChild(im); } else av.textContent = (nm || d.email)[0].toUpperCase();
     $("#hi").textContent = nm ? "Welcome back, " + nm : "Welcome back";
-    var pvEl = $("#pv"); pvEl.hidden = !pf.provider; if (pf.provider) pvEl.textContent = "Signed in with " + (NM[pf.provider] || pf.provider);
+    var pe = $("#pedit"); if (pe) pe.hidden = pf.editable === false; var pvEl = $("#pv"); pvEl.hidden = !pf.provider; if (pf.provider) pvEl.textContent = "Signed in with " + (NM[pf.provider] || pf.provider);
     DATA = d; var today = d.today, rows = d.subscriptions.map(function (s) { s._left = days(today, s.end_date); return s; });
     var live = groupRows(rows.filter(function (s) { return s._left >= 0; }).sort(function (a, b) { return a._left - b._left; }));
     var gone = groupRows(rows.filter(function (s) { return s._left < 0; }).sort(function (a, b) { return b._left - a._left; }));
@@ -356,6 +356,43 @@
   $("#cx").addEventListener("click", function () { $("#cf").hidden = true; $("#lf").hidden = false; $("#em").focus(); });
   $("#out").addEventListener("click", function () { set(null); showLogin(); });
 
+
+  /* Edit profile: display name and a small profile photo, saved to the customer's account. */
+  var pm = $("#pm"), pPic = null; // pPic: undefined = keep, "" = remove, data URL = new photo
+  function paint(el, pic, nm) { el.innerHTML = ""; if (pic) { var im = new Image(); im.alt = ""; im.referrerPolicy = "no-referrer"; im.src = pic; el.appendChild(im); } else el.textContent = ((nm || (DATA && DATA.email) || "?")[0] || "?").toUpperCase(); }
+  function openProfile() { if (!DATA) return; var pf = DATA.profile || {}; pPic = undefined; $("#pname").value = pf.name || ""; $("#pemail").textContent = DATA.email; $("#pe").textContent = ""; paint($("#pav"), pf.picture, pf.name); $("#prm").hidden = !pf.picture; pm.hidden = false; document.documentElement.style.overflow = "hidden"; setTimeout(function () { $("#pname").focus(); }, 50); }
+  function closeProfile() { pm.hidden = true; document.documentElement.style.overflow = ""; }
+  $("#pedit").addEventListener("click", openProfile);
+  pm.addEventListener("click", function (e) { if (e.target === pm || e.target.closest("[data-pclose]")) closeProfile(); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !pm.hidden) closeProfile(); });
+  $("#pfile").addEventListener("change", function () {
+    var f = this.files && this.files[0]; this.value = ""; if (!f) return; var er = $("#pe"); er.textContent = "";
+    if (!/^image\/(jpeg|png|webp)$/.test(f.type)) { er.textContent = "Please choose a JPG or PNG photo."; return; }
+    var rd = new FileReader(); rd.onerror = function () { er.textContent = "That photo could not be read."; };
+    rd.onload = function () { var im = new Image(); im.onerror = function () { er.textContent = "That photo could not be read."; }; im.onload = function () {
+      var S = 160, c = document.createElement("canvas"); c.width = c.height = S; var x = c.getContext("2d"), m = Math.min(im.width, im.height);
+      x.fillStyle = "#fff"; x.fillRect(0, 0, S, S); x.drawImage(im, (im.width - m) / 2, (im.height - m) / 2, m, m, 0, 0, S, S);
+      pPic = c.toDataURL("image/jpeg", 0.82); paint($("#pav"), pPic, $("#pname").value); $("#prm").hidden = false; };
+      im.src = rd.result; };
+    rd.readAsDataURL(f);
+  });
+  $("#prm").addEventListener("click", function () { pPic = ""; paint($("#pav"), "", $("#pname").value); this.hidden = true; });
+  $("#pname").addEventListener("input", function () { var a = $("#pav"); if (!a.querySelector("img")) a.textContent = ((this.value || DATA.email)[0] || "?").toUpperCase(); });
+  $("#pf").addEventListener("submit", function (e) {
+    e.preventDefault(); var nm = $("#pname").value.trim(), er = $("#pe"), b = $("#psave");
+    if (nm.length < 2) { er.textContent = "Please enter your name (at least 2 letters)."; return; }
+    er.textContent = ""; b.disabled = true; b.textContent = "Saving…";
+    var body = { name: nm }; if (pPic !== undefined) body.picture = pPic;
+    fetch("/api/account?a=profile", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + get() }, body: JSON.stringify(body) })
+      .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { if (r.status === 401) { set(null); closeProfile(); showLogin("Your session ended. Please sign in again."); throw new Error("signed out"); } if (!r.ok) throw new Error(j.error || "Could not save. Please try again."); return j; }); })
+      .then(function () {
+        try { sessionStorage.removeItem("sx_acc_pre"); } catch (x) {}
+        DATA.profile = Object.assign({}, DATA.profile, { name: nm }); if (pPic !== undefined) DATA.profile.picture = pPic;
+        paint($("#av"), DATA.profile.picture, nm); $("#hi").textContent = "Welcome back, " + nm; closeProfile(); flash("Profile updated");
+      })
+      .catch(function (x) { if (x.message !== "signed out") er.textContent = x.message; })
+      .then(function () { b.disabled = false; b.textContent = "Save changes"; });
+  });
   /* Renew: confirm the contact details, then open the EPS payment page. Expiry is extended automatically once payment is confirmed. */
   var rm = $("#rm"), cur = null;
   function closeRenew() { rm.hidden = true; document.documentElement.style.overflow = ""; }

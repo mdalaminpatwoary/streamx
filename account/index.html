@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
 <script>try{if(localStorage.getItem("sx_session"))document.documentElement.classList.add("hs")}catch(e){}</script>
-<link rel="stylesheet" href="/assets/css/account.css?v=26">
+<link rel="stylesheet" href="/assets/css/account.css?v=27">
 </head>
 <body>
 <div class="ac-top"><a href="/"><img src="/assets/img/brand/logo.png" alt="StreamX" width="40" height="40"></a><a class="back" href="/">← Back to StreamX</a></div>
@@ -54,7 +54,7 @@
   <section id="app" hidden>
     <header class="ac-prof">
       <div class="ac-av" id="av" aria-hidden="true"></div>
-      <div class="ac-pi"><div class="ac-hi" id="hi">Welcome back</div><div class="ac-em" id="who"></div><span class="ac-pv" id="pv" hidden></span></div>
+      <div class="ac-pi"><div class="ac-hi" id="hi">Welcome back</div><div class="ac-em" id="who"></div><span class="ac-pv" id="pv" hidden></span><button class="ac-edit" id="pedit" type="button" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>Edit profile</button></div>
       <button class="ac-bell" id="bell" type="button" aria-label="Notifications"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9a6 6 0 1 1 12 0c0 5 2 6 2 6H4s2-1 2-6zM10 19a2 2 0 0 0 4 0"/></svg><i id="bn" hidden></i></button>
     </header>
     <h2 class="ac-h2">Subscriptions</h2>
@@ -69,6 +69,27 @@
   </section>
   <div class="ac-skel" aria-hidden="true"><div class="ac-sk-prof"><i class="ac-sk c"></i><div><i class="ac-sk l1"></i><i class="ac-sk l2"></i></div></div><i class="ac-sk h"></i><div class="ac-sk-card"><i class="ac-sk t"></i><div><i class="ac-sk l1"></i><i class="ac-sk l2"></i><i class="ac-sk bar"></i></div></div><div class="ac-sk-card"><i class="ac-sk t"></i><div><i class="ac-sk l1"></i><i class="ac-sk l2"></i><i class="ac-sk bar"></i></div></div></div>
 </main>
+<div class="ac-modal" id="pm" hidden role="dialog" aria-modal="true" aria-labelledby="pmt">
+  <form class="ac-card ac-mbox pf" id="pf" novalidate>
+    <button class="ac-x" type="button" data-pclose aria-label="Close">✕</button>
+    <div class="ac-eyebrow">Your profile</div>
+    <h2 class="pf-t" id="pmt">Edit profile</h2>
+    <div class="pf-ph">
+      <div class="ac-av pf-av" id="pav"></div>
+      <div class="pf-pb">
+        <label class="ac-btn ac-sm pf-up" for="pfile">Change photo</label>
+        <input id="pfile" type="file" accept="image/png,image/jpeg,image/webp" hidden>
+        <button class="pf-rm" id="prm" type="button">Remove photo</button>
+        <small>JPG or PNG. It is resized and saved to your account.</small>
+      </div>
+    </div>
+    <label for="pname">Your name</label>
+    <input class="ac-in" id="pname" maxlength="60" autocomplete="name" placeholder="Full name">
+    <p class="rn-h">Your email <b id="pemail"></b> cannot be changed here.</p>
+    <p class="ac-msg" id="pe" role="alert"></p>
+    <button class="ac-btn rn-go" id="psave" type="submit">Save changes</button>
+  </form>
+</div>
 <div class="ac-modal" id="rm" hidden role="dialog" aria-modal="true" aria-labelledby="rt">
   <form class="ac-card ac-mbox rn" id="rf" novalidate>
     <button class="ac-x" type="button" data-close aria-label="Close">✕</button>
@@ -98,6 +119,6 @@
 <script src="/assets/js/data/catalog.js"></script>
 <script src="/assets/js/data/logos.js?v=20261121a"></script>
 <script src="/assets/js/data/countries.js?v=1"></script>
-<script src="/assets/js/account.js?v=21"></script>
+<script src="/assets/js/account.js?v=22"></script>
 </body>
 </html>

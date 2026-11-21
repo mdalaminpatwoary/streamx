@@ -47,7 +47,8 @@
 <link rel="stylesheet" href="assets/css/sections/hero-modern.css?v=20261121j">
 <link rel="stylesheet" href="assets/css/sections/marquee.css?v=20261120d">
 <link rel="stylesheet" href="assets/css/sections/products.css?v=20261120c">
-<link rel="stylesheet" href="assets/css/sections/trending.css?v=20261120a">
+<link rel="stylesheet" href="assets/css/sections/trending.css?v=20261121m">
+<link rel="stylesheet" href="assets/css/sections/toplist.css?v=1">
 <link rel="stylesheet" href="assets/css/sections/bundles.css?v=20261119zz">
 <link rel="stylesheet" href="assets/css/sections/pricing.css?v=20261121b">
 <link rel="stylesheet" href="assets/css/sections/why.css?v=20261120a">
@@ -158,6 +159,17 @@
   <div class="tr-stage" id="trStage" aria-live="polite"><div class="tr-rail" id="trRail"></div></div>
   <div class="tr-cta rv" id="trCta"></div>
   <p class="note tr-credit"><span class="tr-live"><i></i><span id="trLive">Live</span></span> Rankings update automatically throughout the day, so this list is always fresh.</p>
+</section>
+
+<section id="toplist" class="wrap sec" hidden>
+  <div class="hhead rv"><div><span class="eyebrow">Top picks</span><h2>Best rated &amp; <span class="grad">coming soon.</span></h2></div><p>The highest-rated movies and series, where to watch them, and what is releasing next.</p></div>
+  <div class="tl-bar rv">
+    <div class="tr-seg tl-seg" id="tlKind" role="group" aria-label="Chart"><span class="tr-thumb" aria-hidden="true"></span><button type="button" data-l="top" class="on">Top rated</button><button type="button" data-l="soon">Coming soon</button></div>
+    <div class="tr-seg tl-seg" id="tlType" role="group" aria-label="Show"><span class="tr-thumb" aria-hidden="true"></span><button type="button" data-k="movie" class="on">Movies</button><button type="button" data-k="tv">Series</button></div>
+  </div>
+  <div class="tl-grid" id="tlGrid" aria-live="polite"></div>
+  <div class="tl-more rv"><button class="btn ghost" type="button" id="tlMore" hidden>Show more</button></div>
+  <p class="note tr-credit" id="tlNote">Ratings and release data from TMDB. Platforms show where each title streams, mostly in the US; availability in Bangladesh can differ.</p>
 </section>
 
 <section id="pricing" class="wrap sec">
@@ -519,7 +531,8 @@
 <script src="assets/js/layout/page-effects.js?v=20261119zz"></script>
 <script src="assets/js/features/front-logos.js?v=20261120d"></script>
 <script src="assets/js/features/hero-motion.js?v=20261121l"></script>
-<script src="assets/js/features/trending.js?v=20261121b"></script>
+<script src="assets/js/features/trending.js?v=20261121c"></script>
+<script src="assets/js/features/toplist.js?v=1"></script>
 <script src="assets/js/features/chatbot.js?v=11"></script>
 <script src="assets/js/features/chat-avatar.js?v=20261121j"></script>
 <script src="assets/js/layout/premium-motion.js?v=20261119zz"></script>

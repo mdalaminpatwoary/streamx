@@ -81,3 +81,8 @@ html.tt-open{overflow:hidden}
 .sp-poster .sp-ov b{font-size:13px}
 .sp-poster{position:relative}
 .tt-buy .sp-logo b{font-size:22px;line-height:1}
+/* breathing room around the title and the "Wanna watch it now?" card */
+.tt-body{padding-top:24px}
+.tt-head{padding-top:2px}
+.tt-buy{margin:0 0 4px}
+@media(max-width:600px){.tt-body{padding-top:20px}}

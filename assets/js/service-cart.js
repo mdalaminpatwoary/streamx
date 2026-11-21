@@ -67,5 +67,6 @@
   document.addEventListener("keydown", function (e) { if (e.key === "Escape") openD(false); });
   window.addEventListener("storage", function (e) { if (e.key === KEY) { load(); render(); } });
   window.addEventListener("pageshow", function (e) { if (e.persisted) { load(); render(); } });
+  window.spCart = { add: add, has: function (id) { load(); return cart.some(function (c) { return c.id === id; }); }, open: function () { load(); render(); openD(true); }, pay: function () { $("#sc-pay").click(); } };
   load(); render();
 })();

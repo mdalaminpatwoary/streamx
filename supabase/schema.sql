@@ -92,3 +92,12 @@ create table if not exists public.notices (
 alter table public.notices enable row level security;
 grant select, insert, update, delete on public.notices to service_role;
 grant usage, select on all sequences in schema public to service_role;
+
+-- Customer profile (display name and photo) edited from My account.
+create table if not exists public.profiles (
+  email      text primary key,
+  name       text,
+  picture    text,
+  updated_at timestamptz not null default now()
+);
+alter table public.profiles enable row level security; -- no policies: only the server (service key) can read or write

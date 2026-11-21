@@ -639,3 +639,8 @@ html.tt-open{overflow:hidden}
 .tt-buy .btn{flex:none;margin-left:6px;padding:11px 18px;border-radius:12px;font-size:13.5px;white-space:nowrap}
 .tt-buy .btn i{font-style:normal;margin-left:4px}
 @media(max-width:900px){.tt-head{flex-direction:column;gap:14px}.tt-buy{width:100%}.tt-buy-t{flex:1 1 auto;white-space:normal}}
+/* breathing room around the title and the "Wanna watch it now?" card */
+.tt-body{padding-top:24px}
+.tt-head{padding-top:2px}
+.tt-buy{margin:0 0 4px}
+@media(max-width:600px){.tt-body{padding-top:20px}}

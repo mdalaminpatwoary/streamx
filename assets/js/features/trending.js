@@ -162,6 +162,7 @@
       if(my===tTok&&!dlg.hidden)paintT(d);
     }catch(e){if(my===tTok)tin.innerHTML=`<div class="tt-load"><span>Couldn't load details right now. Please try again.</span><button class="btn ghost" type="button" data-x>Close</button></div>`}
   }
+  window.sxTitle=openT;
   rail.addEventListener("click",e=>{const c=e.target.closest(".tr-card[data-id]");if(c)openT(c.dataset.id,c.dataset.k,c)});
   rail.addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&e.target.matches(".tr-card[data-id]")){e.preventDefault();openT(e.target.dataset.id,e.target.dataset.k,e.target)}});
 
