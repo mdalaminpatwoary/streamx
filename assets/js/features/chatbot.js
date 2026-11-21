@@ -299,18 +299,18 @@
     const REN=A(["renew"])&&!A(["how"]);
     if(!(SUBS||LOGIN||DAYS||ORD||REN))return null;
     if(!token())return{h:signIn(),c:["Prices & plans","Talk to a human"]};
-    const ch=["My subscriptions","Days left","My orders","Talk to a human"];
+    const ch=["My subscriptions","My orders","Renew my plan","Talk to a human"];
     const run=f=>({p:loadAcc().then(f,e=>({h:`<p>${e.status===401?"Your session ended. Please sign in again to see your account here.":"I could not load your account just now. Please try again in a moment."}</p><div class="bt-row">${btn("Open My account","/account/"," bt-go")}</div>`}))});
-    if(ORD)return run(d=>({h:ordersHtml(d),c:["My subscriptions","Talk to a human"]}));
+    if(ORD)return run(d=>({h:ordersHtml(d),c:["My subscriptions","Renew my plan","Talk to a human"]}));
     if(REN)return run(d=>({h:renewHtml(d),c:ch}));
-    if(DAYS&&!LOGIN)return run(d=>({h:daysHtml(d),c:["My login details","Renew my plan","My orders"]}));
+    if(DAYS&&!LOGIN)return run(d=>({h:daysHtml(d),c:["My subscriptions","Renew my plan","My orders"]}));
     if(LOGIN||(SUBS&&ps.length)){
       return run(d=>{const live=d.subscriptions.filter(x=>x._left>=0);let mine=ps.length?live.filter(x=>ps.some(p=>owns(x,p))):live;
         if(ps.length&&!mine.length)return{h:`<p>I do not see ${esc(ps[0].name)} on your account. Here is what you have:</p>`+listHtml(d,""),c:["Prices & plans","Talk to a human"]};
-        if(mine.length===1)return{h:detailHtml(mine[0]),c:["Days left","My orders","Talk to a human"]};
-        return{h:listHtml({subscriptions:mine,email:d.email},mine.length?`Which one? Tap a subscription to see its login details.`:""),c:["Days left","My orders"]}});
+        if(mine.length===1)return{h:detailHtml(mine[0]),c:["My subscriptions","Renew my plan","My orders"]};
+        return{h:listHtml({subscriptions:mine,email:d.email},mine.length?`Which one? Tap a subscription to see its login details.`:""),c:["My orders","Renew my plan"]}});
     }
-    return run(d=>({h:listHtml(d),c:["My login details","Days left","My orders","Renew my plan"]}));
+    return run(d=>({h:listHtml(d),c:["My orders","Renew my plan","Talk to a human"]}));
   }
   function maskAll(){log.querySelectorAll(".bt-sv.shown").forEach(el=>{el.classList.remove("shown");el.textContent=el.dataset.mask;const b=el.closest(".bt-kv").querySelector('[data-act=eye]');if(b){b.classList.remove("on");b.setAttribute("aria-label","Show")}})}
   function secretOf(x,k){const l=(x&&x.login)||{};return({pass:l.password,pin:l.pin,gift:l.gift&&l.gift.code,email:l.email,phone:l.phone,profile:l.profile,family:l.family,acct:ACC&&ACC.email})[k]||""}
@@ -364,7 +364,7 @@
     const a=el.dataset.act,i=+el.dataset.i,v=+el.dataset.v,k=+el.dataset.k,p=PRODUCTS[i];
     if(a==="eye"||a==="cp"){secretAct(el);return}
     if(busy)return;
-    if(a==="sub"){loadAcc().then(()=>{const x=subById(el.dataset.sid);if(x)reply(x.service,{h:detailHtml(x),c:["Days left","My orders","Talk to a human"]})});return}
+    if(a==="sub"){loadAcc().then(()=>{const x=subById(el.dataset.sid);if(x)reply(x.service,{h:detailHtml(x),c:["My subscriptions","Renew my plan","My orders"]})});return}
     if(a==="pick"){ctx.p=p;reply("Choose a plan for "+p.name,{h:typeHtml(p)});return}
     if(a==="card"){ctx.p=p;reply(p.name,{h:productCard(p),c:ctxChips(p)});return}
     if(a==="var"){reply(p.variants[v].n,{h:durHtml(p,v)});return}
@@ -378,7 +378,7 @@
     const u=root.querySelector(".cw-unread");if(u)u.remove();try{sessionStorage.setItem("sx_bot_seen","1")}catch(e){}
     if(!started){started=true;let s=null;try{s=JSON.parse(sessionStorage.getItem("sx_bot")||"null")}catch(e){}
       if(s&&s.h){log.innerHTML=s.h;log.querySelectorAll(".bt-m").forEach(m=>m.classList.add("rest"));if(s.p)ctx.p=LIST.find(x=>x.name===s.p)||null;down()}
-      else if(token()){bot({p:loadAcc().then(d=>{const live=d.subscriptions.filter(x=>x._left>=0).length,nm=((d.profile&&d.profile.name)||"").split(" ")[0];return{h:`<p>Hi${nm?" "+esc(nm):""}! You are signed in${live?` and have ${live} active subscription${live>1?"s":""}`:""}. I can show your plans, days left, login details and orders right here, and I can also help you buy.</p>`,c:live?["My subscriptions","Days left","My login details","My orders","Prices & plans","Talk to a human"]:["Prices & plans","Help me choose","My orders","Talk to a human"]}},()=>({h:`<p>Hi, I'm the StreamX assistant. Ask me anything about prices, plans, payment, delivery or your account.</p>`,c:["Prices & plans","Help me choose","How do I pay online?","Delivery time","My login details","Talk to a human"]}))})}
+      else if(token()){bot({p:loadAcc().then(d=>{const live=d.subscriptions.filter(x=>x._left>=0).length,nm=((d.profile&&d.profile.name)||"").split(" ")[0];return{h:`<p>Hi${nm?" "+esc(nm):""}! You are signed in${live?` and have ${live} active subscription${live>1?"s":""}`:""}. I can show your plans, days left, login details and orders right here, and I can also help you buy.</p>`,c:live?["My subscriptions","My orders","Renew my plan","Prices & plans","Talk to a human"]:["Prices & plans","Help me choose","My orders","Talk to a human"]}},()=>({h:`<p>Hi, I'm the StreamX assistant. Ask me anything about prices, plans, payment, delivery or your account.</p>`,c:["Prices & plans","Help me choose","How do I pay online?","Delivery time","My login details","Talk to a human"]}))})}
       else show({h:`<p>Hi, I'm the StreamX assistant. Ask me anything about prices, plans, payment, delivery or your account.</p>`,c:["Prices & plans","Help me choose","How do I pay online?","Delivery time","My login details","Talk to a human"]})}
     setTimeout(()=>{down();inp.focus({preventScroll:true})},250)}
   function close(){maskAll();panel.classList.remove("on");root.classList.remove("cw-open");setTimeout(()=>{if(!panel.classList.contains("on"))panel.hidden=true},250)}
