@@ -142,3 +142,7 @@ alter table public.subscriptions add column if not exists price numeric;
 alter table public.subscriptions add column if not exists pay_method text;
 alter table public.subscriptions add column if not exists txn_id text;
 notify pgrst, 'reload schema';
+
+-- Where an admin-added purchase came from (WhatsApp, Facebook, Instagram...). Run once.
+alter table public.subscriptions add column if not exists channel text;
+notify pgrst, 'reload schema';

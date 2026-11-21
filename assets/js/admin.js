@@ -170,9 +170,9 @@
     if (er) { m.className = "ac-msg"; m.textContent = er; return; }
     var acc = readAccess(box);
     if (gift && !acc.gifts.length) { m.className = "ac-msg"; m.textContent = "Add at least one gift card with an amount."; return; }
-    var body = Object.assign({ email: f.email.value, name: f.name.value, phone: f.phone.value, service: name, plan: gift ? "Gift card" : o.value, months: gift ? 6 : +o.dataset.m, start: f.start.value || null, notes: f.notes.value, price: f.price.value, pay_method: f.pay_method.value, txn_id: f.txn_id.value }, acc);
+    var body = Object.assign({ email: f.email.value, name: f.name.value, phone: f.phone.value, service: name, plan: gift ? "Gift card" : o.value, months: gift ? 6 : +o.dataset.m, start: f.start.value || null, notes: f.notes.value, price: f.price.value, pay_method: f.pay_method.value, txn_id: f.txn_id.value, channel: f.channel.value }, acc);
     api("", { method: "POST", body: JSON.stringify(body) })
-      .then(function (d) { var n = (d.rows || [d.row]).length; m.className = "ac-msg ok"; m.textContent = d.warn ? "Added, but account details were not saved: " + d.warn : (gift && n > 1 ? n + " gift cards added. " : "Added. ") + "Expires " + d.row.end_date + "."; toast(d.warn ? "Added, but account details were not saved." : gift && n > 1 ? n + " gift cards added." : "Subscription added."); f.email.value = f.name.value = f.phone.value = f.start.value = f.notes.value = f.price.value = f.txn_id.value = ""; f.pay_method.value = ""; plans(); list(); })
+      .then(function (d) { var n = (d.rows || [d.row]).length; m.className = "ac-msg ok"; m.textContent = d.warn ? "Added, but account details were not saved: " + d.warn : (gift && n > 1 ? n + " gift cards added. " : "Added. ") + "Expires " + d.row.end_date + "."; toast(d.warn ? "Added, but account details were not saved." : gift && n > 1 ? n + " gift cards added." : "Subscription added."); f.email.value = f.name.value = f.phone.value = f.start.value = f.notes.value = f.price.value = f.txn_id.value = ""; f.pay_method.value = ""; f.channel.value = ""; plans(); list(); })
       .catch(function (er) { m.className = "ac-msg"; m.textContent = er.message; });
   });
 

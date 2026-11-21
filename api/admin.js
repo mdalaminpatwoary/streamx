@@ -19,6 +19,7 @@ async function savePay(row, body) {
   if (price > 0 && price < 10000000) pay.price = Math.round(price * 100) / 100;
   const pm = clean(body.pay_method, 30); if (pm) pay.pay_method = pm;
   const tx = clean(body.txn_id, 60); if (tx) pay.txn_id = tx;
+  const ch = clean(body.channel, 30); if (ch) pay.channel = ch;
   if (!Object.keys(pay).length || !row || !row.id) return "";
   try { await db.rest("PATCH", `subscriptions?id=eq.${row.id}`, pay); return ""; }
   catch (e) { console.error("payment details not saved", e && e.message); return "the payment details could not be saved. Run the latest SQL in Supabase."; }

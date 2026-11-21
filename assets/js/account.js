@@ -234,11 +234,12 @@
 
   /* /account/#renew=<id> (from the chat assistant) opens that subscription's renew popup */
   function render(d) { renderCore(d); setTimeout(function () { var m = /renew=(\d+)/.exec(location.hash), b = m && document.querySelector('[data-renew="' + m[1] + '"]'); if (b) { try { history.replaceState(null, "", location.pathname); } catch (e) {} b.click(); } }, 0); }
+  function greet() { var h = new Date().getHours(); return h >= 5 && h < 12 ? "Good morning" : h >= 12 && h < 17 ? "Good afternoon" : "Good evening"; }
   function renderCore(d) {
     $("#login").hidden = true; $("#app").hidden = false; $("#who").textContent = d.email; var fw = $("#fwho"); if (fw) fw.textContent = d.email;
     var pf = d.profile || {}, nm = pf.name || "", av = $("#av"); av.innerHTML = ""; try { if (pf.picture) localStorage.setItem("sx_av", JSON.stringify({ p: pf.picture })); else localStorage.removeItem("sx_av"); } catch (e) {}
     if (pf.picture) { var im = new Image(); im.alt = ""; im.referrerPolicy = "no-referrer"; im.onerror = function () { av.textContent = (nm || d.email)[0].toUpperCase(); }; im.src = pf.picture; av.appendChild(im); } else av.textContent = (nm || d.email)[0].toUpperCase();
-    $("#hi").textContent = nm ? "Welcome back, " + nm : "Welcome back";
+    var gr = greet(); $("#hi").textContent = nm ? gr + ", " + nm : gr;
     var pe = $("#pedit"); if (pe) pe.hidden = pf.editable === false; var pvEl = $("#pv"); pvEl.hidden = !pf.provider; if (pf.provider) pvEl.textContent = "Signed in with " + (NM[pf.provider] || pf.provider);
     DATA = d; var today = d.today, rows = d.subscriptions.map(function (s) { s._left = days(today, s.end_date); return s; });
     var live = groupRows(rows.filter(function (s) { return s._left >= 0; }).sort(function (a, b) { return a._left - b._left; }));
@@ -312,7 +313,7 @@
       if (!off && !priced) tot = 0;
       var foot = off ? [o.pay_method ? "Paid with " + esc(o.pay_method) : "", o.txn_id ? "Transaction " + esc(o.txn_id) : "", o.end ? "Valid until " + fmt(o.end) : ""].filter(Boolean).join(" · ") || "Added by StreamX"
         : (ok && o.delivered_at ? "Delivered " + dt(o.delivered_at) : "We deliver to your email and WhatsApp");
-      return '<article class="ac-ord"><div class="ac-oh"><div><b>' + (off ? "Purchase" : "Order") + " #" + esc(String(o.id).slice(-8).toUpperCase()) + '</b><small>' + dt(o.date) + (off ? " · In-store / WhatsApp" : " · Online") + '</small></div><span class="ac-os ' + (ok ? "ok" : "wait") + '">' + (off ? "Completed" : ok ? "Delivered" : "Processing") + '</span></div>' +
+      return '<article class="ac-ord"><div class="ac-oh"><div><b>' + (off ? "Purchase" : "Order") + " #" + esc(String(o.id).slice(-8).toUpperCase()) + '</b><small>' + dt(o.date) + (off ? (o.channel ? " · via " + esc(o.channel) : "") : " · Online") + '</small></div><span class="ac-os ' + (ok ? "ok" : "wait") + '">' + (off ? "Completed" : ok ? "Delivered" : "Processing") + '</span></div>' +
         '<ul class="ac-ol">' + o.lines.map(function (l) { return "<li><span>" + esc(l.name) + (l.plan ? "<small>" + esc(l.plan) + "</small>" : "") + '</span><em>×' + (l.q || 1) + "</em>" + (l.price > 0 ? "<b>" + taka(l.price * (l.q || 1)) + "</b>" : "") + "</li>"; }).join("") + "</ul>" +
         '<div class="ac-of"><span>' + foot + "</span>" + (tot ? "<b>Total " + taka(tot) + "</b>" : "") + "</div></article>";
     }).join("");
@@ -393,7 +394,7 @@
       .then(function () {
         try { sessionStorage.removeItem("sx_acc_pre"); } catch (x) {}
         DATA.profile = Object.assign({}, DATA.profile, { name: nm }); if (pPic !== undefined) DATA.profile.picture = pPic;
-        paint($("#av"), DATA.profile.picture, nm); $("#hi").textContent = "Welcome back, " + nm; closeProfile(); flash("Profile updated");
+        paint($("#av"), DATA.profile.picture, nm); $("#hi").textContent = greet() + ", " + nm; closeProfile(); flash("Profile updated");
       })
       .catch(function (x) { if (x.message !== "signed out") er.textContent = x.message; })
       .then(function () { b.disabled = false; b.textContent = "Save changes"; });

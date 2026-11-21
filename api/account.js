@@ -146,10 +146,10 @@ module.exports = async (req, res) => {
       let offline = [];
       try {
         let adm;
-        try { adm = await db.rest("GET", `subscriptions?email=eq.${db.q(o.e)}&source=eq.admin&select=id,service,plan,start_date,end_date,order_ref,created_at,price,pay_method,txn_id&order=created_at.desc&limit=100`); }
+        try { adm = await db.rest("GET", `subscriptions?email=eq.${db.q(o.e)}&source=eq.admin&select=id,service,plan,start_date,end_date,order_ref,created_at,price,pay_method,txn_id,channel&order=created_at.desc&limit=100`); }
         catch (e) { adm = await db.rest("GET", `subscriptions?email=eq.${db.q(o.e)}&source=eq.admin&select=id,service,plan,start_date,end_date,order_ref,created_at&order=created_at.desc&limit=100`); } // payment columns not added yet
         const g = new Map();
-        (adm || []).forEach((r) => { const k = r.order_ref || "ADM" + r.id; if (!g.has(k)) g.set(k, { id: k, date: r.created_at, kind: "offline", delivery: "delivered", delivered_at: r.created_at, pay_method: r.pay_method || "", txn_id: r.txn_id || "", start: r.start_date, end: r.end_date, lines: [] }); const x = g.get(k); x.lines.push({ name: r.service, plan: r.plan, q: 1, price: Number(r.price) || 0 }); if (r.pay_method && !x.pay_method) x.pay_method = r.pay_method; if (r.txn_id && !x.txn_id) x.txn_id = r.txn_id; });
+        (adm || []).forEach((r) => { const k = r.order_ref || "ADM" + r.id; if (!g.has(k)) g.set(k, { id: k, date: r.created_at, kind: "offline", delivery: "delivered", delivered_at: r.created_at, pay_method: r.pay_method || "", txn_id: r.txn_id || "", channel: r.channel || "", start: r.start_date, end: r.end_date, lines: [] }); const x = g.get(k); x.lines.push({ name: r.service, plan: r.plan, q: 1, price: Number(r.price) || 0 }); if (r.pay_method && !x.pay_method) x.pay_method = r.pay_method; if (r.txn_id && !x.txn_id) x.txn_id = r.txn_id; if (r.channel && !x.channel) x.channel = r.channel; });
         offline = [...g.values()];
       } catch (e) { console.error("offline purchases", e && e.message); }
       let notices = [];
