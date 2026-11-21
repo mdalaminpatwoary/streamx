@@ -1,7 +1,6 @@
 /* Account page v2: hero with stats, tabs, borderless list. Loaded after account.css and title-sheet.css */
 .ac-prof{position:relative;flex-wrap:wrap;gap:18px;padding:26px 26px 22px;margin-bottom:22px;border:0;border-radius:26px;overflow:hidden;background:radial-gradient(120% 140% at 0% 0%,rgba(237,49,36,.22),transparent 55%),radial-gradient(90% 120% at 100% 0%,rgba(99,102,241,.2),transparent 60%),linear-gradient(180deg,rgba(24,29,62,.92),rgba(12,15,32,.96));box-shadow:0 30px 70px -40px #000,inset 0 0 0 1px rgba(255,255,255,.07)}
 .ac-prof .ac-av{width:72px;height:72px;font-size:28px;box-shadow:0 0 0 3px rgba(255,255,255,.14),0 12px 30px rgba(0,0,0,.45)}
-.ac-prof .ac-hi{font-size:23px;letter-spacing:-.01em}
 .ac-pi{flex:1 1 220px;min-width:0}
 .ac-stats{flex:0 0 100%;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:4px}
 .ac-stat{display:flex;flex-direction:column;gap:3px;padding:14px 16px;border:0;border-radius:16px;background:rgba(255,255,255,.05);color:inherit;text-align:left;font-family:inherit;transition:background .25s,transform .25s}
@@ -39,9 +38,34 @@ button.ac-stat{cursor:pointer}button.ac-stat:hover{background:rgba(255,255,255,.
 .ml-more:hover{background:rgba(255,255,255,.15)}
 .ml-more svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.3;stroke-linecap:round;stroke-linejoin:round}
 
+/* Header identity */
+.ac-prof{align-items:center;gap:20px}
+.ac-avw{position:relative;flex:none}
+.ac-prof .ac-av{width:84px;height:84px;font-size:32px;box-shadow:0 0 0 1px rgba(255,255,255,.25),0 0 0 5px rgba(255,255,255,.07),0 14px 34px rgba(0,0,0,.5)}
+.ac-avb{position:absolute;right:-2px;bottom:-2px;display:grid;place-items:center;width:30px;height:30px;padding:0;border:2px solid #121634;border-radius:50%;background:#fff;color:#0c0f20;cursor:pointer;box-shadow:0 6px 14px rgba(0,0,0,.45);transition:transform .25s,background .25s}
+.ac-avb:hover{transform:scale(1.1);background:#ffe9e6}
+.ac-avb[hidden]{display:none}
+.ac-avb svg{width:14px;height:14px}
+.ac-gr{margin:0 0 4px;color:#ff8a7e;font:800 11.5px Manrope,system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase}
+.ac-prof .ac-hi{font-size:30px;font-weight:800;line-height:1.12;letter-spacing:-.025em;background:linear-gradient(180deg,#fff,#c9d1f0);-webkit-background-clip:text;background-clip:text;color:transparent}
+.ac-meta{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin-top:10px}
+.ac-meta .ac-em{white-space:normal;word-break:break-word;font-size:14px}
+.ac-meta .ac-pv{margin:0;padding:4px 11px 4px 9px;display:inline-flex;align-items:center;gap:6px;color:#cfe9d8;border-color:rgba(74,222,128,.3);background:rgba(74,222,128,.08)}
+.ac-meta .ac-pv::before{content:"";width:6px;height:6px;border-radius:50%;background:#4ade80}
+.ac-prof .ac-bell{align-self:flex-start}
+.ac-fa{display:flex;flex-wrap:wrap;gap:10px}
+.ac-fa .ac-out{padding:11px 18px}
+.ac-fa .ac-fedit:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.35)}
+.ac-fa [hidden]{display:none}
+
 @media(max-width:640px){
-  .ac-prof{padding:20px 16px 16px;gap:14px}
-  .ac-prof .ac-av{width:60px;height:60px}
+  .ac-prof .ac-hi{font-size:22px;overflow-wrap:normal}
+  .ac-prof .ac-av{width:58px;height:58px;font-size:23px}
+  .ac-prof{gap:12px}
+  .ac-meta .ac-em{flex:1 1 100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;word-break:normal;font-size:13px}
+  .ac-avb{width:26px;height:26px}
+  .ac-fa{width:100%}.ac-fa .ac-out{flex:1;justify-content:center}
+  .ac-prof{padding:20px 16px 16px}
   .ac-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
   .ac-tabs button{font-size:13px;gap:6px;padding:10px 6px}
   .ac-tabs button svg{display:none}

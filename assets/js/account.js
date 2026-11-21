@@ -239,8 +239,8 @@
     $("#login").hidden = true; $("#app").hidden = false; $("#who").textContent = d.email; var fw = $("#fwho"); if (fw) fw.textContent = d.email;
     var pf = d.profile || {}, nm = pf.name || "", av = $("#av"); av.innerHTML = ""; try { if (pf.picture) localStorage.setItem("sx_av", JSON.stringify({ p: pf.picture })); else localStorage.removeItem("sx_av"); } catch (e) {}
     if (pf.picture) { var im = new Image(); im.alt = ""; im.referrerPolicy = "no-referrer"; im.onerror = function () { av.textContent = (nm || d.email)[0].toUpperCase(); }; im.src = pf.picture; av.appendChild(im); } else av.textContent = (nm || d.email)[0].toUpperCase();
-    var gr = greet(); $("#hi").textContent = nm ? gr + ", " + nm : gr;
-    var pe = $("#pedit"); if (pe) pe.hidden = pf.editable === false; var pvEl = $("#pv"); pvEl.hidden = !pf.provider; if (pf.provider) pvEl.textContent = "Signed in with " + (NM[pf.provider] || pf.provider);
+    $("#gr").textContent = greet(); $("#hi").textContent = nm || d.email.split("@")[0];
+    var pe = $("#pedit"), pe2 = $("#pedit2"); if (pe) pe.hidden = pf.editable === false; if (pe2) pe2.hidden = pf.editable === false; var pvEl = $("#pv"); pvEl.hidden = !pf.provider; if (pf.provider) pvEl.textContent = "Signed in with " + (NM[pf.provider] || pf.provider);
     DATA = d; var today = d.today, rows = d.subscriptions.map(function (s) { s._left = days(today, s.end_date); return s; });
     var live = groupRows(rows.filter(function (s) { return s._left >= 0; }).sort(function (a, b) { return a._left - b._left; }));
     var gone = groupRows(rows.filter(function (s) { return s._left < 0; }).sort(function (a, b) { return b._left - a._left; }));
@@ -368,7 +368,7 @@
   function paint(el, pic, nm) { el.innerHTML = ""; if (pic) { var im = new Image(); im.alt = ""; im.referrerPolicy = "no-referrer"; im.src = pic; el.appendChild(im); } else el.textContent = ((nm || (DATA && DATA.email) || "?")[0] || "?").toUpperCase(); }
   function openProfile() { if (!DATA) return; var pf = DATA.profile || {}; pPic = undefined; $("#pname").value = pf.name || ""; $("#pemail").textContent = DATA.email; $("#pe").textContent = ""; paint($("#pav"), pf.picture, pf.name); $("#prm").hidden = !pf.picture; pm.hidden = false; document.documentElement.style.overflow = "hidden"; setTimeout(function () { $("#pname").focus(); }, 50); }
   function closeProfile() { pm.hidden = true; document.documentElement.style.overflow = ""; }
-  $("#pedit").addEventListener("click", openProfile);
+  $("#pedit").addEventListener("click", openProfile); $("#pedit2").addEventListener("click", openProfile);
   pm.addEventListener("click", function (e) { if (e.target === pm || e.target.closest("[data-pclose]")) closeProfile(); });
   document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !pm.hidden) closeProfile(); });
   $("#pfile").addEventListener("change", function () {
@@ -394,7 +394,7 @@
       .then(function () {
         try { sessionStorage.removeItem("sx_acc_pre"); } catch (x) {}
         DATA.profile = Object.assign({}, DATA.profile, { name: nm }); if (pPic !== undefined) DATA.profile.picture = pPic;
-        paint($("#av"), DATA.profile.picture, nm); $("#hi").textContent = greet() + ", " + nm; closeProfile(); flash("Profile updated");
+        paint($("#av"), DATA.profile.picture, nm); $("#gr").textContent = greet(); $("#hi").textContent = nm || DATA.email.split("@")[0]; closeProfile(); flash("Profile updated");
       })
       .catch(function (x) { if (x.message !== "signed out") er.textContent = x.message; })
       .then(function () { b.disabled = false; b.textContent = "Save changes"; });
