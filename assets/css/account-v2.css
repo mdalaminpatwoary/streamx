@@ -259,8 +259,8 @@ button.ac-stat{cursor:pointer}button.ac-stat:hover{background:rgba(255,255,255,.
 .ac-help[open]{border-color:rgba(255,255,255,.16);background:rgba(255,255,255,.04)}
 .ac-help summary{gap:14px;padding:13px 14px;border-radius:0;color:#fff}
 .ac-help summary::after{display:none}
-.ac-hi{display:grid;place-items:center;width:40px;height:40px;border-radius:12px;flex:none;background:linear-gradient(135deg,rgba(237,49,36,.22),rgba(237,49,36,.08));border:1px solid rgba(237,49,36,.3);color:#ff9d92}
-.ac-hi svg{width:20px;height:20px;color:inherit}
+.ac-hpi{display:grid;place-items:center;width:40px;height:40px;border-radius:12px;flex:none;background:linear-gradient(135deg,rgba(237,49,36,.22),rgba(237,49,36,.08));border:1px solid rgba(237,49,36,.3);color:#ff9d92}
+.ac-hpi svg{width:20px;height:20px;color:inherit}
 .ac-ht{flex:1;min-width:0;display:grid;gap:2px}
 .ac-ht b{font-size:14.5px;font-weight:800}
 .ac-ht small{font-size:12.5px;font-weight:500;color:var(--mut)}

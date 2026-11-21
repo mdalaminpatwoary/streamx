@@ -127,7 +127,7 @@
       topics.push("I want to change my login email");
     }
     var sub = encodeURIComponent("Help with " + s.service + " (#" + s.id + ")"), mark = "__ISSUE__", url = waLink(s, lg, mark).replace(encodeURIComponent(mark), "");
-    return '<details class="ac-help"><summary><span class="ac-hi">' + HELPI + '</span><span class="ac-ht"><b>Need help with this subscription?</b><small>Quick fixes, or chat with our team on WhatsApp</small></span><span class="ac-hc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></summary>' +
+    return '<details class="ac-help"><summary><span class="ac-hpi">' + HELPI + '</span><span class="ac-ht"><b>Need help with this subscription?</b><small>Quick fixes, or chat with our team on WhatsApp</small></span><span class="ac-hc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></summary>' +
       '<div class="ac-hb" data-u="' + esc(url) + '" data-sub="' + sub + '"><div class="ac-hs"><span class="ac-hn">1</span><b>What is the problem?</b></div>' +
       '<div class="ac-topics">' + topics.map(function (t) { return '<button type="button" class="ac-topic" data-t="' + esc(t) + '">' + esc(t) + "</button>"; }).join("") + "</div>" +
       '<div class="ac-hs"><span class="ac-hn">2</span><b>Add details</b><small>Optional if you picked a topic</small></div>' +
