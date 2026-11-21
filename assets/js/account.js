@@ -130,18 +130,18 @@
     return '<details class="ac-help"><summary>' + HELPI + "<span>Need help with this subscription?</span></summary>" +
       '<div class="ac-hb" data-u="' + esc(url) + '" data-sub="' + sub + '"><p>Tap a common question or type your own. We open WhatsApp with your subscription details already attached.</p>' +
       '<div class="ac-topics">' + topics.map(function (t) { return '<button type="button" class="ac-topic" data-t="' + esc(t) + '">' + esc(t) + "</button>"; }).join("") + "</div>" +
-      '<div class="ac-ta-w"><textarea class="ac-ta" rows="3" maxlength="500" placeholder="Describe your issue, in English or Bangla" aria-label="Describe your issue"></textarea><small class="ac-cc">0 / 500</small></div>' +
+      '<div class="ac-ta-w"><textarea class="ac-ta" rows="3" maxlength="500" placeholder="Describe your issue, in English or Bangla" aria-label="Describe your issue"></textarea><small class="ac-ccn">0 / 500</small></div>' +
       '<button type="button" class="ac-send">' + WAI + "<span>Send on WhatsApp</span></button>" +
       '<div class="ac-alt"><span>Or reach us on</span><a href="https://m.me/streamx.com.bd" target="_blank" rel="noopener">' + MSI + 'Messenger</a><a href="https://instagram.com/streamx.com.bd" target="_blank" rel="noopener">' + IGI + 'Instagram</a><a data-mail href="mailto:streamx.com.bd@gmail.com?subject=' + sub + '">' + MLI + "Email</a></div></div></details>";
   }
   document.addEventListener("click", function (e) {
     var box = e.target.closest && e.target.closest(".ac-hb[data-u]"); if (!box) return;
-    var ta = box.querySelector(".ac-ta"), cc = box.querySelector(".ac-cc"), t;
+    var ta = box.querySelector(".ac-ta"), cc = box.querySelector(".ac-ccn"), t;
     if ((t = e.target.closest(".ac-topic"))) { ta.value = t.dataset.t + ". "; cc.textContent = ta.value.length + " / 500"; box.querySelectorAll(".ac-topic").forEach(function (x) { x.classList.toggle("on", x === t); }); ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); return; }
     if (e.target.closest(".ac-send")) { var v = ta.value.trim(); if (!v) { ta.classList.remove("shake"); void ta.offsetWidth; ta.classList.add("shake"); ta.focus(); return; } window.open(box.dataset.u + encodeURIComponent(v), "_blank", "noopener"); return; }
     var m = e.target.closest("a[data-mail]"); if (m && ta.value.trim()) m.href = "mailto:streamx.com.bd@gmail.com?subject=" + box.dataset.sub + "&body=" + encodeURIComponent(ta.value.trim());
   });
-  document.addEventListener("input", function (e) { var ta = e.target; if (ta.classList && ta.classList.contains("ac-ta")) ta.parentNode.querySelector(".ac-cc").textContent = ta.value.length + " / 500"; });
+  document.addEventListener("input", function (e) { var ta = e.target; if (ta.classList && ta.classList.contains("ac-ta")) ta.parentNode.querySelector(".ac-ccn").textContent = ta.value.length + " / 500"; });
 
   /* Gift cards bought together (same order) are shown as one card with several codes. */
   function groupRows(list) {

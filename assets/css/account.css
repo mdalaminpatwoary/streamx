@@ -348,7 +348,7 @@ h1{margin:10px 0 8px;font-size:clamp(30px,5vw,46px);line-height:1.1;letter-spaci
 .ac-ta:focus{outline:0;border-color:rgba(37,211,102,.7);box-shadow:0 0 0 3px rgba(37,211,102,.15)}
 .ac-ta.shake{animation:acShake .35s}
 @keyframes acShake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
-.ac-cc{position:absolute;right:12px;bottom:8px;font-size:11px;color:#7c86ac;pointer-events:none}
+.ac-ccn{position:absolute;right:12px;bottom:8px;font-size:11px;color:#7c86ac;pointer-events:none}
 .ac-send{margin-top:10px;width:100%;display:inline-flex;align-items:center;justify-content:center;gap:9px;padding:12px 18px;border:0;border-radius:99px;background:linear-gradient(135deg,#25d366,#128c7e);color:#fff;font:800 14px Manrope,system-ui,sans-serif;cursor:pointer;box-shadow:0 10px 26px -12px rgba(37,211,102,.7);transition:transform .2s,filter .2s}
 .ac-send:hover{transform:translateY(-1px);filter:brightness(1.08)}
 .ac-send svg{width:19px;height:19px}
