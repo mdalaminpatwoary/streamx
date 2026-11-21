@@ -201,7 +201,23 @@
     if(ps.length&&best&&best[0]==="problem")return best[2](t+" ("+ps[0].name+")");
     if(best)return best[2](t);
     if(ps.length){ctx.p=ps[0];return{h:ps.map(productCard).join(""),c:ctxChips(ps[0])}}
-    return webSearch(t);
+    return aiAsk(t);
+  }
+  /* Free AI answer (/api/chat). Falls back to the Wikipedia lookup when the AI is not set up, busy, or refuses the question. */
+  let aiOff=false;const aiHist=[];
+  const unwrap=r=>r&&r.p?r.p:r;
+  function aiAsk(t){
+    if(aiOff)return webSearch(t);
+    return {p:fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({messages:aiHist.concat([{role:"user",content:t}]).slice(-6)})})
+      .then(r=>r.json().catch(()=>({})).then(j=>({s:r.status,j})))
+      .then(x=>{
+        if(x.s===503){aiOff=true;return unwrap(webSearch(t))}
+        if(x.s===400&&/personal/i.test(x.j.error||""))return{h:`<p>${esc(x.j.error)}</p>`,c:["Talk to a human"]};
+        if(!x.j||!x.j.reply)return unwrap(webSearch(t));
+        aiHist.push({role:"user",content:t},{role:"assistant",content:x.j.reply});if(aiHist.length>8)aiHist.splice(0,2);
+        const h=x.j.reply.split(/\n{2,}/).map(p=>`<p>${esc(p).replace(/\n/g,"<br>")}</p>`).join("");
+        return{h:h+`<p class="bt-cd">AI-generated answer. Please confirm prices and details at checkout.</p><div class="bt-row">${waBtn("Hi StreamX! "+t)}</div>`,c:["Prices & plans","Help me choose","Talk to a human"]};
+      }).catch(()=>unwrap(webSearch(t)))};
   }
   /* Nothing on StreamX matched: look the question up online (Wikipedia), show a short answer with its source, else hand over to the team. */
   function webSearch(t){

@@ -97,4 +97,4 @@ function priceCart(items) {
   });
 }
 
-module.exports = { config, xhash, epsFetch, getToken, priceCart, clean, stage };
+module.exports = { config, xhash, epsFetch, getToken, priceCart, clean, stage, products };
