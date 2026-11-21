@@ -34,6 +34,14 @@ async function logLogin(email, method, name) {
   }
 }
 
+// Mobile number: Bangladesh numbers are saved as 01XXXXXXXXX; other countries as +<digits> (8 to 15 digits).
+function cleanPhone(v) {
+  const raw = String(v || "").trim(); let d = raw.replace(/\D/g, "");
+  if (/^(?:880|0)?1[3-9]\d{8}$/.test(d)) return "0" + d.replace(/^(?:880|0)/, "");
+  if (raw.startsWith("+") && d.length >= 8 && d.length <= 15) return "+" + d;
+  return "";
+}
+
 module.exports = async (req, res) => {
   res.setHeader("Cache-Control", "no-store");
   const a = String((req.query && req.query.a) || "");
@@ -94,7 +102,9 @@ module.exports = async (req, res) => {
       if (!o) return res.status(401).json({ error: "Please sign in again." });
       const name = String(body.name || "").replace(/[\u0000-\u001f<>]/g, "").replace(/\s+/g, " ").trim().slice(0, 60);
       if (name.length < 2) return res.status(400).json({ error: "Please enter your name (at least 2 letters)." });
-      const row = { email: normEmail(o.e), name, updated_at: new Date().toISOString() };
+      const phone = cleanPhone(body.phone);
+      if (!phone) return res.status(400).json({ error: "Please enter a valid mobile number, for example 01712345678." });
+      const row = { email: normEmail(o.e), name, phone, updated_at: new Date().toISOString() };
       if (body.picture !== undefined) {
         const pic = String(body.picture || "");
         if (pic && !/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(pic)) return res.status(400).json({ error: "That image could not be used. Please choose a JPG or PNG photo." });
@@ -103,7 +113,7 @@ module.exports = async (req, res) => {
       }
       try { await db.rest("POST", "profiles?on_conflict=email", [row], "resolution=merge-duplicates,return=minimal"); }
       catch (e) { console.error("profile not saved", e && e.message); return res.status(424).json({ error: "Profile editing is not available yet. Please try again later." }); }
-      return res.status(200).json({ ok: true, profile: { name, picture: row.picture !== undefined ? row.picture : undefined } });
+      return res.status(200).json({ ok: true, profile: { name, phone, picture: row.picture !== undefined ? row.picture : undefined } });
     }
     if (a === "list") {
       const o = verify(bearer(req), "sess");
@@ -157,10 +167,11 @@ module.exports = async (req, res) => {
           .filter((n) => !n.expires_at || new Date(n.expires_at) > new Date()).map((n) => ({ id: n.id, title: n.title, message: n.message, kind: n.kind, at: n.created_at }));
       } catch (e) { /* notices table not created yet */ }
       let custom = null, editable = true; // the customer's own name and photo (profiles table; may not exist yet)
-      try { custom = ((await db.rest("GET", `profiles?email=eq.${db.q(normEmail(o.e))}&select=name,picture&limit=1`)) || [])[0] || null; } catch (e) { editable = false; }
+      try { custom = ((await db.rest("GET", `profiles?email=eq.${db.q(normEmail(o.e))}&select=name,picture,phone&limit=1`)) || [])[0] || null; }
+      catch (e) { try { custom = ((await db.rest("GET", `profiles?email=eq.${db.q(normEmail(o.e))}&select=name,picture&limit=1`)) || [])[0] || null; } catch (e2) { editable = false; } }
       return res.status(200).json({
         notices, email: o.e, today: dhakaToday(), contact: { name: c.name || "", phone: c.phone || "" },
-        profile: { name: (custom && custom.name) || o.n || c.name || "", picture: custom && custom.picture !== null && custom.picture !== undefined ? custom.picture : (o.pic || ""), provider: o.pv || "", editable, custom: !!(custom && custom.picture) },
+        profile: { name: (custom && custom.name) || o.n || c.name || "", phone: (custom && custom.phone) || c.phone || "", picture: custom && custom.picture !== null && custom.picture !== undefined ? custom.picture : (o.pic || ""), provider: o.pv || "", editable, custom: !!(custom && custom.picture) },
         subscriptions: (rows || []).map((r) => ({ id: r.id, service: r.service, plan: r.plan, months: r.months, start_date: r.start_date, end_date: r.end_date, order_ref: r.order_ref || null, login: access.fromRow(r) })),
         orders: orders.map((r) => ({ id: r.mtid, date: r.paid_at || r.created_at, kind: "online", delivery: r.delivery || "pending", delivered_at: r.delivered_at || null, lines: Array.isArray(r.lines) ? r.lines : [] })).concat(offline).sort((a, b) => Date.parse(b.date) - Date.parse(a.date)),
       });

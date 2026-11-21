@@ -233,7 +233,7 @@
   document.addEventListener("click", function (e) { if (e.target.closest("#bell")) { if (PENDING.length || ANN.length) openNotice(); else flash("You are all caught up. No new updates."); } });
 
   /* /account/#renew=<id> (from the chat assistant) opens that subscription's renew popup */
-  function render(d) { renderCore(d); setTimeout(function () { var m = /renew=(\d+)/.exec(location.hash), b = m && document.querySelector('[data-renew="' + m[1] + '"]'); if (b) { try { history.replaceState(null, "", location.pathname); } catch (e) {} b.click(); } }, 0); }
+  function render(d) { renderCore(d); var pq = d.profile || {}; if (pq.editable !== false && !(pq.name && pq.phone)) setTimeout(function () { openProfile(true); }, 350); setTimeout(function () { var m = /renew=(\d+)/.exec(location.hash), b = m && document.querySelector('[data-renew="' + m[1] + '"]'); if (b) { try { history.replaceState(null, "", location.pathname); } catch (e) {} b.click(); } }, 0); }
   function greet() { var h = new Date().getHours(); return h >= 5 && h < 12 ? "Good morning" : h >= 12 && h < 17 ? "Good afternoon" : "Good evening"; }
   function renderCore(d) {
     $("#login").hidden = true; $("#app").hidden = false; $("#who").textContent = d.email; var fw = $("#fwho"); if (fw) fw.textContent = d.email;
@@ -364,11 +364,11 @@
 
 
   /* Edit profile: display name and a small profile photo, saved to the customer's account. */
-  var pm = $("#pm"), pPic = null; // pPic: undefined = keep, "" = remove, data URL = new photo
+  var pm = $("#pm"), pPic = null, must = false; // pPic: undefined = keep, "" = remove, data URL = new photo
   function paint(el, pic, nm) { el.innerHTML = ""; if (pic) { var im = new Image(); im.alt = ""; im.referrerPolicy = "no-referrer"; im.src = pic; el.appendChild(im); } else el.textContent = ((nm || (DATA && DATA.email) || "?")[0] || "?").toUpperCase(); }
-  function openProfile() { if (!DATA) return; var pf = DATA.profile || {}; pPic = undefined; $("#pname").value = pf.name || ""; $("#pemail").textContent = DATA.email; $("#pe").textContent = ""; paint($("#pav"), pf.picture, pf.name); $("#prm").hidden = !pf.picture; pm.hidden = false; document.documentElement.style.overflow = "hidden"; setTimeout(function () { $("#pname").focus(); }, 50); }
-  function closeProfile() { pm.hidden = true; document.documentElement.style.overflow = ""; }
-  $("#pedit").addEventListener("click", openProfile); $("#pedit2").addEventListener("click", openProfile);
+  function openProfile(force) { if (!DATA) return; var pf = DATA.profile || {}; must = force === true; pPic = undefined; $("#pname").value = pf.name || ""; $("#pphone").value = pf.phone || ""; $("#pemail").textContent = DATA.email; $("#pe").textContent = ""; paint($("#pav"), pf.picture, pf.name); $("#prm").hidden = !pf.picture; pm.classList.toggle("must", must); $("#plead").hidden = !must; $("#psout").hidden = !must; $("#peb").textContent = must ? "Welcome to StreamX" : "Your profile"; $("#pmt").textContent = must ? "Complete your profile" : "Edit profile"; $("#psave").textContent = must ? "Save and continue" : "Save changes"; pm.hidden = false; document.documentElement.style.overflow = "hidden"; setTimeout(function () { $((pf.name ? "#pphone" : "#pname")).focus(); }, 50); }
+  function closeProfile() { if (must) return; pm.hidden = true; document.documentElement.style.overflow = ""; }
+  $("#pedit").addEventListener("click", function () { openProfile(); }); $("#pedit2").addEventListener("click", function () { openProfile(); }); $("#psout").addEventListener("click", function () { must = false; closeProfile(); $("#out").click(); });
   pm.addEventListener("click", function (e) { if (e.target === pm || e.target.closest("[data-pclose]")) closeProfile(); });
   document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !pm.hidden) closeProfile(); });
   $("#pfile").addEventListener("change", function () {
@@ -386,18 +386,20 @@
   $("#pname").addEventListener("input", function () { var a = $("#pav"); if (!a.querySelector("img")) a.textContent = ((this.value || DATA.email)[0] || "?").toUpperCase(); });
   $("#pf").addEventListener("submit", function (e) {
     e.preventDefault(); var nm = $("#pname").value.trim(), er = $("#pe"), b = $("#psave");
-    if (nm.length < 2) { er.textContent = "Please enter your name (at least 2 letters)."; return; }
+    var ph = $("#pphone").value.trim(), pd = ph.replace(/\D/g, "");
+    if (nm.length < 2) { er.textContent = "Please enter your name (at least 2 letters)."; $("#pname").focus(); return; }
+    if (!(/^(?:880|0)?1[3-9]\d{8}$/.test(pd) || (ph.charAt(0) === "+" && pd.length >= 8 && pd.length <= 15))) { er.textContent = "Please enter a valid mobile number, for example 01712345678."; $("#pphone").focus(); return; }
     er.textContent = ""; b.disabled = true; b.textContent = "Saving…";
-    var body = { name: nm }; if (pPic !== undefined) body.picture = pPic;
+    var body = { name: nm, phone: ph }; if (pPic !== undefined) body.picture = pPic;
     fetch("/api/account?a=profile", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + get() }, body: JSON.stringify(body) })
       .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { if (r.status === 401) { set(null); closeProfile(); showLogin("Your session ended. Please sign in again."); throw new Error("signed out"); } if (!r.ok) throw new Error(j.error || "Could not save. Please try again."); return j; }); })
       .then(function () {
         try { sessionStorage.removeItem("sx_acc_pre"); } catch (x) {}
-        DATA.profile = Object.assign({}, DATA.profile, { name: nm }); if (pPic !== undefined) DATA.profile.picture = pPic;
-        paint($("#av"), DATA.profile.picture, nm); $("#gr").textContent = greet(); $("#hi").textContent = nm || DATA.email.split("@")[0]; closeProfile(); flash("Profile updated");
+        DATA.profile = Object.assign({}, DATA.profile, { name: nm, phone: ph }); var wasMust = must; must = false; if (pPic !== undefined) DATA.profile.picture = pPic;
+        paint($("#av"), DATA.profile.picture, nm); $("#gr").textContent = greet(); $("#hi").textContent = nm || DATA.email.split("@")[0]; closeProfile(); flash(wasMust ? "Welcome aboard, " + nm.split(" ")[0] + "!" : "Profile updated");
       })
       .catch(function (x) { if (x.message !== "signed out") er.textContent = x.message; })
-      .then(function () { b.disabled = false; b.textContent = "Save changes"; });
+      .then(function () { b.disabled = false; b.textContent = must ? "Save and continue" : "Save changes"; });
   });
   /* Renew: confirm the contact details, then open the EPS payment page. Expiry is extended automatically once payment is confirmed. */
   var rm = $("#rm"), cur = null;

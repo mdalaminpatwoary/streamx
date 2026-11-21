@@ -71,3 +71,10 @@ button.ac-stat{cursor:pointer}button.ac-stat:hover{background:rgba(255,255,255,.
   .ac-tabs button svg{display:none}
   .ml-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:22px 10px}
 }
+
+/* Profile setup (first sign-in) */
+.pf-lead{margin:-4px 0 16px;color:var(--mut);font-size:14px;line-height:1.55}
+.pf-req{margin-left:6px;padding:2px 7px;border-radius:99px;background:rgba(255,138,126,.14);color:#ff9d92;font:800 10px Manrope,sans-serif;letter-spacing:.08em;text-transform:uppercase;vertical-align:middle}
+#pm.must [data-pclose]{display:none}
+.pf-so{display:block;margin:12px auto 0;padding:6px 10px;border:0;background:none;color:var(--mut);font:700 13px Manrope,sans-serif;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.pf-so:hover{color:#fff}.pf-so[hidden]{display:none}

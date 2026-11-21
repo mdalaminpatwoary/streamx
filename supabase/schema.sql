@@ -146,3 +146,7 @@ notify pgrst, 'reload schema';
 -- Where an admin-added purchase came from (WhatsApp, Facebook, Instagram...). Run once.
 alter table public.subscriptions add column if not exists channel text;
 notify pgrst, 'reload schema';
+
+-- Customer mobile number on the profile (required when an account is first set up).
+alter table public.profiles add column if not exists phone text;
+notify pgrst, 'reload schema';

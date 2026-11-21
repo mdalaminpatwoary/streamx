@@ -12,7 +12,7 @@
 <script>try{if(localStorage.getItem("sx_session"))document.documentElement.classList.add("hs")}catch(e){}</script>
 <link rel="stylesheet" href="/assets/css/account.css?v=27">
 <link rel="stylesheet" href="/assets/css/title-sheet.css?v=1">
-<link rel="stylesheet" href="/assets/css/account-v2.css?v=3">
+<link rel="stylesheet" href="/assets/css/account-v2.css?v=4">
 </head>
 <body>
 <div class="ac-top"><a href="/"><img src="/assets/img/brand/logo.png" alt="StreamX" width="40" height="40"></a><a class="back" href="/">← Back to StreamX</a></div>
@@ -100,8 +100,9 @@
 <div class="ac-modal" id="pm" hidden role="dialog" aria-modal="true" aria-labelledby="pmt">
   <form class="ac-card ac-mbox pf" id="pf" novalidate>
     <button class="ac-x" type="button" data-pclose aria-label="Close">✕</button>
-    <div class="ac-eyebrow">Your profile</div>
+    <div class="ac-eyebrow" id="peb">Your profile</div>
     <h2 class="pf-t" id="pmt">Edit profile</h2>
+    <p class="pf-lead" id="plead" hidden>Add your name and mobile number to finish setting up your account. We use them for your orders and to reach you about your subscriptions.</p>
     <div class="pf-ph">
       <div class="ac-av pf-av" id="pav"></div>
       <div class="pf-pb">
@@ -111,11 +112,15 @@
         <small>JPG or PNG. It is resized and saved to your account.</small>
       </div>
     </div>
-    <label for="pname">Your name</label>
-    <input class="ac-in" id="pname" maxlength="60" autocomplete="name" placeholder="Full name">
+    <label for="pname">Full name <span class="pf-req">Required</span></label>
+    <input class="ac-in" id="pname" maxlength="60" autocomplete="name" placeholder="Full name" required>
+    <label for="pphone">Mobile number <span class="pf-req">Required</span></label>
+    <input class="ac-in" id="pphone" type="tel" inputmode="tel" maxlength="20" autocomplete="tel" placeholder="01712345678" required>
+    <p class="rn-h">Bangladesh numbers like 01712345678. From another country? Start with + and your country code.</p>
     <p class="rn-h">Your email <b id="pemail"></b> cannot be changed here.</p>
     <p class="ac-msg" id="pe" role="alert"></p>
     <button class="ac-btn rn-go" id="psave" type="submit">Save changes</button>
+    <button class="pf-so" id="psout" type="button" hidden>Not now? Sign out</button>
   </form>
 </div>
 <div class="ac-modal" id="rm" hidden role="dialog" aria-modal="true" aria-labelledby="rt">
@@ -147,7 +152,7 @@
 <script src="/assets/js/data/catalog.js"></script>
 <script src="/assets/js/data/logos.js?v=20261121a"></script>
 <script src="/assets/js/data/countries.js?v=1"></script>
-<script src="/assets/js/account.js?v=28"></script>
+<script src="/assets/js/account.js?v=29"></script>
 <script src="/assets/js/features/mylist.js?v=1"></script>
 <script src="/assets/js/features/title-sheet.js?v=1"></script>
 <script src="/assets/js/features/account-list.js?v=2"></script>
