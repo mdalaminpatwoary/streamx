@@ -2,6 +2,9 @@
   "functions": {
     "api/*.js": { "includeFiles": "assets/js/data/catalog.js" }
   },
+  "rewrites": [
+    { "source": "/auth/microsoft", "destination": "/api/oauth?a=cb&p=microsoft" }
+  ],
   "headers": [
     {
       "source": "/(.*)",

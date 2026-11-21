@@ -37,7 +37,7 @@ module.exports = async (req, res) => {
   try {
     if (a === "config") return res.status(200).json({ google: ready("google"), microsoft: ready("microsoft"), apple: ready("apple"), enabled: !!secret() });
     if (!secret() || !P[k] || !ready(k)) return fail(res, "This sign-in option is not available yet.");
-    const prov = P[k], redirect = site(req) + "/api/oauth?a=cb&p=" + k;
+    const prov = P[k], redirect = site(req) + (k === "microsoft" ? "/auth/microsoft" : "/api/oauth?a=cb&p=" + k); // Azure rejects redirect URIs with a query string, so Microsoft uses a clean path (rewritten in vercel.json)
 
     if (a === "start") {
       const nonce = crypto.randomBytes(16).toString("hex");
@@ -45,7 +45,7 @@ module.exports = async (req, res) => {
       const q = new URLSearchParams({ client_id: prov.id(), redirect_uri: redirect, response_type: "code", scope: prov.scope, state, nonce, prompt: "select_account" });
       if (prov.post) { q.set("response_mode", "form_post"); q.delete("prompt"); }
       res.statusCode = 302;
-      res.setHeader("Set-Cookie", `sx_oauth=${nonce}; Path=/api/oauth; Max-Age=600; HttpOnly; Secure; SameSite=None`);
+      res.setHeader("Set-Cookie", `sx_oauth=${nonce}; Path=/; Max-Age=600; HttpOnly; Secure; SameSite=None`);
       res.setHeader("Location", prov.auth + "?" + q.toString());
       return res.end();
     }
