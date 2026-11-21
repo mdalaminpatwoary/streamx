@@ -110,3 +110,28 @@ button.bt-btn{appearance:none}
 .cw-unread{position:absolute;top:-4px;left:-4px;z-index:3;min-width:19px;height:19px;padding:0 5px;border-radius:99px;display:grid;place-items:center;background:#ed3124;color:#fff;font:800 11px Manrope,system-ui,sans-serif;border:2px solid #0b0e1f;animation:btPop 2s ease-in-out infinite}
 @keyframes btPop{0%,100%{transform:scale(1)}50%{transform:scale(1.18)}}
 @media(prefers-reduced-motion:reduce){.bt-rv,.bt-chip,.bt-opt,.bt-card li,.bt-logos img,.bt-h,.bt-btn.bt-go::after,.cw-unread,.bt-av i,.bt-pn i{animation:none!important;opacity:1}}
+
+/* human handoff + combo */
+.bt-agent{margin-top:2px;padding:12px;border-radius:16px;border:1px solid rgba(37,211,102,.3);background:linear-gradient(180deg,rgba(37,211,102,.1),rgba(6,9,22,.6))}
+.bt-ag-top{display:flex;align-items:center;gap:12px}
+.bt-ag-av{position:relative;flex:none;width:52px;height:52px}
+.bt-ag-av img{width:52px;height:52px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,.25);display:block}
+.bt-ag-av i{position:absolute;right:0;bottom:1px;width:12px;height:12px;border-radius:50%;background:#35d07f;border:2px solid #101534;animation:btOn 2.2s infinite}
+.bt-ag-top b{display:block;font:800 15px Manrope,system-ui,sans-serif;color:#fff}
+.bt-ag-top small{display:block;margin-top:2px;font-size:12px;color:#7ee2a8}
+.bt-ag-wa{display:flex;align-items:center;gap:11px;margin-top:12px;padding:11px 14px;border-radius:14px;background:linear-gradient(135deg,#25d366,#128c7e);color:#fff;text-decoration:none;box-shadow:0 10px 24px -12px rgba(37,211,102,.8);transition:transform .2s}
+.bt-ag-wa:hover{transform:translateY(-1px)}
+.bt-ag-wa svg{flex:none;width:26px;height:26px}
+.bt-ag-wa span{font:800 14px Manrope,system-ui,sans-serif;line-height:1.25}
+.bt-ag-wa small{display:block;font-weight:600;font-size:11.5px;opacity:.9}
+.bt-ag-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.bt-ag-row a{display:flex;align-items:center;justify-content:center;gap:8px;padding:10px;border-radius:12px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.06);color:#fff;text-decoration:none;font:700 13px Manrope,system-ui,sans-serif;transition:background .2s,transform .2s}
+.bt-ag-row a:hover{background:rgba(255,255,255,.12);transform:translateY(-1px)}
+.bt-ag-row svg{width:18px;height:18px;color:#ffb3aa}
+.bt-ag-mail{display:block;margin-top:9px;text-align:center;font-size:12px;color:#a9b3d6;text-decoration:underline}
+.bt-combo{margin:8px 0 2px;padding:11px 12px;border-radius:14px;border:1px dashed rgba(237,49,36,.5);background:rgba(237,49,36,.07)}
+.bt-combo ul{list-style:none;margin:8px 0 0;padding:0}
+.bt-combo li{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-top:1px solid rgba(255,255,255,.07);font-size:12.5px}
+.bt-combo li b{color:#fff;white-space:nowrap}.bt-combo s{color:#8e99c0;font-weight:500;margin-left:4px}
+.bt-sm{color:#9aa6d0;font-weight:500;font-size:11px}
+.bt-card ul li s{color:#8e99c0;font-weight:500;margin-left:4px}

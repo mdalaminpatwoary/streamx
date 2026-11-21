@@ -4,12 +4,12 @@
 (function(){
   const root=$("#cw");if(!root||typeof PRODUCTS==="undefined")return;
   const esc=t=>String(t).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-  const calm=matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const calm=matchMedia("(prefers-reduced-motion: reduce)").matches,NAME="Muhammad Al-Amin";
   const LIST=PRODUCTS.filter(p=>p.cat!=="18+"&&p.variants&&p.variants.length);
   const pl0=v=>v.plans&&v.plans[0];
   const minOf=p=>{const a=p.variants.map(v=>pl0(v)&&pl0(v).p).filter(x=>x>0);return a.length?Math.min.apply(null,a):0};
   const idx=p=>PRODUCTS.indexOf(p);
-  const canPick=p=>!p.gift&&!p.packs&&typeof buyNow==="function"&&p.variants.some(v=>v.plans&&v.plans.length);
+  const canPick=p=>!p.gift&&typeof buyNow==="function"&&p.variants.some(v=>v.plans&&v.plans.length);
   const norm=t=>(" "+String(t).toLowerCase().replace(/[^a-z0-9ঀ-৿]+/g," ").trim()+" ");
   const has=(q,k)=>/[^\x00-\x7f]/.test(k)?q.indexOf(k)>-1:k.length<=3?q.indexOf(" "+k+" ")>-1:q.indexOf(" "+k)>-1;
   const any=(q,ks)=>ks.reduce((n,k)=>n+(has(q,k)?(k.indexOf(" ")>0?2:1):0),0);
@@ -39,7 +39,19 @@
   const logo=(f,a)=>`<img src="/assets/img/pay/${f}" alt="${a}" height="22" onerror="this.replaceWith(Object.assign(document.createElement('span'),{textContent:this.alt}))">`;
   const mini=a=>`<ul class="bt-mini">${a.map(x=>`<li><a href="#plan=${slug(x[0].name)}" data-close>${esc(x[0].name)}</a><b>${x[1]?"from "+taka(x[1]):"ask us"}</b></li>`).join("")}</ul>`;
 
+  /* combo packs that include this service (e.g. Entertainment Combo = Netflix + Prime Video) */
+  const comboOf=p=>{if(p.cat==="Bundle")return[];const n=norm(p.name).trim().replace(/^amazon /,"");return LIST.filter(b=>b.cat==="Bundle"&&b.packs&&norm(b.desc+" "+b.name).indexOf(" "+n)>-1)};
+  const packRows=b=>`<ul>${b.packs.slice(0,4).map(k=>`<li><span>${esc(k.n)}<small class="bt-sm"> ${esc(k.tag||"")}</small></span><b>${taka(k.p)}${k.old>k.p?` <s>${taka(k.old)}</s>`:""}</b></li>`).join("")}</ul>`;
+  function comboHtml(b){
+    const best=b.packs.reduce((m,k)=>Math.max(m,(k.old||k.p)-k.p),0);
+    return `<div class="bt-combo"><div class="bt-pt">Combo deal<em>${best?"Save up to "+taka(best):"Better together"}</em></div><p class="bt-cd">${esc(b.name)}: ${esc(b.desc)}, together in one pack (monthly price).</p>${packRows(b)}<div class="bt-row">${act("Choose combo &amp; pay online","pick",`data-i="${idx(b)}"`," bt-go")}${btn("View combo","#plan="+slug(b.name))}</div></div>`;
+  }
   function productCard(p){
+    if(p.packs)return `<div class="bt-card"><div class="bt-ct">${esc(p.name)}<em>${esc(p.cat)}</em></div><p class="bt-cd">${esc(p.desc)}, together in one pack (monthly price).</p>${packRows(p)}<p class="bt-pn"><i></i>Pay online with bKash, Nagad, Rocket, Upay or card</p><div class="bt-row">${act("Choose pack &amp; pay online","pick",`data-i="${idx(p)}"`," bt-go")}${btn("View combo","#plan="+slug(p.name))}${btn("WhatsApp",wa("Hi StreamX! I want the "+p.name+"."),"  bt-wa")}</div></div>`;
+    const cb=comboOf(p).map(comboHtml).join("");
+    return productCard1(p)+cb;
+  }
+  function productCard1(p){
     const rows=p.variants.slice(0,4).map(v=>{const x=pl0(v);return x?`<li><span>${esc(v.n)}</span><b>${taka(x.p)}<small> / ${esc(x.v.toLowerCase())}</small></b></li>`:""}).join("");
     const long=p.variants.map(v=>v.plans&&v.plans[v.plans.length-1]).filter(Boolean).sort((a,b)=>b.m-a.m)[0];
     const gift=p.gift&&typeof GIFT!=="undefined";
@@ -65,6 +77,10 @@
     if(!r.length)return `<p>I do not have a match${n?" under "+taka(n):""} there yet. Message us and we will find the best fit.</p>`+waBtn("Hi StreamX! "+(label||"Budget")+(n?" under "+taka(n):"")+". What do you suggest?");
     return `<p>${label?esc(label)+(n?" up to "+taka(n):""):n?"Plans you can get for "+taka(n)+" or less":"Our most affordable plans"} (1 month, from):</p>${mini(r)}`;
   }
+  const I_WA='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97s-.47-.15-.67.15-.77.97-.94 1.16-.35.22-.64.08c-.3-.15-1.26-.46-2.4-1.48-.88-.79-1.48-1.76-1.65-2.06s-.02-.46.13-.6c.13-.13.3-.35.45-.52s.2-.3.3-.5.05-.37-.02-.52c-.08-.15-.67-1.61-.92-2.2-.24-.58-.49-.5-.67-.5h-.57c-.2 0-.52.07-.8.37s-1.04 1.02-1.04 2.48 1.07 2.88 1.21 3.08c.15.2 2.1 3.2 5.08 4.49.71.3 1.26.49 1.7.63.71.23 1.36.2 1.87.12.57-.08 1.76-.72 2-1.41s.25-1.29.17-1.41c-.07-.13-.27-.2-.57-.35M12.05 21.8a9.9 9.9 0 0 1-5.03-1.38l-.36-.21-3.74.98 1-3.65-.24-.37a9.86 9.86 0 0 1-1.51-5.26c0-5.45 4.44-9.89 9.9-9.89 2.64 0 5.12 1.03 6.99 2.9a9.82 9.82 0 0 1 2.9 7c0 5.46-4.44 9.9-9.9 9.9M20.5 3.49A11.8 11.8 0 0 0 12.05 0C5.5 0 .16 5.34.16 11.89c0 2.1.55 4.14 1.59 5.95L.06 24l6.3-1.65a11.88 11.88 0 0 0 5.68 1.45c6.55 0 11.9-5.34 11.9-11.9 0-3.18-1.24-6.17-3.48-8.41"/></svg>';
+  const I_MS='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3C6.9 3 3 6.8 3 11.5c0 2.6 1.2 4.8 3.1 6.3V21l3-1.7c.9.2 1.8.4 2.9.4 5.1 0 9-3.8 9-8.5S17.1 3 12 3z"/><path d="m7.5 13.5 3.2-3.3 2.2 2 3.6-2.7"/></svg>';
+  const I_IG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r=".6"/></svg>';
+  const agentHtml=()=>`<p>Sure. A real person is ready to help you.</p><div class="bt-agent"><div class="bt-ag-top"><span class="bt-ag-av"><img src="/assets/img/brand/al-amin.webp" alt="${NAME}" width="52" height="52"><i></i></span><div><b>${NAME}</b><small>StreamX &middot; available for help</small></div></div><a class="bt-ag-wa" href="${esc(wa("Hi Muhammad Al-Amin! I need help."))}" target="_blank" rel="noopener">${I_WA}<span>Chat on WhatsApp<small>+880 1312-850241 &middot; 24/7</small></span></a><div class="bt-ag-row"><a href="https://m.me/streamx.com.bd" target="_blank" rel="noopener">${I_MS}Messenger</a><a href="https://instagram.com/streamx.com.bd" target="_blank" rel="noopener">${I_IG}Instagram</a></div><a class="bt-ag-mail" href="mailto:streamx.com.bd@gmail.com">streamx.com.bd@gmail.com</a></div>`;
   const catsHtml=()=>{const m={};LIST.forEach(p=>{m[p.cat]=(m[p.cat]||0)+1});return `<p>We have ${LIST.length} services. Pick a group or type a service name:</p>`+chips(Object.keys(m).map(c=>c==="Bundle"?"Bundles":c).concat(["Help me choose"]))};
   const byCat=c=>{const a=LIST.filter(p=>p.cat===c||(c==="Bundles"&&p.cat==="Bundle"));return a.length?`<p>${esc(c)}:</p>${mini(a.map(p=>[p,minOf(p)]))}`:""};
   const payHtml=()=>`<p>You can pay online or manually. Online is the fastest.</p>
@@ -80,7 +96,7 @@
   }
   function durHtml(p,vi){
     const v=p.variants[vi],b=pl0(v),i=idx(p);
-    return `<p>${esc(p.name)}${p.variants.length>1?" · "+esc(v.n):""}: how long?</p><div class="bt-opts">${v.plans.map((x,k)=>{const mo=x.p/x.m,sv=Math.round((1-mo/(b.p/b.m))*100);return `<button type="button" class="bt-opt" style="--i:${k}" data-act="dur" data-i="${i}" data-v="${vi}" data-k="${k}"><b>${esc(x.v)}</b><small>${taka(Math.round(mo))} / month${sv>=3&&k>0?` · save ${sv}%`:""}</small><span>${taka(x.p)}</span></button>`}).join("")}</div>`;
+    return `<p>${esc(p.name)}${p.variants.length>1?" · "+esc(v.n):""}: ${p.packs?"which pack?":"how long?"}</p><div class="bt-opts">${v.plans.map((x,k)=>{const mo=x.p/x.m,sv=Math.round((1-mo/(b.p/b.m))*100);return `<button type="button" class="bt-opt" style="--i:${k}" data-act="dur" data-i="${i}" data-v="${vi}" data-k="${k}"><b>${esc(x.v)}</b><small>${p.packs&&p.packs[k]?esc(p.packs[k].tag)+" · "+taka(x.p)+" / month":taka(Math.round(mo))+" / month"+(sv>=3&&k>0?" · save "+sv+"%":"")}</small><span>${taka(x.p)}</span></button>`}).join("")}</div>`;
   }
   function sumHtml(i,vi,k){
     const p=PRODUCTS[i],v=p.variants[vi],x=v.plans[k],d=`data-i="${i}" data-v="${vi}" data-k="${k}"`;
@@ -126,7 +142,7 @@
   const INT=[
    ["greet",["hi","hello","hey","salam","assalamu","assalamualaikum","good morning","good evening","হাই","হ্যালো","সালাম","আসসালামু"],()=>({h:`<p>Hi! I'm the StreamX assistant. Ask me about prices, plans, payment, delivery or your account, or let me help you choose.</p>`,c:["Prices & plans","Help me choose","Payment methods","My login details"]})],
    ["thanks",["thanks","thank","thx","shukriya","ধন্যবাদ","থ্যাংক"],()=>({h:`<p>You're welcome! Anything else I can help with?</p>`,c:["Prices & plans","Talk to a human"]})],
-   ["human",["human","agent","real person","talk to","speak to","contact","customer support","need support","get support","call","phone number","whatsapp number","messenger","instagram","email","যোগাযোগ","সাপোর্ট","নাম্বার"],()=>({h:`<p>Our team is on WhatsApp 24/7: +880 1312-850241. You can also reach us here:</p><div class="bt-row">${waBtn("Hi StreamX!")}${btn("Messenger","https://m.me/streamx.com.bd")}${btn("Instagram","https://instagram.com/streamx.com.bd")}${btn("Email","mailto:streamx.com.bd@gmail.com")}</div>`,c:["Prices & plans","Payment methods"]})],
+   ["human",["human","admin","real person","real assistant","assistant","talk to","speak to","speak with","contact","customer support","need support","get support","call","phone number","whatsapp number","messenger","instagram","email","owner","manager","যোগাযোগ","সাপোর্ট","নাম্বার","এডমিন","অ্যাডমিন"],()=>({h:agentHtml(),c:["Prices & plans","Payment methods"]})],
    ["choose",["help me choose","recommend","suggest","which service","what should i","not sure","confused","best for","suggestion","help me pick","which one should"],()=>({h:`<p>Happy to help. What will you mostly use it for?</p>`,c:Object.keys(INTERESTS)})],
    ["order",["order","buy","purchase","checkout","cart","how to get","কিভাবে","কীভাবে","অর্ডার","কিনব","কিনতে"],()=>({h:faq(0)+`<div class="bt-row">${btn("Browse plans","#pricing"," bt-go")}</div>`,c:["Payment methods","Delivery time","Prices & plans"]})],
    ["delivery",["deliver","how long","how fast","instant","when will","wait","ডেলিভারি","কতক্ষণ","কত সময়"],()=>({h:faq(1),c:["How do I order?","Payment methods","My login details"]})],
@@ -146,7 +162,7 @@
   ];
   const RULES=KB.concat(INT);
   const CATNAMES={"streaming":"Streaming","ai tools":"AI Tools","music & audio":"Music & Audio","music":"Music & Audio","productivity":"Productivity","learning":"Learning","gift cards":"Gift Cards","virtual cards":"Virtual Cards","bundles":"Bundles"};
-  const LITE=["catalog","cheap","devices","renew","order","delivery","greet","payment","login"];
+  const LITE=["bundle","catalog","cheap","devices","renew","order","delivery","greet","payment","login"];
 
   function ctxChips(p){return [p.name+" devices","How do I pay online?","Talk to a human"]}
   function answer(raw){
