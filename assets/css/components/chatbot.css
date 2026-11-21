@@ -207,3 +207,6 @@ button.bt-btn{appearance:none}
 
 .bt-web .bt-wt{margin:6px 0 10px;font-size:13.5px;line-height:1.55;color:#d6dcf3}
 .bt-wl{display:inline-flex;font-weight:800;font-size:12.5px;color:#ff8a7e;text-decoration:none}.bt-wl:hover{text-decoration:underline}
+
+.bt-lk{appearance:none;background:none;border:0;padding:6px 0 0;margin:0;font:600 12px Manrope,system-ui,sans-serif;color:#9fb0ff;cursor:pointer;text-align:left;display:block}
+.bt-lk:hover{color:#fff;text-decoration:underline}

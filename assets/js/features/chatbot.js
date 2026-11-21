@@ -335,7 +335,7 @@
   }
   function listItems(items,empty){
     if(!items.length)return empty;
-    return `<div class="bt-sublist">${items.slice(0,8).map(m=>`<div class="bt-card bt-title">${m.p?`<img class="bt-po" src="https://image.tmdb.org/t/p/w154${esc(m.p)}" alt="" width="54" height="81" loading="lazy">`:""}<div class="bt-tb">${lbl(m)}<div class="bt-row"><button type="button" class="bt-btn" data-act="lf" data-find="${esc(m.t)}">Where to watch</button></div></div></div>`).join("")}</div>${items.length>8?`<p class="bt-cd">Showing 8 of ${items.length}. Open the full list in My account.</p>`:""}<div class="bt-row">${btn("Open My account","/account/#mylist")}</div>`;
+    return `<div class="bt-sublist">${items.slice(0,8).map(m=>`<div class="bt-card bt-title">${m.p?`<img class="bt-po" src="https://image.tmdb.org/t/p/w154${esc(m.p)}" alt="" width="54" height="81" loading="lazy">`:""}<div class="bt-tb">${lbl(m)}<div class="bt-row"><button type="button" class="bt-btn" data-act="lf" data-find="${esc(m.t)}">Where to watch</button></div><button type="button" class="bt-lk" data-act="ld" data-k="${m.k}" data-id="${m.id}" data-t="${esc(m.t)}">View details &rsaquo;</button></div></div>`).join("")}</div>${items.length>8?`<p class="bt-cd">Showing 8 of ${items.length}. Open the full list in My account.</p>`:""}<div class="bt-row">${btn("Open My account","/account/#mylist")}</div>`;
   }
   const getJ=u=>fetch(u,{headers:token()&&/account/.test(u)?{Authorization:"Bearer "+token()}:{}}).then(r=>r.json().then(j=>{if(!r.ok){const e=new Error(j.error||"error");e.status=r.status;throw e}return j}));
   const failH=e=>`<p>${e&&e.status===401?"Your session ended. Please sign in again.":"I could not look that up just now. Please try again in a moment."}</p>`;
@@ -385,7 +385,11 @@
     if(known)return null;
     return {p:getJ("/api/catalog?a=find&q="+encodeURIComponent(name)).then(f=>{
       const m=f.list&&f.list[0];if(!m){const w=webSearch(name);return w.p?w.p:w}
-      return getJ("/api/title?id="+m.id+"&k="+m.k).then(d=>{
+      return getJ("/api/title?id="+m.id+"&k="+m.k).then(d=>infoRender(d,kind));
+    }).catch(e=>({h:failH(e),c:["Talk to a human"]}))};
+  }
+  function infoRender(d,kind){
+    {
         const dirTxt=d.dir?esc(d.dir):"",cast=(d.cast||[]).slice(0,5).map(c=>esc(c.n)).join(", ");
         const kindW=d.k==="tv"?"series":"movie",yr=d.y?" ("+esc(d.y)+")":"";
         const run=d.k==="tv"?(d.seasons?d.seasons+" season"+(d.seasons>1?"s":""):""):(d.rt?Math.floor(d.rt/60)+"h "+(d.rt%60)+"m":"");
@@ -397,8 +401,7 @@
         const ov=d.o?esc(d.o.length>300?d.o.slice(0,300).replace(/[^.!?]*$/,"")||d.o.slice(0,300)+"…":d.o):"";
         const card=`<div class="bt-card bt-title">${d.p?`<img class="bt-po" src="https://image.tmdb.org/t/p/w154${esc(d.p)}" alt="" width="54" height="81" loading="lazy">`:""}<div class="bt-tb"><span class="bt-tt"><b>${esc(d.t)}</b><small>${[d.y,(d.g||[]).slice(0,2).join(", "),d.v?"★ "+d.v:"",kindW==="series"?"Series":"Movie"].filter(Boolean).join(" · ")}</small></span>${ov?`<p class="bt-wt">${ov}</p>`:""}${kind!=="dir"&&dirTxt?`<p class="bt-cd">${d.k==="tv"?"Created by ":"Directed by "}${dirTxt}</p>`:""}${kind!=="cast"&&cast?`<p class="bt-cd">Cast: ${cast}</p>`:""}<div class="bt-row"><button type="button" class="bt-btn" data-act="lf" data-find="${esc(d.t)}">Where to watch</button>${d.imdb?`<a class="bt-btn" href="https://www.imdb.com/title/${esc(d.imdb)}/" target="_blank" rel="noopener">IMDb</a>`:""}</div></div></div>`;
         return{h:(lead||`<p>Here is what I found:</p>`)+card+`<p class="bt-cd">Details come from TMDB.</p>`,c:["Top rated","What streaming services do you have?","Talk to a human"]};
-      });
-    }).catch(e=>({h:failH(e),c:["Talk to a human"]}))};
+    }
   }
   function watchRoute(q,ql,t){
     const iq=infoQ(t);if(iq){const r=titleInfo(iq[0],iq[1]);if(r)return r}
@@ -421,6 +424,7 @@
   }
   function listAct(el){
     const a=el.dataset.act;
+    if(a==="ld"){reply("Details: "+el.dataset.t,{p:getJ("/api/title?id="+el.dataset.id+"&k="+el.dataset.k).then(d=>infoRender(d,"plot")).catch(e=>({h:failH(e),c:["Talk to a human"]}))});return}
     if(a==="lf"){reply("Where to watch "+el.dataset.find,findTitle(el.dataset.find));return}
     if(!token()){reply(a==="lw"?"Add to wishlist":"Mark as watched",{h:signIn(),c:["Top rated"]});return}
     const k=el.dataset.k,id=el.dataset.id,s=a==="lw"?"wish":"watched";
@@ -503,7 +507,7 @@
   function doAct(el){
     const a=el.dataset.act,i=+el.dataset.i,v=+el.dataset.v,k=+el.dataset.k,p=PRODUCTS[i];
     if(a==="eye"||a==="cp"){secretAct(el);return}
-    if(a==="lw"||a==="lv"||a==="lf"){listAct(el);return}
+    if(a==="lw"||a==="lv"||a==="lf"||a==="ld"){listAct(el);return}
     if(busy)return;
     if(a==="sub"){loadAcc().then(()=>{const x=subById(el.dataset.sid);if(x)reply(x.service,{h:detailHtml(x),c:["My subscriptions","Renew my plan","My orders"]})});return}
     if(a==="pick"){ctx.p=p;reply("Choose a plan for "+p.name,{h:typeHtml(p)});return}
