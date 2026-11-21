@@ -391,7 +391,7 @@ h1{margin:10px 0 8px;font-size:clamp(30px,5vw,46px);line-height:1.1;letter-spaci
 .rn .ac-msg:empty{display:none}
 .rn-go{display:flex;width:100%;margin-top:18px;padding:14px 20px;font-size:15.5px}
 .rn-eps{margin-top:12px;padding:8px 12px;border-radius:14px;background:#fff;box-sizing:border-box;width:100%}
-.rn-eps img{display:block;width:100%;height:auto;max-height:46px;object-fit:contain}
+.rn-eps img{display:block;width:100%;height:auto;max-height:58px;object-fit:contain}
 .rn-fine{list-style:none;margin:14px 0 0;padding:0;display:grid;gap:8px}
 .rn-fine li{display:flex;gap:9px;align-items:flex-start;font-size:12.5px;line-height:1.45;color:var(--mut)}
 .rn-fine svg{flex:none;width:15px;height:15px;margin-top:1px;color:#6ee7b7}
