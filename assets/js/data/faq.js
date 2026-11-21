@@ -11,5 +11,6 @@ const FAQS=[
  ["How long do gift cards last, and can I buy several?","Gift cards are valid for 6 months. You can order several cards of different amounts in one order, and each code appears in My account once delivered."],
  ["Can I choose how long I subscribe, and renew?","Yes. Most products come in 1 month, 6 month and 1 year plans, and some in 18 month plans. Longer plans usually cost less per month. Renew from My account, or message us before your validity ends. Renewals are not automatic, so we only charge when you choose to renew."],
  ["Can the chat assistant help me?","Yes. The assistant at the bottom right of every page answers questions about prices, plans, payment and delivery, compares plans, helps you choose, and can take you to checkout. If you are signed in, it can also show your subscriptions, days left, login details and orders."],
- ["Can I talk to a real person?","Yes. Ask the chat assistant to talk to a human, or message Muhammad Al-Amin directly on WhatsApp, Messenger or Instagram. A real person will reply."]
+ ["Can I talk to a real person?","Yes. Ask the chat assistant to talk to a human, or message Muhammad Al-Amin directly on WhatsApp, Messenger or Instagram. A real person will reply."],
+ ["Does StreamX use cookies or track me?","No advertising or tracking cookies. Your browser only keeps what the site needs, such as your sign-in session, cart and chat on your own device. Details like passwords and PINs stay hidden until you tap Show. Read the Privacy Policy for the full details."]
 ];
