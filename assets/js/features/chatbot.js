@@ -179,6 +179,7 @@
     if(ql==="return policy")return KB.find(k=>k[0]==="policy")[2]();
     if(CATNAMES[ql]){const h=byCat(CATNAMES[ql]);if(h)return{h,c:["Help me choose","Prices & plans","Talk to a human"]}}
     let ps=findProducts(q);
+    const ar=acctRoute(q,ql,ps);if(ar)return ar;
     const scored=RULES.map(r=>[r,any(q,r[1])]).filter(x=>x[1]>0).sort((a,b)=>b[1]-a[1]);
     const best=scored.length?scored[0][0]:null;
     const explain=any(q,["difference","which plan","best plan","plan types","plan type","which one","better","what is the best","which is best"])>0;
@@ -201,6 +202,7 @@
     return{h:`<p>I'm not sure about that one. Send your question to our team and we will reply on WhatsApp.</p>`+waBtn("Hi StreamX! "+t),c:["Prices & plans","Help me choose","How do I order?","Payment methods"]};
   }
 
+  /* acct block is added after the UI elements exist */
   /* ---------- UI ---------- */
   const panel=document.createElement("section");panel.className="bt";panel.id="bt";panel.setAttribute("aria-label","StreamX assistant");panel.hidden=true;
   panel.innerHTML=`<header class="bt-h"><span class="bt-av"><img src="/assets/img/brand/al-amin.webp" alt="" width="40" height="40"><i></i></span><div><b>StreamX assistant</b><small id="btS"><span>Instant answers. Real people on WhatsApp.</span></small></div><button type="button" class="bt-rs" aria-label="Start over" title="Start over"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5"/></svg></button><button type="button" class="bt-x" aria-label="Close chat">&times;</button></header>
@@ -210,8 +212,115 @@
   const log=panel.querySelector("#btLog"),inp=panel.querySelector("#btI"),stat=panel.querySelector("#btS");
   const IDLE="<span>Instant answers. Real people on WhatsApp.</span>";
   let started=false,busy=false,lastBtn=$("#cwBtn");
+
+  /* ---------- signed-in customers: their own subscriptions, details and orders (secrets stay hidden until the customer taps Show) ---------- */
+  const token=()=>{try{return localStorage.getItem("sx_session")}catch(e){return null}};
+  let ACC=null,accAt=0;
+  const dayN=(a,b)=>Math.round((Date.parse(b+"T00:00:00Z")-Date.parse(a+"T00:00:00Z"))/864e5);
+  const MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  const fdate=iso=>{const d=new Date(iso+"T00:00:00Z");return d.getUTCDate()+" "+MON[d.getUTCMonth()]+" "+d.getUTCFullYear()};
+  function loadAcc(force){
+    const t=token();if(!t)return Promise.reject(new Error("signed out"));
+    if(!force&&ACC&&ACC.t===t&&Date.now()-accAt<120000)return Promise.resolve(ACC);
+    let pre=null;try{const j=JSON.parse(sessionStorage.getItem("sx_acc_pre")||"null");if(!force&&j&&j.t===t&&Date.now()-j.at<60000)pre=j.d}catch(e){}
+    const fin=d=>{d.t=t;d.subscriptions.forEach(x=>{x._left=dayN(d.today,x.end_date)});ACC=d;accAt=Date.now();return d};
+    if(pre)return Promise.resolve(fin(pre));
+    return fetch("/api/account?a=me",{headers:{Authorization:"Bearer "+t}}).then(r=>r.json().then(j=>{if(!r.ok){const e=new Error(j.error||"error");e.status=r.status;throw e}return j})).then(d=>{try{sessionStorage.setItem("sx_acc_pre",JSON.stringify({t:t,at:Date.now(),d:d}))}catch(e){}return fin(d)});
+  }
+  const subById=id=>ACC&&ACC.subscriptions.find(x=>String(x.id)===String(id));
+  const stOf=x=>x._left<0?["Expired","bad"]:x._left<=7?["Expires soon","warn"]:["Active","ok"];
+  const colorOf=n=>{const p=PRODUCTS.find(x=>x.name===n);return p?p.color:"#1d2347"};
+  const leftTxt=x=>x._left<0?(-x._left)+(x._left===-1?" day ago":" days ago"):x._left===0?"last day":x._left+(x._left===1?" day left":" days left");
+  const owns=(x,p)=>{const a=norm(x.service),b=norm(p.name);return a===b||a.indexOf(b)>-1||b.indexOf(a)>-1};
+  const I_EYE='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>';
+  const I_CP='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>';
+  const I_OK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg>';
+  const I_LK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
+  const helpWa=x=>wa(`Hi StreamX! I need help with ${x.service} (${x.plan}).\nMy StreamX email: ${ACC.email}\nSubscription ID: #${x.id}`);
+  const signIn=()=>`<p>Sign in to My account and I can show your subscriptions, days left, login details and orders right here in the chat.</p><div class="bt-row">${btn("Sign in","/account/"," bt-go")}</div>`;
+  function rowHtml(label,val,sid,key,secret){
+    const mask="••••••••••";
+    return `<div class="bt-kv"><span class="bt-k">${label}</span><span class="bt-v">${secret?`<span class="bt-sv" data-sv="${sid}:${key}" data-mask="${mask}">${mask}</span>`:esc(val)}</span><span class="bt-ib">${secret?`<button type="button" data-act="eye" data-sid="${sid}" data-k="${key}" aria-label="Show">${I_EYE}</button>`:""}<button type="button" data-act="cp" data-sid="${sid}" data-k="${key}" aria-label="Copy">${I_CP}</button></span></div>`;
+  }
+  function detailHtml(x){
+    const lg=x.login||{},id=x.id,st=stOf(x),total=Math.max(1,dayN(x.start_date,x.end_date)),pct=Math.min(100,Math.max(0,Math.round(x._left/total*100)));
+    const gift=/gift card$/i.test(x.service),mode=lg.mode||"none",rows=[];
+    if(gift){const g=lg.gift||{};if(g.amount)rows.push(`<div class="bt-kv"><span class="bt-k">Card</span><span class="bt-v">${esc(g.amount)}${g.region?" · "+esc(g.region):""}</span></div>`);if(g.code)rows.push(rowHtml("Redeem code","",id,"gift",true));else rows.push(`<p class="bt-cd">Your code will appear here once it is ready.</p>`)}
+    else{
+      if((mode==="email_pass"||mode==="email_otp")&&lg.email)rows.push(rowHtml("Email",lg.email,id,"email"));
+      if((mode==="phone_otp"||mode==="phone_pass"||mode==="number")&&lg.phone)rows.push(rowHtml("Number",lg.phone,id,"phone"));
+      if(mode==="own"){const v=lg.email||lg.phone||ACC.email;rows.push(rowHtml("Activated on",v,id,lg.email?"email":lg.phone?"phone":"acct"))}
+      if((mode==="email_pass"||mode==="phone_pass")&&lg.password)rows.push(rowHtml("Password","",id,"pass",true));
+      if(lg.profile)rows.push(rowHtml("Profile",lg.profile,id,"profile"));
+      if(lg.pin)rows.push(rowHtml("PIN","",id,"pin",true));
+      if(lg.family)rows.push(rowHtml("Family mail",lg.family,id,"family"));
+      if(mode==="email_otp"||mode==="phone_otp"||lg.otp)rows.push(`<p class="bt-cd">Login is OTP based. Ask us for your login code.</p><div class="bt-row">${btn(I_WA+" Get my login code",wa(`Hi StreamX! I need my login code for ${x.service}.\nMy StreamX email: ${ACC.email}`),"  bt-wa")}</div>`);
+      if(lg.vpn&&lg.vpn.required)rows.push(`<div class="bt-kv"><span class="bt-k">VPN</span><span class="bt-v">Required${lg.vpn.country?" · connect to "+esc(lg.vpn.country):""}</span></div>`);
+      const it=(lg.devices&&lg.devices.items)||[];if(it.length)rows.push(`<div class="bt-kv"><span class="bt-k">Devices</span><span class="bt-v">${it.map(d=>esc((d.name||d.type||"Device")+(d.type?" ("+d.type+")":""))).join(", ")}</span></div>`);
+      if(!rows.length)rows.push(`<p class="bt-cd">Your login details will appear here once your account is ready. Need them now? Message us.</p>`);
+    }
+    return `<div class="bt-card bt-acct"><div class="bt-ct"><span class="bt-tile" style="background:${colorOf(x.service)}">${esc(x.service[0])}</span>${esc(x.service)}<em class="bt-st ${st[1]}">${st[0]}</em></div><p class="bt-cd">${esc(x.plan)} · ${fdate(x.start_date)} to ${fdate(x.end_date)}</p>`+
+      `<div class="bt-prog" title="${leftTxt(x)}"><i style="width:${x._left<0?0:pct}%"></i></div><p class="bt-left"><b>${x._left<0?"Expired":x._left}</b> ${x._left<0?leftTxt(x):x._left===0?"last day":x._left===1?"day left":"days left"}</p>`+
+      `<div class="bt-kvs">${rows.join("")}</div><p class="bt-lock">${I_LK}<span>Only you can see this on this device. Secrets are hidden again after 20 seconds.</span></p>`+
+      `<div class="bt-row">${btn("Renew","/account/"," bt-go")}${btn("Need help",helpWa(x),"  bt-wa")}</div></div>`;
+  }
+  function listHtml(d,title){
+    const live=d.subscriptions.filter(x=>x._left>=0).sort((a,b)=>a._left-b._left),gone=d.subscriptions.filter(x=>x._left<0);
+    if(!live.length)return `<p>You do not have an active subscription right now${gone.length?" ("+gone.length+" expired)":""}.</p><div class="bt-row">${btn("Browse services","/services/"," bt-go")}${btn("Open My account","/account/")}</div>`;
+    return `<p>${title||`You have ${live.length} active subscription${live.length>1?"s":""}. Tap one to see its details.`}</p><div class="bt-sublist">${live.map((x,i)=>{const st=stOf(x);return `<button type="button" class="bt-sub" style="--i:${i}" data-act="sub" data-sid="${x.id}"><span class="bt-tile" style="background:${colorOf(x.service)}">${esc(x.service[0])}</span><span class="bt-st-t"><b>${esc(x.service)}</b><small>${esc(x.plan)} · ${leftTxt(x)}</small></span><em class="bt-st ${st[1]}">${st[0]}</em></button>`}).join("")}</div>${gone.length?`<p class="bt-cd">${gone.length} expired subscription${gone.length>1?"s":""} are in My account.</p>`:""}`;
+  }
+  function ordersHtml(d){
+    const os=(d.orders||[]).slice(0,3);if(!os.length)return `<p>I do not see any online orders on your account yet.</p><div class="bt-row">${btn("Browse services","/services/"," bt-go")}</div>`;
+    const dt=iso=>fdate(new Date(Date.parse(iso)+6*3600000).toISOString().slice(0,10));
+    return `<p>Your latest orders:</p>`+os.map(o=>{const ok=o.delivery==="delivered",pr=o.lines.length&&o.lines.every(l=>l.price>0),tot=pr?o.lines.reduce((t,l)=>t+l.price*(l.q||1),0):0;
+      return `<div class="bt-card"><div class="bt-ct">Order #${esc(String(o.id).slice(-8).toUpperCase())}<em class="bt-st ${ok?"ok":"warn"}">${ok?"Delivered":"Processing"}</em></div><p class="bt-cd">${dt(o.date)}${ok&&o.delivered_at?" · delivered "+dt(o.delivered_at):""}</p><ul class="bt-ul">${o.lines.map(l=>`<li>${esc(l.name)}${l.plan?` <span class="bt-cd">${esc(l.plan)}</span>`:""} ×${l.q||1}</li>`).join("")}</ul>${tot?`<p class="bt-pr">Total ${taka(tot)}</p>`:""}</div>`}).join("")+`<div class="bt-row">${btn("All orders in My account","/account/")}</div>`;
+  }
+  function daysHtml(d){
+    const a=d.subscriptions.slice().sort((x,y)=>x._left-y._left);if(!a.length)return listHtml(d);
+    return `<p>Here is how long each plan has left:</p><ul class="bt-mini">${a.map(x=>`<li><span>${esc(x.service)} <small class="bt-sm">${esc(x.plan)}</small></span><b class="bt-dl ${stOf(x)[1]}">${x._left<0?"Expired":leftTxt(x)}</b></li>`).join("")}</ul><p class="bt-cd">Plans end on the date shown in My account, in Bangladesh time.</p>`;
+  }
+  function renewHtml(d){
+    const a=d.subscriptions.filter(x=>x._left<=30).sort((x,y)=>x._left-y._left);
+    if(!a.length)return `<p>None of your plans is close to ending. You can renew from My account any time, and the new period is added after your current expiry, so no days are lost.</p><div class="bt-row">${btn("Open My account","/account/")}</div>`;
+    return `<p>These plans are ending soon. Renew in one tap from My account, or ask us on WhatsApp:</p><ul class="bt-mini">${a.map(x=>`<li><span>${esc(x.service)} <small class="bt-sm">${leftTxt(x)}</small></span><a href="${esc(wa(`Hi StreamX! I want to renew ${x.service} (${x.plan}).\nMy StreamX email: ${d.email}`))}" target="_blank" rel="noopener" class="bt-btn bt-wa">Renew</a></li>`).join("")}</ul><div class="bt-row">${btn("Renew in My account","/account/"," bt-go")}</div>`;
+  }
+  /* returns {p:Promise<reply>} for signed-in account questions, a sign-in prompt when signed out, or null */
+  function acctRoute(q,ql,ps){
+    const A=ks=>any(q,ks)>0;
+    if(/forgot|reset|how (do|to|can)|change (my )?(password|email)/.test(ql))return null;
+    const SUBS=A(["my subscription","my subscriptions","my plans","my plan","my services","active subscription","what do i have","my account","my active","my accounts"])||/^my subscriptions?$/.test(ql);
+    const LOGIN=A(["login details","my login","my password","password","my pin","credentials","show my","copy my","my profile","login code","my email","my number","my devices","signed in devices"]);
+    const DAYS=A(["days left","how many days","expire","expiry","when does","how long left","end date","valid until","time left"]);
+    const ORD=A(["my order","my orders","order status","order history","purchase history","receipt","invoice","track my"]);
+    const REN=A(["renew"])&&!A(["how"]);
+    if(!(SUBS||LOGIN||DAYS||ORD||REN))return null;
+    if(!token())return{h:signIn(),c:["Prices & plans","Talk to a human"]};
+    const ch=["My subscriptions","Days left","My orders","Talk to a human"];
+    const run=f=>({p:loadAcc().then(f,e=>({h:`<p>${e.status===401?"Your session ended. Please sign in again to see your account here.":"I could not load your account just now. Please try again in a moment."}</p><div class="bt-row">${btn("Open My account","/account/"," bt-go")}</div>`}))});
+    if(ORD)return run(d=>({h:ordersHtml(d),c:["My subscriptions","Talk to a human"]}));
+    if(REN)return run(d=>({h:renewHtml(d),c:ch}));
+    if(DAYS&&!LOGIN)return run(d=>({h:daysHtml(d),c:["My login details","Renew my plan","My orders"]}));
+    if(LOGIN||(SUBS&&ps.length)){
+      return run(d=>{const live=d.subscriptions.filter(x=>x._left>=0);let mine=ps.length?live.filter(x=>ps.some(p=>owns(x,p))):live;
+        if(ps.length&&!mine.length)return{h:`<p>I do not see ${esc(ps[0].name)} on your account. Here is what you have:</p>`+listHtml(d,""),c:["Prices & plans","Talk to a human"]};
+        if(mine.length===1)return{h:detailHtml(mine[0]),c:["Days left","My orders","Talk to a human"]};
+        return{h:listHtml({subscriptions:mine,email:d.email},mine.length?`Which one? Tap a subscription to see its login details.`:""),c:["Days left","My orders"]}});
+    }
+    return run(d=>({h:listHtml(d),c:["My login details","Days left","My orders","Renew my plan"]}));
+  }
+  function maskAll(){log.querySelectorAll(".bt-sv.shown").forEach(el=>{el.classList.remove("shown");el.textContent=el.dataset.mask;const b=el.closest(".bt-kv").querySelector('[data-act=eye]');if(b){b.classList.remove("on");b.setAttribute("aria-label","Show")}})}
+  function secretOf(x,k){const l=(x&&x.login)||{};return({pass:l.password,pin:l.pin,gift:l.gift&&l.gift.code,email:l.email,phone:l.phone,profile:l.profile,family:l.family,acct:ACC&&ACC.email})[k]||""}
+  function clip(txt){if(navigator.clipboard&&isSecureContext)return navigator.clipboard.writeText(txt);return new Promise((ok,no)=>{try{const t=document.createElement("textarea");t.value=txt;t.style.cssText="position:fixed;opacity:0";document.body.appendChild(t);t.select();document.execCommand("copy")?ok():no();t.remove()}catch(e){no(e)}})}
+  function secretAct(el){
+    const a=el.dataset.act,sid=el.dataset.sid,k=el.dataset.k;
+    loadAcc().then(()=>{const x=subById(sid);if(!x)return;const v=secretOf(x,k);
+      if(a==="eye"){const sp=el.closest(".bt-kv").querySelector(".bt-sv");const on=!sp.classList.contains("shown");sp.classList.toggle("shown",on);sp.textContent=on?v:sp.dataset.mask;el.classList.toggle("on",on);el.setAttribute("aria-label",on?"Hide":"Show");clearTimeout(sp._t);if(on)sp._t=setTimeout(()=>{sp.classList.remove("shown");sp.textContent=sp.dataset.mask;el.classList.remove("on");el.setAttribute("aria-label","Show")},20000)}
+      else clip(v).then(()=>{const old=el.innerHTML;el.innerHTML=I_OK;el.classList.add("ok");setTimeout(()=>{el.innerHTML=old;el.classList.remove("ok")},1600)}).catch(()=>{el.classList.add("bad");setTimeout(()=>el.classList.remove("bad"),1600)})
+    }).catch(()=>{})
+  }
+
   const down=()=>{log.scrollTop=log.scrollHeight};
-  const save=()=>{try{const c=log.cloneNode(true);c.querySelectorAll(".bt-typing").forEach(n=>n.remove());sessionStorage.setItem("sx_bot",JSON.stringify({h:c.innerHTML.slice(0,90000),p:ctx.p?ctx.p.name:null}))}catch(e){}};
+  const save=()=>{try{const c=log.cloneNode(true);c.querySelectorAll(".bt-typing").forEach(n=>n.remove());c.querySelectorAll(".bt-sv").forEach(n=>{n.classList.remove("shown");n.textContent=n.dataset.mask});sessionStorage.setItem("sx_bot",JSON.stringify({h:c.innerHTML.slice(0,90000),p:ctx.p?ctx.p.name:null}))}catch(e){}};
   function add(cls,html,isText){const d=document.createElement("div");d.className="bt-m "+cls;if(isText)d.textContent=html;else d.innerHTML=html;log.appendChild(d);down();return d}
   function strip(){log.querySelectorAll(".bt-chips").forEach(n=>n.remove())}
   function typeText(el,full){
@@ -231,7 +340,9 @@
   function bot(r){
     busy=true;stat.innerHTML='<span class="bt-ty">typing<i></i><i></i><i></i></span>';
     const dots=add("bt-b bt-typing",'<i></i><i></i><i></i>');
-    setTimeout(()=>{dots.remove();show(r);busy=false;stat.innerHTML=IDLE},calm?0:520+Math.min(500,(r.h||"").length/6));
+    const go=x=>{dots.remove();show(x);busy=false;stat.innerHTML=IDLE};
+    if(r.p){Promise.all([r.p,new Promise(ok=>setTimeout(ok,calm?0:650))]).then(a=>go(a[0]),()=>go({h:`<p>Sorry, something went wrong. Please message us on WhatsApp.</p>`+waBtn("Hi StreamX!")}));return}
+    setTimeout(()=>go(r),calm?0:520+Math.min(500,(r.h||"").length/6));
   }
   function ask(text,silent){
     text=text.trim();if(!text||busy)return;strip();if(!silent)add("bt-u",text,true);inp.value="";
@@ -247,7 +358,9 @@
   function reply(userText,r){strip();add("bt-u",userText,true);bot(r)}
   function doAct(el){
     const a=el.dataset.act,i=+el.dataset.i,v=+el.dataset.v,k=+el.dataset.k,p=PRODUCTS[i];
+    if(a==="eye"||a==="cp"){secretAct(el);return}
     if(busy)return;
+    if(a==="sub"){loadAcc().then(()=>{const x=subById(el.dataset.sid);if(x)reply(x.service,{h:detailHtml(x),c:["Days left","My orders","Talk to a human"]})});return}
     if(a==="pick"){ctx.p=p;reply("Choose a plan for "+p.name,{h:typeHtml(p)});return}
     if(a==="card"){ctx.p=p;reply(p.name,{h:productCard(p),c:ctxChips(p)});return}
     if(a==="var"){reply(p.variants[v].n,{h:durHtml(p,v)});return}
@@ -261,9 +374,10 @@
     const u=root.querySelector(".cw-unread");if(u)u.remove();try{sessionStorage.setItem("sx_bot_seen","1")}catch(e){}
     if(!started){started=true;let s=null;try{s=JSON.parse(sessionStorage.getItem("sx_bot")||"null")}catch(e){}
       if(s&&s.h){log.innerHTML=s.h;log.querySelectorAll(".bt-m").forEach(m=>m.classList.add("rest"));if(s.p)ctx.p=LIST.find(x=>x.name===s.p)||null;down()}
+      else if(token()){bot({p:loadAcc().then(d=>{const live=d.subscriptions.filter(x=>x._left>=0).length,nm=((d.profile&&d.profile.name)||"").split(" ")[0];return{h:`<p>Hi${nm?" "+esc(nm):""}! You are signed in${live?` and have ${live} active subscription${live>1?"s":""}`:""}. I can show your plans, days left, login details and orders right here, and I can also help you buy.</p>`,c:live?["My subscriptions","Days left","My login details","My orders","Prices & plans","Talk to a human"]:["Prices & plans","Help me choose","My orders","Talk to a human"]}},()=>({h:`<p>Hi, I'm the StreamX assistant. Ask me anything about prices, plans, payment, delivery or your account.</p>`,c:["Prices & plans","Help me choose","How do I pay online?","Delivery time","My login details","Talk to a human"]}))})}
       else show({h:`<p>Hi, I'm the StreamX assistant. Ask me anything about prices, plans, payment, delivery or your account.</p>`,c:["Prices & plans","Help me choose","How do I pay online?","Delivery time","My login details","Talk to a human"]})}
     setTimeout(()=>{down();inp.focus({preventScroll:true})},250)}
-  function close(){panel.classList.remove("on");root.classList.remove("cw-open");setTimeout(()=>{if(!panel.classList.contains("on"))panel.hidden=true},250)}
+  function close(){maskAll();panel.classList.remove("on");root.classList.remove("cw-open");setTimeout(()=>{if(!panel.classList.contains("on"))panel.hidden=true},250)}
   function reset(){try{sessionStorage.removeItem("sx_bot")}catch(e){}ctx.p=null;ctx.interest=null;log.innerHTML="";busy=false;started=true;show({h:`<p>Fresh start. What would you like to know?</p>`,c:["Prices & plans","Help me choose","How do I pay online?","Talk to a human"]})}
   panel.querySelector(".bt-x").onclick=close;panel.querySelector(".bt-rs").onclick=reset;
   panel.querySelector("#btF").addEventListener("submit",e=>{e.preventDefault();ask(inp.value)});
