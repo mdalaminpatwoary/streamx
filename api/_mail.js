@@ -98,6 +98,21 @@ const delivered = (req, ord) => {
   };
 };
 
+/* Support changed the customer's name or mobile number. d = {email, name, changes:[[label, text]]}. Never contains secrets. */
+const profileChanged = (req, d) => {
+  const S = site(req), first = (d.name || "").trim().split(/\s+/)[0], list = (d.changes || []).filter(Boolean);
+  return {
+    subject: "Your StreamX account details were updated",
+    html: layout({ req, preheader: "StreamX support updated your account details.", eyebrow: "Account update", title: first ? `${esc(first)}, your details were updated` : "Your details were updated",
+      intro: "Our team updated the details on your StreamX account. Here is what changed:",
+      body: rows(list),
+      cta: [S + "/account/", "Open my account"],
+      cta2: ["https://wa.me/" + WA + "?text=" + encodeURIComponent("Hi StreamX! I did not expect a change to my account details."), "This was not me? Message us"],
+      note: "Your sign-in email (<b style=\"color:#c5cce2\">" + esc(d.email || "") + "</b>) has not changed. You can edit your name and mobile number any time from My account → Edit profile." }),
+    text: "StreamX support updated your account details:\n" + list.map((l) => `- ${l[0]}: ${l[1]}`).join("\n") + `\nOpen your account: ${S}/account/\nNot you? WhatsApp: https://wa.me/${WA}`,
+  };
+};
+
 /* Copy of an online order for the shop mailbox. paid=false means "order placed, payment pending". */
 const orderCopy = (req, d) => {
   const list = [["Order reference", d.ref], ["Status", d.paid ? "PAID" : "Awaiting payment"], ["Amount", d.amount ? "৳" + d.amount : ""], ["Paid with", d.method], ["EPS transaction ID", d.eps], ["Date", d.date],
@@ -111,4 +126,4 @@ const orderCopy = (req, d) => {
   };
 };
 
-module.exports = { send, layout, signIn, delivered, orderCopy, esc, site };
+module.exports = { send, layout, signIn, delivered, profileChanged, orderCopy, esc, site };

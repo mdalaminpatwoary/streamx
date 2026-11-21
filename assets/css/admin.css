@@ -101,3 +101,14 @@
 .ad-nk{font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;padding:4px 9px;border-radius:99px;background:rgba(99,102,241,.18);color:#c7c9ff;margin-top:2px}
 .ad-nk.k-offer{background:rgba(34,197,94,.16);color:#86efac}.ad-nk.k-maintenance{background:rgba(245,158,11,.16);color:#fcd34d}.ad-nk.k-important{background:rgba(239,68,68,.16);color:#fca5a5}
 #nf .ac-btn{margin-top:18px}
+
+/* Customers tab */
+.ad-lock{position:relative}.ad-lock .ac-in{padding-right:44px;opacity:.7;cursor:not-allowed}.ad-lock svg{position:absolute;right:14px;top:50%;width:18px;height:18px;margin-top:-9px;color:var(--mut)}
+.ad-prev{margin-top:12px;border:1px dashed var(--line);border-radius:14px;padding:12px 14px;font-size:13.5px;line-height:1.5;color:#c9d0e8;background:rgba(255,255,255,.03)}
+.ad-prev b{display:block;margin-bottom:4px;font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--mut)}
+.ad-prev li{margin:2px 0}.ad-prev ul{margin:0;padding-left:18px}.ad-prev i{font-style:normal;color:#fff;font-weight:700}
+.ad-prev.off{opacity:.5}
+.ad-cb{padding:0 22px}
+.ad-pill{display:inline-block;padding:3px 9px;border-radius:99px;font-size:11.5px;font-weight:800;background:rgba(255,255,255,.08);color:#c9d0e8}
+.ad-pill.on{background:rgba(34,197,94,.16);color:#6ee7a0}
+.ad-grid2+.ad-sw{margin-top:18px!important}

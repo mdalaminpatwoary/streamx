@@ -35,23 +35,8 @@ async function logLogin(email, method, name) {
 }
 
 // Mobile number: Bangladesh numbers are saved as 01XXXXXXXXX; other countries as +<digits> (8 to 15 digits).
-function cleanPhone(v) {
-  const raw = String(v || "").trim(); let d = raw.replace(/\D/g, "");
-  if (/^(?:880|0)?1[3-9]\d{8}$/.test(d)) return "0" + d.replace(/^(?:880|0)/, "");
-  if (raw.startsWith("+") && d.length >= 8 && d.length <= 15) return "+" + d;
-  return "";
-}
+const { cleanPhone } = require("./_phone");
 
-/* Push the customer's number to the "Customers" sheet of the StreamX Live Data Google Sheet (Apps Script web app, see docs/google-sheets-sync.gs).
-   Optional and best-effort: it never blocks or fails a profile save. */
-async function sheetSync(email, name, phone) {
-  const url = process.env.SHEETS_WEBHOOK_URL; if (!url || !phone) return;
-  try {
-    const ac = new AbortController(), t = setTimeout(() => ac.abort(), 5000);
-    const r = await fetch(url, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify({ secret: process.env.SHEETS_WEBHOOK_SECRET || "", email, name: name || "", phone }), signal: ac.signal, redirect: "follow" });
-    clearTimeout(t); if (!r.ok) console.error("sheet sync HTTP", r.status);
-  } catch (e) { console.error("sheet sync failed", e && e.message); }
-}
 
 module.exports = async (req, res) => {
   res.setHeader("Cache-Control", "no-store");
@@ -124,7 +109,6 @@ module.exports = async (req, res) => {
       }
       try { await db.rest("POST", "profiles?on_conflict=email", [row], "resolution=merge-duplicates,return=minimal"); }
       catch (e) { console.error("profile not saved", e && e.message); return res.status(424).json({ error: "Profile editing is not available yet. Please try again later." }); }
-      await sheetSync(row.email, name, phone);
       return res.status(200).json({ ok: true, profile: { name, phone, picture: row.picture !== undefined ? row.picture : undefined } });
     }
     if (a === "list") {
@@ -179,8 +163,12 @@ module.exports = async (req, res) => {
           .filter((n) => !n.expires_at || new Date(n.expires_at) > new Date()).map((n) => ({ id: n.id, title: n.title, message: n.message, kind: n.kind, at: n.created_at }));
       } catch (e) { /* notices table not created yet */ }
       let custom = null, editable = true; // the customer's own name and photo (profiles table; may not exist yet)
-      try { custom = ((await db.rest("GET", `profiles?email=eq.${db.q(normEmail(o.e))}&select=name,picture,phone&limit=1`)) || [])[0] || null; }
-      catch (e) { try { custom = ((await db.rest("GET", `profiles?email=eq.${db.q(normEmail(o.e))}&select=name,picture&limit=1`)) || [])[0] || null; } catch (e2) { editable = false; } }
+      try { custom = ((await db.rest("GET", `profiles?email=eq.${db.q(normEmail(o.e))}&select=name,picture,phone,admin_changed_at,admin_change&limit=1`)) || [])[0] || null; }
+      catch (e0) { try { custom = ((await db.rest("GET", `profiles?email=eq.${db.q(normEmail(o.e))}&select=name,picture,phone&limit=1`)) || [])[0] || null; }
+      catch (e) { try { custom = ((await db.rest("GET", `profiles?email=eq.${db.q(normEmail(o.e))}&select=name,picture&limit=1`)) || [])[0] || null; } catch (e2) { editable = false; } } }
+      // StreamX support changed the customer's details: show it in the bell for 30 days
+      if (custom && custom.admin_changed_at && Date.now() - Date.parse(custom.admin_changed_at) < 30 * 86400000)
+        notices.unshift({ id: "pf" + Date.parse(custom.admin_changed_at), title: "StreamX updated your profile", message: String(custom.admin_change || "").split("\n").filter(Boolean).join(" · "), kind: "important", at: custom.admin_changed_at });
       return res.status(200).json({
         notices, email: o.e, today: dhakaToday(), geo: String(req.headers["x-vercel-ip-country"] || "").toLowerCase().slice(0, 2), contact: { name: c.name || "", phone: c.phone || "" },
         profile: { name: (custom && custom.name) || o.n || c.name || "", phone: (custom && custom.phone) || c.phone || "", picture: custom && custom.picture !== null && custom.picture !== undefined ? custom.picture : (o.pic || ""), provider: o.pv || "", editable, custom: !!(custom && custom.picture) },

@@ -8,7 +8,7 @@
 <link rel="icon" href="/favicon.ico">
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/css/account.css?v=21">
-<link rel="stylesheet" href="/assets/css/admin.css?v=6">
+<link rel="stylesheet" href="/assets/css/admin.css?v=8">
 </head>
 <body>
 <div class="ac-top"><a href="/"><img src="/assets/img/brand/logo.png" alt="StreamX" width="40" height="40"></a><a class="back" href="/">Open site</a></div>
@@ -31,6 +31,7 @@
       <button class="ad-tab" role="tab" aria-selected="true" data-t="orders">Orders<i id="tc1">0</i></button>
       <button class="ad-tab" role="tab" aria-selected="false" data-t="subs">Subscriptions<i id="tc2">0</i></button>
       <button class="ad-tab" role="tab" aria-selected="false" data-t="add">Add subscription</button>
+      <button class="ad-tab" role="tab" aria-selected="false" data-t="cust">Customers<i id="tc4">0</i></button>
       <button class="ad-tab" role="tab" aria-selected="false" data-t="board">Notice board<i id="tc3">0</i></button>
     </div>
 
@@ -71,6 +72,11 @@
       </form>
       <p class="ac-msg" id="am"></p>
     </section>
+    <section class="ad-pane ad-card" data-p="cust" hidden>
+      <div class="ac-bar"><input class="ac-in" id="cq" placeholder="Search email, name or mobile" style="max-width:420px"></div>
+      <div class="ad-scroll"><table class="ad-tbl"><thead><tr><th>Customer</th><th>Mobile</th><th>Subscriptions</th><th></th></tr></thead><tbody id="crows"></tbody></table></div>
+      <p class="ac-note" id="ccnt"></p>
+    </section>
     <section class="ad-pane ad-card" data-p="board" hidden>
       <b class="ad-h">Notice board</b><span class="ac-note" style="display:block;margin:6px 0 0">Posts show to every customer inside the bell on My account. They never pop up; they only raise the bell number until the customer opens it.</span>
       <form id="nf" novalidate>
@@ -88,9 +94,22 @@
   </div>
 </main>
 <dialog id="dlg" class="ad-dlg"><div class="ad-dh"><div><b id="dt"></b><span id="ds"></span></div><button class="ad-x" id="dx" type="button" aria-label="Close">✕</button></div><div id="dbody"></div><div class="ad-df"><button class="ac-btn ac-ghost" type="button" onclick="document.getElementById('dx').click()">Cancel</button><button class="ac-btn" id="dsave" type="button">Save access</button></div></dialog>
+<dialog id="cdlg" class="ad-dlg"><div class="ad-dh"><div><b>Edit customer</b><span id="cds"></span></div><button class="ad-x" id="cdx" type="button" aria-label="Close">✕</button></div>
+  <div id="cbody" class="ad-cb">
+    <div class="ad-sec"><div class="ad-lab">Details <small>(the email is the customer's sign-in and cannot be changed)</small></div><div class="ad-grid2">
+      <div class="ad-wide"><label>Email</label><div class="ad-lock"><input class="ac-in" id="cem" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></div></div>
+      <div><label for="cnm">Full name</label><input class="ac-in" id="cnm" maxlength="60" autocomplete="off"></div>
+      <div><label for="cph">Mobile / WhatsApp</label><input class="ac-in" id="cph" maxlength="25" inputmode="tel" autocomplete="off" placeholder="01712345678 or +14155550123"></div>
+    </div>
+    <label class="ad-sw" style="margin-top:14px"><input type="checkbox" id="crp"><b></b><span>Remove profile photo</span></label></div>
+    <div class="ad-sec"><label class="ad-sw"><input type="checkbox" id="cnt" checked><b></b><span>Notify the customer</span></label>
+      <p class="ac-note" style="margin:8px 0 0">Sends an email and adds an update to the bell in My account. Turn it off only for silent typo fixes.</p>
+      <div class="ad-prev" id="cprev"></div></div>
+  </div>
+  <div class="ad-df"><button class="ac-btn ac-ghost" type="button" onclick="document.getElementById('cdx').click()">Cancel</button><button class="ac-btn" id="csave" type="button" disabled>Save changes</button></div></dialog>
 <div class="ad-toast" id="toast" role="status"></div>
 <script src="/assets/js/data/catalog.js"></script>
 <script src="/assets/js/data/countries.js?v=1"></script>
-<script src="/assets/js/admin.js?v=14"></script>
+<script src="/assets/js/admin.js?v=15"></script>
 </body>
 </html>

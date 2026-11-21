@@ -4,11 +4,14 @@
    PATCH  /api/admin?id=<n>         change expiry {end_date} and/or login details {acct_email, acct_pass, acct_otp, acct_profile, acct_pin}
    DELETE /api/admin?id=<n>         remove one
    GET    /api/admin?view=orders    list paid orders (newest first) with delivery status
-   PATCH  /api/admin?order=<mtid>   set delivery  {delivery:"pending"|"delivered"} */
+   PATCH  /api/admin?order=<mtid>   set delivery  {delivery:"pending"|"delivered"}
+   GET    /api/admin?view=customers&q=<text>   list customers (profiles + purchase history)
+   PATCH  /api/admin?customer=<email>          change name / mobile / remove photo {name, phone, remove_photo, notify}. The email can never be changed. */
 const crypto = require("crypto");
 const db = require("./_db");
 const { addSub, validDate, normEmail } = require("./_subs");
 const access = require("./_access");
+const { cleanPhone } = require("./_phone");
 
 const h = (s) => crypto.createHash("sha256").update(String(s)).digest();
 const clean = (v, n) => String(v == null ? "" : v).replace(/[\u0000-\u001f]/g, " ").trim().slice(0, n);
@@ -51,6 +54,60 @@ module.exports = async (req, res) => {
         if (!(nid > 0)) return res.status(400).json({ error: "Invalid notice." });
         await db.rest("DELETE", `notices?id=eq.${nid}`);
         return res.status(200).json({ ok: true });
+      }
+    }
+    // Customers: look one up and correct their name or mobile number (never the email). The customer is told in My account and by email.
+    if (req.query && (req.query.view === "customers" || req.query.customer)) {
+      if (req.method === "GET") {
+        const t = clean(req.query.q, 60).replace(/[(),*%]/g, "");
+        const pq = t ? `&or=(email.ilike.*${db.q(t)}*,name.ilike.*${db.q(t)}*,phone.ilike.*${db.q(t)}*)` : "";
+        const [pr, sb] = await Promise.all([
+          db.rest("GET", `profiles?select=email,name,phone&order=updated_at.desc&limit=300${pq}`).catch(() => db.rest("GET", `profiles?select=email,name&order=updated_at.desc&limit=300${pq.replace(/,phone\.ilike\.\*[^)]*\*/, "")}`).catch(() => [])),
+          db.rest("GET", `subscriptions?select=email,name,phone,end_date&order=created_at.desc&limit=1000${pq}`).catch(() => []),
+        ]);
+        const today = new Date(Date.now() + 6 * 3600000).toISOString().slice(0, 10), m = new Map();
+        const get = (e) => { e = normEmail(e); if (!m.has(e)) m.set(e, { email: e, name: "", phone: "", subs: 0, active: 0, account: false }); return m.get(e); };
+        (sb || []).forEach((r) => { const c = get(r.email); c.name = c.name || r.name || ""; c.phone = c.phone || r.phone || ""; c.subs++; if (r.end_date >= today) c.active++; });
+        (pr || []).forEach((r) => { const c = get(r.email); c.account = true; if (r.name) c.name = r.name; if (r.phone) c.phone = r.phone; });
+        return res.status(200).json({ rows: [...m.values()].slice(0, 300) });
+      }
+      if (req.method === "PATCH") {
+        const email = normEmail(req.query.customer);
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return res.status(400).json({ error: "Invalid customer." });
+        const name = clean(body.name, 60).replace(/[<>]/g, "").replace(/\s+/g, " ").trim();
+        if (name && name.length < 2) return res.status(400).json({ error: "The name needs at least 2 letters." });
+        const rawPhone = clean(body.phone, 25), phone = rawPhone ? cleanPhone(rawPhone) : "";
+        if (rawPhone && !phone) return res.status(400).json({ error: "That mobile number does not look right. Use 01XXXXXXXXX or +<country code><number>." });
+        // what the customer has now: their own profile first, else what the purchases say
+        let prof = null;
+        try { prof = ((await db.rest("GET", `profiles?email=eq.${db.q(email)}&select=name,phone&limit=1`)) || [])[0] || null; }
+        catch (e) { try { prof = ((await db.rest("GET", `profiles?email=eq.${db.q(email)}&select=name&limit=1`)) || [])[0] || null; } catch (e2) { return res.status(424).json({ error: "Profiles are not set up in Supabase yet." }); } }
+        const sub = ((await db.rest("GET", `subscriptions?email=eq.${db.q(email)}&select=name,phone&order=created_at.desc&limit=1`).catch(() => [])) || [])[0] || {};
+        const was = { name: (prof && prof.name) || sub.name || "", phone: (prof && prof.phone) || sub.phone || "" };
+        const changes = [], show = (v) => v || "not set";
+        if (name !== was.name) changes.push(["Name", was.name ? `${was.name} → ${name || "removed"}` : `set to ${name || "empty"}`]);
+        if (phone !== was.phone) changes.push(["Mobile number", was.phone ? `${was.phone} → ${phone || "removed"}` : `set to ${phone || "empty"}`]);
+        if (body.remove_photo) changes.push(["Profile photo", "removed"]);
+        if (!changes.length) return res.status(400).json({ error: "Nothing to change." });
+        const notify = body.notify !== false, row = { email, name: name || null, phone: phone || null, updated_at: new Date().toISOString() };
+        if (body.remove_photo) row.picture = "";
+        const stamp = { admin_changed_at: new Date().toISOString(), admin_change: changes.map((c) => c[0] + ": " + c[1]).join("\n") };
+        let inapp = false, warn = "";
+        const save = (r) => db.rest("POST", "profiles?on_conflict=email", [r], "resolution=merge-duplicates,return=minimal");
+        try { if (notify) { await save(Object.assign({}, row, stamp)); inapp = true; } else await save(row); }
+        catch (e) {
+          try { await save(row); warn = notify ? "Saved, but the in-account notice needs the latest SQL in Supabase." : ""; }
+          catch (e2) { console.error("customer not saved", e2 && e2.message); return res.status(424).json({ error: "Could not save. Run the latest SQL in Supabase (profiles.phone)." }); }
+        }
+        // keep the purchase rows in step so the admin list and sheets show the same details
+        const sp = {}; if (name !== was.name && name) sp.name = name; if (phone !== was.phone && phone) sp.phone = phone;
+        if (Object.keys(sp).length) { try { await db.rest("PATCH", `subscriptions?email=eq.${db.q(email)}`, sp); } catch (e) { console.error("subscriptions not synced", e && e.message); } }
+        let mailed = false;
+        if (notify && process.env.RESEND_API_KEY) {
+          try { const mail = require("./_mail"), m = mail.profileChanged(req, { email, name: name || was.name, changes }); await mail.send({ to: email, subject: m.subject, html: m.html, text: m.text, idem: "profile-" + email + "-" + Date.now() }); mailed = true; }
+          catch (e) { console.error("profile email failed", e && e.message); warn = warn || "Saved, but the email could not be sent."; }
+        }
+        return res.status(200).json({ ok: true, customer: { email, name, phone }, changes, inapp, mailed, warn });
       }
     }
     const ord = clean(req.query && req.query.order, 40).replace(/[^0-9A-Za-z]/g, "");

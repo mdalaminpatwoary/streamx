@@ -107,7 +107,7 @@
   }
   function list() {
     api("?q=" + encodeURIComponent($("#q").value.trim())).then(function (d) {
-      $("#gate").hidden = true; $("#panel").hidden = false; $("#lock").hidden = false; orders(); notices();
+      $("#gate").hidden = true; $("#panel").hidden = false; $("#lock").hidden = false; orders(); notices(); custs();
       SUBS = d.rows;
       $("#rows").innerHTML = d.rows.map(function (s, i) {
         var left = days(today, s.end_date), c = left < 0 ? "#ef4444" : left <= 7 ? "#f59e0b" : "#22c55e";
@@ -191,5 +191,48 @@
       .then(function () { toast("Saved."); closeDlg(); list(); }).catch(function (er) { toast(er.message, 1); }).then(function () { b.disabled = false; });
   });
   $("#rows").addEventListener("change", function (e) { var i = e.target.closest("[data-end]"); if (i && i.value) api("?id=" + i.dataset.end, { method: "PATCH", body: JSON.stringify({ end_date: i.value }) }).then(function () { toast("Date saved."); list(); }).catch(function (er) { toast(er.message, 1); }); });
+
+  /* ---------- Customers: edit name / mobile (never the email) ---------- */
+  var CUS = [], cdlg = $("#cdlg"), ccur = null;
+  function custs() {
+    api("?view=customers&q=" + encodeURIComponent($("#cq").value.trim())).then(function (d) {
+      CUS = d.rows; $("#tc4").textContent = CUS.length;
+      $("#crows").innerHTML = CUS.map(function (c, i) {
+        return '<tr><td data-l="Customer"><div><b>' + esc(c.name || "No name yet") + "</b><br>" + esc(c.email) + '</div></td><td data-l="Mobile"><div>' + (c.phone ? esc(c.phone) : '<span class="ad-who">Not added</span>') + '</div></td><td data-l="Subscriptions"><div><span class="ad-pill' + (c.active ? " on" : "") + '">' + c.active + " active</span> <small>" + c.subs + ' total</small></div></td><td><button class="ac-btn ac-ghost ac-sm" type="button" data-cedit="' + i + '">Edit</button></td></tr>';
+      }).join("");
+      $("#ccnt").textContent = CUS.length ? CUS.length + " shown. Pick Edit to change a name or mobile number." : "No customers found.";
+    }).catch(function (e) { $("#ccnt").textContent = e.message; });
+  }
+  var ct; $("#cq").addEventListener("input", function () { clearTimeout(ct); ct = setTimeout(custs, 300); });
+  /* What the customer will be told, built from the fields as they are now */
+  function cDiff() {
+    var nm = $("#cnm").value.trim().replace(/\s+/g, " "), ph = $("#cph").value.trim(), out = [];
+    if (nm !== (ccur.name || "")) out.push(["Name", (ccur.name ? esc(ccur.name) : "not set") + " → <i>" + (nm ? esc(nm) : "removed") + "</i>"]);
+    if (ph !== (ccur.phone || "")) out.push(["Mobile number", (ccur.phone ? esc(ccur.phone) : "not set") + " → <i>" + (ph ? esc(ph) : "removed") + "</i>"]);
+    if ($("#crp").checked) out.push(["Profile photo", "<i>removed</i>"]);
+    return out;
+  }
+  function cPaint() {
+    if (!ccur) return; var d = cDiff(), on = $("#cnt").checked;
+    $("#csave").disabled = !d.length;
+    $("#cprev").className = "ad-prev" + (on ? "" : " off");
+    $("#cprev").innerHTML = d.length ? "<b>" + (on ? "The customer will see" : "Silent change, no message sent") + "</b><ul>" + d.map(function (x) { return "<li>" + x[0] + ": " + x[1] + "</li>"; }).join("") + "</ul>" : "<b>Preview</b>Change a field to see what the customer will be told.";
+  }
+  $("#crows").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-cedit]"); if (!b) return; ccur = CUS[+b.dataset.cedit];
+    $("#cds").textContent = ccur.email; $("#cem").value = ccur.email; $("#cnm").value = ccur.name || ""; $("#cph").value = ccur.phone || ""; $("#crp").checked = false; $("#cnt").checked = true; cPaint();
+    if (cdlg.showModal) cdlg.showModal(); else cdlg.setAttribute("open", "");
+  });
+  ["#cnm", "#cph"].forEach(function (s) { $(s).addEventListener("input", cPaint); }); ["#crp", "#cnt"].forEach(function (s) { $(s).addEventListener("change", cPaint); });
+  var closeC = function () { if (cdlg.close) cdlg.close(); else cdlg.removeAttribute("open"); };
+  $("#cdx").addEventListener("click", closeC);
+  $("#csave").addEventListener("click", function () {
+    if (!ccur) return; var b = this; b.disabled = true;
+    api("?customer=" + encodeURIComponent(ccur.email), { method: "PATCH", body: JSON.stringify({ name: $("#cnm").value, phone: $("#cph").value, remove_photo: $("#crp").checked, notify: $("#cnt").checked }) })
+      .then(function (d) {
+        closeC(); custs(); list();
+        toast(d.warn || (d.mailed ? "Saved. The customer was emailed and notified in My account." : d.inapp ? "Saved. The customer was notified in My account." : "Saved."), !!d.warn);
+      }).catch(function (er) { toast(er.message, 1); }).then(function () { cPaint(); });
+  });
   if (key) list();
 })();
