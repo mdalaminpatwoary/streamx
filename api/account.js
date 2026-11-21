@@ -170,7 +170,7 @@ module.exports = async (req, res) => {
       try { custom = ((await db.rest("GET", `profiles?email=eq.${db.q(normEmail(o.e))}&select=name,picture,phone&limit=1`)) || [])[0] || null; }
       catch (e) { try { custom = ((await db.rest("GET", `profiles?email=eq.${db.q(normEmail(o.e))}&select=name,picture&limit=1`)) || [])[0] || null; } catch (e2) { editable = false; } }
       return res.status(200).json({
-        notices, email: o.e, today: dhakaToday(), contact: { name: c.name || "", phone: c.phone || "" },
+        notices, email: o.e, today: dhakaToday(), geo: String(req.headers["x-vercel-ip-country"] || "").toLowerCase().slice(0, 2), contact: { name: c.name || "", phone: c.phone || "" },
         profile: { name: (custom && custom.name) || o.n || c.name || "", phone: (custom && custom.phone) || c.phone || "", picture: custom && custom.picture !== null && custom.picture !== undefined ? custom.picture : (o.pic || ""), provider: o.pv || "", editable, custom: !!(custom && custom.picture) },
         subscriptions: (rows || []).map((r) => ({ id: r.id, service: r.service, plan: r.plan, months: r.months, start_date: r.start_date, end_date: r.end_date, order_ref: r.order_ref || null, login: access.fromRow(r) })),
         orders: orders.map((r) => ({ id: r.mtid, date: r.paid_at || r.created_at, kind: "online", delivery: r.delivery || "pending", delivered_at: r.delivered_at || null, lines: Array.isArray(r.lines) ? r.lines : [] })).concat(offline).sort((a, b) => Date.parse(b.date) - Date.parse(a.date)),
