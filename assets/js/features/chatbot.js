@@ -342,7 +342,8 @@
   function findTitle(name){
     return {p:getJ("/api/catalog?a=find&q="+encodeURIComponent(name)).then(d=>{
       if(!d.list.length)return{h:`<p>I could not find a movie or series called "${esc(name)}". Check the spelling, or ask us on WhatsApp.</p><div class="bt-row">${waBtn("Hi StreamX! Where can I watch "+name+"?")}</div>`,c:["What streaming services do you have?","Talk to a human"]};
-      return{h:`<p>Here is where ${d.list.length>1?"these titles stream":"it streams"}. Green means you can get that service on StreamX; others you can request.</p>`+d.list.slice(0,3).map(titleCard).join("")+`<p class="bt-cd">Availability comes from TMDB and mostly reflects Bangladesh and the US. It can change.</p>`,c:["My wishlist","Top rated","Talk to a human"]};
+      const shown=d.list.slice(0,d.close?2:3);
+      return{h:(d.close?`<p>Here is where ${shown.length>1?"these titles stream":"it streams"}. Green means you can get that service on StreamX; others you can request.</p>`:`<p>I could not find an exact match for "${esc(name)}". These are the closest titles. Green means you can get that service on StreamX; others you can request.</p>`)+shown.map(titleCard).join("")+`<p class="bt-cd">Availability comes from TMDB and mostly reflects Bangladesh and the US. It can change.</p>`,c:["My wishlist","Top rated","Talk to a human"]};
     }).catch(e=>({h:failH(e),c:["Talk to a human"]}))};
   }
   function onPlatform(pl,k){

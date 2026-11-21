@@ -121,16 +121,29 @@ module.exports = async (req, res) => {
     if (req.query.a === "find") {
       const q = String(req.query.q || "").replace(/\s+/g, " ").trim().slice(0, 80);
       if (q.length < 2) return res.status(400).json({ error: "Type a title to search." });
-      // "swapped movie" -> "swapped": drop words like movie/series, and fall back to the original text if the cleaned one finds nothing
-      const clean = q.replace(/\b(the\s+)?(movie|film|series|tv\s+show|tv\s+series|show|anime|cartoon|animation)\b/gi, " ").replace(/\s+/g, " ").trim();
-      const pick = (r) => (r.results || []).filter((x) => (x.media_type === "movie" || x.media_type === "tv") && x.poster_path).sort((a, b) => (b.popularity || 0) - (a.popularity || 0)).slice(0, 4);
+      // Typed titles are messy ("swapped movie", "the vampire of diaries"): search the text as typed and with filler words removed,
+      // then rank by how well the title words match what was typed (popularity only breaks ties), so a famous near-match beats an unrelated hit.
+      const STOP = new Set(["the", "of", "a", "an", "and", "in", "on", "to", "movie", "film", "series", "show", "tv", "anime", "cartoon", "animation", "full", "watch"]);
+      const toks = (t) => String(t || "").toLowerCase().replace(/[^a-z0-9\u00c0-\u024f ]+/g, " ").split(/\s+/).filter((w) => w && !STOP.has(w)).map((w) => (w.length > 3 ? w.replace(/s$/, "") : w));
+      const near = (x, y) => x === y || (x.length >= 5 && y.length >= 5 && lev(x, y) <= 1);
+      const lev = (x, y) => { const d = Array.from({ length: x.length + 1 }, (_, i) => [i]); for (let j = 1; j <= y.length; j++) d[0][j] = j; for (let i = 1; i <= x.length; i++) for (let j = 1; j <= y.length; j++) d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (x[i - 1] === y[j - 1] ? 0 : 1)); return d[x.length][y.length]; };
+      const qt = toks(q), stripped = String(q).toLowerCase().replace(/[^a-z0-9\u00c0-\u024f ]+/g, " ").split(/\s+/).filter((w) => w && !STOP.has(w)).join(" ");
+      const variants = [q.replace(/\b(the\s+)?(movie|film|series|tv\s+show|tv\s+series|show|anime|cartoon|animation)\b/gi, " ").replace(/\s+/g, " ").trim()];
+      if (stripped && stripped !== variants[0].toLowerCase()) variants.push(stripped);
+      if (!variants[0]) variants[0] = q;
+      const seen = new Map();
+      (await Promise.all(variants.filter((v) => v.length >= 2).map((v) => tmdb("/search/multi", { query: v, include_adult: "false", language: "en-US" }).catch(() => ({ results: [] }))))).forEach((r) => (r.results || []).forEach((x) => { if ((x.media_type === "movie" || x.media_type === "tv") && x.poster_path && !seen.has(x.media_type + x.id)) seen.set(x.media_type + x.id, x); }));
+      const score = (x) => {
+        const tt = toks(x.title || x.name).concat(toks(x.original_title || x.original_name)), tu = [...new Set(tt)];
+        const hit = qt.filter((w) => tu.some((v) => near(w, v))).length, sim = qt.length && tu.length ? hit / Math.max(qt.length, Math.min(tu.length, qt.length + 2)) : 0;
+        return sim * 10 + Math.log10(1 + (x.popularity || 0)) * 0.6 + Math.log10(1 + (x.vote_count || 0)) * 0.4;
+      };
+      const ranked = [...seen.values()].map((x) => [score(x), x]).sort((a, b) => b[0] - a[0]);
       const g = await genreMap();
-      let rows = [];
-      if (clean.length >= 2) rows = pick(await tmdb("/search/multi", { query: clean, include_adult: "false", language: "en-US" }));
-      if (!rows.length && clean !== q) rows = pick(await tmdb("/search/multi", { query: q, include_adult: "false", language: "en-US" }));
+      const rows = ranked.slice(0, 4).map((e) => e[1]);
       const list = await Promise.all(rows.map(async (x) => { const it = item(x, x.media_type, g); const pv = await platformsCached(it.k, it.id); return { ...it, pl: pv.list, reg: pv.reg }; }));
       res.setHeader("Cache-Control", "public, s-maxage=3600, stale-while-revalidate=86400");
-      return res.status(200).json({ q, list });
+      return res.status(200).json({ q, list, close: !!ranked[0] && toks(ranked[0][1].title || ranked[0][1].name).join(" ") === qt.join(" ") });
     }
     if (req.query.a === "web") {
       const q = String(req.query.q || "").replace(/[\u0000-\u001f<>]/g, " ").replace(/\s+/g, " ").trim().slice(0, 100);
