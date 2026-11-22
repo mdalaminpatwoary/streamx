@@ -44,7 +44,7 @@
     </section>
 
     <section class="ad-pane ad-card" data-p="subs" hidden>
-      <div class="ac-bar"><input class="ac-in" id="q" placeholder="Search email, mobile, name or service" style="max-width:420px"><button class="ac-btn ac-ghost ac-sm" id="sheetsync" type="button">Send all to Google Sheet</button></div>
+      <div class="ac-bar"><input class="ac-in" id="q" placeholder="Search email, mobile, name or service" style="max-width:420px"><select class="ac-in" id="sortby" aria-label="Sort users" style="max-width:220px"><option value="soon">Sort: Fewest days left</option><option value="late">Sort: Most days left</option><option value="new">Sort: Newest added</option><option value="old">Sort: Oldest added</option><option value="name">Sort: Name A to Z</option></select><button class="ac-btn ac-ghost ac-sm" id="sheetsync" type="button">Send all to Google Sheet</button></div>
       <div class="ad-scroll"><table class="ad-tbl"><thead><tr><th>Customer</th><th>Service</th><th>Account access</th><th>Expires</th><th>Left</th><th></th></tr></thead><tbody id="rows"></tbody></table></div>
       <p class="ac-note" id="cnt"></p>
     </section>
@@ -184,6 +184,6 @@
 <div class="ad-toast" id="toast" role="status"></div>
 <script src="/assets/js/data/catalog.js"></script>
 <script src="/assets/js/data/countries.js?v=1"></script>
-<script src="/assets/js/admin.js?v=26"></script>
+<script src="/assets/js/admin.js?v=28"></script>
 </body>
 </html>

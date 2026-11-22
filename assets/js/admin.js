@@ -108,6 +108,14 @@
   function list() {
     api("?q=" + encodeURIComponent($("#q").value.trim())).then(function (d) {
       $("#gate").hidden = true; $("#panel").hidden = false; $("#lock").hidden = false; orders(); notices(); reviews(); coupons(); custs();
+      var by = $("#sortby").value, cmp = {
+        soon: function (a, b) { return String(a.end_date).localeCompare(String(b.end_date)) || a.id - b.id; },
+        late: function (a, b) { return String(b.end_date).localeCompare(String(a.end_date)) || b.id - a.id; },
+        "new": function (a, b) { return String(b.created_at).localeCompare(String(a.created_at)) || b.id - a.id; },
+        old: function (a, b) { return String(a.created_at).localeCompare(String(b.created_at)) || a.id - b.id; },
+        name: function (a, b) { return String(a.name || a.email).toLowerCase().localeCompare(String(b.name || b.email).toLowerCase()); }
+      }[by] || null;
+      if (cmp) d.rows.sort(cmp); /* default: fewest days left first */
       SUBS = d.rows;
       $("#rows").innerHTML = d.rows.map(function (s, i) {
         var left = days(today, s.end_date), c = left < 0 ? "#ef4444" : left <= 7 ? "#f59e0b" : "#22c55e";
@@ -308,6 +316,7 @@
   $("#gf").addEventListener("submit", function (e) { e.preventDefault(); key = $("#ak").value; try { sessionStorage.setItem("sx_admin", key); } catch (x) {} $("#gm").textContent = ""; list(); });
   $("#lock").addEventListener("click", function () { key = ""; try { sessionStorage.removeItem("sx_admin"); } catch (x) {} $("#panel").hidden = true; $("#gate").hidden = false; $("#lock").hidden = true; $("#ak").value = ""; });
   $("#sheetsync").addEventListener("click", function (e) { var b = e.currentTarget; b.disabled = true; api("?sheetsync=1", { method: "POST", body: "{}" }).then(function (d) { b.disabled = false; toast(d.ok ? "Sent " + d.count + " purchase" + (d.count === 1 ? "" : "s") + " to the sheet" : (d.error || "Could not reach the sheet"), !d.ok); }).catch(function (er) { b.disabled = false; toast(er.message, true); }); });
+  $("#sortby").addEventListener("change", list);
   var t; $("#q").addEventListener("input", function () { clearTimeout(t); t = setTimeout(list, 300); });
 
   $("#af").addEventListener("submit", function (e) {
