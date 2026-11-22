@@ -2,7 +2,7 @@
    GET    /api/admin?q=<text>       list / search subscriptions
    POST   /api/admin                add one  {email,name,phone,service,plan,months,start?,notes?}
    PATCH  /api/admin?id=<n>         change any purchase detail {name,email,phone,service,plan,months,start_date,end_date,price,pay_method,txn_id,channel,notes,source} and/or login details {acct_email, acct_pass, acct_otp, acct_profile, acct_pin}
-   DELETE /api/admin?id=<n>         remove one
+   DELETE /api/admin?id=<n>         remove one (also needs header x-admin-confirm = the admin password)
    POST   /api/admin?sheetsync=1    send all hand-added purchases to the Google Sheet
    GET    /api/admin?view=orders    list paid orders (newest first) with delivery status
    PATCH  /api/admin?review=<id>  feature or unfeature a review {popular:true|false} (shown in the home page spotlight)
@@ -282,7 +282,11 @@ module.exports = async (req, res) => {
       await sheet.syncSub(id);
       return res.status(200).json({ row: out[0] });
     }
-    if (req.method === "DELETE") { await db.rest("DELETE", `subscriptions?id=eq.${id}`); await sheet.removeSub(id); return res.status(200).json({ ok: true }); }
+    if (req.method === "DELETE") {
+      // Deleting a user is permanent, so the admin password is checked again on the server (not just at sign-in).
+      if (!crypto.timingSafeEqual(h(req.headers["x-admin-confirm"] || ""), h(k))) return res.status(403).json({ error: "Wrong admin password. Nothing was deleted." });
+      await db.rest("DELETE", `subscriptions?id=eq.${id}`); await sheet.removeSub(id); return res.status(200).json({ ok: true });
+    }
     return res.status(405).json({ error: "Method not allowed" });
   } catch (e) {
     console.error("admin error", e && e.message);

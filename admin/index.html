@@ -13,7 +13,7 @@
 <body>
 <div class="ac-top"><a href="/"><img src="/assets/img/brand/logo.png" alt="StreamX" width="40" height="40"></a><a class="back" href="/">Open site</a></div>
 <main class="ad-wrap">
-  <div class="ad-head"><div><div class="ac-eyebrow">Owner only</div><h1>Orders &amp; active users</h1></div><button class="ac-btn ac-ghost ac-sm" id="lock" type="button" hidden>Lock</button></div>
+  <div class="ad-head"><div><div class="ac-eyebrow">Owner only</div><h1>Orders &amp; active users</h1></div><button class="ac-btn ac-ghost ac-sm" id="lock" type="button" hidden>Sign out</button></div>
 
   <section id="gate" class="ac-card ac-login" style="max-width:460px">
     <form id="gf"><label for="ak">Admin key</label>
@@ -153,6 +153,14 @@
     </section>
   </div>
 </main>
+<dialog id="deldlg" class="ad-dlg" style="width:min(460px,calc(100% - 24px))"><div class="ad-dh"><div><b>Delete this user?</b><span id="delsub"></span></div><button class="ad-x" id="delx" type="button" aria-label="Close">✕</button></div>
+  <div class="ad-cb"><div class="ad-sec">
+    <p class="ac-note" style="margin:0 0 12px;color:#fca5a5">This permanently removes the user from the website, and marks them Removed in the Google Sheet. It cannot be undone.</p>
+    <label for="delpw">Enter your admin password to confirm</label>
+    <input class="ac-in" id="delpw" type="password" autocomplete="current-password" placeholder="Admin password">
+    <p class="ac-note" id="delerr" style="margin:8px 0 0;color:#f87171" hidden></p>
+  </div></div>
+  <div class="ad-df"><button class="ac-btn ac-ghost" id="delno" type="button">Keep user</button><button class="ac-btn" id="delgo" type="button" style="background:#dc2626">Delete permanently</button></div></dialog>
 <dialog id="dlg" class="ad-dlg"><div class="ad-dh"><div><b id="dt"></b><span id="ds"></span></div><button class="ad-x" id="dx" type="button" aria-label="Close">✕</button></div><div id="dbody"></div><div class="ad-df"><button class="ac-btn ac-ghost" type="button" onclick="document.getElementById('dx').click()">Cancel</button><button class="ac-btn" id="dsave" type="button">Save changes</button></div></dialog>
 <dialog id="cdlg" class="ad-dlg"><div class="ad-dh"><div><b>Edit customer</b><span id="cds"></span></div><button class="ad-x" id="cdx" type="button" aria-label="Close">✕</button></div>
   <div id="cbody" class="ad-cb">
@@ -184,6 +192,6 @@
 <div class="ad-toast" id="toast" role="status"></div>
 <script src="/assets/js/data/catalog.js"></script>
 <script src="/assets/js/data/countries.js?v=1"></script>
-<script src="/assets/js/admin.js?v=28"></script>
+<script src="/assets/js/admin.js?v=30"></script>
 </body>
 </html>

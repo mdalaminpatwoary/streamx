@@ -363,8 +363,20 @@
   $("#rows").addEventListener("click", function (e) {
     var b = e.target.closest("[data-edit]"), d = e.target.closest("[data-del]");
     if (b) { cur = SUBS[+b.dataset.edit]; $("#dt").textContent = (cur.manual_id ? "Manual ID " + cur.manual_id + " · " : "") + cur.service + " · " + cur.plan; $("#ds").textContent = cur.email; $("#dbody").innerHTML = detailsHTML(cur) + accessHTML(cur.access, cur.service); syncAccess($("#ddet").nextSibling); if (dlg.showModal) dlg.showModal(); else dlg.setAttribute("open", ""); }
-    if (d && confirm("Delete this subscription?")) api("?id=" + d.dataset.del, { method: "DELETE" }).then(function () { toast("Deleted."); list(); }).catch(function (er) { toast(er.message, 1); });
+    if (d) { var s = SUBS.filter(function (x) { return String(x.id) === d.dataset.del; })[0] || {}; delId = d.dataset.del; $("#delsub").textContent = (s.name ? s.name + " · " : "") + (s.email || "") + (s.service ? " · " + s.service + " " + (s.plan || "") : ""); $("#delpw").value = ""; $("#delerr").hidden = true; if (deldlg.showModal) deldlg.showModal(); else deldlg.setAttribute("open", ""); setTimeout(function () { $("#delpw").focus(); }, 50); }
   });
+  /* Delete confirmation: warning + admin password, checked again by the server */
+  var deldlg = $("#deldlg"), delId = null, closeDel = function () { delId = null; if (deldlg.close) deldlg.close(); else deldlg.removeAttribute("open"); };
+  $("#delx").addEventListener("click", closeDel); $("#delno").addEventListener("click", closeDel);
+  var doDelete = function () {
+    var pw = $("#delpw").value, b = $("#delgo"); if (!pw) { $("#delerr").textContent = "Enter your admin password."; $("#delerr").hidden = false; return; }
+    b.disabled = true;
+    api("?id=" + delId, { method: "DELETE", headers: { "x-admin-confirm": pw } }).then(function () { closeDel(); toast("User deleted."); list(); })
+      .catch(function (er) { $("#delerr").textContent = er.message; $("#delerr").hidden = false; $("#delpw").select(); })
+      .then(function () { b.disabled = false; });
+  };
+  $("#delgo").addEventListener("click", doDelete);
+  $("#delpw").addEventListener("keydown", function (e) { if (e.key === "Enter") doDelete(); });
   var closeDlg = function () { if (dlg.close) dlg.close(); else dlg.removeAttribute("open"); };
   $("#dx").addEventListener("click", closeDlg);
   $("#dsave").addEventListener("click", function () {
