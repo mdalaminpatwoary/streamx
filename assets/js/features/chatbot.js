@@ -633,9 +633,10 @@
     }).catch(()=>{})
   }
 
-  const down=()=>{log.scrollTop=log.scrollHeight};
+  let stick=true; // follow new messages only while the reader is at the bottom
+  const down=force=>{if(!force&&!stick)return;try{log.scrollTo({top:log.scrollHeight,behavior:"instant"})}catch(e){log.scrollTop=log.scrollHeight}};
   const save=()=>{try{const c=log.cloneNode(true);c.querySelectorAll(".bt-typing").forEach(n=>n.remove());c.querySelectorAll(".bt-sv").forEach(n=>{n.classList.remove("shown");n.textContent=n.dataset.mask});sessionStorage.setItem("sx_bot",JSON.stringify({h:c.innerHTML.slice(0,90000),p:ctx.p?ctx.p.name:null}))}catch(e){}};
-  function add(cls,html,isText){const d=document.createElement("div");d.className="bt-m "+cls;if(isText)d.textContent=html;else d.innerHTML=html;log.appendChild(d);down();return d}
+  function add(cls,html,isText){const d=document.createElement("div");d.className="bt-m "+cls;if(isText)d.textContent=html;else d.innerHTML=html;log.appendChild(d);down(/bt-u/.test(cls));return d}
   function strip(){log.querySelectorAll(".bt-chips").forEach(n=>n.remove())}
   function typeText(el,full){
     if(calm){el.textContent=full;return 0}
@@ -688,24 +689,74 @@
     if(a==="buy"){close();setTimeout(()=>buyNow(i,v,k),260)}
   }
   function open(){
-    panel.hidden=false;root.classList.add("cw-open");requestAnimationFrame(()=>panel.classList.add("on"));
+    panel.hidden=false;root.classList.add("cw-open");void panel.offsetWidth;requestAnimationFrame(()=>panel.classList.add("on"));
+    if(mob()){lock(true);vvSync();if(!pushed){try{history.pushState({sxbt:1},"")}catch(e){}pushed=true}}
     const u=root.querySelector(".cw-unread");if(u)u.remove();try{sessionStorage.setItem("sx_bot_seen","1")}catch(e){}
     if(!started){started=true;let s=null;try{s=JSON.parse(sessionStorage.getItem("sx_bot")||"null")}catch(e){}
       if(s&&s.h){log.innerHTML=s.h;log.querySelectorAll(".bt-m").forEach(m=>m.classList.add("rest"));if(s.p)ctx.p=LIST.find(x=>x.name===s.p)||null;down()}
       else if(token()){bot({p:loadAcc().then(d=>{const soon=d.subscriptions.filter(x=>x._left>=0&&x._left<=7).sort((a,b)=>a._left-b._left),live=d.subscriptions.filter(x=>x._left>=0).length,nm=((d.profile&&d.profile.name)||"").trim();return{h:`<p>Hi${nm?" "+esc(nm):""}! You are signed in${live?` and have ${live} active subscription${live>1?"s":""}`:""}. I can show your plans, days left, login details and orders right here, and I can also help you buy.</p>`+(soon.length?`<p><b>Heads up:</b> ${esc(soon[0].service)} ${soon[0]._left===0?"ends today":"ends in "+soon[0]._left+(soon[0]._left===1?" day":" days")}${soon.length>1?", and "+(soon.length-1)+" more plan"+(soon.length>2?"s":"")+" end soon":""}. Renew online to keep it going.</p>`:""),c:live?(soon.length?["Renew my plan","My subscriptions","My orders","Prices & plans","Talk to a human"]:["My subscriptions","My orders","Renew my plan","Prices & plans","Talk to a human"]):["Prices & plans","Help me choose","My orders","Talk to a human"]}},()=>({h:`<p>Hi, I'm the StreamX assistant. Ask me anything about prices, plans, payment, delivery or your account.</p>`,c:["Prices & plans","Help me choose","How do I pay online?","Delivery time","My login details","Talk to a human"]}))})}
       else show({h:`<p>Hi, I'm the StreamX assistant. Ask me anything about prices, plans, payment, delivery or your account.</p>`,c:["Prices & plans","Help me choose","How do I pay online?","Delivery time","My login details","Talk to a human"]})}
-    setTimeout(()=>{down();inp.focus({preventScroll:true})},250)}
-  function close(){maskAll();panel.classList.remove("on");root.classList.remove("cw-open");setTimeout(()=>{if(!panel.classList.contains("on"))panel.hidden=true},250)}
+    setTimeout(()=>{down(true);if(!mob())inp.focus({preventScroll:true})},250)}
+  function close(){maskAll();lock(false);inp.blur();panel.classList.remove("on","kb");kbOn=false;root.classList.remove("cw-open");setTimeout(()=>{if(!panel.classList.contains("on"))panel.hidden=true},mob()?420:250)}
+  /* close by the user (X, Escape, swipe, back button): also remove the history step added when the chat opened */
+  function closeUser(){close();if(pushed){pushed=false;try{history.back()}catch(e){}}}
   function reset(){try{sessionStorage.removeItem("sx_bot")}catch(e){}ctx.p=null;ctx.interest=null;log.innerHTML="";busy=false;started=true;show({h:`<p>Fresh start. What would you like to know?</p>`,c:["Prices & plans","Help me choose","How do I pay online?","Talk to a human"]})}
-  panel.querySelector(".bt-x").onclick=close;panel.querySelector(".bt-rs").onclick=reset;
+  panel.querySelector(".bt-x").onclick=closeUser;panel.querySelector(".bt-rs").onclick=reset;
   panel.querySelector("#btF").addEventListener("submit",e=>{e.preventDefault();ask(inp.value)});
   panel.addEventListener("click",e=>{
-    const c=e.target.closest(".bt-chip");if(c){ask(c.dataset.q);return}
+    const c=e.target.closest(".bt-chip");if(c){if(mob())inp.blur();ask(c.dataset.q);return}
     const a=e.target.closest("[data-act]");if(a){doAct(a);return}
     if(e.target.closest("[data-close]")&&innerWidth<=600)close();
   });
-  addEventListener("keydown",e=>{if(e.key==="Escape"&&!panel.hidden)close()});
+  addEventListener("keydown",e=>{if(e.key==="Escape"&&!panel.hidden)closeUser()});
   /* a small unread dot on the photo until the assistant is opened */
   try{if(!sessionStorage.getItem("sx_bot_seen")&&lastBtn){const u=document.createElement("span");u.className="cw-unread";u.textContent="1";u.setAttribute("aria-hidden","true");lastBtn.appendChild(u)}}catch(e){}
+
+  /* ---------- phones: full-screen sheet that follows the keyboard ---------- */
+  const MQ=matchMedia("(max-width:600px), (pointer:coarse) and (max-height:540px)"),mob=()=>MQ.matches;
+  const vv=window.visualViewport,htmlEl=document.documentElement;
+  let pushed=false,kbOn=false;
+  const lock=on=>htmlEl.classList.toggle("bt-lock",on);
+  const form=panel.querySelector("#btF");
+  /* grab handle + a strip of quick replies above the input (phones only, hidden while the keyboard is open) */
+  panel.insertAdjacentHTML("afterbegin",'<span class="bt-grip" aria-hidden="true"></span>');
+  const qr=document.createElement("div");qr.className="bt-qr";qr.id="btQr";
+  qr.innerHTML=["Prices & plans","Help me choose","How do I pay online?","Delivery time","My login details","Talk to a human"].map(q=>`<button type="button" class="bt-chip" data-q="${q}">${q}</button>`).join("");
+  form.before(qr);
+  /* the strip appears once the conversation has started (the welcome message already shows the same choices) */
+  new MutationObserver(()=>panel.classList.toggle("talk",!!log.querySelector(".bt-u"))).observe(log,{childList:true,subtree:true});
+  /* keep the typing field right above the keyboard: size the sheet to the visible area */
+  function vvSync(){
+    const h=vv?vv.height:innerHeight,t=vv?vv.offsetTop:0;
+    htmlEl.style.setProperty("--vvh",Math.round(h)+"px");htmlEl.style.setProperty("--vvt",Math.round(t)+"px");
+    const kb=!!vv&&mob()&&innerHeight-vv.height>140;
+    if(kb!==kbOn){kbOn=kb;panel.classList.toggle("kb",kb)}
+    if(!panel.hidden){down();jumpPos()}
+  }
+  if(vv){vv.addEventListener("resize",vvSync);vv.addEventListener("scroll",vvSync)}
+  addEventListener("orientationchange",()=>setTimeout(vvSync,250));vvSync();
+  /* the page behind must not scroll while the sheet is open */
+  panel.addEventListener("touchmove",e=>{if(mob()&&!e.target.closest(".bt-log,.bt-qr,.bt-rm-b"))e.preventDefault()},{passive:false});
+  /* the phone's Back button closes the chat instead of leaving the page */
+  addEventListener("popstate",()=>{if(pushed&&!panel.hidden){pushed=false;close()}else pushed=false});
+  /* keep the keyboard open after sending, like a messenger */
+  form.querySelector('button[type="submit"]').addEventListener("pointerdown",e=>{if(mob()&&document.activeElement===inp)e.preventDefault()});
+  inp.setAttribute("enterkeyhint","send");inp.setAttribute("autocapitalize","sentences");inp.setAttribute("autocorrect","on");inp.setAttribute("spellcheck","true");
+  /* swipe the header down to close */
+  (function(){const hd=panel.querySelector(".bt-h");let sy=0,dy=0,dr=false,t0=0;
+    hd.addEventListener("pointerdown",e=>{if(!mob()||e.target.closest("button"))return;dr=true;sy=e.clientY;dy=0;t0=performance.now();try{hd.setPointerCapture(e.pointerId)}catch(x){}panel.classList.add("drag")});
+    hd.addEventListener("pointermove",e=>{if(!dr)return;dy=Math.max(0,e.clientY-sy);panel.style.transform="translateY("+dy+"px)"});
+    const end=()=>{if(!dr)return;dr=false;panel.classList.remove("drag");panel.style.transform="";const v=dy/Math.max(1,performance.now()-t0);if(dy>110||(dy>40&&v>.6))closeUser()};
+    hd.addEventListener("pointerup",end);hd.addEventListener("pointercancel",end)})();
+  /* "Latest" button when the reader scrolled up */
+  const jump=document.createElement("button");jump.type="button";jump.className="bt-jump";jump.hidden=true;
+  jump.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6"/></svg>Latest';
+  panel.appendChild(jump);
+  function jumpPos(){jump.style.bottom=(form.offsetHeight+(qr.offsetHeight||0)+10)+"px"}
+  const reach=()=>{const d=log.scrollHeight-log.scrollTop-log.clientHeight;stick=d<80;const show=d>160;if(jump.hidden===show){jump.hidden=!show;if(show)jumpPos()}};
+  log.addEventListener("scroll",reach,{passive:true});log.addEventListener("touchend",reach,{passive:true});
+  /* the moment a finger or wheel moves the list, stop auto-scrolling so new text never pulls the reader away */
+  ["wheel","touchstart","touchmove"].forEach(ev=>log.addEventListener(ev,()=>{stick=false},{passive:true}));
+  jump.onclick=()=>{stick=true;log.scrollTo({top:log.scrollHeight,behavior:"smooth"})};
   window.sxBot={open,close,toggle:()=>panel.hidden?open():close(),ask};
 })();

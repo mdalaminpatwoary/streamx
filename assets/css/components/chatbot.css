@@ -284,3 +284,47 @@ button.bt-btn{appearance:none}
 
 .bt-trn{margin:8px 0 2px;font-size:12.5px;line-height:1.5;color:#b4bddb}.bt-trn span{color:#8b95b8;font-weight:700}
 .bt-trn a{color:#ffb3aa;text-decoration:none;font-weight:700}.bt-trn a:hover{color:#fff;text-decoration:underline}
+
+/* ===== Phones: full-screen sheet that follows the keyboard ===== */
+.bt{position:relative}
+.bt-grip,.bt-qr{display:none}
+.bt-jump{position:absolute;left:50%;z-index:4;display:inline-flex;align-items:center;gap:6px;padding:8px 14px 8px 11px;border:1px solid rgba(255,255,255,.2);border-radius:99px;background:rgba(14,18,38,.92);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);color:#fff;font:700 12.5px Manrope,system-ui,sans-serif;box-shadow:0 10px 26px -10px rgba(0,0,0,.8);transform:translateX(-50%);cursor:pointer;animation:btRv .25s both}
+.bt-jump[hidden]{display:none}
+.bt-jump svg{width:14px;height:14px}
+.bt,.bt *{-webkit-tap-highlight-color:transparent}
+.bt button,.bt a,.bt-chip{touch-action:manipulation}
+html.bt-lock,html.bt-lock body{overflow:hidden!important;overscroll-behavior:none}
+@media(max-width:600px),(pointer:coarse) and (max-height:540px){
+  .cw.cw-open{z-index:2147482000}
+  .cw.cw-open>*:not(.bt){display:none}
+  .bt{position:fixed;left:0;right:0;top:var(--vvt,0px);bottom:auto;width:100%;max-width:none;height:var(--vvh,100dvh);max-height:none;border-radius:0;border:0;box-shadow:none;background:#0a0e20;opacity:1;transform:translateY(100%);transform-origin:bottom center;transition:transform .42s cubic-bezier(.32,.72,0,1);will-change:transform;overscroll-behavior:contain}
+  .bt.on{transform:none}
+  .bt.drag{transition:none}
+  .bt-grip{display:block;position:absolute;top:6px;left:50%;width:40px;height:4px;border-radius:4px;background:rgba(255,255,255,.3);transform:translateX(-50%);pointer-events:none}
+  .bt-h{padding:calc(18px + env(safe-area-inset-top,0px)) calc(12px + env(safe-area-inset-right,0px)) 12px calc(14px + env(safe-area-inset-left,0px));touch-action:none;user-select:none;-webkit-user-select:none}
+  .bt-x,.bt-rs{width:40px;height:40px}
+  .bt-x{font-size:24px}
+  .bt-log{padding:14px calc(12px + env(safe-area-inset-right,0px)) 14px calc(12px + env(safe-area-inset-left,0px));scroll-behavior:auto;-webkit-overflow-scrolling:touch}
+  .bt-m{max-width:94%;font-size:14.5px}
+  .bt-chip{min-height:38px;padding:8px 14px;font-size:13.5px}
+  .bt-btn{min-height:40px;padding:9px 15px;font-size:13.5px}
+  .bt-opt{padding:12px 14px}
+  .bt.talk .bt-qr{display:flex}
+  .bt-qr{gap:8px;padding:8px calc(12px + env(safe-area-inset-right,0px)) 2px calc(12px + env(safe-area-inset-left,0px));overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;border-top:1px solid rgba(255,255,255,.08);background:rgba(6,9,22,.6)}
+  .bt-qr::-webkit-scrollbar{display:none}
+  .bt-qr .bt-chip{flex:none;white-space:nowrap;animation:none}
+  .bt-f{padding:8px calc(12px + env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) calc(12px + env(safe-area-inset-left,0px));border-top:0}
+  .bt-f input{height:46px;font-size:16px}
+  .bt-f button{width:46px;height:46px}
+  .bt.kb .bt-qr{display:none}
+  .bt.kb .bt-f{padding-bottom:8px;border-top:1px solid rgba(255,255,255,.08)}
+  .bt.kb .bt-h{padding-top:12px}
+  .bt.kb .bt-grip{display:none}
+  .bt-jump{font-size:13px}
+  /* renewal dialog: bottom sheet that sits above the keyboard */
+  .bt-rm{top:var(--vvt,0px);bottom:auto;height:var(--vvh,100dvh);place-items:end center;padding:0}
+  .bt-rm-b{max-width:none;border-radius:22px 22px 0 0;max-height:calc(var(--vvh,100dvh) - 10px);padding-bottom:calc(20px + env(safe-area-inset-bottom,0px));-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+  .bt-rm input,.bt-rm select,.bt-rm textarea{font-size:16px!important}
+  .bt-rm-x{width:40px;height:40px}
+}
+@media(prefers-reduced-motion:reduce){.bt{transition:none}.bt-jump{animation:none}}
