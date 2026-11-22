@@ -64,6 +64,7 @@ const shape = (kind) => (r) => ({
   k: kind,
   t: (kind === "movie" ? r.title : r.name) || "",
   y: ((kind === "movie" ? r.release_date : r.first_air_date) || "").slice(0, 4),
+  d: (kind === "movie" ? r.release_date : r.first_air_date) || "",
   p: r.poster_path || "",
   v: r.vote_average ? Math.round(r.vote_average * 10) / 10 : 0,
   o: (r.overview || "").slice(0, 200),

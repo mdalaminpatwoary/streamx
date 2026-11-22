@@ -8,7 +8,7 @@ const API = "https://api.themoviedb.org/3";
 const HOUR = 3600 * 1000;
 
 const { mapProviders } = require("./_providers");
-const PROV_ID = { netflix: 8, "prime-video": 9, "amazon-prime-video": 9, disneyplus: 337, hulu: 15, "hbo-max": 1899, crunchyroll: 283, paramountplus: 531, "apple-tv": 350, peacock: 386, jiohotstar: 122 };
+const PROV_ID = { netflix: 8, "prime-video": 9, "amazon-prime-video": 9, disneyplus: 337, hulu: 15, "hbo-max": 1899, crunchyroll: 283, paramountplus: 531, "apple-tv": 350, peacock: 386, jiohotstar: 122, zee5: 232, sonyliv: 237, viki: 344, mubi: 11 };
 const cache = new Map(); // key -> { at, body }
 const pvCache = new Map(); // "k:id" -> { at, v }
 let genres = null;
@@ -106,6 +106,50 @@ async function build(l, k) {
   return rows.map((r, i) => ({ ...item(r, k, g), pl: pl[i].list, reg: pl[i].reg }));
 }
 
+
+/* ---------- Explore hub: GET /api/catalog?a=hub&s=<section>&k=movie|tv&page=1[&g=<genre id>][&p=<platform>] and a=genres, a=births ---------- */
+const hubCache = new Map(); // key -> { at, body }
+const HUB = new Set(["nowplaying", "upcoming", "toprated", "boxoffice", "popular", "airing", "genre", "platform"]);
+async function hubList(sec, k, page, genre, plat) {
+  const g = await genreMap();
+  const base = { language: "en-US", page, include_adult: "false" };
+  let data;
+  if (sec === "nowplaying") data = await tmdb("/movie/now_playing", { ...base, region: "US" });
+  else if (sec === "upcoming") data = k === "tv"
+    ? await tmdb("/discover/tv", { ...base, sort_by: "popularity.desc", "first_air_date.gte": today() })
+    : await tmdb("/discover/movie", { ...base, sort_by: "popularity.desc", "primary_release_date.gte": today(), with_release_type: "2|3", region: "US" });
+  else if (sec === "toprated") data = await tmdb(`/${k}/top_rated`, base);
+  else if (sec === "boxoffice") data = await tmdb("/discover/movie", { ...base, sort_by: "revenue.desc", "vote_count.gte": 500 });
+  else if (sec === "popular") data = await tmdb(`/${k}/popular`, base);
+  else if (sec === "airing") data = await tmdb("/tv/airing_today", base);
+  else if (sec === "genre") data = await tmdb(`/discover/${k}`, { ...base, sort_by: "popularity.desc", with_genres: genre, "vote_count.gte": 50 });
+  else data = await tmdb(`/discover/${k}`, { ...base, sort_by: "popularity.desc", with_watch_providers: plat, watch_region: "US", with_watch_monetization_types: "flatrate" });
+  const kind = sec === "nowplaying" || sec === "boxoffice" ? "movie" : sec === "airing" ? "tv" : k;
+  return { page: data.page || page, pages: Math.min(data.total_pages || 1, 25), list: (data.results || []).filter((r) => r.poster_path).map((r) => item(r, kind, g)) };
+}
+
+const PEOPLE = /actor|actress|singer|songwriter|rapper|musician|director|filmmaker|film|comedian|model|producer|screenwriter|presenter|television|dancer|youtuber|influencer|cricketer|footballer|athlete|player|composer|band/i;
+const birthCache = new Map(); // "MM/DD" -> { at, list }
+async function birthdays() {
+  const d = today(), mm = d.slice(5, 7), dd = d.slice(8, 10), key = mm + "/" + dd;
+  const hit = birthCache.get(key);
+  if (hit && Date.now() - hit.at < 6 * HOUR) return hit.list;
+  const r = await fetch(`https://en.wikipedia.org/api/rest_v1/feed/onthisday/births/${mm}/${dd}`, { headers: { accept: "application/json", "user-agent": "StreamXBot/1.0 (https://streamx.bd)" }, signal: AbortSignal.timeout(8000) });
+  if (!r.ok) throw new Error("births HTTP " + r.status);
+  const yr = new Date(Date.now() + 6 * HOUR).getUTCFullYear();
+  const seen = new Set(), list = [];
+  for (const b of (await r.json()).births || []) {
+    const pg = (b.pages || [])[0];
+    if (!pg || !pg.title || seen.has(pg.title) || !b.year || !PEOPLE.test(pg.description || "")) continue;
+    seen.add(pg.title);
+    list.push({ n: String(pg.titles && pg.titles.normalized || pg.title).slice(0, 80), y: b.year, age: yr - b.year, d: String(pg.description || "").slice(0, 90), img: (pg.thumbnail && pg.thumbnail.source) || "", u: (pg.content_urls && pg.content_urls.desktop && pg.content_urls.desktop.page) || "" });
+  }
+  list.sort((a, b) => b.y - a.y);
+  const out = list.filter((x) => x.age < 100).slice(0, 30);
+  birthCache.set(key, { at: Date.now(), list: out });
+  return out;
+}
+
 module.exports = async (req, res) => {
   res.setHeader("Content-Type", "application/json; charset=utf-8");
   try {
@@ -159,6 +203,29 @@ module.exports = async (req, res) => {
       const r = await tmdb(`/discover/${k}`, { with_watch_providers: id, watch_region: "US", with_watch_monetization_types: "flatrate", sort_by: "popularity.desc", "vote_count.gte": 200, language: "en-US" });
       res.setHeader("Cache-Control", "public, s-maxage=21600, stale-while-revalidate=86400");
       return res.status(200).json({ p: req.query.p, k, list: (r.results || []).filter((x) => x.poster_path).slice(0, 6).map((x) => item(x, k, g)) });
+    }
+    if (req.query.a === "genres") {
+      const j = await tmdb(`/genre/${k}/list`, { language: "en-US" });
+      res.setHeader("Cache-Control", "public, s-maxage=86400, stale-while-revalidate=604800");
+      return res.status(200).json({ k, genres: (j.genres || []).map((x) => ({ id: x.id, n: x.name })) });
+    }
+    if (req.query.a === "births") {
+      res.setHeader("Cache-Control", "public, s-maxage=21600, stale-while-revalidate=86400");
+      return res.status(200).json({ date: today(), list: await birthdays() });
+    }
+    if (req.query.a === "hub") {
+      const sec = String(req.query.s || ""), page = Math.min(25, Math.max(1, parseInt(req.query.page, 10) || 1));
+      if (!HUB.has(sec)) return res.status(400).json({ error: "Unknown section" });
+      const genre = String(req.query.g || "").replace(/[^0-9]/g, "").slice(0, 6), plat = PROV_ID[String(req.query.p || "").toLowerCase()];
+      if (sec === "genre" && !genre) return res.status(400).json({ error: "Pick a genre" });
+      if (sec === "platform" && !plat) return res.status(400).json({ error: "Unknown platform" });
+      const key = [sec, k, page, genre, plat].join("|"), hit = hubCache.get(key);
+      res.setHeader("Cache-Control", "public, s-maxage=3600, stale-while-revalidate=86400");
+      if (hit && Date.now() - hit.at < HOUR) return res.status(200).json(hit.body);
+      const body = { s: sec, k, ...(await hubList(sec, k, page, genre, plat)) };
+      if (hubCache.size > 400) hubCache.clear();
+      hubCache.set(key, { at: Date.now(), body });
+      return res.status(200).json(body);
     }
     const l = req.query.l === "soon" ? "soon" : "top", key = l + k;
     const hit = cache.get(key);

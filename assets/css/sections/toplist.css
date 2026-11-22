@@ -98,3 +98,9 @@
   .tp-open{opacity:0}
 }
 @media(prefers-reduced-motion:reduce){.tp-card{animation:none}.tp-ld,.tp-sk i{animation:none}}
+
+.tp-hub{display:flex;flex-direction:column;align-items:center;gap:10px;margin:22px auto 0;max-width:560px;text-align:center}
+.tp-hub p{margin:0;color:var(--mut);font-size:14px;line-height:1.6}
+.tp-hubl{display:inline-flex;align-items:center;gap:8px;color:#ff8a7e;font:800 14px Manrope,sans-serif;text-decoration:none;transition:color .2s,gap .2s}
+.tp-hubl svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;transition:transform .25s}
+.tp-hubl:hover{color:#fff}.tp-hubl:hover svg{transform:translateX(4px)}

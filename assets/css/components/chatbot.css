@@ -281,3 +281,6 @@ button.bt-btn{appearance:none}
 .bt-chips{scroll-padding:0 14px}
 .bt-ag-row>*{min-width:0}.bt-ag-row a{padding:10px 6px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
 @media(max-width:380px){.bt-ag-row{grid-template-columns:1fr}}
+
+.bt-trn{margin:8px 0 2px;font-size:12.5px;line-height:1.5;color:#b4bddb}.bt-trn span{color:#8b95b8;font-weight:700}
+.bt-trn a{color:#ffb3aa;text-decoration:none;font-weight:700}.bt-trn a:hover{color:#fff;text-decoration:underline}

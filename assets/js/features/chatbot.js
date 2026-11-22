@@ -159,7 +159,7 @@
    ["official",["official","affiliated","authorized","partner","reseller","original account","legal","is this real"],()=>({h:`<p>StreamX is an independent reseller based in Dhaka. We are not affiliated with the brands we sell. Prices are shown before you pay, and online payments go through EPS's secure page.</p><div class="bt-row">${btn("About us","/about/")}${btn("Terms","/terms/")}</div>`,c:["Is it safe?","Return policy"]})],
    ["privacy",["privacy","personal information","my information","my data","data safe","cookie","cookies","tracking","track me"],()=>({h:`<p>We never see your card or wallet details, because online payments happen on EPS's secure page. We do not use advertising or tracking cookies. Your browser only keeps what the site needs, like your sign-in, cart and this chat, on your own device. Passwords and PINs stay hidden until you tap Show, and they are never saved in the chat history. Read the full details in the Privacy Policy.</p><div class="bt-row">${btn("Privacy Policy","/privacy/")}</div>`,c:["Is it safe?","Payment methods"]})],
    ["forother",["for my friend","for someone","for family","buy for","another person","as a gift for","for my brother","for my sister"],()=>({h:`<p>Yes, you can buy for someone else. For plans activated on an email, send us that person's email on WhatsApp when you order.</p>`+waBtn("Hi StreamX! I want to buy a subscription for someone else."),c:["How do I order?","Payment methods"]})],
-   ["trending",["trending","what to watch","movie suggestion","popular movie","tv shows","what's new","whats new","what should i watch"],()=>({h:`<p>The Trending section shows what is popular right now by country, with a "Wanna watch it now?" button for each title.</p><div class="bt-row">${btn("See what's trending","/#trending"," bt-go")}</div>`,c:["Movies & series","Prices & plans"]})],
+   ["trending",["trending","what to watch","movie suggestion","popular movie","tv shows","what's new","whats new","what should i watch"],()=>({h:`<p>The Trending section shows what is popular right now by country. For upcoming releases, movies in theaters, top rated, genres, box office and celebrity birthdays, open the Explore hub.</p><div class="bt-row">${btn("See what's trending","/#trending"," bt-go")}${btn("Open Explore hub","/explore/")}</div>`,c:["Movies & series","Prices & plans"]})],
    ["reviews",["reviews","testimonials","customers say","customer feedback","ratings"],()=>({h:`<p>Real customer reviews are in the Reviews section of the site.</p><div class="bt-row">${btn("Read reviews","/#reviews"," bt-go")}</div>`,c:["Is it safe?","Prices & plans"]})],
    ["bulk",["bulk","wholesale","reseller price","resell","agency","many accounts","large order"],()=>({h:`<p>For bulk orders or reseller pricing, message us on WhatsApp with what you need.</p>`+waBtn("Hi StreamX! I want to ask about bulk or reseller pricing."),c:["Talk to a human"]})],
    ["policy",["policy","terms","refund","money back","return","replace","replacement","warranty","guarantee"],()=>({h:`<p>${esc(POL.return[1][0])}</p><p>${esc(POL.return[1][1])}</p><div class="bt-row">${btn("Return policy","/return-policy/")}${btn("Terms","/terms/")}${waBtn("Hi StreamX! I need help with a refund or replacement. Order details: ")}</div>`,c:["It is not working","Talk to a human"]})]
@@ -195,19 +195,64 @@
   const LITE=["bundle","catalog","cheap","devices","renew","order","delivery","greet","payment","login"];
 
   function ctxChips(p){return [p.name+" devices","How do I pay online?","Talk to a human"]}
+  /* ---------- Banglish (Bangla typed in English letters) -> English hints, so routing and search understand it ---------- */
+  const BN=[
+    [/(netfliks|netfilx|netflex|netflicks|netflx)/,"netflix"],[/(spotifi|spotifay|spotifi)/,"spotify"],[/(yutube|youtub|ytube|utube)/,"youtube"],[/(chat ?gpt|chatgbt|chtgpt)/,"chatgpt"],[/(amazon prime|primevideo|prime video|amazone)/,"prime"],[/(disny|disnep)/,"disney"],[/(biksh|bikas|bkas|bikash)/,"bkash"],[/(nogod|nagod)/,"nagad"],
+    [/(koto taka|koto|kto|dam|daam|dam koto|mullo|mulyo|rate koto)/,"price how much cost"],
+    [/(kinbo|kinte|kinsi|kinci|kine|kinum|nibo|nite chai|nite cai|lagbe|lagche|chai|cai|order korbo|order dibo|order korte)/,"buy order"],
+    [/(kivabe|kibhabe|kivave|kemne|kmne|kmn kore|kemon kore|ki vabe|kibhabe)/,"how"],
+    [/(keno|kno|kn)/,"why"],[/(kothay|kothai|kotha e)/,"where"],[/(kokhon|kokhono|kkhn|kobe)/,"when"],[/(kon ta|konta|kon)/,"which"],[/(koyta|koyjon|koita|koyta)/,"how many"],
+    [/(ache|ase|achhe|available ache)/,"available"],[/(nai|nei|nay|na)/,"no"],
+    [/(kaj korche na|kaj kore na|kaj korena|kaj koro na|chalche na|chole na|open hocche na|open hoy na|hocche na|hoccha na|hoy na|ashche na|ase na|load hocche na)/,"not working problem"],
+    [/(login hocche na|login hoy na|login kora jay na|dhukte parchi na|dhukte pari na)/,"not working problem"],
+    [/(password vul|pass vul|password bhul|vul password|wrong pass|password kaj)/,"wrong password problem"],
+    [/(taka ferot|ferot|fert|refund chai|taka fire)/,"refund"],
+    [/(pathan|pathao|pathaben|pathiye dao|pathiye den|dao|den)/,"send"],
+    [/(kobe pabo|kokhon pabo|kokhon pabo|pete koto|delivery kobe|delivery kokhon|koto somoy|kotokkhon|kotokhon)/,"delivery time"],
+    [/(meyad|meyad sesh|meyad shesh|shesh hoye|sesh hoye|sesh hoye gese|expire hoye|expire hoise|expire hobe)/,"expire renew"],
+    [/(renew korbo|renew kora|renew kori|renew korte|barate|barano|barabo)/,"renew"],
+    [/(amar account|amar acc|amar subscription|amar sub|amar plan|amar package|amar package)/,"my account subscription"],
+    [/(amar order|amar kena|ami ja kinechi)/,"my orders"],
+    [/(taka pathabo|taka dibo|pay korbo|payment korbo|payment kivabe|taka dite|bkash e|nagad e|rocket e|upay e)/,"pay payment"],
+    [/(sasta|shasta|shosta|sosta|kom dam|kom dame|cheap|kom taka)/,"cheap"],
+    [/(discount|offer|chhar|chad|coupon|promo)/,"discount offer"],
+    [/(assalamu|assalamualaikum|salam|slm|valo achen|bhalo achen|kemon achen|kemon asen|kmn asen|hello|hi bhai|bhaiya|bhai|vaiya|vaia|apu)/,"hello"],
+    [/(dhonnobad|dhonnobaad|dhonyobad|shukriya|thank you|thanks|thanx)/,"thanks"],
+    [/(manush er sathe|manusher sathe|agent er sathe|kotha bolte chai|kotha bolbo|call korbo|real manush|human er sathe|admin er sathe|owner er sathe)/,"talk to human"],
+    [/(nirapod|nirapad|bishshash|vishwash|biswas|trusted|fake naki|scam naki|ghotala|protarona)/,"safe trusted"],
+    [/(mobile e|phone e|tv te|tv e|laptop e|pc te|device e|ek sathe koyta|koyta device|koto jon)/,"devices"],
+    [/(mash|mase|mas e|mas er)/,"month"],[/(bochor|bosor|bochhor)/,"year"],[/(ek mash|ek mas|1 mas|1 mash)/,"1 month"],
+    [/(gift card|giftcard|voucher|recharge card)/,"gift card"],
+    [/(free ache|free te|free kore)/,"free"],
+    [/(shuru|suru|start korbo|start kora)/,"start"],
+    [/(bondho|bandho|off kore|cancel korbo|cancel kora|cancel korte)/,"cancel"],
+    [/(change korbo|change kora|poriborton|bodlabo|badlabo)/,"change"],
+    [/(vpn lagbe|vpn lage|vpn dorkar)/,"vpn"],
+    [/(ki ki|ki ki ache|ki ki pawa jay|ki ki service|service gulo|service list|sob service)/,"all services catalog"],
+    [/(dekhao|dekhan|dekhi|dekhte chai|dekhbo)/,"show"],
+    [/(amake|amar|ami)/,""]
+  ];
+  function banglish(raw){
+    const q=" "+String(raw).toLowerCase().replace(/[^a-z0-9\u0980-\u09ff]+/g," ").trim()+" ";
+    let out=[];
+    BN.forEach(r=>{const re=new RegExp("(^| )(?:"+r[0].source.slice(1,-1)+")(?= |$)");if(r[1]&&re.test(q))out.push(r[1])});
+    /* Bangla script */
+    [["দাম","price"],["কত","how much"],["কিভাবে","how"],["কীভাবে","how"],["ফেরত","refund"],["নিরাপদ","safe"],["সাহায্য","help"],["অর্ডার","order"],["পেমেন্ট","payment"],["রিনিউ","renew"],["লগইন","login"],["সমস্যা","problem"]].forEach(b=>{if(q.indexOf(b[0])>-1)out.push(b[1])});
+    return out.join(" ");
+  }
   function answer(raw){
-    const q=norm(raw),t=raw.trim(),ql=t.toLowerCase();
+    const t=raw.trim(),ext=banglish(raw),ql0=t.toLowerCase(),ql=ext?ql0+" "+ext:ql0,q=norm(ext?raw+" "+ext:raw);
     /* quick flows and shortcuts */
     if(INTERESTS[t]){ctx.interest=t;return{h:`<p>${esc(t)}. What is your monthly budget?</p>`,c:["Under 200","Under 500","Any budget"]}}
-    const num=ql.match(/^under\s+(\d{2,5})$/);
-    if(num||ql==="any budget"){const n=num?+num[1]:0,f=ctx.interest?INTERESTS[ctx.interest]:null,lb=ctx.interest;ctx.interest=null;const r=cheap(n).filter(x=>!f||f(x[0])).slice(0,4);
+    const num=ql0.match(/^under\s+(\d{2,5})$/);
+    if(num||ql0==="any budget"){const n=num?+num[1]:0,f=ctx.interest?INTERESTS[ctx.interest]:null,lb=ctx.interest;ctx.interest=null;const r=cheap(n).filter(x=>!f||f(x[0])).slice(0,4);
       return{h:budgetList(n,f,lb),c:r.length?r.map(x=>x[0].name).concat(["Help me choose"]).slice(0,4):["Talk to a human"]}}
-    if(ql==="how do i pay online?")return{h:payHtml(),c:["Is it safe?","Delivery time"]};
-    if(ql==="read reviews")return KB.find(k=>k[0]==="reviews")[2]();
-    if(ql==="gift card price")return KB.find(k=>k[0]==="giftrate")[2]();
-    if(ql==="how to redeem")return KB.find(k=>k[0]==="redeem")[2]();
-    if(ql==="return policy")return KB.find(k=>k[0]==="policy")[2]();
-    if(CATNAMES[ql]){const h=byCat(CATNAMES[ql]);if(h)return{h,c:["Help me choose","Prices & plans","Talk to a human"]}}
+    if(ql0==="how do i pay online?")return{h:payHtml(),c:["Is it safe?","Delivery time"]};
+    if(ql0==="read reviews")return KB.find(k=>k[0]==="reviews")[2]();
+    if(ql0==="gift card price")return KB.find(k=>k[0]==="giftrate")[2]();
+    if(ql0==="how to redeem")return KB.find(k=>k[0]==="redeem")[2]();
+    if(ql0==="return policy")return KB.find(k=>k[0]==="policy")[2]();
+    if(CATNAMES[ql0]){const h=byCat(CATNAMES[ql0]);if(h)return{h,c:["Help me choose","Prices & plans","Talk to a human"]}}
     let ps=findProducts(q);
     const wr=watchRoute(q,ql,t);if(wr)return wr;
     const ar=acctRoute(q,ql,ps);if(ar)return ar;
@@ -268,6 +313,7 @@
   <form class="bt-f" id="btF" autocomplete="off"><input id="btI" type="text" maxlength="200" placeholder="Ask about prices, plans, payment..." aria-label="Type your question"><button type="submit" aria-label="Send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg></button></form>`;
   root.insertBefore(panel,root.firstChild);
   const log=panel.querySelector("#btLog"),inp=panel.querySelector("#btI"),stat=panel.querySelector("#btS");
+  new MutationObserver(()=>fillTrend(log)).observe(log,{childList:true,subtree:true});
   const IDLE="<span>Instant answers · 24/7 on WhatsApp</span>";
   /* voice input where the browser supports it */
   (function(){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR)return;
@@ -317,6 +363,19 @@
   const I_LK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
   const planPrice=x=>{const p=PRODUCTS.find(q=>q.name===x.service);if(!p||p.gift)return 0;const lb=x.plan.indexOf(" · ")>-1?x.plan.split(" · ")[0]:"",vr=lb?p.variants.find(v=>v.n===lb):p.variants[0],pl=vr&&vr.plans.find(y=>y.m===x.months);return pl?pl.p:0};
   const renewWa=x=>wa(`Hi StreamX! I want to renew ${x.service} (${x.plan}).\nMy StreamX email: ${ACC.email}`);
+  /* "Trending now" under a subscription: live top titles for that service (TMDB via /api/trending) */
+  const TRP=[[/netflix/i,"netflix","Netflix"],[/prime/i,"prime","Prime Video"],[/disney/i,"disney","Disney+"],[/hbo/i,"hbomax","HBO Max"],[/crunchyroll/i,"crunchyroll","Crunchyroll"],[/hotstar/i,"hotstar","JioHotstar"],[/paramount/i,"paramount","Paramount+"],[/hulu/i,"hulu","Hulu"],[/apple tv/i,"appletv","Apple TV+"],[/zee5/i,"zee5","ZEE5"],[/sonyliv|sony liv/i,"sonyliv","SonyLIV"]];
+  const trendLine=x=>{const m=TRP.find(t=>t[0].test(x.service||""));return m?`<p class="bt-trn" data-p="${m[1]}" data-n="${m[2]}" hidden></p>`:""};
+  const TRC={};
+  function fillTrend(root){
+    root.querySelectorAll(".bt-trn:not([data-done])").forEach(el=>{
+      el.dataset.done="1";const p=el.dataset.p;
+      (TRC[p]=TRC[p]||fetch("/api/trending?p="+p+"&r=BD").then(r=>r.ok?r.json():null).catch(()=>null)).then(d=>{
+        if(!d)return;const a=[(d.movies||[])[0],(d.tv||[])[0],(d.movies||[])[1]].filter(Boolean);
+        if(!a.length)return;
+        el.innerHTML=`<span>Trending on ${esc(el.dataset.n)}:</span> ${a.map(t=>`<a href="/#trending" data-close>${esc(t.t)}</a>`).join(" · ")}`;el.hidden=false});
+    });
+  }
   const renewBtns=x=>{const pr=planPrice(x);return `<div class="bt-rn"><button type="button" class="bt-btn bt-go" data-act="renew" data-sid="${x.id}">Renew online${pr?" · "+taka(pr):""}</button><a class="bt-rwa" href="${esc(renewWa(x))}" target="_blank" rel="noopener">or renew on WhatsApp</a></div>`};
   const helpWa=x=>wa(`Hi StreamX! I need help with ${x.service} (${x.plan}).\nMy StreamX email: ${ACC.email}\nSubscription ID: #${x.id}`);
   /* renew right here: pay on EPS straight from the chat (no trip to My account) */
@@ -395,7 +454,7 @@
     return `<div class="bt-card bt-acct"><div class="bt-ct">${tileOf(x.service)}${esc(x.service)}<em class="bt-st ${st[1]}">${st[0]}</em></div><p class="bt-cd">${esc(x.plan)} · ${fdate(x.start_date)} to ${fdate(x.end_date)}</p>`+
       `<div class="bt-prog" title="${leftTxt(x)}"><i style="width:${x._left<0?0:pct}%"></i></div><p class="bt-left"><b>${x._left<0?"Expired":x._left}</b> ${x._left<0?leftTxt(x):x._left===0?"last day":x._left===1?"day left":"days left"}</p>`+
       `<div class="bt-kvs">${rows.join("")}</div><p class="bt-lock">${I_LK}<span>Only you can see this on this device. Secrets are hidden again after 20 seconds.</span></p>`+
-      `${renewBtns(x)}<div class="bt-row">${btn("Need help",helpWa(x),"  bt-wa")}</div></div>`;
+      `${trendLine(x)}${renewBtns(x)}<div class="bt-row">${btn("Need help",helpWa(x),"  bt-wa")}</div></div>`;
   }
   function listHtml(d,title){
     const live=d.subscriptions.filter(x=>x._left>=0).sort((a,b)=>a._left-b._left),gone=d.subscriptions.filter(x=>x._left<0);
@@ -419,7 +478,7 @@
   function renewHtml(d){
     const a=d.subscriptions.filter(x=>x._left<=30).sort((x,y)=>x._left-y._left);
     if(!a.length)return `<p>None of your plans is close to ending. You can still renew any time from My account. The new period is added after your current expiry, so no days are lost.</p><div class="bt-row">${btn("Open My account","/account/")}</div>`;
-    return `<p>${a.length>1?"These plans are":"This plan is"} ending soon. Renew online and your plan is extended automatically once payment is confirmed. You do not need to do anything else.</p>`+a.map(x=>`<div class="bt-card"><div class="bt-ct">${tileOf(x.service)}${esc(x.service)}<em class="bt-st ${stOf(x)[1]}">${leftTxt(x)}</em></div><p class="bt-cd">${esc(x.plan)}</p>${renewBtns(x)}</div>`).join("");
+    return `<p>${a.length>1?"These plans are":"This plan is"} ending soon. Renew online and your plan is extended automatically once payment is confirmed. You do not need to do anything else.</p>`+a.map(x=>`<div class="bt-card"><div class="bt-ct">${tileOf(x.service)}${esc(x.service)}<em class="bt-st ${stOf(x)[1]}">${leftTxt(x)}</em></div><p class="bt-cd">${esc(x.plan)}</p>${trendLine(x)}${renewBtns(x)}</div>`).join("");
   }
 
   /* ---------- movies and series: where to watch, wishlist and watched ---------- */

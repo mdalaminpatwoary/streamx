@@ -644,3 +644,5 @@ html.tt-open{overflow:hidden}
 .tt-head{padding-top:2px}
 .tt-buy{margin:0 0 4px}
 @media(max-width:600px){.tt-body{padding-top:20px}}
+
+.tr-new{position:absolute;left:8px;bottom:8px;z-index:2;padding:3px 8px;border-radius:999px;font:800 10.5px/1 Manrope,system-ui,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#fff;background:linear-gradient(135deg,#ed3124,#c4241a);box-shadow:0 4px 12px -4px rgba(237,49,36,.8)}

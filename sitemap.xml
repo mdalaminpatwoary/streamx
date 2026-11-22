@@ -46,4 +46,5 @@
 <url><loc>https://streamx.bd/services/scribd/</loc><lastmod>2026-11-20</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
 <url><loc>https://streamx.bd/services/skillshare/</loc><lastmod>2026-11-20</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
 <url><loc>https://streamx.bd/services/entertainment-combo/</loc><lastmod>2026-11-20</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://streamx.bd/explore/</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
 </urlset>

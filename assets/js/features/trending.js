@@ -22,6 +22,8 @@
   const esc=t=>String(t).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
   const flag=c=>`https://flagcdn.com/48x36/${c.toLowerCase()}.png`;
   const ok=(v,list)=>list.includes(v);
+  /* "New": released in the last 30 days */
+  const isNew=m=>{const t=Date.parse(m.d||"");return t>0&&Date.now()-t>=0&&Date.now()-t<30*864e5};
 
   // Defaults: movies, United States (India for JioHotstar). A region the visitor picks themselves is remembered.
   const homeRegion=p=>["hotstar","zee5","sonyliv"].includes(p)?"IN":"US";
@@ -115,7 +117,7 @@
       rail.innerHTML=`<div class="tr-msg"><b>Nothing to show for ${esc(P.name)} in ${esc(regionName())}</b>${esc(P.name)} may not be available in this region. Try another region or platform.</div>`;
       return;
     }
-    rail.innerHTML=list.map((m,i)=>`<article class="tr-card" style="--i:${i}" tabindex="0" role="button" aria-label="${esc(m.t)}: details and trailer" data-id="${m.id}" data-k="${m.k}"><span class="tr-rank" aria-hidden="true">${i+1}</span><div class="tr-poster"><img src="https://image.tmdb.org/t/p/w342${esc(m.p)}" alt="${esc(m.t)} poster" loading="lazy"><span class="tr-kind">${m.k==="tv"?"Series":"Movie"}</span><div class="tr-ov" aria-hidden="true"><span class="tr-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span><b>Watch trailer</b></div></div><div class="tr-info"><h3>${esc(m.t)}</h3><div class="tr-meta">${m.y?`<span>${esc(m.y)}</span>`:""}${m.v?`<span class="tr-star">★ ${m.v}</span>`:""}</div></div></article>`).join("");
+    rail.innerHTML=list.map((m,i)=>`<article class="tr-card" style="--i:${i}" tabindex="0" role="button" aria-label="${esc(m.t)}: details and trailer" data-id="${m.id}" data-k="${m.k}"><span class="tr-rank" aria-hidden="true">${i+1}</span><div class="tr-poster"><img src="https://image.tmdb.org/t/p/w342${esc(m.p)}" alt="${esc(m.t)} poster" loading="lazy"><span class="tr-kind">${m.k==="tv"?"Series":"Movie"}</span>${isNew(m)?`<span class="tr-new">New</span>`:""}<div class="tr-ov" aria-hidden="true"><span class="tr-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span><b>Watch trailer</b></div></div><div class="tr-info"><h3>${esc(m.t)}</h3><div class="tr-meta">${m.y?`<span>${esc(m.y)}</span>`:""}${m.v?`<span class="tr-star">★ ${m.v}</span>`:""}</div></div></article>`).join("");
     rail.scrollTo({left:0});
   }
 
