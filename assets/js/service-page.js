@@ -43,17 +43,6 @@
     if (pb) { var m = pb.textContent.match(/^(\D*)([\d,]+)(.*)$/); if (m) { var to = +m[2].replace(/,/g, ""), s = performance.now(); (function up(t) { var k = Math.min(1, (t - s) / 1100), e = 1 - Math.pow(1 - k, 3); pb.textContent = m[1] + Math.round(to * e).toLocaleString("en-US") + m[3]; if (k < 1) requestAnimationFrame(up); })(s); } }
   }
 
-  /* 4. 3D tilt with glare on cards (mouse devices only) */
-  if (FINE && !RM) {
-    var TILT = ".sp-vcard,.sp-hcard,.sp-rev,.sp-rc,.sp-poster,.sp-why>div";
-    document.addEventListener("pointermove", function (e) {
-      var el = e.target.closest && e.target.closest(TILT); $$(".sp-tilting").forEach(function (o) { if (o !== el) { o.classList.remove("sp-tilting"); o.style.rotate = ""; } });
-      if (!el) return; var b = el.getBoundingClientRect(), x = (e.clientX - b.left) / b.width - .5, y = (e.clientY - b.top) / b.height - .5;
-      el.classList.add("sp-tilting"); el.style.rotate = (-y * 2).toFixed(3) + " " + (x * 2).toFixed(3) + " 0 " + (Math.hypot(x, y) * 10).toFixed(2) + "deg";
-      el.style.setProperty("--gx", (x + .5) * 100 + "%"); el.style.setProperty("--gy", (y + .5) * 100 + "%");
-    }, { passive: true });
-  }
-
   /* 5. Live trending (TMDB via /api/trending). The section stays hidden if the data is unavailable. */
   var ts = $("[data-trend]");
   if (ts) {
@@ -135,4 +124,21 @@
       window.open("https://wa.me/" + f.dataset.wa + "?text=" + encodeURIComponent(msg), "_blank", "noopener");
     });
   }
+
+  /* Nav: compact once scrolled; on phones the section links hide while scrolling down and return when scrolling up */
+  (function () {
+    var nv = $("#spNav"), bb = $("#spBuy"), last = scrollY, tk = false;
+    var pl = $("#plans"), en = $(".sp-end"), vis = { p: false, e: false };
+    if (bb && "IntersectionObserver" in window) {
+      var bo = new IntersectionObserver(function (es) { es.forEach(function (e) { vis[e.target === pl ? "p" : "e"] = e.isIntersecting; }); upd(); });
+      if (pl) bo.observe(pl); if (en) bo.observe(en);
+    }
+    function upd() { if (bb) bb.classList.toggle("on", scrollY > 520 && !vis.p && !vis.e); }
+    function run() {
+      tk = false; var y = scrollY;
+      if (nv) { nv.classList.toggle("sp-scrolled", y > 30); if (y > 140 && y > last + 4) nv.classList.add("sp-compact"); else if (y < last - 4 || y < 60) nv.classList.remove("sp-compact"); }
+      last = y; upd();
+    }
+    addEventListener("scroll", function () { if (!tk) { tk = true; requestAnimationFrame(run); } }, { passive: true }); run();
+  })();
 })();

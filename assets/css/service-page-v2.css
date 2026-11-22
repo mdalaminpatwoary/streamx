@@ -1,0 +1,139 @@
+/* StreamX service pages, refined layer (loads after service-page.css): floating nav like the home page, calmer hero, tidier sections. */
+
+/* ---------- Nav: floating pill, same look as the home page ---------- */
+.sp-nav{position:sticky;top:0;z-index:50;padding:12px 0 0;background:none;border:0;-webkit-backdrop-filter:none;backdrop-filter:none;pointer-events:none}
+.sp-nav .sp-navin{pointer-events:auto;width:min(1140px,100% - 28px);gap:12px;padding:8px 10px 8px 16px;border-radius:60px;background:rgba(14,18,38,.62);-webkit-backdrop-filter:blur(18px) saturate(1.5);backdrop-filter:blur(18px) saturate(1.5);border:1px solid rgba(255,255,255,.08);transition:background .4s,box-shadow .4s,width .5s cubic-bezier(.2,.8,.2,1)}
+.sp-nav.sp-scrolled .sp-navin{background:rgba(8,11,24,.86);box-shadow:0 18px 50px -12px rgba(0,0,0,.7),0 0 0 1px rgba(79,107,255,.2)}
+.sp-brand{flex:none;display:block;line-height:0}
+.sp-brand img{height:38px;width:auto;border-radius:11px}
+.sp-nav nav{flex:1;min-width:0;display:flex;justify-content:safe center;gap:2px;padding:0;overflow-x:auto;scrollbar-width:none}
+.sp-nav nav::-webkit-scrollbar{display:none}
+.sp-nav nav a{display:inline-flex;align-items:center;gap:7px;flex:none;white-space:nowrap;padding:9px 14px;border-radius:30px;font-size:13.5px;font-weight:600;color:#bfc7de;transition:color .25s,background .25s,box-shadow .25s}
+.sp-nav nav a[hidden]{display:none}
+.sp-nav nav a svg{flex:none;width:16px;height:16px;opacity:.65;transition:opacity .25s,color .25s}
+.sp-nav nav a:hover{background:rgba(255,255,255,.05);color:#fff}
+.sp-nav nav a:hover svg,.sp-nav nav a[aria-current] svg{opacity:1}
+.sp-nav nav a[aria-current]{color:#fff;background:linear-gradient(90deg,rgba(79,107,255,.28),rgba(237,49,36,.22));box-shadow:inset 0 0 0 1px rgba(237,49,36,.38)}
+.sp-nav nav a[aria-current] svg{color:#ff8a7c}
+.sp-nr{flex:none;display:flex;align-items:center;gap:8px}
+.sp-nav .sp-acct{margin:0;width:40px;height:40px;background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.1)}
+.sp-ord{padding:11px 20px;border-radius:99px;background:var(--g);color:#fff;font-weight:700;font-size:13.5px;box-shadow:0 10px 26px -12px rgba(237,49,36,.9);transition:transform .25s,box-shadow .25s}
+.sp-ord:hover{transform:translateY(-1px);box-shadow:0 14px 30px -12px rgba(237,49,36,1)}
+@media(max-width:1020px){.sp-nav nav a svg{display:none}.sp-nav nav a{padding:9px 12px}}
+@media(max-width:860px){
+  .sp-nav .sp-navin{flex-wrap:wrap;border-radius:26px;padding:8px 10px 8px 12px;row-gap:6px}
+  .sp-nr{margin-left:auto}
+  .sp-nav nav{order:3;flex:0 0 100%;justify-content:flex-start;padding-bottom:2px}
+  .sp-nav nav a svg{display:block}
+  .sp-nav.sp-compact nav{display:none}
+  .sp-nav.sp-compact .sp-navin{border-radius:60px}
+}
+@media(max-width:420px){.sp-ord{padding:10px 14px}.sp-nav nav a svg{display:none}}
+.sp-sec[id]{scroll-margin-top:92px}
+@media(max-width:860px){.sp-sec[id]{scroll-margin-top:84px}}
+
+/* ---------- Hero ---------- */
+.sp-hero{padding:46px 0 84px}
+.sp-hero{-webkit-mask:linear-gradient(180deg,#000 calc(100% - 70px),transparent);mask:linear-gradient(180deg,#000 calc(100% - 70px),transparent)}
+.sp-grid{animation:none;opacity:.55}
+.sp-herogrid{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:56px;align-items:start}
+.sp-hero h1{font-size:clamp(34px,4.6vw,54px);letter-spacing:-.03em;line-height:1.08}
+.sp-lead{color:#b9c2de}
+.sp-eyebrow{padding:0;margin-bottom:14px}
+.sp-trust{display:grid;grid-template-columns:repeat(4,minmax(0,auto));justify-content:start;gap:18px 26px;margin-top:38px;padding-top:26px;border-top:1px solid rgba(255,255,255,.09)}
+.sp-trust li{align-items:flex-start;gap:10px;font-size:14px}
+.sp-trust svg{flex:none;width:20px;height:20px;margin-top:2px;color:#ff8a7c}
+.sp-trust span{display:block;line-height:1.3}
+.sp-trust b{display:block;color:#fff;font-size:13.5px;font-weight:700}
+.sp-trust small{display:block;color:var(--mut);font-size:12px;font-weight:500}
+@media(max-width:1100px){.sp-trust{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.sp-hcard{display:block;justify-items:stretch;padding:26px;border-radius:24px;text-align:left;animation:none;background:linear-gradient(180deg,rgba(255,255,255,.065),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.1);box-shadow:0 34px 70px -44px color-mix(in srgb,var(--c) 80%,#000)}
+.sp-hc-top{display:flex;align-items:center;gap:14px}
+.sp-hc-top b{display:block;font-size:19px;letter-spacing:-.01em}
+.sp-hc-top small{color:var(--mut);font-size:13px}
+.sp-hcard .sp-logo{width:60px;height:60px;border-radius:16px;box-shadow:0 12px 26px -12px rgba(0,0,0,.7)}
+.sp-hcard .sp-logo b{font-size:26px}
+.sp-ring{display:none}
+.sp-hcard .sp-from{margin:24px 0 4px;text-align:left}
+.sp-hcard .sp-from b{font-size:clamp(38px,4vw,48px);font-weight:800;background:none;-webkit-text-fill-color:#fff;color:#fff;animation:none}
+.sp-qp{list-style:none;margin:18px 0 0;padding:0;border-top:1px solid rgba(255,255,255,.09)}
+.sp-qp a{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 2px;border-bottom:1px solid rgba(255,255,255,.06);transition:color .2s,padding .25s}
+.sp-qp span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#d5dbf0;font-size:14.5px;font-weight:600}
+.sp-qp b{flex:none;font-size:14.5px;font-variant-numeric:tabular-nums}
+.sp-qp a:hover{color:#ff8a7c;padding-left:6px}
+.sp-hcard .sp-meta{justify-content:flex-start;margin-top:18px}
+
+/* ---------- Sections ---------- */
+.sp-sec{padding:84px 0}
+.sp-sec h2{font-size:clamp(26px,3vw,36px);letter-spacing:-.025em}
+.sp-sec h2::after{display:none}
+#plans h2::before,#about .sp-two>div:first-child h2::before,#why h2::before,#faq h2::before,#related h2::before{display:block;margin-bottom:12px;color:var(--ac);font:800 12px Manrope,sans-serif;letter-spacing:.16em;text-transform:uppercase}
+#plans h2::before{content:"Pricing"}
+#about .sp-two>div:first-child h2::before{content:"About"}
+#why h2::before{content:"Why StreamX"}
+#faq h2::before{content:"FAQ"}
+#related h2::before{content:"Explore more"}
+.sp-sub{color:#a3acc8}
+
+/* plan cards */
+.sp-vgrid{grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;margin-top:36px}
+.sp-vcard{position:relative;overflow:hidden;padding:26px;border-radius:20px;background:#0f1328;border:1px solid rgba(255,255,255,.08);box-shadow:none}
+.sp-vcard::before{content:"";position:absolute;inset:0 0 auto 0;height:3px;background:linear-gradient(90deg,var(--c),transparent 85%)}
+.sp-vcard:hover{transform:translateY(-3px);border-color:color-mix(in srgb,var(--c) 55%,transparent);box-shadow:0 26px 54px -32px var(--c)}
+.sp-vh h3{font-size:20px}
+.sp-ft{margin-top:18px}
+.sp-row{padding:12px 14px;border-radius:12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07)}
+.sp-row span{color:#e4e9f8;font-weight:600}
+.sp-row b{font-size:16.5px;font-variant-numeric:tabular-nums}
+.sp-row i{padding:6px 14px;font-size:12.5px}
+.sp-rows{padding-top:22px}
+
+/* about */
+.sp-two{grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:40px;align-items:start}
+.sp-two>div:nth-child(2){padding:26px;border-radius:20px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08)}
+.sp-two>div:nth-child(2) h2{font-size:20px}
+.sp-two p{color:#b9c2de}
+
+/* why: one joined panel */
+.sp-why{grid-template-columns:repeat(4,minmax(0,1fr));gap:0;margin-top:34px;border:1px solid rgba(255,255,255,.09);border-radius:22px;overflow:hidden;background:rgba(255,255,255,.025)}
+.sp-why>div{padding:28px 26px;border:0;border-left:1px solid rgba(255,255,255,.08);border-radius:0;background:none}
+.sp-why>div:first-child{border-left:0}
+.sp-why svg{width:44px;height:44px;padding:11px;border-radius:12px;background:rgba(237,49,36,.12);color:#ff8a7c}
+.sp-why h3{margin:18px 0 8px}
+@media(max-width:1000px){.sp-why{grid-template-columns:repeat(2,minmax(0,1fr))}.sp-why>div:nth-child(odd){border-left:0}.sp-why>div:nth-child(n+3){border-top:1px solid rgba(255,255,255,.08)}}
+@media(max-width:600px){.sp-why{grid-template-columns:1fr}.sp-why>div{border-left:0}.sp-why>div+div{border-top:1px solid rgba(255,255,255,.08)}}
+
+/* reviews, related */
+.sp-rev,.sp-rc{background:#0f1328;border:1px solid rgba(255,255,255,.08)}
+.sp-rev{border-radius:20px}
+.sp-rc{border-radius:16px}
+
+/* faq: heading on the left, questions on the right */
+.sp-faqgrid{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.5fr);gap:56px;align-items:start}
+.sp-faqhead{position:sticky;top:104px}
+.sp-faqhead .sp-sub{margin:14px 0 0}
+.sp-faqhead .sp-btn{margin-top:22px}
+.sp-faqlist .sp-faq:first-child{margin-top:0}
+.sp-faq{border-radius:14px;background:#0f1328;border-color:rgba(255,255,255,.08)}
+.sp-faq[open]{border-color:rgba(237,49,36,.4)}
+@media(max-width:860px){.sp-faqgrid{grid-template-columns:1fr;gap:26px}.sp-faqhead{position:static}.sp-herogrid{grid-template-columns:1fr;gap:34px}.sp-two{grid-template-columns:1fr}}
+
+/* closing call to action */
+.sp-end{padding:56px 26px;border-radius:28px}
+
+/* ---------- Phone: sticky buy bar ---------- */
+.sp-buybar{display:none}
+@media(max-width:760px){
+  .sp-buybar{position:fixed;left:0;right:0;bottom:0;z-index:55;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 92px calc(10px + env(safe-area-inset-bottom,0px)) 16px;background:rgba(10,13,26,.94);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-top:1px solid rgba(255,255,255,.1);transform:translateY(110%);visibility:hidden;transition:transform .35s cubic-bezier(.16,1,.3,1),visibility 0s .35s}
+  .sp-buybar.on{transform:none;visibility:visible;transition:transform .35s cubic-bezier(.16,1,.3,1)}
+  .sp-buybar small{display:block;color:var(--mut);font-size:11.5px;line-height:1.1}
+  .sp-buybar b{font-size:19px;font-weight:800;line-height:1.2}
+  .sp-buybar .sp-btn{padding:12px 20px;font-size:14.5px;white-space:nowrap}
+  .sp-foot{padding-bottom:76px}
+}
+@media(max-width:520px){.sp-hero{padding:30px 0 80px}.sp-sec{padding:58px 0}.sp-trust{gap:16px}.sp-hcard{padding:22px}}
+
+/* services hub: category bar sits under the new nav */
+.hb-bar{top:76px}
+@media(max-width:620px){.hb-bar{top:72px}}
+@media(prefers-reduced-motion:reduce){.sp-buybar{transition:none}}
