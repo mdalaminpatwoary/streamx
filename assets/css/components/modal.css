@@ -547,3 +547,6 @@
 .rm-shot { margin: 14px 0 0; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; background: #0b0e1e; }
 .rm-shot img { display: block; width: 100%; max-height: 62vh; object-fit: contain; background: #0b0e1e; }
 .rv-empty { text-align: center; color: var(--mut); padding: 30px 0; }
+.rm-cc,.rs-cc{display:inline-flex;align-items:center;gap:8px;padding:5px 12px;border:1px solid var(--line);border-radius:99px;background:rgba(255,255,255,.05);font:700 12.5px Manrope,sans-serif;color:#dfe4f5}
+.rm-head .rec{margin-right:8px}.rs-cc{margin-top:8px}
+.fl-i{width:20px;height:15px;border-radius:3px;object-fit:cover;flex:none}

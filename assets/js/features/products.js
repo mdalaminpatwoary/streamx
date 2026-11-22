@@ -16,21 +16,36 @@ const bcard=(p,i)=>`<div class="card bd" onclick="openSvc(${i})">
   <div class="br"><div class="pr"><small>From</small> <b>${taka(entry(p).p)}</b> <small>/ month</small> <s>${taka(p.packs[0].old)}</s></div>
   <div class="pks">${p.packs.map(k=>`<span class="pk">${k.n} <b>${taka(k.p)}</b></span>`).join("")}</div>
   <button class="btn grad-bg">View ${p.packs.length} packs →</button></div></div>`;
+function endCard(){const g=$("#productGrid");if(limit>=view.length&&view.length>PAGE&&!g.querySelector(".pr-endc"))g.insertAdjacentHTML("beforeend",`<a class="pr-endc" href="/services/"><b>See everything</b><span>All services with full details</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>`)}
 function renderProducts(){
   view=PRODUCTS.map((p,i)=>[p,i]).filter(([p])=>p.cat!=="Bundle"&&(cat==="All"||p.cat===cat)&&(p.name+" "+p.variants.map(v=>v.n).join(" ")).toLowerCase().includes(q)).sort(SORTS[sortKey]);
-  $("#productGrid").innerHTML=view.slice(0,limit).map(([p,i],n)=>card(p,i,n%8*60)).join("")||'<p class="empty">No product found.</p>';
-  syncMore();
+  const g=$("#productGrid");loading=false;g.scrollLeft=0;
+  g.innerHTML=view.slice(0,limit).map(([p,i],n)=>card(p,i,n%8*60)).join("")||'<p class="empty">No product found.</p>';
+  syncMore();endCard();setTimeout(railSync,50);
 }
 function syncMore(){
   $("#count").innerHTML=`Showing ${Math.min(limit,view.length)} of ${view.length} products<div class="prog"><i style="width:${Math.min(100,limit/Math.max(view.length,1)*100)}%"></i></div>`;
-  const b=$("#loadMore");b.style.display=view.length>PAGE?"":"none";
-  b.textContent=limit>=view.length?"Show less ↑":`Load ${Math.min(MORE,view.length-limit)} more · ${view.length-limit} left ↓`;
 }
-$("#loadMore").onclick=()=>{
-  if(limit>=view.length){limit=PAGE;renderProducts();$("#products").scrollIntoView();return}
-  const from=limit;limit=Math.min(view.length,limit+MORE);
-  $("#productGrid").insertAdjacentHTML("beforeend",view.slice(from,limit).map(([p,i],n)=>card(p,i,n%8*60)).join(""));syncMore();
-};
+// Horizontal row: near the end a loading card shows, then the next products are added (no button).
+let loading=false;
+function moreCards(){
+  if(loading||limit>=view.length)return;loading=true;const g=$("#productGrid");
+  g.insertAdjacentHTML("beforeend",'<div class="pr-ldc" role="status" aria-label="Loading more services"><i class="tp-spin"></i><span>Loading more…</span></div>');
+  setTimeout(()=>{
+    if(!loading)return;const l=g.querySelector(".pr-ldc");if(l)l.remove();
+    const from=limit;limit=Math.min(view.length,limit+MORE);
+    g.insertAdjacentHTML("beforeend",view.slice(from,limit).map(([p,i],n)=>card(p,i,n%8*60)).join(""));
+    syncMore();endCard();loading=false;railSync();
+  },650);
+}
+const rail=document.createElement("div");rail.className="pr-rail";
+{const g=$("#productGrid");g.parentNode.insertBefore(rail,g);rail.appendChild(g)}
+const mkNav=(c,d)=>{const b=document.createElement("button");b.type="button";b.className="tp-nav "+c;b.setAttribute("aria-label",c==="prev"?"Scroll left":"Scroll right");b.innerHTML=d;rail.appendChild(b);return b};
+const prevB=mkNav("prev",'<svg viewBox="0 0 24 24"><path d="m15 5-7 7 7 7"/></svg>'),nextB=mkNav("next",'<svg viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></svg>');
+function railSync(){const g=$("#productGrid");prevB.hidden=g.scrollLeft<8;nextB.hidden=g.scrollLeft+g.clientWidth>=g.scrollWidth-8;if(!loading&&limit<view.length&&g.scrollLeft+g.clientWidth>=g.scrollWidth-500)moreCards()}
+$("#productGrid").addEventListener("scroll",railSync,{passive:true});addEventListener("resize",railSync);
+prevB.onclick=()=>$("#productGrid").scrollBy({left:-Math.max(260,$("#productGrid").clientWidth*.85),behavior:"smooth"});
+nextB.onclick=()=>{const g=$("#productGrid");g.scrollBy({left:Math.max(260,g.clientWidth*.85),behavior:"smooth"});setTimeout(railSync,450)};
 // 18+ category: adults-only confirmation (remembered for this visit)
 let ageOK=false,agCb=null;try{ageOK=sessionStorage.getItem("sx_18")==="1"}catch(e){}
 function askAge(cb){if(ageOK){cb();return}agCb=cb;$("#agate").classList.add("show")}

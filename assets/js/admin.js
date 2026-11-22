@@ -153,12 +153,35 @@
     var names = PROD.filter(function (p) { return p.cat !== "18+"; }).map(function (p) { return p.name; });
     $("#rsv").innerHTML = names.map(function (n) { return '<label class="ad-chip"><input type="checkbox" value="' + esc(n) + '"><span>' + esc(n) + "</span></label>"; }).join("");
   })();
+  var CTRY = [["BD", "Bangladesh"], ["AE", "United Arab Emirates"], ["SA", "Saudi Arabia"], ["QA", "Qatar"], ["KW", "Kuwait"], ["OM", "Oman"], ["BH", "Bahrain"], ["MY", "Malaysia"], ["SG", "Singapore"], ["GB", "United Kingdom"], ["US", "United States"], ["CA", "Canada"], ["AU", "Australia"], ["IT", "Italy"], ["DE", "Germany"], ["FR", "France"], ["ES", "Spain"], ["NL", "Netherlands"], ["SE", "Sweden"], ["NO", "Norway"], ["DK", "Denmark"], ["FI", "Finland"], ["IE", "Ireland"], ["PT", "Portugal"], ["GR", "Greece"], ["JP", "Japan"], ["KR", "South Korea"], ["CN", "China"], ["HK", "Hong Kong"], ["IN", "India"], ["NP", "Nepal"], ["LK", "Sri Lanka"], ["PK", "Pakistan"], ["TH", "Thailand"], ["TR", "Türkiye"], ["JO", "Jordan"], ["LB", "Lebanon"], ["ZA", "South Africa"], ["NZ", "New Zealand"], ["BN", "Brunei"], ["MV", "Maldives"], ["MU", "Mauritius"], ["RU", "Russia"], ["UA", "Ukraine"], ["PL", "Poland"], ["BR", "Brazil"], ["MX", "Mexico"], ["EG", "Egypt"], ["NG", "Nigeria"], ["KE", "Kenya"]];
+  var RPHOTO = "";
+  (function () {
+    $("#rcc").innerHTML = '<option value="">Not specified</option>' + CTRY.map(function (c) { return '<option value="' + c[0] + '">' + esc(c[1]) + "</option>"; }).join("");
+  })();
+  function cropSquare(file, size) {
+    return new Promise(function (ok, no) {
+      var u = URL.createObjectURL(file), im = new Image();
+      im.onload = function () {
+        var s = Math.min(im.width, im.height), c = document.createElement("canvas"); c.width = c.height = size;
+        c.getContext("2d").drawImage(im, (im.width - s) / 2, (im.height - s) / 2, s, s, 0, 0, size, size); URL.revokeObjectURL(u);
+        var q = 0.85, d = c.toDataURL("image/jpeg", q); while (d.length > 100000 && q > 0.45) { q -= 0.1; d = c.toDataURL("image/jpeg", q); } ok(d);
+      };
+      im.onerror = function () { no(new Error("That file could not be read as an image.")); }; im.src = u;
+    });
+  }
+  function setPhoto(d) { RPHOTO = d || ""; var p = $("#rpv"); p.style.backgroundImage = d ? "url(" + d + ")" : ""; p.textContent = d ? "" : "?"; $("#rpx").hidden = !d; }
+  document.addEventListener("change", function (e) {
+    if (e.target.id === "rpf" && e.target.files[0]) cropSquare(e.target.files[0], 240).then(setPhoto).catch(function (er) { e.target.value = ""; toast(er.message, true); });
+    if (e.target.name === "kind" && e.target.form && e.target.form.id === "rf") { var st = e.target.value === "student"; $("#rrl").textContent = st ? "Class / degree" : "Designation"; e.target.form.role.placeholder = st ? "e.g. BSc in CSE, Class 10" : "e.g. Software Engineer"; $("#rcow").hidden = st; $("#rinw").hidden = !st; }
+    if (e.target.id === "rcc") $("#rxw").hidden = !e.target.value || e.target.value === "BD";
+  });
+  document.addEventListener("click", function (e) { if (e.target.id === "rpx") { setPhoto(""); $("#rpf").value = ""; } });
   function reviews() {
     api("?view=reviews").then(function (j) {
       var r = j.rows || []; $("#tc5").textContent = r.length;
       $("#rlist").innerHTML = r.length ? r.map(function (v) {
         var pf = v.proof_kind === "image" && v.has_img ? "Screenshot" : v.proof_kind === "link" ? "Link" : "";
-        return '<div class="ad-rr"><span class="ad-av">' + esc(String(v.name).split(" ").map(function (w) { return w[0]; }).join("").slice(0, 2).toUpperCase()) + '</span><div><b>' + esc(v.name) + '</b> <span class="ad-st">' + stars(v.rating) + "</span>" + '<p>' + esc(v.body) + "</p><small>" + esc([v.role, v.company, v.loc].filter(Boolean).join(" · ")) + ((v.services || []).length ? " · " + esc(v.services.join(", ")) : "") + "</small>" + (pf ? '<span class="ad-pill ok">Proof: ' + pf + "</span>" : '<span class="ad-pill warn">No proof</span>') + '</div><button type="button" class="ac-btn ac-ghost ac-sm" data-rdel="' + v.id + '">Delete</button></div>';
+        return '<div class="ad-rr"><span class="ad-av"' + (v.has_photo ? ' style="background:url(/api/catalog?a=rvimg&amp;w=photo&amp;id=' + v.id + ') center/cover"' : "") + ">" + (v.has_photo ? "" : esc(String(v.name).split(" ").map(function (w) { return w[0]; }).join("").slice(0, 2).toUpperCase())) + '</span><div><b>' + esc(v.name) + '</b> <span class="ad-st">' + stars(v.rating) + "</span>" + '<p>' + esc(v.body) + "</p><small>" + esc([v.role, v.kind === "student" ? v.institution : v.company, v.loc].filter(Boolean).join(" · ")) + (v.country ? " · " + flagImg(v.country) + " " + esc(v.country) + (v.expat ? " (expatriate)" : "") : "") + ((v.services || []).length ? " · " + esc(v.services.join(", ")) : "") + "</small>" + (pf ? '<span class="ad-pill ok">Proof: ' + pf + "</span>" : '<span class="ad-pill warn">No proof</span>') + '</div><button type="button" class="ac-btn ac-ghost ac-sm" data-rdel="' + v.id + '">Delete</button></div>';
       }).join("") : '<p class="ac-note">No reviews yet.</p>';
     }).catch(function (e) { $("#rlist").innerHTML = '<p class="ac-msg err" style="display:block">' + esc(/reviews|DB|relation/i.test(e.message) ? "Reviews are not set up yet. Run the new SQL in Supabase first." : e.message) + "</p>"; });
   }
@@ -186,12 +209,12 @@
   document.addEventListener("submit", function (e) {
     if (e.target.id !== "rf") return; e.preventDefault();
     var f = e.target, m = $("#rm"), b = f.querySelector("button[type=submit]"); m.className = "ac-msg"; m.textContent = "";
-    var err = !f.name.value.trim() || !f.body.value.trim() ? "Please add the customer's name and the review text." : RPROOF === "image" && !SHOT ? "Choose the screenshot of the original review." : RPROOF === "link" && !/^https?:\/\//i.test(f.proof_url.value.trim()) ? "The review link must start with https://" : "";
+    var stu = f.kind.value === "student"; var err = stu && !f.institution.value.trim() ? "Please add the school or university." : !f.name.value.trim() || !f.body.value.trim() ? "Please add the customer's name and the review text." : RPROOF === "image" && !SHOT ? "Choose the screenshot of the original review." : RPROOF === "link" && !/^https?:\/\//i.test(f.proof_url.value.trim()) ? "The review link must start with https://" : "";
     if (err) { m.className = "ac-msg err"; m.textContent = err; return; }
     var sv = Array.prototype.map.call(f.querySelectorAll("#rsv input:checked"), function (i) { return i.value; });
     b.disabled = true;
-    api("?review=new", { method: "POST", body: JSON.stringify({ name: f.name.value, role: f.role.value, company: f.company.value, loc: f.loc.value, photo: f.photo.value, rating: f.rating.value, body: f.body.value, services: sv, proof_kind: RPROOF, proof_url: f.proof_url.value, proof_img: RPROOF === "image" ? SHOT : "" }) })
-      .then(function () { f.reset(); SHOT = ""; RPROOF = ""; $("#pfPrev").hidden = true; $("#pfImg").hidden = true; $("#pfLink").hidden = true; toast("Review posted"); reviews(); })
+    api("?review=new", { method: "POST", body: JSON.stringify({ name: f.name.value, kind: f.kind.value, role: f.role.value, company: f.company.value, institution: f.institution.value, country: f.country.value, expat: f.expat.checked, photo_img: RPHOTO, loc: f.loc.value, photo: f.photo.value, rating: f.rating.value, body: f.body.value, services: sv, proof_kind: RPROOF, proof_url: f.proof_url.value, proof_img: RPROOF === "image" ? SHOT : "" }) })
+      .then(function () { f.reset(); setPhoto(""); $("#rcow").hidden = false; $("#rinw").hidden = true; $("#rxw").hidden = true; $("#rrl").textContent = "Designation"; SHOT = ""; RPROOF = ""; $("#pfPrev").hidden = true; $("#pfImg").hidden = true; $("#pfLink").hidden = true; toast("Review posted"); reviews(); })
       .catch(function (er) { m.className = "ac-msg err"; m.textContent = er.message; }).then(function () { b.disabled = false; });
   });
   document.addEventListener("click", function (e) {

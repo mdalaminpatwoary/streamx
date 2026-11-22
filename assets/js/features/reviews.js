@@ -5,6 +5,9 @@ const ph=r=>r.photo?`<img src="${r.photo}" alt="${r.n}" loading="lazy" onerror="
 const THUMB='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10v12"/><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z"/></svg>';
 const GR=[["#ED3124","#B4233C"],["#4F6BFF","#1E2F8F"],["#FF6F61","#D9363E"],["#2DD4BF","#0E6E80"],["#8B9DFF","#3B4BC8"],["#FF5B4D","#8E2A5C"],["#34D399","#0B6B4B"],["#60A5FA","#1D4ED8"]];
 const grad=i=>`--c1:${GR[i%GR.length][0]};--c2:${GR[i%GR.length][1]}`;
+const cname=c=>{try{return new Intl.DisplayNames(["en"],{type:"region"}).of(c)||c}catch(e){return c}};
+const flag=c=>c&&/^[A-Z]{2}$/.test(c)?`<img class="fl-i" src="https://flagcdn.com/w40/${c.toLowerCase()}.png" alt="" width="20" height="15" loading="lazy" onerror="this.remove()">`:"";
+const ccTag=(r,cls)=>r.cc?`<span class="${cls}">${flag(r.cc)}${r.x?"Expatriate · ":""}${cname(r.cc)}</span>`:"";
 const subLine=r=>[r.role,r.company].filter(Boolean).join(" · ");
 const svcOf=r=>r.services&&r.services.length?r.services:[r.p];
 const svcTiles=(r,cls)=>svcOf(r).map(n=>{const p=PRODUCTS.find(x=>x.name===n);return `<span class="${cls}">${p?ptile(p):""}<em>${n}</em></span>`}).join("");
@@ -32,7 +35,7 @@ function setPop(n,instant){
       <span class="rs-badge"><span class="rs-stars">${"★".repeat(r.s||5)}</span><b>${(r.s||5).toFixed(1)}</b></span></div>
     <div class="rs-body"><span class="eyebrow">Popular review</span>${QUOTE}
       <blockquote>${r.t.split(" ").map((w,k)=>`<span class="rw" style="--k:${k}">${w}</span>`).join(" ")}</blockquote>
-      <div class="rs-by"><b>${r.n}</b><span>${[subLine(r),r.loc].filter(Boolean).join(" · ")}</span></div>
+      <div class="rs-by"><b>${r.n}</b><span>${[subLine(r),r.loc].filter(Boolean).join(" · ")}</span>${ccTag(r,"rs-cc")}</div>
       <div class="rs-svcs" aria-label="Services bought">${popTile(r)}</div>
       <div class="rs-act"><button class="btn grad-bg" onclick="openReview(${i})">View full story →</button></div></div>
     <div class="rs-nav" role="tablist">${POP.map((j,x)=>`<button type="button" role="tab" aria-selected="${x===pk}" class="${x===pk?"on":""}" onclick="setPop(${x})" style="${grad(j)}"><span class="rs-mini"><i>${initials(REVIEWS[j].n)}</i>${ph(REVIEWS[j])}</span><span class="rs-nm"><b>${REVIEWS[j].n}</b><small>${REVIEWS[j].role||"Customer"}</small></span><span class="rs-bar"><i></i></span></button>`).join("")}</div></div>`;
@@ -62,10 +65,10 @@ $("#pop").addEventListener("pointermove",e=>{
 const esc=t=>String(t==null?"":t).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const PROOF='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/><path d="m9 15 2 2 4-4"/></svg>';
 function openReview(i){
-  const r=REVIEWS[i],info=[["Designation",r.role],["Company",r.company],["Location",r.loc]].filter(x=>x[1]);
+  const r=REVIEWS[i],info=[["Designation",r.role],[r.kind==="student"?"Institution":"Company",r.company],["Location",r.loc]].filter(x=>x[1]);
   $("#rmb").innerHTML=`<button class="rm-x" aria-label="Close">✕</button><div class="rm-cover" style="${grad(i)}"></div>
   <div class="rm-body" style="${grad(i)}"><div class="rm-av"><i>${initials(r.n)}</i>${ph(r)}</div>
-  <div class="rm-head rm-i" style="--n:0"><h3>${r.n}</h3><p>${subLine(r)||"Customer"}</p><span class="rec">${THUMB}Recommends StreamX</span></div>
+  <div class="rm-head rm-i" style="--n:0"><h3>${r.n}</h3><p>${subLine(r)||"Customer"}</p><span class="rec">${THUMB}Recommends StreamX</span>${ccTag(r,"rm-cc")}</div>
   <blockquote class="rm-i" style="--n:1">“${r.t}”</blockquote>
   ${info.length?`<div class="rm-grid rm-i" style="--n:2">${info.map(x=>`<div><small>${x[0]}</small><b>${x[1]}</b></div>`).join("")}</div>`:""}
   <h4 class="rm-i" style="--n:3">Services taken</h4><div class="rm-svc rm-i" style="--n:3">${svcTiles(r,"sv2")}</div>
@@ -95,7 +98,7 @@ function startReviews(){
   document.dispatchEvent(new Event("sx-reviews"));
 }
 (function(){
-  let done=false;const go=l=>{if(done)return;done=true;if(l)REVIEWS.splice(0,REVIEWS.length,...l.map(r=>({...r,n:esc(r.n),role:esc(r.role),company:esc(r.company),loc:esc(r.loc),t:esc(r.t),photo:esc(r.photo),p:(r.services||[])[0]||""})));startReviews()};
+  let done=false;const go=l=>{if(done)return;done=true;if(l)REVIEWS.splice(0,REVIEWS.length,...l.map(r=>({...r,n:esc(r.n),role:esc(r.role),company:esc(r.kind==="student"?r.inst:r.company),loc:esc(r.loc),t:esc(r.t),photo:esc(r.photo),p:(r.services||[])[0]||""})));startReviews()};
   const t=setTimeout(()=>go(null),4000);
   fetch("/api/catalog?a=reviews").then(r=>r.ok?r.json():null).then(d=>{clearTimeout(t);go(d&&Array.isArray(d.list)?d.list:null)}).catch(()=>{clearTimeout(t);go(null)});
 })();

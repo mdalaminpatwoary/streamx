@@ -87,3 +87,4 @@
 @media(max-width:860px){.rs-nav{display:flex;grid-template-columns:none}.rs-nav button{min-width:150px}}
 /* Soft edges on the review tab row */
 .rs-nav{-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 26px,#000 calc(100% - 26px),transparent 100%);mask-image:linear-gradient(90deg,transparent 0,#000 26px,#000 calc(100% - 26px),transparent 100%);padding-left:8px;padding-right:8px}
+.rs-by .rs-cc{display:flex;width:max-content;max-width:100%;color:#dfe4f5;font-size:12.5px}

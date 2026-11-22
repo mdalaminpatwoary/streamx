@@ -120,3 +120,16 @@
 .tp-nav:focus-visible{outline:2px solid #fff;outline-offset:2px}
 @media(hover:none),(max-width:760px){.tp-nav{display:none}}
 @media(max-width:640px){#toplist:not([data-mode="page"]) .tp-grid{gap:6px 16px;margin:0 -16px;padding-left:16px;padding-right:16px;scroll-padding-left:16px}#toplist:not([data-mode="page"]) .tp-grid>.tp-card{flex-basis:44vw}}
+
+/* Home row: loading card while the next titles are added, and the end-of-row link */
+#toplist:not([data-mode="page"]) .tp-more{display:none}
+.tp-ldc,.tp-endc{flex:0 0 clamp(150px,15vw,190px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;aspect-ratio:2/3;border-radius:16px;border:1px dashed rgba(255,255,255,.18);color:#b4bddb;font:700 13px Manrope,sans-serif;text-align:center;scroll-snap-align:start;animation:tpIn .4s both}
+.tp-ldc{background:linear-gradient(90deg,rgba(255,255,255,.03),rgba(255,255,255,.09),rgba(255,255,255,.03));background-size:200% 100%;animation:tpSk 1.3s linear infinite}
+@keyframes tpSk{to{background-position:-200% 0}}
+.tp-spin{width:30px;height:30px;border-radius:50%;border:3px solid rgba(255,255,255,.16);border-top-color:#ff5b4d;animation:tpSpin .8s linear infinite}
+@keyframes tpSpin{to{transform:rotate(360deg)}}
+.tp-endc{text-decoration:none;border-style:solid;background:rgba(255,255,255,.04);transition:.3s}
+.tp-endc b{color:#fff;font-size:16px}.tp-endc span{font-weight:600;color:var(--mut)}
+.tp-endc svg{width:22px;height:22px;fill:none;stroke:#ff8a7e;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.tp-endc:hover{background:linear-gradient(135deg,#ff5b4d,#ff8a4d);border-color:transparent}.tp-endc:hover *{color:#fff;stroke:#fff}
+@media(prefers-reduced-motion:reduce){.tp-spin{animation-duration:2s}.tp-ldc{animation:none}}

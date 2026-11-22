@@ -211,3 +211,11 @@ grant select, insert, update, delete on public.coupons to service_role;
 grant usage, select on all sequences in schema public to service_role;
 alter table public.orders add column if not exists coupon   text;
 alter table public.orders add column if not exists discount int not null default 0;
+
+-- Reviews: student / institution, country, expatriate and an uploaded customer photo
+alter table public.reviews add column if not exists kind        text    not null default 'pro';   -- pro | student
+alter table public.reviews add column if not exists institution text    not null default '';
+alter table public.reviews add column if not exists country     text    not null default '';      -- 2-letter code, e.g. BD, GB, AE
+alter table public.reviews add column if not exists expat       boolean not null default false;   -- Bangladeshi living abroad
+alter table public.reviews add column if not exists photo_img   text    not null default '';      -- uploaded customer photo (small JPEG data URL)
+alter table public.reviews add column if not exists has_photo   boolean not null default false;

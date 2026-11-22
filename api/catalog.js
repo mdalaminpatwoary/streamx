@@ -220,15 +220,18 @@ module.exports = async (req, res) => {
     // Reviews (managed in Admin): public list, and the screenshot of one review's original
     if (req.query.a === "reviews") {
       if (!db.enabled()) return res.status(503).json({ error: "off" });
-      const rows = (await db.rest("GET", "reviews?select=id,name,role,company,loc,services,rating,body,photo,proof_kind,proof_url,has_img,popular,created_at&order=created_at.desc&limit=100")) || [];
+      const base = "id,name,role,company,loc,services,rating,body,photo,proof_kind,proof_url,has_img,popular,created_at";
+      let rows; try { rows = (await db.rest("GET", `reviews?select=${base},kind,institution,country,expat,has_photo&order=created_at.desc&limit=100`)) || []; }
+      catch (e) { rows = (await db.rest("GET", `reviews?select=${base}&order=created_at.desc&limit=100`)) || []; } // new columns not added yet
       res.setHeader("Cache-Control", "public, s-maxage=60, stale-while-revalidate=600");
-      return res.status(200).json({ list: rows.map((r) => ({ id: r.id, n: r.name, role: r.role, company: r.company, loc: r.loc, services: r.services || [], s: r.rating, t: r.body, photo: r.photo, pk: r.proof_kind === "image" && !r.has_img ? "" : r.proof_kind, pu: r.proof_kind === "link" ? r.proof_url : "", popular: !!r.popular })) });
+      return res.status(200).json({ list: rows.map((r) => ({ id: r.id, n: r.name, role: r.role, company: r.company, loc: r.loc, services: r.services || [], s: r.rating, t: r.body, photo: r.has_photo ? "/api/catalog?a=rvimg&w=photo&id=" + r.id : r.photo, kind: r.kind || "pro", inst: r.institution || "", cc: r.country || "", x: !!r.expat, pk: r.proof_kind === "image" && !r.has_img ? "" : r.proof_kind, pu: r.proof_kind === "link" ? r.proof_url : "", popular: !!r.popular })) });
     }
     if (req.query.a === "rvimg") {
       const id = parseInt(req.query.id, 10);
       if (!(id > 0) || !db.enabled()) return res.status(404).end();
-      const row = ((await db.rest("GET", `reviews?id=eq.${id}&select=proof_img,proof_kind`)) || [])[0];
-      const m = row && row.proof_kind === "image" && /^data:(image\/(?:jpeg|png|webp));base64,(.+)$/.exec(row.proof_img || "");
+      const ph = req.query.w === "photo";
+      const row = ((await db.rest("GET", `reviews?id=eq.${id}&select=${ph ? "photo_img,has_photo" : "proof_img,proof_kind"}`)) || [])[0];
+      const m = row && (ph ? row.has_photo : row.proof_kind === "image") && /^data:(image\/(?:jpeg|png|webp));base64,(.+)$/.exec((ph ? row.photo_img : row.proof_img) || "");
       if (!m) return res.status(404).end();
       res.setHeader("Content-Type", m[1]); res.setHeader("Cache-Control", "public, s-maxage=86400, stale-while-revalidate=604800");
       return res.status(200).send(Buffer.from(m[2], "base64"));

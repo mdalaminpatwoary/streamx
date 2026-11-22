@@ -63,7 +63,7 @@ module.exports = async (req, res) => {
     }
     // Reviews: post and delete customer reviews (shown on the site; proof = screenshot or link to the original review)
     if (req.query && (req.query.view === "reviews" || req.query.review)) {
-      const RV = "id,name,role,company,loc,services,rating,body,photo,proof_kind,proof_url,has_img,popular,created_at";
+      const RV = "id,name,role,company,loc,services,rating,body,photo,proof_kind,proof_url,has_img,popular,created_at,kind,institution,country,expat,has_photo";
       if (req.method === "GET") return res.status(200).json({ rows: await db.rest("GET", `reviews?select=${RV}&order=created_at.desc&limit=200`) });
       if (req.method === "POST") {
         const name = clean(body.name, 60), text = clean(body.body, 600);
@@ -74,9 +74,11 @@ module.exports = async (req, res) => {
         if (kind === "link") { purl = clean(body.proof_url, 400); if (!/^https?:\/\//i.test(purl)) return res.status(400).json({ error: "The review link must start with https://" }); }
         if (kind === "image") { pimg = String(body.proof_img || ""); if (!/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(pimg) || pimg.length > 400000) return res.status(400).json({ error: "The screenshot must be a JPEG, PNG or WebP image under 300 KB." }); }
         let photo = clean(body.photo, 400); if (photo && !/^https?:\/\//i.test(photo)) photo = "";
-        const row = { name, role: clean(body.role, 60), company: clean(body.company, 80), loc: clean(body.loc, 60), services, rating, body: text, photo, proof_kind: kind, proof_url: purl, proof_img: pimg, has_img: !!pimg, popular: !!body.popular };
+        const student = body.kind === "student", country = /^[A-Za-z]{2}$/.test(String(body.country || "")) ? String(body.country).toUpperCase() : "";
+        let phimg = String(body.photo_img || ""); if (phimg && (!/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(phimg) || phimg.length > 150000)) return res.status(400).json({ error: "The customer photo must be a JPEG, PNG or WebP image." });
+        const row = { name, role: clean(body.role, 60) || (student ? "Student" : ""), company: student ? "" : clean(body.company, 80), loc: clean(body.loc, 60), services, rating, body: text, photo: phimg ? "" : photo, proof_kind: kind, proof_url: purl, proof_img: pimg, has_img: !!pimg, popular: !!body.popular, kind: student ? "student" : "pro", institution: student ? clean(body.institution, 100) : "", country, expat: !!body.expat && country !== "BD", photo_img: phimg, has_photo: !!phimg };
         const out = (await db.rest("POST", "reviews", row, "return=representation"))[0];
-        delete out.proof_img; return res.status(200).json({ row: out });
+        delete out.proof_img; delete out.photo_img; return res.status(200).json({ row: out });
       }
       if (req.method === "DELETE") {
         const rid = parseInt(req.query.review, 10);

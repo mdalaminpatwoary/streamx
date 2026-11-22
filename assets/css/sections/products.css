@@ -1247,3 +1247,19 @@
   #planTable.packs .pshare { top: 10px; right: 10px; }
   #planTable.packs .pcard .tag { top: 14px; right: 52px; padding: 3px 10px; }
 }
+
+/* Home "Everything you stream": one horizontal row with arrows + loading card (no button) */
+.pr-rail{position:relative}
+.pr-rail #productGrid{display:flex;flex-wrap:nowrap;gap:18px;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:6px 2px 18px;overscroll-behavior-x:contain}
+.pr-rail #productGrid::-webkit-scrollbar{display:none}
+.pr-rail #productGrid>.pc{flex:0 0 clamp(236px,24vw,284px);scroll-snap-align:start;min-width:0}
+.pr-rail #productGrid>.empty{flex:1}
+.pr-rail .tp-nav{top:40%}
+.pr-ldc,.pr-endc{flex:0 0 clamp(200px,20vw,240px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;border-radius:18px;border:1px dashed rgba(255,255,255,.18);color:#b4bddb;font:700 13px Manrope,sans-serif;text-align:center;scroll-snap-align:start;padding:20px}
+.pr-ldc{background:linear-gradient(90deg,rgba(255,255,255,.03),rgba(255,255,255,.09),rgba(255,255,255,.03));background-size:200% 100%;animation:tpSk 1.3s linear infinite}
+.pr-endc{text-decoration:none;color:#fff;transition:border-color .25s,background .25s}
+.pr-endc:hover{border-color:#ff5b4d;background:rgba(255,91,77,.08)}
+.pr-endc b{font-size:15px}.pr-endc span{font-weight:600;color:#b4bddb;font-size:12px}
+.pr-endc svg{width:22px;height:22px;fill:none;stroke:#ff5b4d;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+@media(max-width:600px){.pr-rail #productGrid{gap:14px;margin-inline:-16px;padding-inline:16px;scroll-padding-inline:16px}.pr-rail #productGrid>.pc{flex-basis:78vw;max-width:300px}}
+@media(prefers-reduced-motion:reduce){.pr-ldc{animation:none}}

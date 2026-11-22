@@ -6,7 +6,8 @@
   const esc=t=>String(t==null?"":t).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
   const NAME={"Prime Video":"Amazon Prime Video"};
   const MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-  const FIRST=PAGE?50:10,STEP=PAGE?50:20;
+  const FIRST=PAGE?50:12,STEP=PAGE?50:20;
+  let lastRows=[],lastSoon=false,busy=false;
   const st={l:"top",k:"movie",n:FIRST,q:"",hide:false},cache={},pv={},asked={},idx={};
   const logo=n=>{const key=NAME[n]||n,L=typeof LOGOS!=="undefined"&&typeof LOGO_OF!=="undefined"&&LOGOS[LOGO_OF[key]];
     return L&&L.p?`<span class="tp-lg" style="background:${esc(L.bg)};color:${esc(L.fg||"#fff")}"><svg viewBox="${esc(L.vb)}" aria-hidden="true"><path d="${L.p}"/></svg></span>`:`<span class="tp-lg" style="background:#1d2347">${esc((n||"?")[0])}</span>`};
@@ -27,6 +28,11 @@
     else num=`<span class="tp-n ${rank<=3?"r"+rank:""} l${String(rank).length}" aria-hidden="true">${rank}</span>`;
     const days=soon&&m.d?Math.round((new Date(m.d+"T00:00:00Z")-Date.now())/864e5):null;
     return `<article class="tp-card" data-id="${m.id}" data-k="${m.k}" style="--i:${i%10}"><div class="tp-pw">${num}<div class="tp-poster">${poster(m,"w342")}<button class="tp-open" type="button" aria-label="${esc(m.t)}: details, trailer and where to watch"></button><span class="tp-seen">Watched</span>${acts}</div></div><div class="tp-info"><h3>${esc(m.t)}</h3>${soon?`<p class="tp-meta">${days!=null&&days>0&&days<=90?`<b class="tp-soon">in ${days} day${days>1?"s":""}</b>`:""}${[m.y,m.g&&m.g[0]].filter(Boolean).map(x=>`<span>${esc(x)}</span>`).join("")}</p>`:metaHtml(m)}${onBox(m,soon)}</div></article>`;
+  }
+  function endCard(show){
+    if(PAGE)return;const e=grid.querySelector(".tp-endc");
+    if(!show){if(e)e.remove();return}
+    if(!e&&!grid.querySelector(".tp-msg"))grid.insertAdjacentHTML("beforeend",`<a class="tp-endc" href="${st.l==="soon"?"/top/#soon":"/top/"}"><b>See everything</b><span>Browse the full list</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>`);
   }
   function paintStates(){
     if(!window.sxList)return;
@@ -54,7 +60,8 @@
     const shown=rows.slice(0,st.n);
     grid.innerHTML=shown.map((x,i)=>card(x.m,x.r,i,soon)).join("");
     const left=rows.length-shown.length;
-    more.hidden=left<=0;more.textContent=`Show ${Math.min(STEP,left)} more`;
+    more.hidden=PAGE?left<=0:true;more.textContent=`Show ${Math.min(STEP,left)} more`;
+    if(!PAGE){lastRows=rows;lastSoon=soon;endCard(left<=0&&rows.length>FIRST)}
     if(all){all.hidden=mine;all.href=soon?"/top/#soon":"/top/";all.firstChild.textContent=soon?"Explore all upcoming ":"Explore all 250 "}
     if(cnt)cnt.textContent=`Showing ${shown.length} of ${rows.length}`;
     wantPl(shown.map(x=>x.m));paintStates();
@@ -76,8 +83,26 @@
     const pb=mk("prev",'<svg viewBox="0 0 24 24"><path d="m15 5-7 7 7 7"/></svg>'),nb=mk("next",'<svg viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></svg>');
     const sync=()=>{pb.hidden=grid.scrollLeft<8;nb.hidden=grid.scrollLeft+grid.clientWidth>=grid.scrollWidth-8};
     const go=d=>grid.scrollBy({left:d*Math.max(240,grid.clientWidth*.85),behavior:"smooth"});
+    // Endless row: near the end of the row a loading card shows for a moment, then the next 20 titles are added (no button).
+    const LD='<div class="tp-ldc" role="status" aria-label="Loading more titles"><i class="tp-spin"></i><span>Loading more…</span></div>';
+    const more20=()=>{
+      if(busy||st.n>=lastRows.length)return;busy=true;
+      grid.insertAdjacentHTML("beforeend",LD);
+      setTimeout(()=>{
+        const l=grid.querySelector(".tp-ldc");if(l)l.remove();
+        const from=st.n;st.n=Math.min(lastRows.length,st.n+STEP);
+        const add=lastRows.slice(from,st.n);
+        const e=grid.querySelector(".tp-endc");if(e)e.remove();
+        grid.insertAdjacentHTML("beforeend",add.map((x,i)=>card(x.m,x.r,i,lastSoon)).join(""));
+        wantPl(add.map(x=>x.m));paintStates();if(cnt)cnt.textContent=`Showing ${st.n} of ${lastRows.length}`;
+        endCard(st.n>=lastRows.length);busy=false;requestAnimationFrame(sync);
+      },650);
+    };
+    grid.addEventListener("scroll",()=>{if(grid.scrollLeft+grid.clientWidth>=grid.scrollWidth-700)more20()},{passive:true});
+    nb.addEventListener("click",()=>{if(grid.scrollLeft+grid.clientWidth>=grid.scrollWidth-700)more20()});
+    new MutationObserver(()=>requestAnimationFrame(()=>{sync();if(!busy&&grid.scrollWidth<=grid.clientWidth+700&&st.n<lastRows.length&&!grid.querySelector(".tp-sk,.tp-msg"))more20()})).observe(grid,{childList:true});
     pb.onclick=()=>go(-1);nb.onclick=()=>go(1);grid.addEventListener("scroll",sync,{passive:true});addEventListener("resize",sync);
-    new MutationObserver(()=>requestAnimationFrame(sync)).observe(grid,{childList:true});
+    
   }
   if(PAGE&&/soon/i.test(location.hash))st.l="soon";
   more.addEventListener("click",()=>{st.n+=STEP;paint()});
