@@ -106,3 +106,11 @@ html.ts-open{overflow:hidden}
 .ml-empty{grid-column:1/-1;padding:30px 12px;text-align:center;color:var(--mut,#9aa3c4);font:600 13.5px Manrope,sans-serif}
 .ml-empty b{display:block;margin-bottom:6px;color:#fff;font-size:15px}
 .ml-empty a{color:#fff}
+
+.ts-get{display:flex;align-items:center;gap:12px;margin:14px 0 4px;padding:12px 14px;border-radius:16px;border:1px solid rgba(237,49,36,.55);background:linear-gradient(135deg,rgba(237,49,36,.22),rgba(196,36,26,.12));color:#fff;text-decoration:none;transition:transform .25s,border-color .25s,background-color .25s,box-shadow .25s}
+.ts-get:hover{transform:translateY(-2px);border-color:#ff6a5c;box-shadow:0 14px 30px -14px rgba(237,49,36,.8)}
+.ts-get>span{flex:1;min-width:0}.ts-get b{display:block;font:800 14.5px/1.3 Manrope,sans-serif}.ts-get small{display:block;margin-top:2px;color:#ffc9c3;font:600 12.5px Manrope,sans-serif}
+.ts-get i{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:#ed3124}.ts-get i svg{width:16px;height:16px;fill:none;stroke:#fff;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.ts-get:focus-visible{outline:2px solid #ff8a7e;outline-offset:3px}
+.ts-acts .ts-get{flex:1 1 100%;margin:0 0 2px}
+.ts-get .ts-lg{flex:none;width:40px;height:40px}

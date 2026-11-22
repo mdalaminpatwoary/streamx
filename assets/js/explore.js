@@ -114,6 +114,39 @@
         return p.u?'<a class="ex-b" href="'+esc(p.u)+'" target="_blank" rel="noopener">'+inner+"</a>":'<div class="ex-b">'+inner+"</div>"}).join("");
     }).catch(function(){box.innerHTML='<div class="ex-msg" style="grid-column:1/-1"><b>Couldn\'t load birthdays right now</b>Please try again later.</div>'});
   }
+  /* search: results rail above the sections */
+  (function(){
+    var f=document.getElementById("exForm"),inp=document.getElementById("exQ"),clr=document.getElementById("exClr"),res=document.getElementById("exRes"),g=document.getElementById("exResG"),t=document.getElementById("exResT"),more=document.getElementById("exResMore"),st={q:"",page:0,pages:1,loading:false,n:0},timer,seq=0;
+    if(!f)return;
+    arrows(res,g);
+    var CARD={rank:false};
+    function run(reset){
+      var qq=inp.value.replace(/\s+/g," ").trim();
+      if(qq.length<2){res.hidden=true;g.innerHTML="";more.hidden=true;st.q="";return}
+      if(reset){st.q=qq;st.page=0;st.n=0;g.innerHTML='<div class="ex-sk">'+"<i></i>".repeat(8)+"</div>";g.scrollLeft=0}
+      if(st.loading&&!reset)return;
+      var my=++seq;st.loading=true;res.hidden=false;t.textContent="Results for \u201c"+qq+"\u201d";
+      get({a:"search",q:st.q,page:st.page+1}).then(function(d){
+        if(my!==seq)return;
+        var sk=g.querySelector(".ex-sk");if(sk)sk.remove();
+        st.page=d.page;st.pages=d.pages;var rows=d.list||[];
+        if(!rows.length&&!st.n){g.innerHTML='<div class="ex-msg"><b>No matches for \u201c'+esc(st.q)+'\u201d</b>Check the spelling or try another title.</div>';more.hidden=true;return}
+        CARD._n=st.n;g.insertAdjacentHTML("beforeend",rows.map(function(m,i){return card(m,i,CARD)}).join(""));st.n+=rows.length;more.hidden=st.page>=st.pages;
+      }).catch(function(){if(my===seq){var sk=g.querySelector(".ex-sk");if(sk)sk.remove();if(!st.n)g.innerHTML='<div class="ex-msg"><b>Search is unavailable right now</b>Please try again in a moment.</div>'}}).then(function(){if(my===seq)st.loading=false});
+    }
+    inp.addEventListener("input",function(){clr.hidden=!inp.value;clearTimeout(timer);timer=setTimeout(function(){run(true)},350)});
+    f.addEventListener("submit",function(e){e.preventDefault();clearTimeout(timer);run(true)});
+    clr.addEventListener("click",function(){inp.value="";clr.hidden=true;run(true);inp.focus()});
+    more.addEventListener("click",function(){run(false)});
+    g.addEventListener("scroll",function(){if(!more.hidden&&!st.loading&&g.scrollLeft+g.clientWidth>g.scrollWidth-320)run(false)},{passive:true});
+    res.addEventListener("click",function(e){var el=e.target.closest(".ex-card");if(el&&window.sxSheet)sxSheet.open(el.dataset.id,el.dataset.k,el,idx[el.dataset.k+":"+el.dataset.id])});
+    res.addEventListener("keydown",function(e){if((e.key==="Enter"||e.key===" ")&&e.target.matches(".ex-card")){e.preventDefault();e.target.click()}});
+    document.addEventListener("keydown",function(e){if(e.key==="/"&&!/input|textarea/i.test((e.target.tagName||""))){e.preventDefault();inp.focus()}});
+    /* My list badge */
+    var badge=document.getElementById("exMyN");
+    function mine(){if(!badge||!window.sxList)return;var n=sxList.all().length;badge.hidden=!n;badge.textContent=n}
+    if(window.sxList){sxList.onChange(mine);sxList.load().then(mine)}
+  })();
   SECS.forEach(function(c){var s=build(c);root.appendChild(s);c._el=s});
   nav.innerHTML=SECS.map(function(c){return '<a href="#'+c.id+'">'+c.nav+"</a>"}).join("");
   var io=new IntersectionObserver(function(es){es.forEach(function(e){if(!e.isIntersecting)return;io.unobserve(e.target);var c=SECS.filter(function(x){return x._el===e.target})[0];if(!c)return;if(c.births)births();else c._start()})},{rootMargin:"500px 0px"});

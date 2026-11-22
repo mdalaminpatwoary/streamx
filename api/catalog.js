@@ -265,6 +265,14 @@ module.exports = async (req, res) => {
       res.setHeader("Cache-Control", "public, s-maxage=21600, stale-while-revalidate=86400");
       return res.status(200).json({ p: req.query.p, k, list: (r.results || []).filter((x) => x.poster_path).slice(0, 6).map((x) => item(x, k, g)) });
     }
+    if (req.query.a === "search") {
+      const text = String(req.query.q || "").replace(/\s+/g, " ").trim().slice(0, 80), page = Math.min(10, Math.max(1, parseInt(req.query.page, 10) || 1));
+      if (text.length < 2) return res.status(200).json({ q: text, page: 1, pages: 1, list: [] });
+      const g = await genreMap();
+      const j = await tmdb("/search/multi", { query: text, page, include_adult: "false", language: "en-US" });
+      res.setHeader("Cache-Control", "public, s-maxage=600, stale-while-revalidate=3600");
+      return res.status(200).json({ q: text, page: j.page || page, pages: Math.min(j.total_pages || 1, 10), list: (j.results || []).filter((r) => (r.media_type === "movie" || r.media_type === "tv") && r.poster_path).map((r) => item(r, r.media_type, g)) });
+    }
     if (req.query.a === "news") {
       const c = ["movies", "tv", "people", "boxoffice"].includes(req.query.c) ? req.query.c : "all", page = Math.min(10, Math.max(1, parseInt(req.query.page, 10) || 1));
       const all = (await newsAll()).filter((x) => c === "all" || NEWS_C[c].test(x._c));

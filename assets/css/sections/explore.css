@@ -92,3 +92,20 @@
 .ex-rail .ex-msg{flex:1 0 100%}
 .ex-rail .ex-foot{margin-top:10px}
 @media(max-width:520px){.ex-rail .ex-card{width:148px}.ex-rail.ex-vsec .ex-card,.ex-rail.ex-nsec .ex-card{width:260px}.ex-arr{display:none}}
+
+/* search + my list */
+.ex-tools{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:0 0 6px}
+.ex-search{position:relative;flex:1 1 320px;min-width:0}
+.ex-search svg{position:absolute;left:16px;top:50%;width:18px;height:18px;margin-top:-9px;fill:none;stroke:#8b95b8;stroke-width:2;stroke-linecap:round;pointer-events:none}
+.ex-search input{width:100%;box-sizing:border-box;padding:14px 44px 14px 44px;border-radius:999px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.05);color:#fff;font:600 15px Manrope,sans-serif;transition:border-color .2s,background-color .2s,box-shadow .2s}
+.ex-search input::placeholder{color:#8b95b8}
+.ex-search input:focus{outline:none;border-color:rgba(237,49,36,.7);background:rgba(255,255,255,.08);box-shadow:0 0 0 4px rgba(237,49,36,.14)}
+.ex-search input::-webkit-search-cancel-button{display:none}
+#exClr{position:absolute;right:8px;top:50%;width:30px;height:30px;margin-top:-15px;border-radius:50%;border:0;background:rgba(255,255,255,.1);color:#fff;font-size:18px;line-height:1;cursor:pointer}
+#exClr:hover{background:rgba(237,49,36,.35)}
+.ex-my{display:inline-flex;align-items:center;gap:8px;padding:13px 20px;border-radius:999px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:#fff;font:800 14px Manrope,sans-serif;text-decoration:none;transition:background-color .2s,border-color .2s}
+.ex-my:hover{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.4)}
+.ex-my svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linejoin:round}
+.ex-my i{min-width:20px;padding:2px 6px;border-radius:999px;background:#ed3124;color:#fff;font:800 11px Manrope,sans-serif;font-style:normal;text-align:center}
+#exRes{padding-top:26px}
+@media(max-width:520px){.ex-my{flex:1;justify-content:center}}

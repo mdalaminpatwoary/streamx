@@ -49,6 +49,11 @@
     if(oth.length)h+='<div class="ts-also"><span>Also on</span>'+oth.map(function(p){return '<em>'+logo(p.n)+esc(p.n)+'</em>'}).join("")+'</div>';
     return h+'</section>';
   }
+  function getBtn(d){
+    var own=(d.pl||[]).filter(function(p){return p.s})[0];if(!own)return"";
+    var pr=from(own.s);
+    return '<a class="ts-get" href="/services/'+esc(own.s)+'/">'+logo(own.n)+'<span><b>Get '+esc(own.n)+' on StreamX</b><small>'+(pr?esc(pr)+" · ":"")+'bKash, Nagad, Rocket or card</small></span><i>'+ICON.go+'</i></a>';
+  }
   function paint(d){
     cur=d;
     var meta=[d.y,d.k==="tv"?(d.seasons?d.seasons+" season"+(d.seasons>1?"s":""):"Series"):mins(d.rt),d.lang].filter(Boolean).map(function(x){return'<span>'+esc(x)+'</span>'}).join("");
@@ -60,7 +65,7 @@
     '<div class="ts-ttl"><h3>'+esc(d.t)+'</h3>'+(d.tag?'<p class="ts-tag">'+esc(d.tag)+'</p>':'')+'</div></div>'+
     '<div class="ts-facts">'+meta+(d.vc?'<span>'+d.vc.toLocaleString("en-US")+' votes</span>':'')+'</div>'+
     (d.g&&d.g.length?'<div class="ts-gen">'+d.g.map(function(g){return'<i>'+esc(g)+'</i>'}).join("")+'</div>':'')+
-    '<div class="ts-acts"><button class="ts-btn" type="button" data-act="wish" aria-pressed="false">'+ICON.mark+'<b>Add to wishlist</b></button><button class="ts-btn" type="button" data-act="watched" aria-pressed="false">'+ICON.check+'<b>Mark as watched</b></button></div>'+
+    '<div class="ts-acts">'+getBtn(d)+'<button class="ts-btn" type="button" data-act="wish" aria-pressed="false">'+ICON.mark+'<b>Add to wishlist</b></button><button class="ts-btn" type="button" data-act="watched" aria-pressed="false">'+ICON.check+'<b>Mark as watched</b></button></div>'+
     (d.o?'<p class="ts-ov">'+esc(d.o)+'</p>':'')+(d.dir?'<p class="ts-dir"><small>'+(d.k==="tv"?"Created by":"Director")+'</small> '+esc(d.dir)+'</p>':'')+'</div></div>'+
     where(d)+
     (d.cast&&d.cast.length?'<section class="ts-cast-w"><div class="ts-sec"><h4>Top cast</h4></div><div class="ts-cast">'+d.cast.slice(0,8).map(function(c){return'<div>'+(c.p?'<img src="https://image.tmdb.org/t/p/w185'+esc(c.p)+'" alt="" loading="lazy">':'<span class="ts-ph">'+esc((c.n||"")[0]||"")+'</span>')+'<b>'+esc(c.n)+'</b><small>'+esc(c.c)+'</small></div>'}).join("")+'</div></section>':'')+
