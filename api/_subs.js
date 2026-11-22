@@ -50,6 +50,7 @@ async function activateOrder(mtid) {
         const m = /\$\s?(\d+)/.exec(String(l.plan || ""));
         try { await rest("PATCH", `subscriptions?id=eq.${row.id}`, { gift_region: "US", gift_amount: m ? "$" + m[1] : null }); } catch (e) { console.error("gift details not saved", e && e.message); }
       }
+      if (row && row.id) { try { await require("./_sheet").syncSub(row.id); } catch (e) { /* the sheet is optional */ } }
       n++;
     }
   }
