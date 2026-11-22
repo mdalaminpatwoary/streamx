@@ -4,7 +4,9 @@
 const db = require("./_db");
 
 const FIELDS = ["id", "created_at", "name", "email", "phone", "service", "plan", "months", "start_date", "end_date", "price", "pay_method", "txn_id", "channel", "notes"];
-const slim = (r) => { const o = {}; FIELDS.forEach((k) => { o[k] = r[k] == null ? "" : r[k]; }); return o; };
+/* A value that starts with = + - or @ would be read by Google Sheets as a formula (for example +44 phone numbers), so it is stored as plain text. */
+const safe = (v) => (typeof v === "string" && /^[=+\-@]/.test(v) ? "'" + v : v);
+const slim = (r) => { const o = {}; FIELDS.forEach((k) => { o[k] = r[k] == null ? "" : safe(r[k]); }); return o; };
 const enabled = () => !!process.env.SHEETS_WEBHOOK_URL;
 
 /* Returns "" when the sheet accepted the data, otherwise a short reason. */
