@@ -54,3 +54,28 @@
 .nt-card small{display:block;margin-top:12px;color:var(--mut);font-size:12.5px}
 .nt-foot{display:flex;justify-content:center;margin-top:26px}
 @media(max-width:820px){.nt-row{display:flex;overflow-x:auto;scroll-snap-type:x proximity;gap:14px;margin:0 -16px;padding:2px 16px 14px;scrollbar-width:none}.nt-row::-webkit-scrollbar{display:none}.nt-card{flex:0 0 78%;scroll-snap-align:start}}
+
+/* Nav bell: opens the notice board, shows how many notices are active */
+#ntBell[hidden]{display:none}
+#ntCount{position:absolute;top:-6px;right:-6px;min-width:20px;height:20px;padding:0 5px;border-radius:10px;background:var(--g);font:700 11px Manrope,sans-serif;display:grid;place-items:center;color:#fff}
+#ntBell.ring svg{transform-origin:50% 50%;animation:ntRing 1.6s ease 1s 2}
+@keyframes ntRing{0%,100%{transform:rotate(0)}10%{transform:rotate(14deg)}20%{transform:rotate(-12deg)}30%{transform:rotate(9deg)}40%{transform:rotate(-6deg)}50%{transform:rotate(0)}}
+@media(prefers-reduced-motion:reduce){#ntBell.ring svg{animation:none}}
+#ntBell svg{width:20px;height:20px}
+
+/* One-time "island": the latest notice pops out of the megaphone icon, stays a few seconds, then folds back into it */
+.nt-isl{position:fixed;z-index:1200;display:flex;align-items:center;gap:12px;overflow:hidden;box-sizing:border-box;padding:0;border-radius:999px;background:#05060d;border:1px solid rgba(255,255,255,.16);box-shadow:0 18px 50px rgba(0,0,0,.55),0 0 0 1px rgba(0,0,0,.6);color:#fff;text-decoration:none;
+  transition:left .62s cubic-bezier(.2,.9,.25,1.08),top .62s cubic-bezier(.2,.9,.25,1.08),width .62s cubic-bezier(.2,.9,.25,1.08),height .62s cubic-bezier(.2,.9,.25,1.08),border-radius .62s ease,opacity .3s ease}
+.nt-isl-in{display:flex;align-items:center;gap:12px;min-width:0;padding:0 18px 0 14px;opacity:0;transition:opacity .25s ease}
+.nt-isl.open .nt-isl-in{opacity:1;transition-delay:.3s}
+.nt-isl.open{border-radius:34px}
+.nt-isl .nt-ik{flex:none;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:color-mix(in srgb,var(--k,#fbbf24) 22%,transparent);color:var(--k,#fbbf24)}
+.nt-isl .nt-ik svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.nt-isl .nt-it{min-width:0;flex:1}
+.nt-isl small{display:block;color:var(--k,#fbbf24);font:800 10.5px Manrope,sans-serif;letter-spacing:.1em;text-transform:uppercase}
+.nt-isl b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:800 14.5px Manrope,sans-serif}
+.nt-isl em{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#b4bddb;font:600 12.5px Manrope,sans-serif;font-style:normal}
+.nt-isl-x{flex:none;width:26px;height:26px;border:0;border-radius:50%;background:rgba(255,255,255,.1);color:#fff;font:700 13px/1 Manrope,sans-serif;cursor:pointer}
+#ntBell.pop{animation:ntPop .6s ease}
+@keyframes ntPop{40%{transform:scale(1.22)}100%{transform:scale(1)}}
+@media(prefers-reduced-motion:reduce){.nt-isl,.nt-isl-in{transition:none}#ntBell.pop{animation:none}}
