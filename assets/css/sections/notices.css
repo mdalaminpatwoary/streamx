@@ -79,3 +79,6 @@
 #ntBell.pop{animation:ntPop .6s ease}
 @keyframes ntPop{40%{transform:scale(1.22)}100%{transform:scale(1)}}
 @media(prefers-reduced-motion:reduce){.nt-isl,.nt-isl-in{transition:none}#ntBell.pop{animation:none}}
+/* The megaphone icon replaces the "Notices" text link in the desktop menu (keeps the bar from overflowing); the phone menu keeps the link */
+@media(min-width:861px){#ntNav{display:none!important}}
+#ntBell{flex:none;box-sizing:border-box;width:42px;height:42px}
