@@ -4,22 +4,50 @@
   var esc=function(t){return String(t==null?"":t).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})};
   var MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   var PLAT=[["netflix","Netflix"],["prime-video","Prime Video"],["disneyplus","Disney+"],["hbo-max","HBO Max"],["crunchyroll","Crunchyroll"],["jiohotstar","JioHotstar"],["paramountplus","Paramount+"],["hulu","Hulu"],["apple-tv","Apple TV+"],["peacock","Peacock"],["zee5","ZEE5"],["sonyliv","SonyLIV"],["viki","Rakuten Viki"],["mubi","MUBI"]];
+  var ANIME=[["popular","Popular"],["top","Top rated"],["new","New releases"],["crunchyroll","On Crunchyroll"]];
   var KIND=[["movie","Movies"],["tv","Series"]];
+  var NEWSC=[["all","All"],["movies","Movies"],["tv","TV & series"],["people","Stars"],["boxoffice","Box office"]];
   var SECS=[
     {id:"theaters",nav:"In theaters",eye:"Cinema",h:"In theaters <span class=\"grad\">now.</span>",sub:"Movies playing in cinemas right now, most popular first.",s:"nowplaying",k:"movie",rank:false},
     {id:"soon",nav:"Coming soon",eye:"Releases",h:"Coming <span class=\"grad\">soon.</span>",sub:"Every upcoming movie and series, with the release date on each poster.",s:"upcoming",kinds:true,date:true},
+    {id:"trailers",nav:"Trailers",eye:"Trailers",h:"Latest <span class=\"grad\">trailers.</span>",sub:"The newest official trailers for upcoming and currently airing movies and series. Tap to watch here.",s:"trailers",kinds:true,video:true},
+    {id:"news",nav:"News",eye:"Entertainment news",h:"Entertainment <span class=\"grad\">news.</span>",sub:"Headlines on movies, series, actors and actresses, box office and the wider industry, from leading trade publications. Each story opens at the source.",chips:NEWSC,news:true},
     {id:"platforms",nav:"By platform",eye:"Streaming",h:"Trending on <span class=\"grad\">every platform.</span>",sub:"Pick a platform to see its most popular movies and series. Get the matching plan from StreamX.",s:"platform",kinds:true,chips:PLAT},
     {id:"top",nav:"Top rated",eye:"Charts",h:"All-time <span class=\"grad\">top rated.</span>",sub:"The best-rated movies and series ever, ranked by TMDB user score.",s:"toprated",kinds:true,rank:true},
+    {id:"anime",nav:"Anime",eye:"Anime",h:"Anime <span class=\"grad\">worldwide.</span>",sub:"Japanese anime series and films: what is popular, best rated, newly released and streaming on Crunchyroll.",s:"anime",kinds:true,chips:ANIME,mode:true},
     {id:"genres",nav:"Genres",eye:"Categories",h:"Browse by <span class=\"grad\">genre.</span>",sub:"Choose a genre to explore every available title, most popular first.",s:"genre",kinds:true,genres:true},
     {id:"boxoffice",nav:"Box office",eye:"Earnings",h:"Box office <span class=\"grad\">hits.</span>",sub:"The highest-grossing movies of all time, ranked by worldwide revenue.",s:"boxoffice",k:"movie",rank:true},
     {id:"popular",nav:"Popular now",eye:"Right now",h:"Popular <span class=\"grad\">right now.</span>",sub:"What everyone is watching this week.",s:"popular",kinds:true},
     {id:"airing",nav:"Airing today",eye:"Series",h:"Series airing <span class=\"grad\">today.</span>",sub:"Episodes releasing today.",s:"airing",k:"tv"},
     {id:"birthdays",nav:"Birthdays",eye:"Celebrities",h:"Born <span class=\"grad\">today.</span>",sub:"Actors, singers, filmmakers and athletes celebrating a birthday today.",births:true}
   ];
+  SECS.forEach(function(c,i){c.rail=i%2===1});
+  function arrows(sec,sc){var a=sec.querySelector(".ex-arr");if(!a)return;a.addEventListener("click",function(e){var b=e.target.closest("button[data-dir]");if(!b)return;sc.scrollBy({left:(+b.dataset.dir)*Math.max(240,sc.clientWidth*.8),behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"})});
+    function fade(){var l=sc.scrollLeft<4,r=sc.scrollLeft+sc.clientWidth>=sc.scrollWidth-4,bs=a.querySelectorAll("button");bs[0].disabled=l;bs[1].disabled=r}sc.addEventListener("scroll",fade,{passive:true});fade();new MutationObserver(fade).observe(sc,{childList:true})}
   var q=function(o){return Object.keys(o).filter(function(k){return o[k]!==""&&o[k]!=null}).map(function(k){return k+"="+encodeURIComponent(o[k])}).join("&")};
   var get=function(p){return fetch("/api/catalog?"+q(p)).then(function(r){if(!r.ok)throw 0;return r.json()})};
   var idx={};
+  function ago(t){var m=Math.round((Date.now()-t)/6e4);return !t?"":m<1?"just now":m<60?m+" min ago":m<1440?Math.round(m/60)+" h ago":Math.round(m/1440)+" d ago"}
+  function ncard(m,i){
+    return '<a class="ex-card ex-nc" style="--i:'+(i%12)+'" href="'+esc(m.u)+'" target="_blank" rel="noopener noreferrer"><div class="ex-po">'+(m.i?'<img src="'+esc(m.i)+'" alt="" loading="lazy" width="640" height="360" referrerpolicy="no-referrer">':'<span class="ex-nph" aria-hidden="true">'+esc((m.s||"N")[0])+"</span>")+'<span class="ex-src">'+esc(m.s)+'</span></div><h3>'+esc(m.t)+"</h3><p>"+(m.x?esc(m.x):"")+"</p><small>"+ago(m.d)+" · Read at "+esc(m.s)+" ↗</small></a>";
+  }
+  function vcard(m,i){
+    idx[m.k+":"+m.id]=m;
+    var img=m.b?"https://image.tmdb.org/t/p/w780"+esc(m.b):"https://image.tmdb.org/t/p/w342"+esc(m.p);
+    return '<article class="ex-card ex-vc" style="--i:'+(i%20)+'" tabindex="0" role="button" aria-label="Play trailer: '+esc(m.t)+'" data-yt="'+esc(m.yt)+'" data-t="'+esc(m.t)+'"><div class="ex-po"><img src="'+img+'" alt="'+esc(m.t)+' trailer thumbnail" loading="lazy" width="780" height="439"><span class="ex-play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>'+(m.v?'<span class="ex-v">★ '+m.v+"</span>":"")+'</div><h3>'+esc(m.t)+"</h3><p>"+esc(m.vt||"Official trailer")+"</p></article>";
+  }
+  function player(key,title){
+    var d=document.createElement("div");d.className="ex-pl";d.setAttribute("role","dialog");d.setAttribute("aria-modal","true");d.setAttribute("aria-label",title+" trailer");
+    d.innerHTML='<div class="ex-plbg" data-x></div><div class="ex-plbox"><button type="button" class="ex-plx" data-x aria-label="Close trailer">&times;</button><div class="ex-plv"><iframe src="https://www.youtube-nocookie.com/embed/'+encodeURIComponent(key)+'?autoplay=1&rel=0&modestbranding=1" title="'+esc(title)+' trailer" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe></div><p>'+esc(title)+"</p></div>";
+    var prev=document.activeElement;
+    function close(){document.removeEventListener("keydown",key_);d.remove();document.body.style.overflow="";if(prev&&prev.focus)prev.focus()}
+    function key_(e){if(e.key==="Escape")close()}
+    d.addEventListener("click",function(e){if(e.target.closest("[data-x]"))close()});
+    document.addEventListener("keydown",key_);document.body.style.overflow="hidden";document.body.appendChild(d);d.querySelector(".ex-plx").focus();
+  }
   function card(m,i,c){
+    if(c.news)return ncard(m,i);
+    if(c.video)return vcard(m,i);
     idx[m.k+":"+m.id]=m;
     var dt="";if(c.date&&m.d){var d=new Date(m.d+"T00:00:00");if(!isNaN(d))dt='<span class="ex-dt">'+d.getDate()+" "+MON[d.getMonth()]+(d.getFullYear()!==new Date().getFullYear()?" "+d.getFullYear():"")+"</span>"}
     return '<article class="ex-card" style="--i:'+(i%20)+'" tabindex="0" role="button" aria-label="'+esc(m.t)+': details and trailer" data-id="'+m.id+'" data-k="'+m.k+'"><div class="ex-po"><img src="https://image.tmdb.org/t/p/w342'+esc(m.p)+'" alt="'+esc(m.t)+' poster" loading="lazy" width="342" height="513">'+(c.rank?'<span class="ex-rk">#'+(c._n+i+1)+"</span>":"")+(m.v?'<span class="ex-v">★ '+m.v+"</span>":"")+dt+'</div><h3>'+esc(m.t)+"</h3><p>"+esc(m.y||"")+(m.g&&m.g.length?" · "+esc(m.g.slice(0,2).join(", ")):"")+"</p></article>";
@@ -29,8 +57,8 @@
 
   function build(c){
     var sec=document.createElement("section");sec.className="ex-sec";sec.id=c.id;sec.dataset.nav=c.nav;
-    sec.innerHTML='<div class="ex-head"><div><div class="ac-eyebrow">'+c.eye+"</div><h2>"+c.h+"</h2></div>"+(c.sub?"<p>"+c.sub+"</p>":"")+"</div>";
-    if(c.births){sec.insertAdjacentHTML("beforeend",'<div class="ex-bd" id="exBd"></div>');return sec}
+    sec.className="ex-sec"+(c.video?" ex-vsec":"")+(c.news?" ex-nsec":"")+(c.rail?" ex-rail":"");sec.innerHTML='<div class="ex-head"><div><div class="ac-eyebrow">'+c.eye+"</div><h2>"+c.h+"</h2></div>"+(c.sub?"<p>"+c.sub+"</p>":"")+(c.rail?'<div class="ex-arr"><button type="button" data-dir="-1" aria-label="Scroll left">&#8592;</button><button type="button" data-dir="1" aria-label="Scroll right">&#8594;</button></div>':"")+"</div>";
+    if(c.births){sec.insertAdjacentHTML("beforeend",'<div class="ex-bd" id="exBd"></div>');arrows(sec,sec.querySelector("#exBd"));return sec}
     var bar="";
     if(c.kinds)bar+=seg(KIND,"movie","k");
     var st={k:c.k||"movie",page:0,pages:1,chip:c.chips?c.chips[0][0]:"",n:0,loading:false};
@@ -45,7 +73,7 @@
       var gid=c.genres?st.chip:"";
       if(c.genres&&!gid)return;
       st.loading=true;more.disabled=true;
-      get({a:"hub",s:c.s,k:st.k,page:st.page+1,g:gid,p:c.chips?st.chip:""}).then(function(d){
+      (c.news?get({a:"news",c:st.chip,page:st.page+1}):get({a:"hub",s:c.s,k:st.k,page:st.page+1,g:gid,p:c.chips&&!c.mode?st.chip:"",m:c.mode?st.chip:""})).then(function(d){
         var sk=grid.querySelector(".ex-sk");if(sk)sk.remove();
         st.page=d.page;st.pages=d.pages;
         c._n=st.n;var rows=d.list||[];
@@ -64,13 +92,14 @@
       thumbs(sec);
     };
     more.addEventListener("click",function(){load(false)});
+    if(c.rail){arrows(sec,grid);grid.addEventListener("scroll",function(){if(!more.hidden&&!st.loading&&grid.scrollLeft+grid.clientWidth>grid.scrollWidth-320)load(false)},{passive:true})}
     sec.addEventListener("click",function(e){
       var b=e.target.closest("button[data-v]");if(!b||!sec.contains(b))return;
       if(b.classList.contains("ex-chip")){st.chip=b.dataset.v;drawChips(c.genres?c._g:c.chips);load(true);return}
       var sg=b.closest(".tp-seg");if(sg){sg.querySelectorAll("button").forEach(function(x){x.classList.toggle("on",x===b)});st.k=b.dataset.v;thumbs(sec);
         if(c.genres)get({a:"genres",k:st.k}).then(function(d){c._g=d.genres.map(function(g){return[String(g.id),g.n]});st.chip=c._g[0][0];drawChips(c._g);load(true)});else load(true)}
     });
-    sec.addEventListener("click",function(e){var el=e.target.closest(".ex-card");if(el&&window.sxSheet)sxSheet.open(el.dataset.id,el.dataset.k,el,idx[el.dataset.k+":"+el.dataset.id])});
+    sec.addEventListener("click",function(e){var el=e.target.closest(".ex-card");if(el&&el.dataset.yt){player(el.dataset.yt,el.dataset.t);return}if(el&&window.sxSheet)sxSheet.open(el.dataset.id,el.dataset.k,el,idx[el.dataset.k+":"+el.dataset.id])});
     sec.addEventListener("keydown",function(e){if((e.key==="Enter"||e.key===" ")&&e.target.matches(".ex-card")){e.preventDefault();e.target.click()}});
     return sec;
   }
