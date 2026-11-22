@@ -5,7 +5,7 @@ const db = require("./_db");
 const coupons = require("./_coupon");
 const auth = require("./_auth");
 
-const PHONE = /^(?:\+?88)?01[3-9]\d{8}$/;
+const PHONE = /^(?:(?:\+?88)?01[3-9]\d{8}|\+[1-9]\d{7,14})$/;
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 module.exports = async (req, res) => {
@@ -16,10 +16,10 @@ module.exports = async (req, res) => {
     // A signed-in customer (checkout or renewal): the email always comes from their verified session, never from the request.
     const sess = auth.verify(auth.bearer(req), "sess");
     if (b.renew && !sess) return res.status(401).json({ error: "Please sign in again." });
-    const name = clean(b.name, 60), email = sess ? sess.e : clean(b.email, 100), phone = clean(b.phone, 20).replace(/[\s-]/g, "");
+    const name = clean(b.name, 60), email = sess ? sess.e : clean(b.email, 100), phone = clean(b.phone, 20).replace(/[\s\-()]/g, "");
     if (!b.check && name.length < 2) return res.status(400).json({ error: "Please enter your name." });
     if (!b.check && !EMAIL.test(email)) return res.status(400).json({ error: "Please enter a valid email address." });
-    if (!b.check && !PHONE.test(phone)) return res.status(400).json({ error: "Please enter a valid Bangladeshi mobile number (01XXXXXXXXX)." });
+    if (!b.check && !PHONE.test(phone)) return res.status(400).json({ error: "Please enter a valid mobile number (01XXXXXXXXX, or with country code like +358442354993)." });
 
     const lines = priceCart(b.items);
     // Coupon: re-checked here every time. {check:true} only previews the discount (no order is created).

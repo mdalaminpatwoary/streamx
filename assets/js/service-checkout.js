@@ -4,11 +4,11 @@
   var KEY = "sx_buyer", WA = "8801312850241";
   var $ = function (s, r) { return (r || document).querySelector(s); };
   var esc = function (t) { return String(t).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
-  var PHONE = /^(?:\+?88)?01[3-9]\d{8}$/, EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+  var PHONE = /^(?:(?:\+?88)?01[3-9]\d{8}|\+[1-9]\d{7,14})$/, EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
   var m = document.createElement("div"); m.className = "co"; m.hidden = true; m.setAttribute("role", "dialog"); m.setAttribute("aria-modal", "true"); m.setAttribute("aria-labelledby", "co-t");
   m.innerHTML = '<form class="co-box" novalidate><button class="co-x" type="button" data-x aria-label="Close">✕</button><span class="co-eb">Secure checkout</span><h3 id="co-t">Pay online</h3><div class="co-sum" id="co-s"></div>' +
     '<label><span class="co-l">Your name</span><input id="co-n" type="text" autocomplete="name" placeholder="e.g. Rafiq Ahmed" maxlength="60"></label>' +
-    '<div class="co-row"><label><span class="co-l">Mobile number</span><input id="co-p" type="tel" inputmode="numeric" autocomplete="tel" placeholder="01XXXXXXXXX" maxlength="14"></label>' +
+    '<div class="co-row"><label><span class="co-l">Mobile number</span><input id="co-p" type="tel" inputmode="tel" autocomplete="tel" placeholder="01XXXXXXXXX or +358…" maxlength="20"></label>' +
     '<label><span class="co-l">Email</span><input id="co-e" type="email" autocomplete="email" placeholder="you@example.com" maxlength="100"></label></div>' +
     '<label><span class="co-l">Note for us <em>(optional)</em></span><textarea id="co-c" rows="2" maxlength="300" placeholder="Anything we should know about your order?"></textarea></label>' +
     '<p class="co-agree">By paying, you agree to our <a href="/terms/" target="_blank" rel="noopener">Terms &amp; Conditions</a> and <a href="/refund-policy/" target="_blank" rel="noopener">Refund Policy</a>.</p>' +
@@ -49,9 +49,9 @@ function sessEmail(){try{var t=localStorage.getItem("sx_session");if(!t)return "
   document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !m.hidden) close(); });
   f.addEventListener("submit", function (e) {
     e.preventDefault(); if (!cur) return;
-    var name = $("#co-n").value.trim(), phone = $("#co-p").value.replace(/[\s-]/g, ""), se = sessEmail(), email = se || $("#co-e").value.trim();
+    var name = $("#co-n").value.trim(), phone = $("#co-p").value.replace(/[\s\-()]/g, ""), se = sessEmail(), email = se || $("#co-e").value.trim();
     if (name.length < 2) { er.textContent = "Please enter your name."; return; }
-    if (!PHONE.test(phone)) { er.textContent = "Enter a valid mobile number, e.g. 01712345678."; return; }
+    if (!PHONE.test(phone)) { er.textContent = "Enter a valid mobile number: 01712345678, or with country code, e.g. +358442354993."; return; }
     if (!EMAIL.test(email)) { er.textContent = "Enter a valid email address."; return; }
     er.textContent = ""; go.disabled = true; go.textContent = "Opening secure payment…";
     try { localStorage.setItem(KEY, JSON.stringify({ n: name, p: phone, e: se ? "" : email })); } catch (x) {}

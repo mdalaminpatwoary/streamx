@@ -380,7 +380,7 @@
   const helpWa=x=>wa(`Hi StreamX! I need help with ${x.service} (${x.plan}).\nMy StreamX email: ${ACC.email}\nSubscription ID: #${x.id}`);
   /* renew right here: pay on EPS straight from the chat (no trip to My account) */
   const planOfSub=x=>{const p=PRODUCTS.find(q=>q.name===x.service);if(!p)return null;const lb=x.plan.indexOf(" · ")>-1?x.plan.split(" · ")[0]:"",vr=lb?p.variants.find(v=>v.n===lb):p.variants[0],pl=vr&&vr.plans.find(y=>y.m===x.months);return pl?{name:p.name,vr:lb||undefined,v:pl.v,price:pl.p}:null};
-  const BDPH=/^(?:\+?88)?01[3-9]\d{8}$/;
+  const BDPH=/^(?:(?:\+?88)?01[3-9]\d{8}|\+[1-9]\d{7,14})$/;
   /* Renew popup: confirm the details on this page, then go to the secure EPS payment page. The account email is fixed. */
   let rm=null,rmX=null;
   function rmClose(){if(rm){rm.hidden=true;document.documentElement.style.overflow=""}}
@@ -391,7 +391,7 @@
       <p class="bt-rm-un" id="btRmU"></p>
       <label class="bt-rm-l">Account email<input class="bt-in is-lock" id="btRmE" type="email" readonly></label>
       <p class="bt-rm-h">Fixed to the account you are signed in with.</p>
-      <div class="bt-rm-two"><label class="bt-rm-l">Your name<input class="bt-in" id="btRmN" type="text" autocomplete="name" maxlength="60" placeholder="Full name"></label><label class="bt-rm-l">Mobile number<input class="bt-in" id="btRmM" type="tel" inputmode="tel" autocomplete="tel" maxlength="16" placeholder="01XXXXXXXXX"></label></div>
+      <div class="bt-rm-two"><label class="bt-rm-l">Your name<input class="bt-in" id="btRmN" type="text" autocomplete="name" maxlength="60" placeholder="Full name"></label><label class="bt-rm-l">Mobile number<input class="bt-in" id="btRmM" type="tel" inputmode="tel" autocomplete="tel" maxlength="20" placeholder="01XXXXXXXXX or +358…"></label></div>
       <p class="bt-er" id="btRmR" role="alert"></p>
       <button type="button" class="bt-btn bt-go bt-rm-go" id="btRmG"></button>
       <div class="bt-rm-eps"><img src="/assets/img/pay/eps-renew.webp" alt="Pay with EPS: Visa, Mastercard, American Express, bKash, Nagad, Rocket and more" width="1012" height="162" loading="lazy"></div>
@@ -406,16 +406,16 @@
     const c=ACC.contact||{},base=x.end_date>ACC.today?x.end_date:ACC.today,end=new Date(Date.parse(base+"T00:00:00Z"));end.setUTCMonth(end.getUTCMonth()+x.months);
     rm.querySelector("#btRmTile").innerHTML=tileOf(x.service);rm.querySelector("#btRmS").textContent=x.service;rm.querySelector("#btRmP").textContent=x.plan;rm.querySelector("#btRmA").textContent=taka(pl.price);
     rm.querySelector("#btRmU").textContent="Your plan will run until about "+fdate(end.toISOString().slice(0,10))+". It is added after your current expiry, so no days are lost.";
-    rm.querySelector("#btRmE").value=ACC.email||"";rm.querySelector("#btRmN").value=(c.name||"").trim();rm.querySelector("#btRmM").value=(c.phone||"").replace(/[\s-]/g,"");
+    rm.querySelector("#btRmE").value=ACC.email||"";rm.querySelector("#btRmN").value=(c.name||"").trim();rm.querySelector("#btRmM").value=(c.phone||"").replace(/[\s\-()]/g,"");
     rm.querySelector("#btRmR").textContent="";const g=rm.querySelector("#btRmG");g.disabled=false;g.textContent="Pay "+taka(pl.price)+" securely";
     rm.hidden=false;document.documentElement.style.overflow="hidden";
     setTimeout(()=>{const n=rm.querySelector("#btRmN");(n.value?rm.querySelector("#btRmM"):n).focus({preventScroll:true})},60);
   }
   function rmPay(){
     const x=rmX,pl=x&&planOfSub(x);if(!pl)return;
-    const er=rm.querySelector("#btRmR"),g=rm.querySelector("#btRmG"),nm=rm.querySelector("#btRmN").value.trim(),ph=rm.querySelector("#btRmM").value.replace(/[\s-]/g,"");
+    const er=rm.querySelector("#btRmR"),g=rm.querySelector("#btRmG"),nm=rm.querySelector("#btRmN").value.trim(),ph=rm.querySelector("#btRmM").value.replace(/[\s\-()]/g,"");
     if(nm.length<2){er.textContent="Please enter your name.";return}
-    if(!BDPH.test(ph)){er.textContent="Enter a valid mobile number, e.g. 01712345678.";return}
+    if(!BDPH.test(ph)){er.textContent="Enter a valid mobile number: 01712345678, or with country code, e.g. +358442354993.";return}
     er.textContent="";g.disabled=true;g.textContent="Opening secure payment…";
     fetch("/api/checkout",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+token()},body:JSON.stringify({renew:true,name:nm,phone:ph,items:[{name:pl.name,vr:pl.vr,v:pl.v,q:1}]})})
       .then(r=>r.json().catch(()=>({})).then(j=>{

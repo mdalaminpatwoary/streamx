@@ -4,7 +4,7 @@
 (function () {
   const m = $("#paymodal"), f = $("#payForm"), err = $("#payErr"), go = $("#payGo");
   const KEY = "sx_buyer";
-  const PHONE = /^(?:\+?88)?01[3-9]\d{8}$/, EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+  const PHONE = /^(?:(?:\+?88)?01[3-9]\d{8}|\+[1-9]\d{7,14})$/, EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
   try { const q = new URLSearchParams(location.search).get("coupon"); if (q) sessionStorage.setItem("sx_cp", q.toUpperCase().replace(/[^A-Z0-9_-]/g, "").slice(0, 24)); } catch (e) {}
   let cp = null; // applied coupon {code, discount, label}; the server re-checks it when you pay
   const total = () => Math.max(1, cart.reduce((s, c) => s + c.q * c.p, 0) - (cp ? cp.discount : 0)) + tip;
@@ -60,9 +60,9 @@ function sessEmail(){try{var t=localStorage.getItem("sx_session");if(!t)return "
 
   f.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const note = $("#payNote").value.trim(), name = $("#payName").value.trim(), phone = $("#payPhone").value.replace(/[\s-]/g, ""), se = sessEmail(), email = se || $("#payEmail").value.trim();
+    const note = $("#payNote").value.trim(), name = $("#payName").value.trim(), phone = $("#payPhone").value.replace(/[\s\-()]/g, ""), se = sessEmail(), email = se || $("#payEmail").value.trim();
     if (name.length < 2) return (err.textContent = "Please enter your name.");
-    if (!PHONE.test(phone)) return (err.textContent = "Enter a valid mobile number, e.g. 01712345678.");
+    if (!PHONE.test(phone)) return (err.textContent = "Enter a valid mobile number: 01712345678, or with country code, e.g. +358442354993.");
     if (!EMAIL.test(email)) return (err.textContent = "Enter a valid email address.");
     err.textContent = ""; go.disabled = true; go.classList.add("busy"); go.textContent = "Opening secure payment…";
     try { localStorage.setItem(KEY, JSON.stringify({ n: name, p: phone, e: se ? "" : email })); } catch (x) {}
