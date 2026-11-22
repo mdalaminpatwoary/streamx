@@ -1,7 +1,7 @@
 /* Owner-only API for the /admin/ page. Every call needs the x-admin-key header (env ADMIN_KEY).
    GET    /api/admin?q=<text>       list / search subscriptions
    POST   /api/admin                add one  {email,name,phone,service,plan,months,start?,notes?}
-   PATCH  /api/admin?id=<n>         change expiry {end_date} and/or login details {acct_email, acct_pass, acct_otp, acct_profile, acct_pin}
+   PATCH  /api/admin?id=<n>         change any purchase detail {name,email,phone,service,plan,months,start_date,end_date,price,pay_method,txn_id,channel,notes,source} and/or login details {acct_email, acct_pass, acct_otp, acct_profile, acct_pin}
    DELETE /api/admin?id=<n>         remove one
    POST   /api/admin?sheetsync=1    send all hand-added purchases to the Google Sheet
    GET    /api/admin?view=orders    list paid orders (newest first) with delivery status
@@ -250,6 +250,22 @@ module.exports = async (req, res) => {
     if (req.method === "PATCH") {
       const upd = {};
       if (body.end_date !== undefined) { if (!validDate(body.end_date)) return res.status(400).json({ error: "Expiry date is not valid." }); upd.end_date = body.end_date; }
+      // Purchase details: the admin can correct anything about the purchase itself.
+      const has = (k) => body[k] !== undefined;
+      if (has("name")) upd.name = clean(body.name, 60);
+      if (has("email")) { const em = normEmail(body.email); if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em) || em.length > 120) return res.status(400).json({ error: "Enter a valid email address." }); upd.email = em; }
+      if (has("phone")) { const raw = clean(body.phone, 25); upd.phone = raw ? cleanPhone(raw) || raw : ""; }
+      if (has("service")) { const v = clean(body.service, 80); if (!v) return res.status(400).json({ error: "Service cannot be empty." }); upd.service = v; }
+      if (has("plan")) { const v = clean(body.plan, 80); if (!v) return res.status(400).json({ error: "Plan cannot be empty." }); upd.plan = v; }
+      if (has("months")) { const m = parseInt(body.months, 10); if (!(m >= 1 && m <= 60)) return res.status(400).json({ error: "Months must be between 1 and 60." }); upd.months = m; }
+      if (has("start_date")) { if (!validDate(body.start_date)) return res.status(400).json({ error: "Start date is not valid." }); upd.start_date = body.start_date; }
+      if (has("price")) { const t = String(body.price).trim(); if (!t) upd.price = null; else { const n = Number(t.replace(/[^0-9.]/g, "")); if (!(n >= 0 && n < 10000000)) return res.status(400).json({ error: "Price is not valid." }); upd.price = Math.round(n * 100) / 100; } }
+      if (has("pay_method")) upd.pay_method = clean(body.pay_method, 30) || null;
+      if (has("txn_id")) upd.txn_id = clean(body.txn_id, 60) || null;
+      if (has("channel")) upd.channel = clean(body.channel, 30) || null;
+      if (has("notes")) upd.notes = clean(body.notes, 200) || null;
+      if (has("source")) { if (!["admin", "online"].includes(body.source)) return res.status(400).json({ error: "Source must be admin or online." }); upd.source = body.source; }
+      if (upd.start_date && upd.end_date && upd.end_date < upd.start_date) return res.status(400).json({ error: "The expiry date is before the start date." });
       const lg = access.toRow(body);
       let stamp = null;
       if (lg) {

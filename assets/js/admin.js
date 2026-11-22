@@ -111,7 +111,7 @@
       SUBS = d.rows;
       $("#rows").innerHTML = d.rows.map(function (s, i) {
         var left = days(today, s.end_date), c = left < 0 ? "#ef4444" : left <= 7 ? "#f59e0b" : "#22c55e";
-        return '<tr><td data-l="Customer"><div><b>' + esc(s.name || "") + "</b><br>" + esc(s.email) + "<br>" + esc(s.phone || "") + '</div></td><td data-l="Service"><div><b>' + esc(s.service) + "</b><br>" + esc(s.plan) + "<br><small>" + esc(s.source) + '</small></div></td><td data-l="Access"><div class="ad-accs">' + accSummary(s) + '</div></td><td data-l="Expires"><input class="ac-in" type="date" value="' + esc(s.end_date) + '" data-end="' + s.id + '" style="padding:6px 8px;width:150px"></td><td data-l="Left"><span class="ad-chip" style="color:' + c + '">' + (left < 0 ? "Expired" : left + " days") + '</span></td><td data-l=""><div class="ad-btns"><button class="ac-btn ac-sm" data-edit="' + i + '">Edit access</button><button class="ad-x" data-del="' + s.id + '">Delete</button></div></td></tr>';
+        return '<tr><td data-l="Customer"><div><b>' + esc(s.name || "") + "</b><br>" + esc(s.email) + "<br>" + esc(s.phone || "") + '</div></td><td data-l="Service"><div><b>' + esc(s.service) + "</b><br>" + esc(s.plan) + "<br><small>" + esc(s.source) + '</small></div></td><td data-l="Access"><div class="ad-accs">' + accSummary(s) + '</div></td><td data-l="Expires"><input class="ac-in" type="date" value="' + esc(s.end_date) + '" data-end="' + s.id + '" style="padding:6px 8px;width:150px"></td><td data-l="Left"><span class="ad-chip" style="color:' + c + '">' + (left < 0 ? "Expired" : left + " days") + '</span></td><td data-l=""><div class="ad-btns"><button class="ac-btn ac-sm" data-edit="' + i + '">Edit</button><button class="ad-x" data-del="' + s.id + '">Delete</button></div></td></tr>';
       }).join("");
       stats(); $("#cnt").textContent = d.rows.length + " shown (latest 300). Change a date and click away to save.";
     }).catch(function (e) { if (e.status === 401) { key = ""; try { sessionStorage.removeItem("sx_admin"); } catch (x) {} $("#panel").hidden = true; $("#gate").hidden = false; $("#gm").textContent = e.message; } else { $("#cnt").textContent = e.message; $("#gm").textContent = e.message; } });
@@ -321,18 +321,46 @@
       .catch(function (er) { m.className = "ac-msg"; m.textContent = er.message; });
   });
 
+  /* Edit dialog: purchase details + login access */
+  var PAYM = ["Cash", "bKash", "Nagad", "Rocket", "Upay", "Bank transfer", "Online (EPS)", "Other"], CHAN = ["WhatsApp", "Facebook", "Instagram", "Phone call", "Website", "Other"];
+  function opts(list, val) { var l = list.slice(); if (val && l.indexOf(val) < 0) l.unshift(val); return '<option value="">Not recorded</option>' + l.map(function (o) { return "<option" + (o === val ? " selected" : "") + ">" + esc(o) + "</option>"; }).join(""); }
+  function fld(label, inner, wide) { return "<div" + (wide ? ' style="grid-column:1/-1"' : "") + "><label>" + label + "</label>" + inner + "</div>"; }
+  function inp(k, v, extra) { return '<input class="ac-in" data-d="' + k + '" value="' + esc(v == null ? "" : v) + '" ' + (extra || "") + ">"; }
+  function detailsHTML(s) {
+    return '<div class="ad-sec" id="ddet"><h4 style="margin:0 0 10px">Purchase details</h4><div class="ad-grid ad-grid2">' +
+      fld("Customer name", inp("name", s.name, 'maxlength="60"')) + fld("Email", inp("email", s.email, 'type="email" maxlength="120"')) +
+      fld("Mobile", inp("phone", s.phone, 'maxlength="25" inputmode="tel"')) + fld("Source", '<select class="ac-in" data-d="source"><option value="admin"' + (s.source !== "online" ? " selected" : "") + '>Added by you (admin)</option><option value="online"' + (s.source === "online" ? " selected" : "") + ">Website order (online)</option></select>") +
+      fld("Service", inp("service", s.service, 'maxlength="80"')) + fld("Plan", inp("plan", s.plan, 'maxlength="80"')) +
+      fld("Months", inp("months", s.months, 'type="number" min="1" max="60"')) + fld("Start date", inp("start_date", s.start_date, 'type="date"')) +
+      fld("Expiry date", inp("end_date", s.end_date, 'type="date"')) + fld("Amount paid (৳)", inp("price", s.price == null ? "" : s.price, 'inputmode="decimal"')) +
+      fld("Paid with", '<select class="ac-in" data-d="pay_method">' + opts(PAYM, s.pay_method) + "</select>") + fld("Transaction ID", inp("txn_id", s.txn_id, 'maxlength="60"')) +
+      fld("Sold through", '<select class="ac-in" data-d="channel">' + opts(CHAN, s.channel) + "</select>") + fld("Notes", inp("notes", s.notes, 'maxlength="200"')) +
+      "</div>" + (s.order_ref ? '<small style="display:block;margin-top:8px;color:var(--mut)">Order reference: ' + esc(s.order_ref) + "</small>" : "") + "</div>";
+  }
+  function readDetails() {
+    var o = {}; [].forEach.call($("#dbody").querySelectorAll("[data-d]"), function (e) { o[e.dataset.d] = e.value.trim(); }); return o;
+  }
+  function detailsError(o) {
+    if (!o.email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(o.email)) return "Enter a valid email address.";
+    if (!o.service || !o.plan) return "Service and plan cannot be empty.";
+    var m = parseInt(o.months, 10); if (!(m >= 1 && m <= 60)) return "Months must be between 1 and 60.";
+    if (!o.start_date || !o.end_date) return "Start and expiry dates are required.";
+    if (o.end_date < o.start_date) return "The expiry date is before the start date.";
+    if (o.price && !(Number(o.price.replace(/[^0-9.]/g, "")) >= 0)) return "Amount paid is not valid.";
+    return "";
+  }
   /* Edit access dialog */
   var dlg = $("#dlg"), cur = null;
   $("#rows").addEventListener("click", function (e) {
     var b = e.target.closest("[data-edit]"), d = e.target.closest("[data-del]");
-    if (b) { cur = SUBS[+b.dataset.edit]; $("#dt").textContent = cur.service + " · " + cur.plan; $("#ds").textContent = cur.email; $("#dbody").innerHTML = accessHTML(cur.access, cur.service); syncAccess($("#dbody").firstChild); if (dlg.showModal) dlg.showModal(); else dlg.setAttribute("open", ""); }
+    if (b) { cur = SUBS[+b.dataset.edit]; $("#dt").textContent = cur.service + " · " + cur.plan; $("#ds").textContent = cur.email; $("#dbody").innerHTML = detailsHTML(cur) + accessHTML(cur.access, cur.service); syncAccess($("#ddet").nextSibling); if (dlg.showModal) dlg.showModal(); else dlg.setAttribute("open", ""); }
     if (d && confirm("Delete this subscription?")) api("?id=" + d.dataset.del, { method: "DELETE" }).then(function () { toast("Deleted."); list(); }).catch(function (er) { toast(er.message, 1); });
   });
   var closeDlg = function () { if (dlg.close) dlg.close(); else dlg.removeAttribute("open"); };
   $("#dx").addEventListener("click", closeDlg);
   $("#dsave").addEventListener("click", function () {
-    if (!cur) return; var er = accessError($("#dbody").firstChild); if (er) { toast(er, 1); return; } var b = this; b.disabled = true;
-    api("?id=" + cur.id, { method: "PATCH", body: JSON.stringify(readAccess($("#dbody").firstChild)) })
+    if (!cur) return; var acc = $("#ddet").nextSibling, det = readDetails(), er = detailsError(det) || accessError(acc); if (er) { toast(er, 1); return; } var b = this; b.disabled = true;
+    api("?id=" + cur.id, { method: "PATCH", body: JSON.stringify(Object.assign(det, readAccess(acc))) })
       .then(function () { toast("Saved."); closeDlg(); list(); }).catch(function (er) { toast(er.message, 1); }).then(function () { b.disabled = false; });
   });
   $("#rows").addEventListener("change", function (e) { var i = e.target.closest("[data-end]"); if (i && i.value) api("?id=" + i.dataset.end, { method: "PATCH", body: JSON.stringify({ end_date: i.value }) }).then(function () { toast("Date saved."); list(); }).catch(function (er) { toast(er.message, 1); }); });
