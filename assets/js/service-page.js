@@ -106,6 +106,23 @@
   }
 
   /* 6. Review form -> WhatsApp */
+  /* Reviews of this service: from the admin-managed list, filled in the browser */
+  (function () {
+    var box = $("#spRevs"); if (!box) return;
+    var svc = box.dataset.svc, sec = $("#reviews"), sub = sec && sec.querySelector(".sp-sub");
+    var esc = function (t) { return String(t == null ? "" : t).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
+    fetch("/api/catalog?a=reviews").then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
+      if (!d || !d.list) return;
+      var l = d.list.filter(function (r) { return (r.services || []).indexOf(svc) > -1; });
+      if (!l.length) return;
+      var avg = (l.reduce(function (a, r) { return a + (r.s || 5); }, 0) / l.length).toFixed(1);
+      if (sub) sub.innerHTML = '<span class="sp-avg">' + avg + "</span> average from " + l.length + " review" + (l.length > 1 ? "s" : "") + " of " + esc(svc) + ".";
+      box.innerHTML = l.map(function (r) {
+        var ini = String(r.n).split(/\s+/).map(function (w) { return w[0]; }).join("").slice(0, 2).toUpperCase();
+        return '<figure class="sp-rev"><div class="sp-rst" aria-label="' + r.s + ' out of 5">' + "★★★★★".slice(0, r.s) + '</div><blockquote>' + esc(r.t) + '</blockquote><figcaption><span class="sp-av">' + esc(ini) + '</span><span><b>' + esc(r.n) + "</b><small>" + esc([r.role, r.loc].filter(Boolean).join(" · ")) + "</small></span></figcaption></figure>";
+      }).join("");
+    }).catch(function () {});
+  })();
   var f = $(".sp-rform");
   if (f) {
     var n = 5, pick = $(".sp-pick", f), btns = $$("button", pick);

@@ -1,9 +1,9 @@
-/* Sign in with Google / Microsoft / Apple (OpenID Connect, authorization-code flow). No extra dependencies.
-   GET  /api/oauth?a=config                 -> which providers are configured, e.g. {google:true,microsoft:false,apple:false}
+/* Sign in with Google / Microsoft (OpenID Connect, authorization-code flow). No extra dependencies.
+   GET  /api/oauth?a=config                 -> which providers are configured, e.g. {google:true,microsoft:false}
    GET  /api/oauth?a=start&p=<provider>     -> redirects to the provider
-   GET|POST /api/oauth?a=cb&p=<provider>    -> provider returns here (Apple uses POST); we read the VERIFIED email,
+   GET|POST /api/oauth?a=cb&p=<provider>    -> provider returns here ; we read the VERIFIED email,
                                                then send the browser to /account/#t=<short link token> (same flow as the email link).
-   Env: GOOGLE_CLIENT_ID/_SECRET, MS_CLIENT_ID/_SECRET, APPLE_CLIENT_ID (Services ID), APPLE_TEAM_ID, APPLE_KEY_ID, APPLE_PRIVATE_KEY. */
+   Env: GOOGLE_CLIENT_ID/_SECRET, MS_CLIENT_ID/_SECRET. */
 const crypto = require("crypto");
 const { secret, sign, verify } = require("./_auth");
 const db = require("./_db");
@@ -18,15 +18,7 @@ const P = {
   // "consumers" = personal Microsoft accounts only (Outlook, Hotmail, Live), whose email is verified by Microsoft.
   microsoft: { name: "Microsoft", auth: "https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize", token: "https://login.microsoftonline.com/consumers/oauth2/v2.0/token", scope: "openid email profile User.Read", iss: ["https://login.live.com", "https://sts.windows.net/9188040d-6c67-4c5b-b112-36a304b66dad/", "https://login.microsoftonline.com/9188040d-6c67-4c5b-b112-36a304b66dad/v2.0"],
     id: () => env("MS_CLIENT_ID"), sec: () => env("MS_CLIENT_SECRET") },
-  apple: { name: "Apple", auth: "https://appleid.apple.com/auth/authorize", token: "https://appleid.apple.com/auth/token", scope: "email", iss: ["https://appleid.apple.com"], post: true,
-    id: () => env("APPLE_CLIENT_ID"), sec: () => appleSecret() },
 };
-function appleSecret() {
-  const key = env("APPLE_PRIVATE_KEY").replace(/\\n/g, "\n"), now = Math.floor(Date.now() / 1000);
-  if (!key || !env("APPLE_TEAM_ID") || !env("APPLE_KEY_ID") || !env("APPLE_CLIENT_ID")) return "";
-  const h = b64({ alg: "ES256", kid: env("APPLE_KEY_ID") }), p = b64({ iss: env("APPLE_TEAM_ID"), iat: now, exp: now + 300, aud: "https://appleid.apple.com", sub: env("APPLE_CLIENT_ID") });
-  return h + "." + p + "." + crypto.sign("sha256", Buffer.from(h + "." + p), { key, dsaEncoding: "ieee-p1363" }).toString("base64url");
-}
 const ready = (k) => !!(P[k].id() && P[k].sec());
 const back = (res, hash) => { res.statusCode = 302; res.setHeader("Location", "/account/#" + hash); res.setHeader("Set-Cookie", "sx_oauth=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=None"); res.end(); };
 const fail = (res, msg) => back(res, "e=" + encodeURIComponent(msg));
@@ -50,7 +42,7 @@ module.exports = async (req, res) => {
   res.setHeader("Cache-Control", "no-store");
   const a = String((req.query && req.query.a) || ""), k = String((req.query && req.query.p) || "");
   try {
-    if (a === "config") return res.status(200).json({ google: ready("google"), microsoft: ready("microsoft"), apple: ready("apple"), enabled: !!secret() });
+    if (a === "config") return res.status(200).json({ google: ready("google"), microsoft: ready("microsoft"), enabled: !!secret() });
     if (!secret() || !P[k] || !ready(k)) return fail(res, "This sign-in option is not available yet.");
     const prov = P[k], redirect = site(req) + (k === "microsoft" ? "/auth/microsoft" : "/api/oauth?a=cb&p=" + k); // Azure rejects redirect URIs with a query string, so Microsoft uses a clean path (rewritten in vercel.json)
 

@@ -26,3 +26,16 @@
 .pay-wa{display:block;margin-top:8px;text-align:center}.pay-wa a{color:#fff;font-weight:700;text-decoration:underline}
 .pay-m textarea{resize:vertical;min-height:64px;line-height:1.5}.pay-m form>label{display:block;margin-top:14px}.pay-m .pay-row{margin-top:14px}.pay-m form>label.pay-wa-f{margin-top:14px}
 #payEmail.is-lock{opacity:.75;cursor:not-allowed}.pay-lock{display:block;margin-top:6px;font-size:13px;line-height:1.45;color:#b4bddb}
+
+/* Coupon code */
+.pay-cp { margin-bottom: 18px; }
+.pay-cprow { display: flex; gap: 10px; }
+.pay-cprow input { flex: 1; min-width: 0; text-transform: uppercase; letter-spacing: .08em; font-weight: 700; }
+.pay-cprow input[readonly] { opacity: .8; border-color: #34d399; }
+.pay-cprow button { flex: none; padding: 0 20px; border: 1px solid var(--line); border-radius: 12px; background: rgba(255,255,255,.07); color: #fff; font: 800 14px Manrope, sans-serif; cursor: pointer; transition: .25s; }
+.pay-cprow button:hover:not(:disabled) { background: rgba(255,91,77,.2); border-color: #ff5b4d; }
+.pay-cprow button.on { background: transparent; color: #c3cae3; }
+.pay-cprow button:disabled { opacity: .6; cursor: wait; }
+.pay-cpm { min-height: 18px; margin: 8px 0 0; font-size: 13px; color: #b4bddb; }
+.pay-cpm.ok { color: #6ee7b7; } .pay-cpm.bad { color: #ff8a7e; }
+.pay-sum .pay-disc, .pay-sum .pay-disc b { color: #6ee7b7; }

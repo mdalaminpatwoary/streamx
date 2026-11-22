@@ -112,3 +112,26 @@
 .ad-pill{display:inline-block;padding:3px 9px;border-radius:99px;font-size:11.5px;font-weight:800;background:rgba(255,255,255,.08);color:#c9d0e8}
 .ad-pill.on{background:rgba(34,197,94,.16);color:#6ee7a0}
 .ad-grid2+.ad-sw{margin-top:18px!important}
+
+/* Reviews tab + notice extras */
+.ad-chips{display:flex;flex-wrap:wrap;gap:8px;max-height:168px;overflow:auto;padding:2px}
+.ad-chip input{position:absolute;opacity:0;pointer-events:none}
+.ad-chip span{display:inline-block;padding:7px 12px;border:1px solid var(--line);border-radius:99px;font-size:13px;font-weight:600;color:#c9d0e8;cursor:pointer;transition:.2s}
+.ad-chip input:checked+span{background:rgba(255,91,77,.16);border-color:#ff5b4d;color:#fff}
+.ad-chip input:focus-visible+span{outline:2px solid #fff;outline-offset:2px}
+.ad-seg{display:inline-flex;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.ad-seg input{position:absolute;opacity:0}
+.ad-seg span{display:block;padding:9px 18px;font-size:14px;font-weight:700;color:#aab3d4;cursor:pointer;transition:.2s}
+.ad-seg input:checked+span{background:#ff5b4d;color:#fff}
+.ad-seg input:focus-visible+span{outline:2px solid #fff;outline-offset:-2px}
+#pfPrev{display:block;margin-top:10px;max-width:240px;max-height:200px;border-radius:12px;border:1px solid var(--line)}
+.ad-rl{display:grid;gap:10px;margin-top:18px}
+.ad-rr{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:start;padding:14px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.03)}
+.ad-rr p{margin:6px 0;color:#c9d0e8;font-size:14px;line-height:1.5}.ad-rr small{display:block;color:#8d95b5;margin-bottom:8px}
+.ad-av{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#ff5b4d,#8e2a5c);font-weight:800;font-size:14px}
+.ad-st{color:#f2c14e;letter-spacing:1px;font-size:13px}
+.ad-nk.k-price{background:rgba(96,165,250,.16);color:#9cc4ff}
+@media(max-width:560px){.ad-rr{grid-template-columns:auto 1fr}.ad-rr>button{grid-column:1/-1;justify-self:start}}
+.ad-code{font-size:17px;letter-spacing:.08em}.ad-cd{background:linear-gradient(135deg,#34d399,#0b6b4b)}
+.ad-cb{display:flex;flex-direction:column;gap:8px}
+@media(max-width:560px){.ad-cb{grid-column:1/-1;flex-direction:row}}

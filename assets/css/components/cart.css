@@ -649,3 +649,7 @@
   display: flex;
   animation: rise 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
+
+/* "Price on request" plans (Facebook services) */
+.pcard .amt.ask b { font-size: 26px; line-height: 1.1; letter-spacing: -.01em; }
+.pcard .actions a.btn { display: inline-flex; align-items: center; justify-content: center; text-decoration: none; flex: 1 1 100%; }

@@ -1,7 +1,7 @@
 /* Product catalog: categories, durations, plan types, prices and combo packs. */
 // ===== PRODUCT CATALOG (edit names, text and prices here) =====
 // Popular products come first (the first 8 show on the page, 4 on phone).
-const CATS=["Streaming","Music & Audio","AI Tools","Productivity","Learning","Gift Cards","Virtual Cards","VPN","18+"];
+const CATS=["Streaming","Music & Audio","AI Tools","Productivity","Learning","Gift Cards","Virtual Cards","Facebook","VPN","18+"];
 const DUR={1:"1 Month",3:"3 Months",6:"6 Months",12:"1 Year",18:"18 Months",36:"3 Years"},UNIT={1:"month",3:"3 months",6:"6 months",12:"year",18:"18 months",36:"3 years"};
 // V(plan type, badge, one-line summary, [features], [notes], {months: price in BDT})
 const V=(n,tag,line,f,notes,pr)=>({n,tag,line,f,notes,plans:Object.entries(pr).map(([m,p])=>({m:+m,v:DUR[m],p}))});
@@ -11,6 +11,7 @@ const GIFT={min:5,max:500,step:5,rate:()=>130,ok:a=>Number.isInteger(a)&&a>=5&&a
 const GC=a=>({m:1,v:"$"+a,p:a*GIFT.rate(a),u:"card",gc:a});
 const PRIVF=["Profile name and PIN protected","Customizable profile","Instant delivery"];
 const SH={1:180,6:800,12:1200},PR={1:250,6:1100,12:1900};
+const ASKN="Price on request, we reply on WhatsApp";
 const GEMF=["5 TB Google storage","Activated on your own email"];
 // 18+ services that also get their own (age-gated, not search-indexed) page under /services/.
 const ADULT_PAGES=["Ullu","ALTT","Atrangii"];
@@ -125,10 +126,24 @@ const CATALOG=[
  V("Standard","","An adults-only streaming service.",["Single-device access","Instant delivery"],[ADULT],{1:120,6:500,12:800})]],
 ["FapHouse","18+","#374151","An adults-only (18+) service with a premium plan.",[
  V("Premium","","The premium plan of an adults-only service.",["Premium plan","Single-device access","Instant delivery"],[ADULT],{1:250,6:1000,12:1500})]],
+["Facebook Services","Facebook","#1877f2","Grow your Facebook profile, page, group or videos: followers, views, shares, comments, reactions and more. Price on request.",[
+  (()=>{const v=V("Followers · BD, Global or Mix","On request","Grow your Facebook followers with a Bangladesh, Global or Mixed audience.",["Choose Bangladesh, Global or Mix","Works on profiles and pages","Tell us your link and quantity"],[ASKN],{1:0});v.plans=[{m:1,v:"Custom order",p:0,ask:1}];return v})(),
+  (()=>{const v=V("Reels Views","On request","More views on your Facebook Reels.",["Works on public Reels","Tell us your Reel link and quantity"],[ASKN],{1:0});v.plans=[{m:1,v:"Custom order",p:0,ask:1}];return v})(),
+  (()=>{const v=V("Post Share","On request","More shares on your Facebook post.",["Works on public posts","Tell us your post link and quantity"],[ASKN],{1:0});v.plans=[{m:1,v:"Custom order",p:0,ask:1}];return v})(),
+  (()=>{const v=V("Star Gift","On request","Facebook Stars sent to your live or post.",["For creators and streamers","Tell us your link and quantity"],[ASKN],{1:0});v.plans=[{m:1,v:"Custom order",p:0,ask:1}];return v})(),
+  (()=>{const v=V("Comments","On request","Comments on your Facebook post or Reel.",["Works on public posts","Tell us your link and the comment style"],[ASKN],{1:0});v.plans=[{m:1,v:"Custom order",p:0,ask:1}];return v})(),
+  (()=>{const v=V("Page Comments","On request","Comments on your Facebook page content.",["Works on page posts","Tell us your page link and quantity"],[ASKN],{1:0});v.plans=[{m:1,v:"Custom order",p:0,ask:1}];return v})(),
+  (()=>{const v=V("Group Members","On request","Grow your Facebook group with new members.",["Works on public groups","Tell us your group link and quantity"],[ASKN],{1:0});v.plans=[{m:1,v:"Custom order",p:0,ask:1}];return v})(),
+  (()=>{const v=V("Reactions","On request","Likes and reactions on your Facebook post.",["Choose the reaction type","Tell us your post link and quantity"],[ASKN],{1:0});v.plans=[{m:1,v:"Custom order",p:0,ask:1}];return v})(),
+  (()=>{const v=V("Watch Time","On request","More watch time for your Facebook videos.",["For monetization goals","Tell us your video link and hours needed"],[ASKN],{1:0});v.plans=[{m:1,v:"Custom order",p:0,ask:1}];return v})(),
+  (()=>{const v=V("Live Stream Views","On request","More viewers on your Facebook live stream.",["Works on public live streams","Tell us your live link and viewer count"],[ASKN],{1:0});v.plans=[{m:1,v:"Custom order",p:0,ask:1}];return v})()
+]],
+["Facebook BIN","Facebook","#1877f2","A Facebook Business Identification Number code, with no 15% government VAT. Lifetime validity, code delivered to you.",[
+ (()=>{const v=V("BIN Code","Code delivered","A Facebook BIN code with lifetime validity. The code expires after activation.",["No 15% government VAT","Lifetime validity","Code provided after payment"],["Expires after activation"],{1:300});v.plans=[{m:1,v:"BIN Code",p:300,once:1}];return v})()]],
 ["Entertainment Combo","Bundle","#E50914","Netflix + Prime Video",[V("Packs","","",[],[],{1:230})]]
 ];
 const PRODUCTS=CATALOG.map(([name,cat,color,desc,variants])=>({name,cat,color,desc,icon:name[0],variants}));
-const entry=p=>p.variants.flatMap(v=>v.plans).reduce((a,b)=>b.p<a.p?b:a); // starting (cheapest) plan
+const entry=p=>{const a=p.variants.flatMap(v=>v.plans),b=a.filter(x=>x.p>0);return (b.length?b:a).reduce((x,y)=>y.p<x.p?y:x)}; // starting (cheapest) plan
 // Entertainment Combo packs: shown when a customer opens the combo (monthly price, "old" = regular price)
 const PACKS=[
  {n:"Pack 1",sub:"Best value. Shared Netflix profile, for phone and web.",p:230,old:280,tag:"Most affordable",f:["Netflix: shared profile, no customization","Prime Video: private PIN-protected profile","Watch on mobile, tablet and web (no TV)","Netflix login by secure OTP","Instant delivery"]},
@@ -136,4 +151,4 @@ const PACKS=[
  {n:"Pack 3",sub:"Netflix on your TV, with multi-device access.",p:400,old:450,tag:"Best for TV",hot:true,f:["Netflix: single slot, PIN-protected, customizable","Prime Video: private PIN-protected profile","Watch on mobile, tablet, web and TV","Netflix login by password","Delivery depends on stock availability"]},
  {n:"Pack 4",sub:"Private profile on TV, with instant delivery and priority service.",p:450,old:500,tag:"Premium",f:["Netflix: Signature private profile, customizable","Prime Video: private PIN-protected profile","Watch on mobile, tablet, web and TV","Netflix login by secure OTP","Instant delivery and priority service"]}
 ];
-PRODUCTS.forEach(p=>{if(p.name==="Apple Gift Card"||p.name==="iTunes Gift Card")p.gift=true;if(p.name==="Entertainment Combo"){p.packs=PACKS;p.variants[0].plans=PACKS.map(k=>({m:1,v:k.n,p:k.p}))}});
+PRODUCTS.forEach(p=>{if(p.variants.every(v=>v.plans.every(x=>x.ask)))p.ask=true;if(p.name==="Apple Gift Card"||p.name==="iTunes Gift Card")p.gift=true;if(p.name==="Entertainment Combo"){p.packs=PACKS;p.variants[0].plans=PACKS.map(k=>({m:1,v:k.n,p:k.p}))}});

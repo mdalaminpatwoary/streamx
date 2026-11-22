@@ -809,3 +809,4 @@
   animation: rise 0.8s calc(var(--n) * 90ms + 250ms)
     cubic-bezier(0.16, 1, 0.3, 1) backwards;
 }
+#pop[hidden], .rwall[hidden] { display: none; }

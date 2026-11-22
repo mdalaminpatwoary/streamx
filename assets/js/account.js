@@ -29,7 +29,7 @@
     var pl = vr && vr.plans.filter(function (x) { return x.m === s.months; })[0];
     return pl ? { name: p.name, vr: label || undefined, v: pl.v, price: pl.p } : null;
   }
-  var NM = { google: "Google", microsoft: "Microsoft", apple: "Apple" };
+  var NM = { google: "Google", microsoft: "Microsoft" };
   var DATA = null, taka = function (n) { return "৳" + n.toLocaleString("en-US"); };
   var LG = typeof LOGOS !== "undefined" ? LOGOS : {}, LO = typeof LOGO_OF !== "undefined" ? LOGO_OF : {};
   function tile(s) {
@@ -482,10 +482,9 @@
   var ICO = {
     google: '<svg viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.9 6.1C12.4 13.6 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.6 5.9c4.5-4.1 7-10.2 7-17.6z"/><path fill="#FBBC05" d="M10.5 28.7a14.5 14.5 0 0 1 0-9.4l-7.9-6.1a24 24 0 0 0 0 21.6l7.9-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.6-5.9c-2.1 1.4-4.9 2.3-8.3 2.3-6.3 0-11.6-4.1-13.5-9.8l-7.9 6.1C6.5 42.6 14.6 48 24 48z"/></svg>',
     microsoft: '<svg viewBox="0 0 24 24"><path fill="#F25022" d="M2 2h9.5v9.5H2z"/><path fill="#7FBA00" d="M12.5 2H22v9.5h-9.5z"/><path fill="#00A4EF" d="M2 12.5h9.5V22H2z"/><path fill="#FFB900" d="M12.5 12.5H22V22h-9.5z"/></svg>',
-    apple: '<svg viewBox="0 0 24 24" fill="#fff"><path d="M16.4 12.6c0-2.4 2-3.5 2.1-3.6-1.1-1.7-2.9-1.9-3.5-1.9-1.5-.2-2.9.9-3.7.9-.8 0-1.9-.9-3.2-.8-1.6 0-3.1.9-4 2.4-1.7 3-.4 7.4 1.2 9.8.8 1.2 1.8 2.5 3 2.4 1.2 0 1.7-.8 3.1-.8 1.5 0 1.9.8 3.200.8 1.300 0 2.100-1.200 2.900-2.400.9-1.400 1.300-2.700 1.300-2.800 0 0-2.400-.9-2.400-3.800zM14 5.400c.7-.8 1.100-1.900 1-3-1 0-2.100.7-2.800 1.500-.6.700-1.200 1.800-1 2.900 1.100.1 2.100-.5 2.800-1.400z"/></svg>'
   };
   fetch("/api/oauth?a=config").then(function (r) { return r.json(); }).then(function (c) {
-    var on = ["google", "microsoft", "apple"].filter(function (k) { return c[k]; });
+    var on = ["google", "microsoft"].filter(function (k) { return c[k]; });
     if (!on.length) return;
     $("#soc").innerHTML = on.map(function (k) { return '<a class="ac-sb" href="/api/oauth?a=start&p=' + k + '">' + ICO[k] + "Continue with " + NM[k] + "</a>"; }).join("") + '<div class="ac-or">or use email</div>';
     $("#soc").hidden = false;

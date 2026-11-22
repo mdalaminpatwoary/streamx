@@ -92,7 +92,7 @@ function priceCart(items) {
       if (a && _gift.ok(a)) pl = { v: "$" + a, p: a * _gift.rate(a) };
     }
     const q = Math.floor(Number(it.q));
-    if (!pl || !(q >= 1 && q <= 20)) throw new Error("An item in your cart is no longer available. Please re-add it.");
+    if (!pl || !(pl.p > 0) || !(q >= 1 && q <= 20)) throw new Error("An item in your cart is no longer available. Please re-add it.");
     return { name: p.name, plan: (p.variants.length > 1 ? vr.n + " · " : "") + pl.v, price: pl.p, q, months: p.gift ? null : pl.m || null };
   });
 }

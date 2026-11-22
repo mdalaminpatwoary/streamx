@@ -2,6 +2,7 @@
    Creates an EPS payment session for the cart and returns the EPS payment page link. */
 const { config, xhash, epsFetch, getToken, priceCart, clean, stage } = require("./_eps");
 const db = require("./_db");
+const coupons = require("./_coupon");
 const auth = require("./_auth");
 
 const PHONE = /^(?:\+?88)?01[3-9]\d{8}$/;
@@ -16,15 +17,22 @@ module.exports = async (req, res) => {
     const sess = auth.verify(auth.bearer(req), "sess");
     if (b.renew && !sess) return res.status(401).json({ error: "Please sign in again." });
     const name = clean(b.name, 60), email = sess ? sess.e : clean(b.email, 100), phone = clean(b.phone, 20).replace(/[\s-]/g, "");
-    if (name.length < 2) return res.status(400).json({ error: "Please enter your name." });
-    if (!EMAIL.test(email)) return res.status(400).json({ error: "Please enter a valid email address." });
-    if (!PHONE.test(phone)) return res.status(400).json({ error: "Please enter a valid Bangladeshi mobile number (01XXXXXXXXX)." });
+    if (!b.check && name.length < 2) return res.status(400).json({ error: "Please enter your name." });
+    if (!b.check && !EMAIL.test(email)) return res.status(400).json({ error: "Please enter a valid email address." });
+    if (!b.check && !PHONE.test(phone)) return res.status(400).json({ error: "Please enter a valid Bangladeshi mobile number (01XXXXXXXXX)." });
 
     const lines = priceCart(b.items);
+    // Coupon: re-checked here every time. {check:true} only previews the discount (no order is created).
+    let cp = null;
+    if (b.coupon) {
+      try { cp = await coupons.apply(b.coupon, lines, email); }
+      catch (e) { if (e instanceof coupons.CouponError) return res.status(400).json({ error: e.message, coupon: true }); throw e; }
+    }
+    if (b.check) { if (!cp) return res.status(400).json({ error: "Enter a coupon code.", coupon: true }); const st = lines.reduce((s, l) => s + l.price * l.q, 0); return res.status(200).json({ coupon: cp.code, label: cp.label, discount: cp.discount, subtotal: st, total: st - cp.discount }); }
     const tip = Math.max(0, Math.min(5000, Math.floor(Number(b.tip) || 0)));
     const comment = clean(b.comment, 300);
     const subtotal = lines.reduce((s, l) => s + l.price * l.q, 0);
-    const total = subtotal + tip;
+    const discount = cp ? cp.discount : 0, total = subtotal - discount + tip;
     if (!(total >= 1)) return res.status(400).json({ error: "Invalid total." });
 
     const c = config();
@@ -32,13 +40,17 @@ module.exports = async (req, res) => {
     const stamp = Date.now().toString() + Math.floor(1000 + Math.random() * 9000);
     const mtid = stamp; // unique, 10+ digits
     const ret = (s) => `${site}/payment-result.html?s=${s}&t=${mtid}`;
-    const summary = lines.map((l) => `${l.name} (${l.plan}) x${l.q}`).join("; ");
+    const summary = lines.map((l) => `${l.name} (${l.plan}) x${l.q}`).join("; ") + (cp ? ` | Coupon ${cp.code} -৳${cp.discount}` : "");
     const ip = clean((req.headers["x-forwarded-for"] || "").split(",")[0], 45) || "0.0.0.0";
 
     // Remember what was ordered so a confirmed payment can create the customer's subscription records. Never blocks checkout.
     if (db.enabled()) {
-      try { await db.rest("POST", "orders?on_conflict=mtid", [{ mtid, email: email.toLowerCase(), name, phone, lines: lines.map((l) => ({ name: l.name, plan: l.plan, months: l.months, q: l.q, price: l.price })) }], "resolution=ignore-duplicates"); }
-      catch (e) { console.error("order save failed", e && e.message); }
+      const row = { mtid, email: email.toLowerCase(), name, phone, lines: lines.map((l) => ({ name: l.name, plan: l.plan, months: l.months, q: l.q, price: l.price })) };
+      try { await db.rest("POST", "orders?on_conflict=mtid", [cp ? { ...row, coupon: cp.code, discount: cp.discount } : row], "resolution=ignore-duplicates"); }
+      catch (e) {
+        console.error("order save failed", e && e.message);
+        if (cp) { try { await db.rest("POST", "orders?on_conflict=mtid", [row], "resolution=ignore-duplicates"); } catch (e2) { console.error("order save retry failed", e2 && e2.message); } }
+      }
     }
 
     const token = await getToken(c);
@@ -75,7 +87,7 @@ module.exports = async (req, res) => {
       valueA: comment,
       valueB: tip ? "Tip " + tip : "",
       valueC: summary.slice(0, 250),
-      valueD: "",
+      valueD: cp ? "Coupon " + cp.code + " -" + cp.discount : "",
       shippingMethod: "NO",
       noOfItem: String(lines.reduce((s, l) => s + l.q, 0)),
       productName: clean(lines.map((l) => l.name).join(", "), 100),

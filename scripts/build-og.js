@@ -23,7 +23,7 @@ p{margin-top:20px;font-size:34px;color:#c4cbe3;font-weight:600}
 .pill{padding:12px 26px;border-radius:99px;background:linear-gradient(90deg,#ed3124,#ff4f3f);color:#fff;font-weight:800}
 </style><div class="bg"></div><div class="grid"></div><div class="in">
 <div class="top"><img src="${logoBrand}">StreamX</div>
-<div class="mid">${home ? "" : tile(it)}<div><h1>${home ? "Premium subscriptions,<br><span>fairly priced.</span>" : esc(it.name) + "<br><span>in Bangladesh</span>"}</h1><p>${home ? "Netflix, Spotify, ChatGPT and more. Pay in BDT." : "From ৳" + it.from.toLocaleString("en-US") + " · Fixed BDT prices"}</p></div></div>
+<div class="mid">${home ? "" : tile(it)}<div><h1>${home ? "Premium subscriptions,<br><span>fairly priced.</span>" : esc(it.name) + "<br><span>in Bangladesh</span>"}</h1><p>${home ? "Netflix, Spotify, ChatGPT and more. Pay in BDT." : (it.from ? "From ৳" + it.from.toLocaleString("en-US") + " · Fixed BDT prices" : "Price on WhatsApp")}</p></div></div>
 <div class="bot"><span>streamx.bd</span><span class="pill">bKash · Nagad · Rocket · Card</span></div></div>`;
 (async () => {
   const b = await chromium.launch(), pg = await b.newPage({ viewport: { width: 1200, height: 630 } });

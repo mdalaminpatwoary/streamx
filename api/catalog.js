@@ -8,6 +8,7 @@ const API = "https://api.themoviedb.org/3";
 const HOUR = 3600 * 1000;
 
 const { mapProviders } = require("./_providers");
+const db = require("./_db");
 const PROV_ID = { netflix: 8, "prime-video": 9, "amazon-prime-video": 9, disneyplus: 337, hulu: 15, "hbo-max": 1899, crunchyroll: 283, paramountplus: 531, "apple-tv": 350, peacock: 386, jiohotstar: 122, zee5: 232, sonyliv: 237, viki: 344, mubi: 11 };
 const cache = new Map(); // key -> { at, body }
 const pvCache = new Map(); // "k:id" -> { at, v }
@@ -216,6 +217,32 @@ module.exports = async (req, res) => {
   try {
     if (req.method !== "GET") return res.status(405).json({ error: "Method not allowed" });
     const k = req.query.k === "tv" ? "tv" : "movie";
+    // Reviews (managed in Admin): public list, and the screenshot of one review's original
+    if (req.query.a === "reviews") {
+      if (!db.enabled()) return res.status(503).json({ error: "off" });
+      const rows = (await db.rest("GET", "reviews?select=id,name,role,company,loc,services,rating,body,photo,proof_kind,proof_url,has_img,popular,created_at&order=created_at.desc&limit=100")) || [];
+      res.setHeader("Cache-Control", "public, s-maxage=60, stale-while-revalidate=600");
+      return res.status(200).json({ list: rows.map((r) => ({ id: r.id, n: r.name, role: r.role, company: r.company, loc: r.loc, services: r.services || [], s: r.rating, t: r.body, photo: r.photo, pk: r.proof_kind === "image" && !r.has_img ? "" : r.proof_kind, pu: r.proof_kind === "link" ? r.proof_url : "", popular: !!r.popular })) });
+    }
+    if (req.query.a === "rvimg") {
+      const id = parseInt(req.query.id, 10);
+      if (!(id > 0) || !db.enabled()) return res.status(404).end();
+      const row = ((await db.rest("GET", `reviews?id=eq.${id}&select=proof_img,proof_kind`)) || [])[0];
+      const m = row && row.proof_kind === "image" && /^data:(image\/(?:jpeg|png|webp));base64,(.+)$/.exec(row.proof_img || "");
+      if (!m) return res.status(404).end();
+      res.setHeader("Content-Type", m[1]); res.setHeader("Cache-Control", "public, s-maxage=86400, stale-while-revalidate=604800");
+      return res.status(200).send(Buffer.from(m[2], "base64"));
+    }
+    // Public notice board (/notices/)
+    if (req.query.a === "notices") {
+      if (!db.enabled()) return res.status(503).json({ error: "off" });
+      let rows;
+      try { rows = await db.rest("GET", "notices?select=id,title,message,kind,pinned,link,link_label,created_at,expires_at&order=created_at.desc&limit=100"); }
+      catch (e) { rows = await db.rest("GET", "notices?select=id,title,message,kind,created_at,expires_at&order=created_at.desc&limit=100"); }
+      const now = Date.now();
+      res.setHeader("Cache-Control", "public, s-maxage=60, stale-while-revalidate=600");
+      return res.status(200).json({ list: (rows || []).filter((n) => !n.expires_at || Date.parse(n.expires_at) > now).map((n) => ({ id: n.id, t: n.title, m: n.message, k: n.kind, pin: !!n.pinned, l: n.link || "", ll: n.link_label || "", at: n.created_at })) });
+    }
     if (req.query.a === "pv") {
       const ids = String(req.query.ids || "").split(",").map((x) => x.trim()).filter((x) => /^\d{1,9}$/.test(x)).slice(0, 12);
       const out = {};

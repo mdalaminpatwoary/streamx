@@ -104,3 +104,19 @@
 .tp-hubl{display:inline-flex;align-items:center;gap:8px;color:#ff8a7e;font:800 14px Manrope,sans-serif;text-decoration:none;transition:color .2s,gap .2s}
 .tp-hubl svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;transition:transform .25s}
 .tp-hubl:hover{color:#fff}.tp-hubl:hover svg{transform:translateX(4px)}
+
+/* Home: one horizontal, swipeable row (the full /top/ page keeps the grid) */
+.tp-rail{position:relative}
+#toplist:not([data-mode="page"]) .tp-grid{display:flex;gap:6px 22px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;scroll-padding-left:4px;padding:6px 4px 22px;margin:0 -4px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+#toplist:not([data-mode="page"]) .tp-grid::-webkit-scrollbar{display:none}
+#toplist:not([data-mode="page"]) .tp-grid>.tp-card{flex:0 0 clamp(168px,17vw,214px);scroll-snap-align:start}
+#toplist:not([data-mode="page"]) .tp-grid>.tp-msg,#toplist:not([data-mode="page"]) .tp-grid>.tp-sk{flex:1 0 100%}
+#toplist:not([data-mode="page"]) .tp-sk{display:flex;gap:22px}#toplist:not([data-mode="page"]) .tp-sk i{flex:0 0 clamp(168px,17vw,214px)}
+.tp-nav{position:absolute;top:34%;z-index:3;width:44px;height:44px;border-radius:50%;border:1px solid rgba(255,255,255,.16);background:rgba(11,14,30,.82);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);color:#fff;display:grid;place-items:center;cursor:pointer;transition:background .25s,transform .25s,opacity .25s,border-color .25s}
+.tp-nav svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.tp-nav:hover{background:#ff5b4d;border-color:#ff5b4d;transform:scale(1.06)}
+.tp-nav.prev{left:-14px}.tp-nav.next{right:-14px}
+.tp-nav[hidden]{display:none}
+.tp-nav:focus-visible{outline:2px solid #fff;outline-offset:2px}
+@media(hover:none),(max-width:760px){.tp-nav{display:none}}
+@media(max-width:640px){#toplist:not([data-mode="page"]) .tp-grid{gap:6px 16px;margin:0 -16px;padding-left:16px;padding-right:16px;scroll-padding-left:16px}#toplist:not([data-mode="page"]) .tp-grid>.tp-card{flex-basis:44vw}}

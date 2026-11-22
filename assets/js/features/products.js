@@ -8,7 +8,7 @@ const openSvc=i=>{const p=PRODUCTS[i];if(NOPAGE.includes(p.name)){showPlans(i,tr
 const card=(p,i,d=0)=>`<div class="card pc" style="animation-delay:${d}ms" onclick="openSvc(${i})">
   <div class="ph">${ptile(p)}<span class="cat">${p.cat}</span></div>
   <h3>${p.name}</h3><p>${p.desc}</p>
-  <div class="pf"><div class="pr"><small>From</small> <b>${taka(entry(p).p)}</b> <small>/ ${entry(p).u||UNIT[entry(p).m]}</small></div><button class="go" aria-label="Open ${p.name} page">→</button></div></div>`;
+  <div class="pf"><div class="pr">${p.ask?"<b>Price on request</b>":`<small>From</small> <b>${taka(entry(p).p)}</b> <small>/ ${entry(p).u||(entry(p).once?"lifetime":UNIT[entry(p).m])}</small>`}</div><button class="go" aria-label="Open ${p.name} page">→</button></div></div>`;
 const bcard=(p,i)=>`<div class="card bd" onclick="openSvc(${i})">
   <div class="bl2"><span class="sv">Save up to ${taka(Math.max(...p.packs.map(k=>k.old-k.p)))} / month</span>
   <div class="stk">${PARTS[p.name].map(s=>tile(s,`<span class="lg" style="background:#1E2545">${s[0].toUpperCase()}</span>`)).join("")}</div>

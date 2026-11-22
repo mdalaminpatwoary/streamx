@@ -6,7 +6,7 @@
   const pr=$("#bwPrices");
   const lock='<span class="bw-lock"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Price locked</span>';
   const list=PRODUCTS.map((p,i)=>[p,i]).filter(x=>x[0].cat!=="18+");
-  pr.innerHTML=`<div class="vp" id="vp">${list.map(([p,i])=>{const f=entry(p),pk=!!p.packs;return `<button type="button" class="vp-i" data-i="${i}" tabindex="-1">${pk?ptile({name:"Netflix"}):ptile(p)}<span>${p.name}<small>${f.u||(pk?"/ month":"/ "+UNIT[f.m])}</small></span><b>${taka(f.p)}</b></button>`}).join("")}</div>${lock}`;
+  pr.innerHTML=`<div class="vp" id="vp">${list.map(([p,i])=>{const f=entry(p),pk=!!p.packs;return `<button type="button" class="vp-i" data-i="${i}" tabindex="-1">${pk?ptile({name:"Netflix"}):ptile(p)}<span>${p.name}<small>${f.u||(pk?"/ month":"/ "+UNIT[f.m])}</small></span><b>${p.ask?"Ask":taka(f.p)}</b></button>`}).join("")}</div>${lock}`;
   const vp=$("#vp"),its=[...vp.children],PITCH=60,H=250,TOT=its.length*PITCH;
   vp.style.height=H+"px";
   vp.addEventListener("click",e=>{const b=e.target.closest(".vp-i");if(b)showPlans(+b.dataset.i,true)});

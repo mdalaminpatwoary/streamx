@@ -6,6 +6,8 @@
    GET    /api/admin?view=orders    list paid orders (newest first) with delivery status
    PATCH  /api/admin?order=<mtid>   set delivery  {delivery:"pending"|"delivered"}
    GET    /api/admin?view=customers&q=<text>   list customers (profiles + purchase history)
+   GET/POST/PATCH/DELETE /api/admin?view=coupons | ?coupon=new | ?coupon=<id>   coupon codes
+   GET/POST/DELETE /api/admin?view=reviews | ?review=new | ?review=<id>   customer reviews
    PATCH  /api/admin?customer=<email>          change name / mobile / remove photo {name, phone, remove_photo, notify}. The email can never be changed. */
 const crypto = require("crypto");
 const db = require("./_db");
@@ -41,12 +43,15 @@ module.exports = async (req, res) => {
     if (req.query && (req.query.view === "notices" || req.query.notice)) {
       if (req.method === "GET") return res.status(200).json({ rows: await db.rest("GET", "notices?select=*&order=created_at.desc&limit=100") });
       if (req.method === "POST") {
-        const title = clean(body.title, 80), message = clean(body.message, 500);
-        const kind = ["info", "offer", "maintenance", "important"].includes(body.kind) ? body.kind : "info";
+        const title = clean(body.title, 90), message = clean(body.message, 700);
+        const kind = ["info", "price", "offer", "maintenance", "important"].includes(body.kind) ? body.kind : "info";
         if (!title) return res.status(400).json({ error: "Please add a title." });
         let exp = null;
         if (body.expires_at) { const d = new Date(body.expires_at); if (isNaN(d)) return res.status(400).json({ error: "Invalid expiry date." }); exp = d.toISOString(); }
-        const row = (await db.rest("POST", "notices", { title, message, kind, expires_at: exp }, "return=representation"))[0];
+        let link = clean(body.link, 300); if (link && !/^(https?:\/\/|\/)/i.test(link)) return res.status(400).json({ error: "The link must start with https:// or /" });
+        const base = { title, message, kind, expires_at: exp }, extra = { pinned: !!body.pinned, link, link_label: clean(body.link_label, 30) };
+        let row; try { row = (await db.rest("POST", "notices", { ...base, ...extra }, "return=representation"))[0]; }
+        catch (e) { if (!extra.pinned && !link) row = (await db.rest("POST", "notices", base, "return=representation"))[0]; else throw new Error("The notice board needs the latest SQL in Supabase (pinned and link)."); }
         return res.status(200).json({ row });
       }
       if (req.method === "DELETE") {
@@ -55,6 +60,53 @@ module.exports = async (req, res) => {
         await db.rest("DELETE", `notices?id=eq.${nid}`);
         return res.status(200).json({ ok: true });
       }
+    }
+    // Reviews: post and delete customer reviews (shown on the site; proof = screenshot or link to the original review)
+    if (req.query && (req.query.view === "reviews" || req.query.review)) {
+      const RV = "id,name,role,company,loc,services,rating,body,photo,proof_kind,proof_url,has_img,popular,created_at";
+      if (req.method === "GET") return res.status(200).json({ rows: await db.rest("GET", `reviews?select=${RV}&order=created_at.desc&limit=200`) });
+      if (req.method === "POST") {
+        const name = clean(body.name, 60), text = clean(body.body, 600);
+        if (!name || !text) return res.status(400).json({ error: "Please add the customer's name and the review text." });
+        const services = (Array.isArray(body.services) ? body.services : []).map((x) => clean(x, 60)).filter(Boolean).slice(0, 6);
+        const rating = Math.min(5, Math.max(1, parseInt(body.rating, 10) || 5));
+        let kind = ["image", "link"].includes(body.proof_kind) ? body.proof_kind : "", purl = "", pimg = "";
+        if (kind === "link") { purl = clean(body.proof_url, 400); if (!/^https?:\/\//i.test(purl)) return res.status(400).json({ error: "The review link must start with https://" }); }
+        if (kind === "image") { pimg = String(body.proof_img || ""); if (!/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(pimg) || pimg.length > 400000) return res.status(400).json({ error: "The screenshot must be a JPEG, PNG or WebP image under 300 KB." }); }
+        let photo = clean(body.photo, 400); if (photo && !/^https?:\/\//i.test(photo)) photo = "";
+        const row = { name, role: clean(body.role, 60), company: clean(body.company, 80), loc: clean(body.loc, 60), services, rating, body: text, photo, proof_kind: kind, proof_url: purl, proof_img: pimg, has_img: !!pimg, popular: !!body.popular };
+        const out = (await db.rest("POST", "reviews", row, "return=representation"))[0];
+        delete out.proof_img; return res.status(200).json({ row: out });
+      }
+      if (req.method === "DELETE") {
+        const rid = parseInt(req.query.review, 10);
+        if (!(rid > 0)) return res.status(400).json({ error: "Invalid review." });
+        await db.rest("DELETE", `reviews?id=eq.${rid}`);
+        return res.status(200).json({ ok: true });
+      }
+    }
+    // Coupon codes: create, pause and delete (the discount itself is always calculated at checkout, on the server)
+    if (req.query && (req.query.view === "coupons" || req.query.coupon)) {
+      if (req.method === "GET") {
+        const rows = (await db.rest("GET", "coupons?select=*&order=created_at.desc&limit=200")) || [];
+        let paid = []; try { paid = (await db.rest("GET", "orders?select=coupon,discount&coupon=not.is.null&paid=eq.true&limit=5000")) || []; } catch (e) { /* coupon columns not added yet */ }
+        return res.status(200).json({ rows: rows.map((r) => { const u = paid.filter((o) => o.coupon === r.code); return { ...r, used: u.length, saved: u.reduce((s, o) => s + (o.discount || 0), 0) }; }) });
+      }
+      if (req.method === "POST") {
+        const code = require("./_coupon").norm(body.code);
+        if (code.length < 3) return res.status(400).json({ error: "The code needs at least 3 letters or numbers." });
+        const kind = body.kind === "fixed" ? "fixed" : "percent", value = Math.floor(Number(body.value));
+        if (!(value >= 1) || (kind === "percent" && value > 100) || value > 100000) return res.status(400).json({ error: kind === "percent" ? "Percent must be between 1 and 100." : "Enter the taka amount off." });
+        const num = (v, max) => Math.max(0, Math.min(max, Math.floor(Number(v) || 0)));
+        let exp = null; if (body.expires_at) { const d = new Date(body.expires_at); if (isNaN(d)) return res.status(400).json({ error: "Invalid expiry date." }); exp = d.toISOString(); }
+        const row = { code, kind, value, max_discount: kind === "percent" ? num(body.max_discount, 100000) : 0, min_order: num(body.min_order, 1000000), max_uses: num(body.max_uses, 1000000), per_email: body.per_email !== false, services: (Array.isArray(body.services) ? body.services : []).map((x) => clean(x, 60)).filter(Boolean).slice(0, 40), expires_at: exp, active: true, note: clean(body.note, 120) };
+        try { const out = (await db.rest("POST", "coupons", row, "return=representation"))[0]; return res.status(200).json({ row: out }); }
+        catch (e) { if (/duplicate|unique|23505/i.test(e.message || "")) return res.status(409).json({ error: "That code already exists." }); throw e; }
+      }
+      const cid = parseInt(req.query.coupon, 10);
+      if (!(cid > 0)) return res.status(400).json({ error: "Invalid coupon." });
+      if (req.method === "PATCH") { await db.rest("PATCH", `coupons?id=eq.${cid}`, { active: !!body.active }); return res.status(200).json({ ok: true }); }
+      if (req.method === "DELETE") { await db.rest("DELETE", `coupons?id=eq.${cid}`); return res.status(200).json({ ok: true }); }
     }
     // Customers: look one up and correct their name or mobile number (never the email). The customer is told in My account and by email.
     if (req.query && (req.query.view === "customers" || req.query.customer)) {

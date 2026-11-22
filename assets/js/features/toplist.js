@@ -70,6 +70,15 @@
   function seg(id,attr){const el=document.getElementById(id);el.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;st[attr]=b.dataset[attr];st.n=FIRST;syncSegs();load(false);if(PAGE)try{history.replaceState(null,"",st.l==="soon"?"#soon":location.pathname)}catch(x){}})}
   function syncSegs(){[["tlKind","l"],["tlType","k"]].forEach(([id,a])=>{const el=document.getElementById(id);el.querySelectorAll("button").forEach(b=>b.classList.toggle("on",b.dataset[a]===st[a]));thumb(el)})}
   seg("tlKind","l");seg("tlType","k");
+  if(!PAGE){
+    const rail=document.createElement("div");rail.className="tp-rail";grid.parentNode.insertBefore(rail,grid);rail.appendChild(grid);
+    const mk=(c,d)=>{const b=document.createElement("button");b.type="button";b.className="tp-nav "+c;b.setAttribute("aria-label",c==="prev"?"Scroll left":"Scroll right");b.innerHTML=d;rail.appendChild(b);return b};
+    const pb=mk("prev",'<svg viewBox="0 0 24 24"><path d="m15 5-7 7 7 7"/></svg>'),nb=mk("next",'<svg viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></svg>');
+    const sync=()=>{pb.hidden=grid.scrollLeft<8;nb.hidden=grid.scrollLeft+grid.clientWidth>=grid.scrollWidth-8};
+    const go=d=>grid.scrollBy({left:d*Math.max(240,grid.clientWidth*.85),behavior:"smooth"});
+    pb.onclick=()=>go(-1);nb.onclick=()=>go(1);grid.addEventListener("scroll",sync,{passive:true});addEventListener("resize",sync);
+    new MutationObserver(()=>requestAnimationFrame(sync)).observe(grid,{childList:true});
+  }
   if(PAGE&&/soon/i.test(location.hash))st.l="soon";
   more.addEventListener("click",()=>{st.n+=STEP;paint()});
   if(qEl)qEl.addEventListener("input",()=>{st.q=qEl.value;st.n=FIRST;paint()});

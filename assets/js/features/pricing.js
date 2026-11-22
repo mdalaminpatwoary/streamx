@@ -44,11 +44,11 @@ function showPlans(i,scroll,v=0){
     const cards=vr.plans.map((pl,k)=>{
       const pct=base&&pl.m>1?Math.round((1-pl.p/(base.p*pl.m))*100):0,best=many&&!pl.u&&k===vr.plans.length-1;
       return `<div class="pcard${best?" best":""}" style="animation-delay:${k*90}ms"><button class="pshare" onclick="sharePlan(${i},${v},${k})" aria-label="Share ${label} ${pl.v}" title="Share this plan">${SHARE}</button>${best?'<span class="tag">Best value</span>':""}
-      <span class="dur">${pl.v}</span><div class="amt"><span class="cur">৳</span><b data-to="${pl.p}">0</b></div>
-      <small class="pm">${pl.u?"US region · redeem code":pl.m>1?taka(Math.round(pl.p/pl.m))+" / month":"per month"}</small>
-      <span class="save${pct>0||pl.u?"":" mute"}">${pl.u?`${taka(GIFT.rate(pl.gc))} per $1`:pct>0?`Save ${pct}%`:(pl.m===1?"Monthly plan":"Fixed-term plan")}</span>
-      <div class="actions"><button class="btn ghost" onclick="addToCart(${i},${v},${k})">${BAG} Add to Cart</button>
-      <button type="button" class="btn grad-bg" onclick="buyNow(${i},${v},${k})">Buy Now</button></div></div>`}).join("");
+      <span class="dur">${pl.v}</span>${pl.ask?`<div class="amt ask"><b>Ask for price</b></div>`:`<div class="amt"><span class="cur">৳</span><b data-to="${pl.p}">0</b></div>`}
+      <small class="pm">${pl.ask?"Quoted on WhatsApp":pl.once?"one-time · lifetime validity":pl.u?"US region · redeem code":pl.m>1?taka(Math.round(pl.p/pl.m))+" / month":"per month"}</small>
+      <span class="save${pct>0||pl.u?"":" mute"}">${pl.ask?"We reply within minutes":pl.once?"No 15% VAT":pl.u?`${taka(GIFT.rate(pl.gc))} per $1`:pct>0?`Save ${pct}%`:(pl.m===1?"Monthly plan":"Fixed-term plan")}</span>
+      ${pl.ask?`<div class="actions"><a class="btn grad-bg" target="_blank" rel="noopener" href="https://wa.me/${WA_NUMBER}?text=${encodeURIComponent("Hi StreamX! I want a price for Facebook: "+vr.n)}">Get price on WhatsApp</a></div></div>`:`<div class="actions"><button class="btn ghost" onclick="addToCart(${i},${v},${k})">${BAG} Add to Cart</button>
+      <button type="button" class="btn grad-bg" onclick="buyNow(${i},${v},${k})">Buy Now</button></div>`}</div>`}).join("");
     const custom=p.gift?`<div class="pcard gcc"><span class="dur">Any amount</span><div class="gc-step"><button type="button" id="gcMinus" aria-label="Decrease by $5">−</button><div class="gc-val"><span>$</span><b id="gcVal">25</b></div><button type="button" id="gcPlus" aria-label="Increase by $5">+</button></div><input id="gcAmt" class="gc-range" type="range" min="${GIFT.min}" max="${GIFT.max}" step="${GIFT.step}" value="25" aria-label="Gift card amount in US dollars"><div class="gc-ends"><span>$${GIFT.min}</span><span>$${GIFT.max}</span></div><div class="amt"><span class="cur">৳</span><b id="gcPrice">0</b></div><small class="pm" id="gcNote"></small><div class="actions"><button class="btn ghost" id="gcAdd" onclick="gcGo(false)">${BAG} Add to Cart</button><button type="button" class="btn grad-bg" id="gcBuy" onclick="gcGo(true)">Buy Now</button></div></div>`:"";
     T.innerHTML=tabs+`<div class="vbody">${info}<div class="vplans">${cards}${custom}</div></div>`;
     if(p.gift)gcInit();

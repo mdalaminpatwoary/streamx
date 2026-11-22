@@ -107,7 +107,7 @@
   }
   function list() {
     api("?q=" + encodeURIComponent($("#q").value.trim())).then(function (d) {
-      $("#gate").hidden = true; $("#panel").hidden = false; $("#lock").hidden = false; orders(); notices(); custs();
+      $("#gate").hidden = true; $("#panel").hidden = false; $("#lock").hidden = false; orders(); notices(); reviews(); coupons(); custs();
       SUBS = d.rows;
       $("#rows").innerHTML = d.rows.map(function (s, i) {
         var left = days(today, s.end_date), c = left < 0 ? "#ef4444" : left <= 7 ? "#f59e0b" : "#22c55e";
@@ -123,7 +123,7 @@
     $("#s1").textContent = p; $("#s2").textContent = dn; $("#s3").textContent = act; $("#s4").textContent = soon; $("#tc1").textContent = p; $("#tc2").textContent = SUBS.length;
   }
   /* ---------- Notice board ---------- */
-  var KIND = { info: "Update", offer: "Offer", maintenance: "Maintenance", important: "Important" };
+  var KIND = { info: "Update", price: "Price change", offer: "Offer", maintenance: "Maintenance", important: "Important" };
   function notices() {
     api("?view=notices").then(function (j) {
       var r = j.rows || [], now = Date.now(); $("#tc3").textContent = r.length;
@@ -138,13 +138,99 @@
     var f = e.target, m = $("#nm"), b = f.querySelector("button"); m.className = "ac-msg"; m.textContent = "";
     if (!f.title.value.trim()) { m.className = "ac-msg err"; m.textContent = "Please add a title."; return; }
     b.disabled = true;
-    api("?notice=new", { method: "POST", body: JSON.stringify({ title: f.title.value, message: f.message.value, kind: f.kind.value, expires_at: f.expires_at.value ? f.expires_at.value + "T23:59:59+06:00" : "" }) })
+    api("?notice=new", { method: "POST", body: JSON.stringify({ title: f.title.value, message: f.message.value, kind: f.kind.value, link: f.link.value, link_label: f.link_label.value, pinned: f.pinned.checked, expires_at: f.expires_at.value ? f.expires_at.value + "T23:59:59+06:00" : "" }) })
       .then(function () { f.reset(); toast("Notice posted"); notices(); })
       .catch(function (er) { m.className = "ac-msg err"; m.textContent = er.message; }).then(function () { b.disabled = false; });
   });
   document.addEventListener("click", function (e) {
     var d = e.target.closest("[data-ndel]"); if (!d || !confirm("Delete this notice?")) return;
     api("?notice=" + d.dataset.ndel, { method: "DELETE" }).then(function () { toast("Notice deleted"); notices(); }).catch(function (er) { toast(er.message, true); });
+  });
+  /* ---------- Reviews ---------- */
+  var RPROOF = "";
+  function stars(n) { return "★★★★★".slice(0, n) + "☆☆☆☆☆".slice(0, 5 - n); }
+  (function () {
+    var names = PROD.filter(function (p) { return p.cat !== "18+"; }).map(function (p) { return p.name; });
+    $("#rsv").innerHTML = names.map(function (n) { return '<label class="ad-chip"><input type="checkbox" value="' + esc(n) + '"><span>' + esc(n) + "</span></label>"; }).join("");
+  })();
+  function reviews() {
+    api("?view=reviews").then(function (j) {
+      var r = j.rows || []; $("#tc5").textContent = r.length;
+      $("#rlist").innerHTML = r.length ? r.map(function (v) {
+        var pf = v.proof_kind === "image" && v.has_img ? "Screenshot" : v.proof_kind === "link" ? "Link" : "";
+        return '<div class="ad-rr"><span class="ad-av">' + esc(String(v.name).split(" ").map(function (w) { return w[0]; }).join("").slice(0, 2).toUpperCase()) + '</span><div><b>' + esc(v.name) + '</b> <span class="ad-st">' + stars(v.rating) + "</span>" + '<p>' + esc(v.body) + "</p><small>" + esc([v.role, v.company, v.loc].filter(Boolean).join(" · ")) + ((v.services || []).length ? " · " + esc(v.services.join(", ")) : "") + "</small>" + (pf ? '<span class="ad-pill ok">Proof: ' + pf + "</span>" : '<span class="ad-pill warn">No proof</span>') + '</div><button type="button" class="ac-btn ac-ghost ac-sm" data-rdel="' + v.id + '">Delete</button></div>';
+      }).join("") : '<p class="ac-note">No reviews yet.</p>';
+    }).catch(function (e) { $("#rlist").innerHTML = '<p class="ac-msg err" style="display:block">' + esc(/reviews|DB|relation/i.test(e.message) ? "Reviews are not set up yet. Run the new SQL in Supabase first." : e.message) + "</p>"; });
+  }
+  document.addEventListener("change", function (e) {
+    if (e.target.name !== "proof") return; RPROOF = e.target.value; $("#pfImg").hidden = RPROOF !== "image"; $("#pfLink").hidden = RPROOF !== "link";
+  });
+  // Shrink a screenshot to a small JPEG so it stays light in the database
+  function shrink(file) {
+    return new Promise(function (ok, no) {
+      var u = URL.createObjectURL(file), im = new Image();
+      im.onload = function () {
+        var m = 900, k = Math.min(1, m / Math.max(im.width, im.height)), c = document.createElement("canvas"); c.width = Math.round(im.width * k); c.height = Math.round(im.height * k);
+        var x = c.getContext("2d"); x.fillStyle = "#fff"; x.fillRect(0, 0, c.width, c.height); x.drawImage(im, 0, 0, c.width, c.height); URL.revokeObjectURL(u);
+        var q = 0.8, d = c.toDataURL("image/jpeg", q); while (d.length > 300000 && q > 0.4) { q -= 0.1; d = c.toDataURL("image/jpeg", q); }
+        d.length > 390000 ? no(new Error("That image is too large. Try a smaller screenshot.")) : ok(d);
+      };
+      im.onerror = function () { no(new Error("That file could not be read as an image.")); }; im.src = u;
+    });
+  }
+  var SHOT = "";
+  document.addEventListener("change", function (e) {
+    if (e.target.id !== "pfFile" || !e.target.files[0]) return;
+    shrink(e.target.files[0]).then(function (d) { SHOT = d; var p = $("#pfPrev"); p.src = d; p.hidden = false; }).catch(function (er) { SHOT = ""; e.target.value = ""; $("#pfPrev").hidden = true; toast(er.message, true); });
+  });
+  document.addEventListener("submit", function (e) {
+    if (e.target.id !== "rf") return; e.preventDefault();
+    var f = e.target, m = $("#rm"), b = f.querySelector("button[type=submit]"); m.className = "ac-msg"; m.textContent = "";
+    var err = !f.name.value.trim() || !f.body.value.trim() ? "Please add the customer's name and the review text." : RPROOF === "image" && !SHOT ? "Choose the screenshot of the original review." : RPROOF === "link" && !/^https?:\/\//i.test(f.proof_url.value.trim()) ? "The review link must start with https://" : "";
+    if (err) { m.className = "ac-msg err"; m.textContent = err; return; }
+    var sv = Array.prototype.map.call(f.querySelectorAll("#rsv input:checked"), function (i) { return i.value; });
+    b.disabled = true;
+    api("?review=new", { method: "POST", body: JSON.stringify({ name: f.name.value, role: f.role.value, company: f.company.value, loc: f.loc.value, photo: f.photo.value, rating: f.rating.value, body: f.body.value, services: sv, proof_kind: RPROOF, proof_url: f.proof_url.value, proof_img: RPROOF === "image" ? SHOT : "" }) })
+      .then(function () { f.reset(); SHOT = ""; RPROOF = ""; $("#pfPrev").hidden = true; $("#pfImg").hidden = true; $("#pfLink").hidden = true; toast("Review posted"); reviews(); })
+      .catch(function (er) { m.className = "ac-msg err"; m.textContent = er.message; }).then(function () { b.disabled = false; });
+  });
+  document.addEventListener("click", function (e) {
+    var d = e.target.closest("[data-rdel]"); if (!d || !confirm("Delete this review? This cannot be undone.")) return;
+    api("?review=" + d.dataset.rdel, { method: "DELETE" }).then(function () { toast("Review deleted"); reviews(); }).catch(function (er) { toast(er.message, true); });
+  });
+  /* ---------- Coupons ---------- */
+  (function () {
+    var names = PROD.filter(function (p) { return p.cat !== "18+" && p.cat !== "Bundle"; }).map(function (p) { return p.name; });
+    $("#csv").innerHTML = names.map(function (n) { return '<label class="ad-chip"><input type="checkbox" value="' + esc(n) + '"><span>' + esc(n) + "</span></label>"; }).join("");
+  })();
+  function coupons() {
+    api("?view=coupons").then(function (j) {
+      var r = j.rows || []; $("#tc6").textContent = r.filter(function (c) { return c.active; }).length;
+      $("#clist").innerHTML = r.length ? r.map(function (c) {
+        var gone = c.expires_at && Date.parse(c.expires_at) < Date.now(), full = c.max_uses > 0 && c.used >= c.max_uses, st = !c.active ? "Paused" : gone ? "Expired" : full ? "Fully used" : "Active";
+        var rule = (c.kind === "fixed" ? "৳" + c.value + " off" : c.value + "% off" + (c.max_discount ? " (max ৳" + c.max_discount + ")" : "")) + (c.min_order ? " · min ৳" + c.min_order : "") + ((c.services || []).length ? " · " + esc(c.services.join(", ")) : " · whole cart") + (c.per_email ? " · once per email" : "") + (c.expires_at ? " · until " + esc(new Date(c.expires_at).toLocaleDateString("en-GB", { timeZone: "Asia/Dhaka", day: "numeric", month: "short", year: "numeric" })) : "");
+        return '<div class="ad-rr"><span class="ad-av ad-cd">%</span><div><b class="ad-code">' + esc(c.code) + '</b> <span class="ad-pill ' + (st === "Active" ? "ok" : "warn") + '">' + st + "</span><p>" + rule + "</p><small>Used " + c.used + (c.max_uses ? " / " + c.max_uses : "") + " times · customers saved ৳" + (c.saved || 0).toLocaleString("en-US") + (c.note ? " · " + esc(c.note) : "") + '</small></div><div class="ad-cb"><button type="button" class="ac-btn ac-ghost ac-sm" data-ctog="' + c.id + '" data-on="' + (c.active ? 1 : 0) + '">' + (c.active ? "Pause" : "Resume") + '</button><button type="button" class="ac-btn ac-ghost ac-sm" data-cdel="' + c.id + '">Delete</button></div></div>';
+      }).join("") : '<p class="ac-note">No coupons yet.</p>';
+    }).catch(function (e) { $("#clist").innerHTML = '<p class="ac-msg err" style="display:block">' + esc(/coupons|DB|relation/i.test(e.message) ? "Coupons are not set up yet. Run the new SQL in Supabase first." : e.message) + "</p>"; });
+  }
+  document.addEventListener("change", function (e) {
+    if (e.target.name !== "kind" || !e.target.form || e.target.form.id !== "cf") return;
+    var pc = e.target.value === "percent", f = e.target.form; $("#cvl").textContent = pc ? "Percent *" : "Taka off *"; f.value.max = pc ? 100 : 100000; f.value.placeholder = pc ? "10" : "100"; $("#cmaxw").hidden = !pc;
+  });
+  document.addEventListener("submit", function (e) {
+    if (e.target.id !== "cf") return; e.preventDefault();
+    var f = e.target, m = $("#cm"), b = f.querySelector("button[type=submit]"); m.className = "ac-msg"; m.textContent = "";
+    if (f.code.value.trim().length < 3 || !(+f.value.value >= 1)) { m.className = "ac-msg err"; m.textContent = "Add a code (3+ characters) and the discount amount."; return; }
+    var sv = Array.prototype.map.call(f.querySelectorAll("#csv input:checked"), function (i) { return i.value; });
+    b.disabled = true;
+    api("?coupon=new", { method: "POST", body: JSON.stringify({ code: f.code.value, kind: f.kind.value, value: f.value.value, max_discount: f.max_discount.value, min_order: f.min_order.value, max_uses: f.max_uses.value, per_email: f.per_email.checked, expires_at: f.expires_at.value ? f.expires_at.value + "T23:59:59+06:00" : "", note: f.note.value, services: sv }) })
+      .then(function () { f.reset(); $("#cvl").textContent = "Percent *"; $("#cmaxw").hidden = false; toast("Coupon created"); coupons(); })
+      .catch(function (er) { m.className = "ac-msg err"; m.textContent = er.message; }).then(function () { b.disabled = false; });
+  });
+  document.addEventListener("click", function (e) {
+    var t = e.target.closest("[data-ctog]"), d = e.target.closest("[data-cdel]");
+    if (t) { api("?coupon=" + t.dataset.ctog, { method: "PATCH", body: JSON.stringify({ active: t.dataset.on !== "1" }) }).then(function () { toast("Coupon updated"); coupons(); }).catch(function (er) { toast(er.message, true); }); }
+    if (d && confirm("Delete this coupon? Past orders keep their discount.")) api("?coupon=" + d.dataset.cdel, { method: "DELETE" }).then(function () { toast("Coupon deleted"); coupons(); }).catch(function (er) { toast(er.message, true); });
   });
   function toast(m, bad) { var t = $("#toast"); t.textContent = m; t.className = "ad-toast on" + (bad ? " err" : ""); clearTimeout(toast.t); toast.t = setTimeout(function () { t.className = "ad-toast"; }, 3200); }
   document.querySelectorAll(".ad-tab").forEach(function (b) { b.addEventListener("click", function () { document.querySelectorAll(".ad-tab").forEach(function (x) { x.setAttribute("aria-selected", x === b ? "true" : "false"); }); document.querySelectorAll(".ad-pane").forEach(function (p) { p.hidden = p.dataset.p !== b.dataset.t; }); }); });

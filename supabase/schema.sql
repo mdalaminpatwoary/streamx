@@ -150,3 +150,64 @@ notify pgrst, 'reload schema';
 -- Customer mobile number on the profile (required when an account is first set up).
 alter table public.profiles add column if not exists phone text;
 notify pgrst, 'reload schema';
+
+-- Customer reviews (managed from Admin → Reviews). The 8 demo reviews are inserted once so you can delete them from the admin page.
+create table if not exists public.reviews (
+  id         bigint generated always as identity primary key,
+  name       text not null,
+  role       text not null default '',
+  company    text not null default '',
+  loc        text not null default '',
+  services   jsonb not null default '[]',
+  rating     int  not null default 5,
+  body       text not null,
+  photo      text not null default '',
+  proof_kind text not null default '',   -- '' | 'image' | 'link'  (the "View original review" proof)
+  proof_url  text not null default '',   -- link to the original review (kind = link)
+  proof_img  text not null default '',   -- screenshot of the original review, stored as a small JPEG data URL (kind = image)
+  has_img    boolean not null default false,
+  popular    boolean not null default false,
+  created_at timestamptz not null default now()
+);
+alter table public.reviews enable row level security;
+grant select, insert, update, delete on public.reviews to service_role;
+grant usage, select on all sequences in schema public to service_role;
+insert into public.reviews (name, role, company, loc, services, rating, body, popular)
+select * from (values
+  ('Rafiq Hasan','Software Engineer','CodeNest Technologies','Dhaka','["Netflix","Spotify"]'::jsonb,5,'Got my Netflix in 5 minutes. Very fast and honest service. Highly recommended!',true),
+  ('Tania Akter','University Student','','Chattogram','["Spotify"]'::jsonb,5,'Spotify price is great and support replied quickly on WhatsApp. Smooth payment with bKash.',false),
+  ('Sabbir Mahmud','Video Editor','FrameLab Studio','Dhaka','["YouTube Premium","CapCut"]'::jsonb,5,'YouTube Premium works perfectly. I renewed for 12 months and saved a lot.',true),
+  ('Nusrat Jahan','Medical Student','','Sylhet','["ChatGPT"]'::jsonb,5,'Bought ChatGPT for my studies. Delivery was instant and the team is very polite.',true),
+  ('Imran Khan','Business Owner','Khan Traders','Dhaka','["Entertainment Combo"]'::jsonb,4,'Good prices and clear process. Had a small issue, they replaced it within minutes.',false),
+  ('Mehjabin Sultana','Boutique Owner','Mehjabin''s Boutique','Khulna','["Canva"]'::jsonb,5,'Canva for my small business. Trusted seller, 24/7 support is real.',true),
+  ('Fahim Rahman','Graphic Designer','Studio Fahim','Rajshahi','["CapCut","Canva"]'::jsonb,5,'Bought Canva and CapCut together. Genuine service and very fair price.',false),
+  ('Sadia Islam','Digital Marketer','GrowMore Agency','Dhaka','["Disney+"]'::jsonb,5,'Fast reply even late at night. My Disney+ account was ready in minutes.',false)
+) as d(name, role, company, loc, services, rating, body, popular)
+where not exists (select 1 from public.reviews);
+
+-- Public notice board (/notices/): more types, pinned posts and an optional link
+alter table public.notices add column if not exists pinned     boolean not null default false;
+alter table public.notices add column if not exists link       text    not null default '';
+alter table public.notices add column if not exists link_label text    not null default '';
+
+-- Coupon codes (managed from Admin → Coupons). The discount is calculated on the server at checkout.
+create table if not exists public.coupons (
+  id           bigint generated always as identity primary key,
+  code         text not null unique,                 -- stored in capitals, e.g. EID10
+  kind         text not null default 'percent',      -- percent | fixed
+  value        int  not null,                        -- percent (1-100) or taka off
+  max_discount int  not null default 0,              -- cap for percent coupons (0 = no cap)
+  min_order    int  not null default 0,              -- minimum cart subtotal in taka (0 = none)
+  max_uses     int  not null default 0,              -- total paid uses allowed (0 = unlimited)
+  per_email    boolean not null default true,        -- one use per customer email
+  services     jsonb not null default '[]',          -- limit to these services (empty = whole cart)
+  expires_at   timestamptz,
+  active       boolean not null default true,
+  note         text not null default '',
+  created_at   timestamptz not null default now()
+);
+alter table public.coupons enable row level security;
+grant select, insert, update, delete on public.coupons to service_role;
+grant usage, select on all sequences in schema public to service_role;
+alter table public.orders add column if not exists coupon   text;
+alter table public.orders add column if not exists discount int not null default 0;

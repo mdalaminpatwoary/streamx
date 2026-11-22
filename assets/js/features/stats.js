@@ -10,8 +10,8 @@ document.querySelectorAll(".stat").forEach(s=>sio.observe(s));
 
 // ===== Stats extras (real reviewers, service logos, years) + footer shortcuts =====
 (function(){
-  const f=$("#faces");
-  f.innerHTML=`<div class="fcs">${REVIEWS.slice(0,5).map(r=>`<span><i>${initials(r.n)}</i>${ph(r)}</span>`).join("")}</div><div class="frt"><strong>Recommended</strong><small>by customers on Facebook</small></div>`;
+  const f=$("#faces"),paintFaces=()=>{f.hidden=!REVIEWS.length;f.innerHTML=`<div class="fcs">${REVIEWS.slice(0,5).map(r=>`<span><i>${initials(r.n)}</i>${ph(r)}</span>`).join("")}</div><div class="frt"><strong>Recommended</strong><small>by StreamX customers</small></div>`};
+  f.hidden=true;document.addEventListener("sx-reviews",paintFaces);
   const shown=MQ.slice(0,6),total=PRODUCTS.filter(p=>p.cat!=="Bundle").length;
   $("#slogos").innerHTML=shown.map(m=>tile(m[0],"")).join("")+`<span class="more">+${total-shown.length} more</span>`;
   const since=+document.querySelector(".yr b").dataset.to,y=new Date().getFullYear()-since;

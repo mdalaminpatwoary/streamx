@@ -9,7 +9,7 @@
   const pl0=v=>v.plans&&v.plans[0];
   const minOf=p=>{const a=p.variants.map(v=>pl0(v)&&pl0(v).p).filter(x=>x>0);return a.length?Math.min.apply(null,a):0};
   const idx=p=>PRODUCTS.indexOf(p);
-  const canPick=p=>!p.gift&&typeof buyNow==="function"&&p.variants.some(v=>v.plans&&v.plans.length);
+  const canPick=p=>!p.gift&&!p.ask&&typeof buyNow==="function"&&p.variants.some(v=>v.plans&&v.plans.length);
   const norm=t=>(" "+String(t).toLowerCase().replace(/[^a-z0-9ঀ-৿]+/g," ").trim()+" ");
   const has=(q,k)=>/[^\x00-\x7f]/.test(k)?q.indexOf(k)>-1:k.length<=3?q.indexOf(" "+k+" ")>-1:q.indexOf(" "+k)>-1;
   const any=(q,ks)=>ks.reduce((n,k)=>n+(has(q,k)?(k.indexOf(" ")>0?2:1):0),0);
@@ -52,7 +52,7 @@
     return productCard1(p)+cb;
   }
   function productCard1(p){
-    const rows=p.variants.slice(0,4).map(v=>{const x=pl0(v);return x?`<li><span>${esc(v.n)}</span><b>${taka(x.p)}<small> / ${esc(x.v.toLowerCase())}</small></b></li>`:""}).join("");
+    const rows=p.variants.slice(0,4).map(v=>{const x=pl0(v);return x?`<li><span>${esc(v.n)}</span><b>${x.ask?"Ask on WhatsApp":taka(x.p)+`<small> / ${esc(x.once?"one-time":x.v.toLowerCase())}</small>`}</b></li>`:""}).join("");
     const long=p.variants.map(v=>v.plans&&v.plans[v.plans.length-1]).filter(Boolean).sort((a,b)=>b.m-a.m)[0];
     const gift=p.gift&&typeof GIFT!=="undefined";
     return `<div class="bt-card"><div class="bt-ct">${esc(p.name)}<em>${esc(p.cat)}</em></div><p class="bt-cd">${esc(p.desc)}</p>`+
@@ -64,7 +64,7 @@
   const featOf=p=>{const f=p.variants[0].f||[];return f[0]||p.desc};
   function deviceLines(p){return `<ul class="bt-ul">`+p.variants.slice(0,4).map(v=>`<li><b>${esc(v.n)}</b>: ${esc((v.f||[]).find(x=>/mobile|tablet|web|tv|android|apple|device/i.test(x))||v.line)}</li>`).join("")+`</ul>`}
   function explainHtml(p){
-    return `<div class="bt-card"><div class="bt-ct">${esc(p.name)}<em>Plan types</em></div><ul class="bt-ul">`+p.variants.map(v=>{const x=pl0(v);return `<li><b>${esc(v.n)}</b>${v.tag?` <em class="bt-tg">${esc(v.tag)}</em>`:""}<br><span class="bt-cd">${esc(v.line)}</span>${x?`<br><span class="bt-pr">from ${taka(x.p)} / ${esc(x.v.toLowerCase())}</span>`:""}</li>`}).join("")+`</ul>${canPick(p)?`<div class="bt-row">${act("Choose plan &amp; pay online","pick",`data-i="${idx(p)}"`," bt-go")}</div>`:""}</div>`;
+    return `<div class="bt-card"><div class="bt-ct">${esc(p.name)}<em>Plan types</em></div><ul class="bt-ul">`+p.variants.map(v=>{const x=pl0(v);return `<li><b>${esc(v.n)}</b>${v.tag?` <em class="bt-tg">${esc(v.tag)}</em>`:""}<br><span class="bt-cd">${esc(v.line)}</span>${x?`<br><span class="bt-pr">${x.ask?"price on WhatsApp":`from ${taka(x.p)} / ${esc(x.v.toLowerCase())}`}</span>`:""}</li>`}).join("")+`</ul>${canPick(p)?`<div class="bt-row">${act("Choose plan &amp; pay online","pick",`data-i="${idx(p)}"`," bt-go")}</div>`:""}</div>`;
   }
   function compareHtml(ps){
     const row=(k,f)=>`<tr><th>${k}</th>${ps.map(p=>`<td>${f(p)}</td>`).join("")}</tr>`;

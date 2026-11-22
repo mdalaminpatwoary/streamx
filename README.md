@@ -140,6 +140,6 @@ Customers sign in with an emailed link (no password) at `/account/` and see each
 Files: `api/account.js`, `api/admin.js`, `api/_db.js`, `api/_subs.js`, `account/`, `admin/`, `assets/js/account.js`, `assets/js/admin.js`.
 
 ## Social sign-in (optional)
-`/api/oauth` adds Google, Microsoft (personal accounts) and Apple sign-in to /account/. A button only appears once its env vars are set in Vercel.
-Redirect URI to register with each provider: `https://<your-domain>/api/oauth?a=cb&p=google|microsoft|apple` (set `SITE_URL` so it is always the same domain).
-Env: `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `MS_CLIENT_ID`, `MS_CLIENT_SECRET`, `APPLE_CLIENT_ID` (Services ID), `APPLE_TEAM_ID`, `APPLE_KEY_ID`, `APPLE_PRIVATE_KEY`.
+`/api/oauth` adds Google and Microsoft (personal accounts) sign-in to /account/. A button only appears once its env vars are set in Vercel.
+Redirect URI to register with each provider: `https://<your-domain>/api/oauth?a=cb&p=google|microsoft` (set `SITE_URL` so it is always the same domain).
+Env: `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `MS_CLIENT_ID`, `MS_CLIENT_SECRET`.
