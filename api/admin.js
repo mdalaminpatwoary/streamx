@@ -214,8 +214,10 @@ module.exports = async (req, res) => {
     }
     if (req.method === "GET") {
       const t = clean(req.query && req.query.q, 60).replace(/[(),*%]/g, "");
-      const f = t ? `&or=(email.ilike.*${db.q(t)}*,phone.ilike.*${db.q(t)}*,name.ilike.*${db.q(t)}*,service.ilike.*${db.q(t)}*)` : "";
-      const rows = await db.rest("GET", `subscriptions?select=*&order=created_at.desc&limit=300${f}`);
+      const f = (withMid) => t ? `&or=(email.ilike.*${db.q(t)}*,phone.ilike.*${db.q(t)}*,name.ilike.*${db.q(t)}*,service.ilike.*${db.q(t)}*${withMid ? `,manual_id.ilike.*${db.q(t)}*` : ""})` : "";
+      let rows;
+      try { rows = await db.rest("GET", `subscriptions?select=*&order=created_at.desc&limit=300${f(true)}`); }
+      catch (e) { rows = await db.rest("GET", `subscriptions?select=*&order=created_at.desc&limit=300${f(false)}`); } // manual_id column not added yet
       return res.status(200).json({ rows: (rows || []).map((r) => Object.assign({}, r, { acct_pass: undefined, acct_pin: undefined, gift_code: undefined, access: access.fromRow(r) })) });
     }
     if (req.method === "POST") {

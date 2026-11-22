@@ -3,7 +3,7 @@
    Only plain purchase details are sent: never login details, passwords, PINs or gift card codes. */
 const db = require("./_db");
 
-const FIELDS = ["id", "created_at", "name", "email", "phone", "service", "plan", "months", "start_date", "end_date", "price", "pay_method", "txn_id", "channel", "notes", "source", "order_ref"];
+const FIELDS = ["id", "created_at", "name", "email", "phone", "service", "plan", "months", "start_date", "end_date", "price", "pay_method", "txn_id", "channel", "notes", "source", "order_ref", "manual_id"];
 /* A value that starts with = + - or @ would be read by Google Sheets as a formula (for example +44 phone numbers), so it is stored as plain text. */
 const safe = (v) => (typeof v === "string" && /^[=+\-@]/.test(v) ? "'" + v : v);
 const slim = (r) => { const o = {}; FIELDS.forEach((k) => { o[k] = r[k] == null ? "" : safe(r[k]); }); return o; };

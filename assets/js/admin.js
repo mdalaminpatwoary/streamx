@@ -111,7 +111,7 @@
       SUBS = d.rows;
       $("#rows").innerHTML = d.rows.map(function (s, i) {
         var left = days(today, s.end_date), c = left < 0 ? "#ef4444" : left <= 7 ? "#f59e0b" : "#22c55e";
-        return '<tr><td data-l="Customer"><div><b>' + esc(s.name || "") + "</b><br>" + esc(s.email) + "<br>" + esc(s.phone || "") + '</div></td><td data-l="Service"><div><b>' + esc(s.service) + "</b><br>" + esc(s.plan) + "<br><small>" + esc(s.source) + '</small></div></td><td data-l="Access"><div class="ad-accs">' + accSummary(s) + '</div></td><td data-l="Expires"><input class="ac-in" type="date" value="' + esc(s.end_date) + '" data-end="' + s.id + '" style="padding:6px 8px;width:150px"></td><td data-l="Left"><span class="ad-chip" style="color:' + c + '">' + (left < 0 ? "Expired" : left + " days") + '</span></td><td data-l=""><div class="ad-btns"><button class="ac-btn ac-sm" data-edit="' + i + '">Edit</button><button class="ad-x" data-del="' + s.id + '">Delete</button></div></td></tr>';
+        return '<tr><td data-l="Customer"><div><b>' + esc(s.name || "") + "</b><br>" + esc(s.email) + "<br>" + esc(s.phone || "") + (s.manual_id ? '<br><small class="ad-who">' + esc(s.manual_id) + "</small>" : "") + '</div></td><td data-l="Service"><div><b>' + esc(s.service) + "</b><br>" + esc(s.plan) + "<br><small>" + esc(s.source) + '</small></div></td><td data-l="Access"><div class="ad-accs">' + accSummary(s) + '</div></td><td data-l="Expires"><input class="ac-in" type="date" value="' + esc(s.end_date) + '" data-end="' + s.id + '" style="padding:6px 8px;width:150px"></td><td data-l="Left"><span class="ad-chip" style="color:' + c + '">' + (left < 0 ? "Expired" : left + " days") + '</span></td><td data-l=""><div class="ad-btns"><button class="ac-btn ac-sm" data-edit="' + i + '">Edit</button><button class="ad-x" data-del="' + s.id + '">Delete</button></div></td></tr>';
       }).join("");
       stats(); $("#cnt").textContent = d.rows.length + " shown (latest 300). Change a date and click away to save.";
     }).catch(function (e) { if (e.status === 401) { key = ""; try { sessionStorage.removeItem("sx_admin"); } catch (x) {} $("#panel").hidden = true; $("#gate").hidden = false; $("#gm").textContent = e.message; } else { $("#cnt").textContent = e.message; $("#gm").textContent = e.message; } });
@@ -353,7 +353,7 @@
   var dlg = $("#dlg"), cur = null;
   $("#rows").addEventListener("click", function (e) {
     var b = e.target.closest("[data-edit]"), d = e.target.closest("[data-del]");
-    if (b) { cur = SUBS[+b.dataset.edit]; $("#dt").textContent = cur.service + " · " + cur.plan; $("#ds").textContent = cur.email; $("#dbody").innerHTML = detailsHTML(cur) + accessHTML(cur.access, cur.service); syncAccess($("#ddet").nextSibling); if (dlg.showModal) dlg.showModal(); else dlg.setAttribute("open", ""); }
+    if (b) { cur = SUBS[+b.dataset.edit]; $("#dt").textContent = (cur.manual_id ? cur.manual_id + " · " : "") + cur.service + " · " + cur.plan; $("#ds").textContent = cur.email; $("#dbody").innerHTML = detailsHTML(cur) + accessHTML(cur.access, cur.service); syncAccess($("#ddet").nextSibling); if (dlg.showModal) dlg.showModal(); else dlg.setAttribute("open", ""); }
     if (d && confirm("Delete this subscription?")) api("?id=" + d.dataset.del, { method: "DELETE" }).then(function () { toast("Deleted."); list(); }).catch(function (er) { toast(er.message, 1); });
   });
   var closeDlg = function () { if (dlg.close) dlg.close(); else dlg.removeAttribute("open"); };
