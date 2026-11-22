@@ -21,7 +21,7 @@
     {id:"airing",nav:"Airing today",eye:"Series",h:"Series airing <span class=\"grad\">today.</span>",sub:"Episodes releasing today.",s:"airing",k:"tv"},
     {id:"birthdays",nav:"Birthdays",eye:"Celebrities",h:"Born <span class=\"grad\">today.</span>",sub:"Actors, singers, filmmakers and athletes celebrating a birthday today.",births:true}
   ];
-  SECS.forEach(function(c,i){c.rail=i%2===1});
+  SECS.forEach(function(c){c.rail=true});
   function arrows(sec,sc){var a=sec.querySelector(".ex-arr");if(!a)return;a.addEventListener("click",function(e){var b=e.target.closest("button[data-dir]");if(!b)return;sc.scrollBy({left:(+b.dataset.dir)*Math.max(240,sc.clientWidth*.8),behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"})});
     function fade(){var l=sc.scrollLeft<4,r=sc.scrollLeft+sc.clientWidth>=sc.scrollWidth-4,bs=a.querySelectorAll("button");bs[0].disabled=l;bs[1].disabled=r}sc.addEventListener("scroll",fade,{passive:true});fade();new MutationObserver(fade).observe(sc,{childList:true})}
   var q=function(o){return Object.keys(o).filter(function(k){return o[k]!==""&&o[k]!=null}).map(function(k){return k+"="+encodeURIComponent(o[k])}).join("&")};
