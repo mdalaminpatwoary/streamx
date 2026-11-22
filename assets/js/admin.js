@@ -272,6 +272,19 @@
     $("#ocnt").textContent = rows.length + " order" + (rows.length === 1 ? "" : "s") + ". Only paid orders appear here.";
   }
   $("#of").addEventListener("change", drawOrders);
+  $("#orows").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-dv]"); if (!b || b.disabled) return;
+    var id = b.dataset.dv, to = b.dataset.to;
+    if (to === "pending" && !confirm("Move this order back to Not delivered?")) return;
+    var label = b.textContent; b.disabled = true; b.textContent = "Saving…";
+    api("?order=" + encodeURIComponent(id), { method: "PATCH", body: JSON.stringify({ delivery: to }) })
+      .then(function (d) {
+        ORD.forEach(function (o) { if (o.mtid === id) { o.delivery = to; o.delivered_at = d.row && d.row.delivered_at || null; } });
+        drawOrders(); stats();
+        toast(to === "delivered" ? (d.mailed ? "Marked delivered. Email sent to the customer." : d.mailNote ? "Marked delivered. " + d.mailNote : "Marked delivered.") : "Moved back to Not delivered.", to === "delivered" && !d.mailed && !!d.mailNote);
+      })
+      .catch(function (er) { b.disabled = false; b.textContent = label; toast(er.message || "Could not update the order.", 1); });
+  });
   $("#gf").addEventListener("submit", function (e) { e.preventDefault(); key = $("#ak").value; try { sessionStorage.setItem("sx_admin", key); } catch (x) {} $("#gm").textContent = ""; list(); });
   $("#lock").addEventListener("click", function () { key = ""; try { sessionStorage.removeItem("sx_admin"); } catch (x) {} $("#panel").hidden = true; $("#gate").hidden = false; $("#lock").hidden = true; $("#ak").value = ""; });
   var t; $("#q").addEventListener("input", function () { clearTimeout(t); t = setTimeout(list, 300); });

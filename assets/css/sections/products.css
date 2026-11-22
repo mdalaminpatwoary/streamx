@@ -1263,9 +1263,22 @@
 .pr-endc svg{width:22px;height:22px;fill:none;stroke:#ff5b4d;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
 @media(max-width:600px){
   /* phones: two rows, scrolling sideways */
-  .pr-rail #productGrid{display:grid;grid-auto-flow:column;grid-template-rows:repeat(2,auto);grid-auto-columns:min(68vw,270px);gap:14px;margin-inline:-16px;padding-inline:16px;scroll-padding-inline:16px;align-items:stretch}
+  .pr-rail #productGrid{display:grid;grid-auto-flow:column;grid-template-columns:none;grid-template-rows:repeat(2,auto);grid-auto-columns:min(68vw,270px);gap:14px;margin-inline:-16px;padding-inline:16px;scroll-padding-inline:16px;align-items:stretch}
   .pr-rail #productGrid>.pc{flex:none;max-width:none;width:auto}
   .pr-rail #productGrid>.pr-ldc,.pr-rail #productGrid>.pr-endc{grid-row:1/-1;width:auto;min-height:200px}
   .pr-rail #productGrid>.empty{grid-row:1/-1;grid-column:1/-1}
+  /* compact vertical card: logo + arrow on top, name, one-line blurb, price */
+  .pr-rail #productGrid .pc{display:grid;grid-template-columns:1fr auto;grid-template-rows:auto;column-gap:10px;row-gap:0;align-items:start;padding:14px 14px 15px;border-radius:18px;min-width:0}
+  .pr-rail #productGrid .pc .ph{grid-column:1;grid-row:1;margin:0 0 12px;justify-content:flex-start}
+  .pr-rail #productGrid .pc .ph .lg{width:46px;height:46px;border-radius:13px;font-size:22px}
+  .pr-rail #productGrid .pc .ph .lg img,.pr-rail #productGrid .pc .ph .lg svg{max-width:62%;max-height:62%}
+  .pr-rail #productGrid .pc .ph .cat{display:none}
+  .pr-rail #productGrid .pc .pf{display:contents}
+  .pr-rail #productGrid .pc .go{grid-column:2;grid-row:1;width:34px;height:34px;font-size:15px}
+  .pr-rail #productGrid .pc h3{grid-column:1/-1;grid-row:2;margin:0;font-size:15.5px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pr-rail #productGrid .pc p{grid-column:1/-1;grid-row:3;margin:4px 0 10px;font-size:12px;line-height:1.4;max-height:1.4em;-webkit-line-clamp:1!important}
+  .pr-rail #productGrid .pc .pr{grid-column:1/-1;grid-row:4;white-space:nowrap;display:flex;align-items:baseline;gap:4px;min-width:0}
+  .pr-rail #productGrid .pc .pr b{font-size:17px}
+  .pr-rail #productGrid .pc .pr small{font-size:11.5px}
 }
 @media(prefers-reduced-motion:reduce){.pr-ldc{animation:none}}

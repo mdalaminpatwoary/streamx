@@ -1,5 +1,5 @@
 /* Products grid: search, sort, category filter, load more, 18+ age check. */
-const mq=matchMedia("(max-width:600px)");let PAGE=8,MORE=8; // 8 first (two rows of 4 on phones); the row loads 8 more near its end
+const mq=matchMedia("(max-width:600px)");let PAGE=20,MORE=20; // 20 first; the row loads 20 more near its end
 let cat="All",q="",limit=PAGE,view=[],sortKey="rec";
 // Sort factors: popularity (list order), price, name, newest (added last), category
 const SORTS={rec:(a,b)=>a[1]-b[1],pa:(a,b)=>entry(a[0]).p-entry(b[0]).p||a[1]-b[1],pd:(a,b)=>entry(b[0]).p-entry(a[0]).p||a[1]-b[1],az:(a,b)=>a[0].name.localeCompare(b[0].name),za:(a,b)=>b[0].name.localeCompare(a[0].name),new:(a,b)=>b[1]-a[1],cat:(a,b)=>a[0].cat.localeCompare(b[0].cat)||a[1]-b[1]};

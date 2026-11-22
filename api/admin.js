@@ -179,13 +179,17 @@ module.exports = async (req, res) => {
       if (!dv) return res.status(400).json({ error: "Invalid status." });
       const before = ((await db.rest("GET", `orders?mtid=eq.${db.q(ord)}&select=delivery`)) || [])[0];
       const row = (await db.rest("PATCH", `orders?mtid=eq.${db.q(ord)}`, { delivery: dv, delivered_at: dv === "delivered" ? new Date().toISOString() : null }, "return=representation"))[0];
-      let mailed = false;
+      let mailed = false, mailNote = "";
       // First time it flips to "delivered": tell the customer by email.
-      if (row && dv === "delivered" && !(before && before.delivery === "delivered") && row.email && process.env.RESEND_API_KEY) {
-        try { const mail = require("./_mail"), m = mail.delivered(req, row); await mail.send({ to: row.email, subject: m.subject, html: m.html, text: m.text, idem: "delivered-" + row.mtid }); mailed = true; }
-        catch (e) { console.error("delivered email failed", e && e.message); }
-      }
-      return res.status(200).json({ row, mailed });
+      if (row && dv === "delivered" && !(before && before.delivery === "delivered")) {
+        if (!row.email) mailNote = "No email address on this order, so no email was sent.";
+        else if (!process.env.RESEND_API_KEY) mailNote = "Email is not configured (RESEND_API_KEY missing), so no email was sent.";
+        else {
+          try { const mail = require("./_mail"), m = mail.delivered(req, row); await mail.send({ to: row.email, subject: m.subject, html: m.html, text: m.text, idem: "delivered-" + row.mtid }); mailed = true; }
+          catch (e) { console.error("delivered email failed", e && e.message); mailNote = "Email to the customer failed: " + String(e && e.message || "unknown error").slice(0, 120); }
+        }
+      } else if (row && dv === "delivered") mailNote = "Customer was already emailed earlier.";
+      return res.status(200).json({ row, mailed, mailNote });
     }
     if (req.method === "GET") {
       const t = clean(req.query && req.query.q, 60).replace(/[(),*%]/g, "");
