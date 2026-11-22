@@ -3,6 +3,7 @@
    POST   /api/admin                add one  {email,name,phone,service,plan,months,start?,notes?}
    PATCH  /api/admin?id=<n>         change expiry {end_date} and/or login details {acct_email, acct_pass, acct_otp, acct_profile, acct_pin}
    DELETE /api/admin?id=<n>         remove one
+   POST   /api/admin?sheetsync=1    send all hand-added purchases to the Google Sheet
    GET    /api/admin?view=orders    list paid orders (newest first) with delivery status
    PATCH  /api/admin?review=<id>  feature or unfeature a review {popular:true|false} (shown in the home page spotlight)
    PATCH  /api/admin?order=<mtid>   set delivery  {delivery:"pending"|"delivered"|"refunded"}
@@ -14,6 +15,7 @@ const crypto = require("crypto");
 const db = require("./_db");
 const { addSub, validDate, normEmail } = require("./_subs");
 const access = require("./_access");
+const sheet = require("./_sheet");
 const { cleanPhone } = require("./_phone");
 
 const h = (s) => crypto.createHash("sha256").update(String(s)).digest();
@@ -39,6 +41,13 @@ module.exports = async (req, res) => {
     if (!crypto.timingSafeEqual(h(req.headers["x-admin-key"] || ""), h(k))) return res.status(401).json({ error: "Wrong admin key." });
     const body = typeof req.body === "string" ? JSON.parse(req.body || "{}") : req.body || {};
     const id = parseInt((req.query && req.query.id) || "", 10);
+
+    // Send every hand-added purchase to the Google Sheet (button on the Subscriptions tab)
+    if (req.query && req.query.sheetsync && req.method === "POST") {
+      if (!sheet.enabled()) return res.status(200).json({ ok: false, error: "The Google Sheet link is not set up yet (SHEETS_WEBHOOK_URL)." });
+      const r = await sheet.syncAll();
+      return res.status(200).json(r);
+    }
 
     // Notice board: announcements for every customer (they only raise the bell count)
     if (req.query && (req.query.view === "notices" || req.query.notice)) {
@@ -226,6 +235,7 @@ module.exports = async (req, res) => {
           if (row && row.id) { try { const lg = access.toRow({ gift_code: cards[i].code, gift_region: body.gift_region || "US", gift_amount: cards[i].amount }); await db.rest("PATCH", `subscriptions?id=eq.${row.id}`, lg); } catch (e) { console.error("gift details not saved", e && e.message); warn = "Added, but the gift card details could not be saved. Run the latest SQL in Supabase."; } }
         }
         { const pw = await savePay(rows[0], body); if (pw) warn = warn || "Added, but " + pw; }
+        for (let i = 0; i < rows.length; i++) await sheet.syncSub(rows[i] && rows[i].id);
         return res.status(200).json(warn ? { row: rows[0], rows, warn } : { row: rows[0], rows });
       }
       if (!svc || !clean(body.plan, 80) || !(months >= 1 && months <= 60)) return res.status(400).json({ error: "Choose a service and plan." });
@@ -233,6 +243,7 @@ module.exports = async (req, res) => {
       const lg = access.toRow(body);
       if (lg && row && row.id) { try { await db.rest("PATCH", `subscriptions?id=eq.${row.id}`, lg); } catch (e) { console.error("login details not saved", e && e.message); return res.status(200).json({ row, warn: "Added, but the login details could not be saved. Run the latest SQL in Supabase." }); } }
       const payWarn = await savePay(row, body);
+      await sheet.syncSub(row && row.id);
       return res.status(200).json(payWarn ? { row, warn: "Added, but " + payWarn } : { row });
     }
     if (!(id > 0)) return res.status(400).json({ error: "Missing id." });
@@ -250,9 +261,10 @@ module.exports = async (req, res) => {
       let out;
       try { out = await db.rest("PATCH", `subscriptions?id=eq.${id}`, Object.assign({}, upd, stamp || {}), "return=representation"); }
       catch (e) { if (!stamp) throw e; out = await db.rest("PATCH", `subscriptions?id=eq.${id}`, upd, "return=representation"); } // notice columns not added yet
+      await sheet.syncSub(id);
       return res.status(200).json({ row: out[0] });
     }
-    if (req.method === "DELETE") { await db.rest("DELETE", `subscriptions?id=eq.${id}`); return res.status(200).json({ ok: true }); }
+    if (req.method === "DELETE") { await db.rest("DELETE", `subscriptions?id=eq.${id}`); await sheet.removeSub(id); return res.status(200).json({ ok: true }); }
     return res.status(405).json({ error: "Method not allowed" });
   } catch (e) {
     console.error("admin error", e && e.message);

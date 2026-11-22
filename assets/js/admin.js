@@ -307,6 +307,7 @@
   });
   $("#gf").addEventListener("submit", function (e) { e.preventDefault(); key = $("#ak").value; try { sessionStorage.setItem("sx_admin", key); } catch (x) {} $("#gm").textContent = ""; list(); });
   $("#lock").addEventListener("click", function () { key = ""; try { sessionStorage.removeItem("sx_admin"); } catch (x) {} $("#panel").hidden = true; $("#gate").hidden = false; $("#lock").hidden = true; $("#ak").value = ""; });
+  $("#sheetsync").addEventListener("click", function (e) { var b = e.currentTarget; b.disabled = true; api("?sheetsync=1", { method: "POST", body: "{}" }).then(function (d) { b.disabled = false; toast(d.ok ? "Sent " + d.count + " purchase" + (d.count === 1 ? "" : "s") + " to the sheet" : (d.error || "Could not reach the sheet"), !d.ok); }).catch(function (er) { b.disabled = false; toast(er.message, true); }); });
   var t; $("#q").addEventListener("input", function () { clearTimeout(t); t = setTimeout(list, 300); });
 
   $("#af").addEventListener("submit", function (e) {
