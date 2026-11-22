@@ -220,8 +220,8 @@ alter table public.reviews add column if not exists expat       boolean not null
 alter table public.reviews add column if not exists photo_img   text    not null default '';      -- uploaded customer photo (small JPEG data URL)
 alter table public.reviews add column if not exists has_photo   boolean not null default false;
 
--- Manual IDs (M0001, M0002, ...) for purchases added by hand with "Add subscription". Run once in the Supabase SQL Editor.
+-- Manual IDs (1, 2, 3, ...) for purchases added by hand with "Add subscription". Run once in the Supabase SQL Editor.
 alter table public.subscriptions add column if not exists manual_id text;
 create unique index if not exists subscriptions_manual_id_key on public.subscriptions (manual_id) where manual_id is not null;
 with n as (select id, row_number() over (order by id) rn from public.subscriptions where source = 'admin' and manual_id is null)
-update public.subscriptions s set manual_id = 'M' || lpad((coalesce((select max(substring(manual_id from 2)::int) from public.subscriptions where manual_id is not null), 0) + n.rn)::text, 4, '0') from n where s.id = n.id;
+update public.subscriptions s set manual_id = ((select coalesce(max(manual_id::int), 0) from public.subscriptions where manual_id is not null) + n.rn)::text from n where s.id = n.id;

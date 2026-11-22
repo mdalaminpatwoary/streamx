@@ -27,10 +27,10 @@ async function addSub(s) {
     start_date: start, end_date: addMonths(start, s.months), source: s.source || "admin", order_ref: s.order_ref || null, line_idx: s.line_idx == null ? null : s.line_idx, notes: s.notes || null,
   };
   const url = "subscriptions" + (row.order_ref ? "?on_conflict=order_ref,line_idx" : ""), pref = row.order_ref ? "return=representation,resolution=ignore-duplicates" : "return=representation";
-  // Hand-added purchases get a Manual ID: M0001, M0002, ... (needs the manual_id column; without it the purchase is still saved, just without the ID)
+  // Hand-added purchases get a Manual ID: 1, 2, 3, ... (needs the manual_id column; without it the purchase is still saved, just without the ID)
   let mid = null;
   if (row.source === "admin") {
-    try { const last = await rest("GET", "subscriptions?manual_id=not.is.null&select=manual_id&order=id.desc&limit=1"); const n = last && last[0] ? parseInt(String(last[0].manual_id).replace(/\D/g, ""), 10) || 0 : 0; mid = "M" + String(n + 1).padStart(4, "0"); } catch (e) { mid = null; }
+    try { const last = await rest("GET", "subscriptions?manual_id=not.is.null&select=manual_id&order=id.desc&limit=1"); const n = last && last[0] ? parseInt(String(last[0].manual_id).replace(/\D/g, ""), 10) || 0 : 0; mid = String(n + 1); } catch (e) { mid = null; }
   }
   let out;
   if (mid) { try { out = await rest("POST", url, [Object.assign({}, row, { manual_id: mid })], pref); } catch (e) { console.error("manual id not saved", e && e.message); out = null; } }
