@@ -1,4 +1,4 @@
-/* Sends every subscription (hand-added and paid online) to the Google Sheet: the "Subscriptions" tab, the Customers tab and, for hand-added ones, the "Manual sales" tab.
+/* Sends every subscription (hand-added and paid online) to the Google Sheet: the "Active Users" tab, the Customers tab and, for hand-added ones, the "Manual sales" tab.
    Needs env SHEETS_WEBHOOK_URL (the Apps Script web app URL) and SHEETS_WEBHOOK_SECRET. Without them it quietly does nothing.
    Only plain purchase details are sent: never login details, passwords, PINs or gift card codes. */
 const db = require("./_db");

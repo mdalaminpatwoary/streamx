@@ -42,7 +42,7 @@ module.exports = async (req, res) => {
     const body = typeof req.body === "string" ? JSON.parse(req.body || "{}") : req.body || {};
     const id = parseInt((req.query && req.query.id) || "", 10);
 
-    // Send every hand-added purchase to the Google Sheet (button on the Subscriptions tab)
+    // Send every hand-added purchase to the Google Sheet (button on the Active Users tab)
     if (req.query && req.query.sheetsync && req.method === "POST") {
       if (!sheet.enabled()) return res.status(200).json({ ok: false, error: "The Google Sheet link is not set up yet (SHEETS_WEBHOOK_URL)." });
       const r = await sheet.syncAll();

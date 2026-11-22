@@ -13,7 +13,7 @@
 <body>
 <div class="ac-top"><a href="/"><img src="/assets/img/brand/logo.png" alt="StreamX" width="40" height="40"></a><a class="back" href="/">Open site</a></div>
 <main class="ad-wrap">
-  <div class="ad-head"><div><div class="ac-eyebrow">Owner only</div><h1>Orders &amp; subscriptions</h1></div><button class="ac-btn ac-ghost ac-sm" id="lock" type="button" hidden>Lock</button></div>
+  <div class="ad-head"><div><div class="ac-eyebrow">Owner only</div><h1>Orders &amp; active users</h1></div><button class="ac-btn ac-ghost ac-sm" id="lock" type="button" hidden>Lock</button></div>
 
   <section id="gate" class="ac-card ac-login" style="max-width:460px">
     <form id="gf"><label for="ak">Admin key</label>
@@ -29,8 +29,8 @@
     </div>
     <div class="ad-tabs" role="tablist">
       <button class="ad-tab" role="tab" aria-selected="true" data-t="orders">Orders<i id="tc1">0</i></button>
-      <button class="ad-tab" role="tab" aria-selected="false" data-t="subs">Subscriptions<i id="tc2">0</i></button>
-      <button class="ad-tab" role="tab" aria-selected="false" data-t="add">Add subscription</button>
+      <button class="ad-tab" role="tab" aria-selected="false" data-t="subs">Active Users<i id="tc2">0</i></button>
+      <button class="ad-tab" role="tab" aria-selected="false" data-t="add">Add user</button>
       <button class="ad-tab" role="tab" aria-selected="false" data-t="cust">Customers<i id="tc4">0</i></button>
       <button class="ad-tab" role="tab" aria-selected="false" data-t="board">Notice board<i id="tc3">0</i></button>
       <button class="ad-tab" role="tab" aria-selected="false" data-t="rev">Reviews<i id="tc5">0</i></button>
@@ -50,7 +50,7 @@
     </section>
 
     <section class="ad-pane ad-card" data-p="add" hidden>
-      <b class="ad-h">Add a subscription</b><span class="ac-note" style="display:block;margin:6px 0 0">Expiry is calculated. If the customer already has this service running, the new period starts when the current one ends. Gift cards are valid for 6 months.</span>
+      <b class="ad-h">Add a user</b><span class="ac-note" style="display:block;margin:6px 0 0">Expiry is calculated. If the customer already has this service running, the new period starts when the current one ends. Gift cards are valid for 6 months.</span>
       <form id="af" novalidate>
         <div class="ad-sec"><div class="ad-lab">1 · Customer</div><div class="ad-grid2">
           <div><label>Email *</label><input class="ac-in" name="email" type="email" required></div>
@@ -70,7 +70,7 @@
           <div><label>Sold through</label><select class="ac-in" name="channel"><option value="">Not recorded</option><option>WhatsApp</option><option>Facebook</option><option>Instagram</option><option>Phone call</option><option>Other</option></select></div>
         </div></div>
         <div class="ad-sec"><div class="ad-lab">3 · Account access <small>(what the customer sees in My account)</small></div><div id="accbox"></div></div>
-        <button class="ac-btn" type="submit" style="min-width:180px">Add subscription</button>
+        <button class="ac-btn" type="submit" style="min-width:180px">Add user</button>
       </form>
       <p class="ac-msg" id="am"></p>
     </section>
