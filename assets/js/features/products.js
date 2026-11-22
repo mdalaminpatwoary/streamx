@@ -1,5 +1,5 @@
 /* Products grid: search, sort, category filter, load more, 18+ age check. */
-const mq=matchMedia("(max-width:600px)");let PAGE=mq.matches?4:8,MORE=8; // phone shows 4 first; every "Load more" adds 8
+const mq=matchMedia("(max-width:600px)");let PAGE=8,MORE=8; // 8 first (two rows of 4 on phones); the row loads 8 more near its end
 let cat="All",q="",limit=PAGE,view=[],sortKey="rec";
 // Sort factors: popularity (list order), price, name, newest (added last), category
 const SORTS={rec:(a,b)=>a[1]-b[1],pa:(a,b)=>entry(a[0]).p-entry(b[0]).p||a[1]-b[1],pd:(a,b)=>entry(b[0]).p-entry(a[0]).p||a[1]-b[1],az:(a,b)=>a[0].name.localeCompare(b[0].name),za:(a,b)=>b[0].name.localeCompare(a[0].name),new:(a,b)=>b[1]-a[1],cat:(a,b)=>a[0].cat.localeCompare(b[0].cat)||a[1]-b[1]};
@@ -59,4 +59,4 @@ $("#sortBy").onchange=e=>{sortKey=e.target.value;limit=PAGE;renderProducts()};
 $("#search").oninput=e=>{q=e.target.value.toLowerCase().trim();limit=PAGE;renderProducts()};
 renderProducts();
 $("#bundleGrid").innerHTML=PRODUCTS.map((p,i)=>p.cat==="Bundle"?bcard(p,i):"").join("");
-mq.onchange=()=>{PAGE=mq.matches?4:8;limit=PAGE;renderProducts()};
+mq.onchange=()=>{limit=PAGE;renderProducts()};
