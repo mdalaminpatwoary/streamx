@@ -1,5 +1,5 @@
-/* Reviews: popular spotlight, moving rows and full story card. */
-// Reviews: popular spotlight (one after another), moving rows, click for full story
+/* Reviews: featured spotlight, moving rows and full story card. */
+// Reviews: featured spotlight (one after another), moving rows, click for full story
 const initials=n=>n.split(" ").map(w=>w[0]).join("").slice(0,2).toUpperCase();
 const ph=r=>r.photo?`<img src="${r.photo}" alt="${r.n}" loading="lazy" onerror="this.remove()">`:"";
 const THUMB='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10v12"/><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z"/></svg>';
@@ -17,7 +17,7 @@ function renderRows(){
   const half=Math.ceil(REVIEWS.length/2),rows=[REVIEWS.slice(0,half),REVIEWS.slice(half)];
   rows.forEach((row,x)=>{$("#rrow"+(x+1)).innerHTML=row.length?[0,1,2,3].map(c=>row.map(r=>rcard(r,c>0)).join("")).join(""):""});
 }
-// Popular review spotlight: big portrait, one review after another every 10 seconds (pauses on hover, off-screen and in background tabs)
+// Featured review spotlight: big portrait, one review after another every 10 seconds (pauses on hover, off-screen and in background tabs)
 let POP=REVIEWS.map((r,i)=>i); // every review takes its turn in the spotlight
 const QUOTE='<svg class="rs-q" viewBox="0 0 48 36" aria-hidden="true"><path d="M0 36V20C0 8 6 1.5 18 0v7c-6 1.2-8.600 4.400-8.800 9H18v20zm27 0V20C27 8 33 1.500 45 0v7c-6 1.200-8.600 4.400-8.800 9H45v20z"/></svg>';
 const POP_MS=10000;
@@ -33,7 +33,7 @@ function setPop(n,instant){
     <div class="rs-portrait"><span class="rs-pring"></span><span class="rs-ring r1"></span><span class="rs-ring r2"></span>
       <div class="rs-frame" onclick="openReview(${i})"><span class="rs-init">${initials(r.n)}</span>${ph(r)}<span class="rs-shine"></span></div>
       <span class="rs-badge"><span class="rs-stars">${"★".repeat(r.s||5)}</span><b>${(r.s||5).toFixed(1)}</b></span></div>
-    <div class="rs-body"><span class="eyebrow">Popular review</span>${QUOTE}
+    <div class="rs-body"><span class="eyebrow">Featured review</span>${QUOTE}
       <blockquote>${r.t.split(" ").map((w,k)=>`<span class="rw" style="--k:${k}">${w}</span>`).join(" ")}</blockquote>
       <div class="rs-by"><b>${r.n}</b><span>${[subLine(r),r.loc].filter(Boolean).join(" · ")}</span>${ccTag(r,"rs-cc")}</div>
       <div class="rs-svcs" aria-label="Services bought">${popTile(r)}</div>
@@ -89,7 +89,8 @@ document.addEventListener("keydown",e=>{
 
 // Reviews come from the admin page (database). If it can't be reached, the built-in list is used.
 function startReviews(){
-  POP=REVIEWS.map((r,i)=>i);pk=0;
+  POP=REVIEWS.map((r,i)=>r.popular?i:-1).filter(i=>i>-1);if(!POP.length)POP=REVIEWS.map((r,i)=>i); // reviews marked "Featured" in the admin take the spotlight; if none are marked, every review does
+  pk=0;
   const any=REVIEWS.length>0;
   ["#pop",".rwall"].forEach(q=>{const el=document.querySelector(q);if(el)el.hidden=!any});
   let em=document.getElementById("rvEmpty");

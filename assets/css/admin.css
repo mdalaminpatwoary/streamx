@@ -138,3 +138,8 @@
 .ad-photo{display:flex;gap:14px;align-items:flex-start}
 .ad-pv{flex:none;width:64px;height:64px;border-radius:50%;display:grid;place-items:center;background:#1b2140 center/cover no-repeat;border:1px solid var(--line);color:#8d95b5;font-weight:800;font-size:22px}
 .ad-photo>div{flex:1;min-width:0}
+
+/* Reviews: featured badge and row actions */
+.ad-pill.feat{background:rgba(255,194,71,.14);border-color:rgba(255,194,71,.4);color:#ffc247}
+.ad-ra{display:flex;flex-direction:column;gap:6px;align-items:stretch}
+@media(max-width:560px){.ad-ra{flex-direction:row;flex-wrap:wrap}}

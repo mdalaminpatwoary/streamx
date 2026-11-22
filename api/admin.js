@@ -4,6 +4,7 @@
    PATCH  /api/admin?id=<n>         change expiry {end_date} and/or login details {acct_email, acct_pass, acct_otp, acct_profile, acct_pin}
    DELETE /api/admin?id=<n>         remove one
    GET    /api/admin?view=orders    list paid orders (newest first) with delivery status
+   PATCH  /api/admin?review=<id>  feature or unfeature a review {popular:true|false} (shown in the home page spotlight)
    PATCH  /api/admin?order=<mtid>   set delivery  {delivery:"pending"|"delivered"}
    GET    /api/admin?view=customers&q=<text>   list customers (profiles + purchase history)
    GET/POST/PATCH/DELETE /api/admin?view=coupons | ?coupon=new | ?coupon=<id>   coupon codes
@@ -79,6 +80,12 @@ module.exports = async (req, res) => {
         const row = { name, role: clean(body.role, 60) || (student ? "Student" : ""), company: student ? "" : clean(body.company, 80), loc: clean(body.loc, 60), services, rating, body: text, photo: phimg ? "" : photo, proof_kind: kind, proof_url: purl, proof_img: pimg, has_img: !!pimg, popular: !!body.popular, kind: student ? "student" : "pro", institution: student ? clean(body.institution, 100) : "", country, expat: !!body.expat && country !== "BD", photo_img: phimg, has_photo: !!phimg };
         const out = (await db.rest("POST", "reviews", row, "return=representation"))[0];
         delete out.proof_img; delete out.photo_img; return res.status(200).json({ row: out });
+      }
+      if (req.method === "PATCH") {
+        const rid = parseInt(req.query.review, 10);
+        if (!(rid > 0)) return res.status(400).json({ error: "Invalid review." });
+        await db.rest("PATCH", `reviews?id=eq.${rid}`, { popular: !!body.popular });
+        return res.status(200).json({ ok: true });
       }
       if (req.method === "DELETE") {
         const rid = parseInt(req.query.review, 10);

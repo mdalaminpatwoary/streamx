@@ -1,7 +1,7 @@
 /* Customer reviews shown in the Reviews section. */
 // Reviews: replace with your real customer reviews
 const REVIEWS = [
-  // company, loc, services, fb, ig = shown in the details card (leave "" to hide). popular:true = shown in the "Popular review" spotlight. Use each customer's own Facebook / Instagram link.
+  // company, loc, services, fb, ig = shown in the details card (leave "" to hide). popular:true = shown in the "Featured review" spotlight. Use each customer's own Facebook / Instagram link.
 // role = designation shown under the name (e.g. "Student", "Business Owner"). photo = profile picture. cover = optional wide cover image (if empty, the photo is used as a blurred cover). Example: photo:"assets/img/reviews/rafiq.jpg", cover:"assets/img/reviews/rafiq-cover.jpg"
   {n:"Rafiq Hasan", role:"Software Engineer", company:"CodeNest Technologies", loc:"Dhaka", services:["Netflix", "Spotify"], fb:"https://www.facebook.com/", ig:"https://www.instagram.com/", popular:true, s:5, t:"Got my Netflix in 5 minutes. Very fast and honest service. Highly recommended!", p:"Netflix", photo:""},
   {n:"Tania Akter", role:"University Student", company:"", loc:"Chattogram", services:["Spotify"], fb:"https://www.facebook.com/", ig:"https://www.instagram.com/", s:5, t:"Spotify price is great and support replied quickly on WhatsApp. Smooth payment with bKash.", p:"Spotify", photo:""},

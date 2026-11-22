@@ -1,4 +1,4 @@
-/* Popular review spotlight: large portrait, word-by-word quote, 10s auto-advance with progress. */
+/* Featured review spotlight: large portrait, word-by-word quote, 10s auto-advance with progress. */
 .rs-wrap{position:relative;margin:0 0 28px}
 .rs{--p:0;position:relative;display:grid;grid-template-columns:minmax(300px,420px) 1fr;grid-template-areas:"pt body" "nav nav";gap:20px 56px;align-items:center;padding:44px 48px 28px;border-radius:28px;border:1px solid rgba(255,255,255,.09);background:linear-gradient(145deg,rgba(255,255,255,.06),rgba(255,255,255,.015));overflow:hidden;isolation:isolate;animation:rsIn .9s cubic-bezier(.16,1,.3,1) both}
 .rs.out{animation:rsOut .48s cubic-bezier(.7,0,.84,0) both}
