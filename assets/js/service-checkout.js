@@ -11,6 +11,7 @@
     '<div class="co-row"><label><span class="co-l">Mobile number</span><input id="co-p" type="tel" inputmode="numeric" autocomplete="tel" placeholder="01XXXXXXXXX" maxlength="14"></label>' +
     '<label><span class="co-l">Email</span><input id="co-e" type="email" autocomplete="email" placeholder="you@example.com" maxlength="100"></label></div>' +
     '<label><span class="co-l">Note for us <em>(optional)</em></span><textarea id="co-c" rows="2" maxlength="300" placeholder="Anything we should know about your order?"></textarea></label>' +
+    '<p class="co-agree">By paying, you agree to our <a href="/terms/" target="_blank" rel="noopener">Terms &amp; Conditions</a> and <a href="/refund-policy/" target="_blank" rel="noopener">Refund Policy</a>.</p>' +
     '<p class="co-er" role="alert"></p><button class="co-go" type="submit"></button>' +
     '<img class="co-eps" src="/assets/img/pay/eps-renew.webp" alt="Pay with EPS: Visa, Mastercard, American Express, bKash, Nagad, Rocket and more" loading="lazy" width="1012" height="162">' +
     '<small class="co-fine">You will be taken to the EPS payment page. We never see your card or wallet PIN.</small>' +

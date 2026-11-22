@@ -38,7 +38,7 @@ function layout(o) {
   </td></tr>
   <tr><td align="center" style="padding:22px 10px 6px;font:400 12.5px/1.7 ${FONT};color:${C.mut}">
     Need help? <a href="https://wa.me/${WA}" style="color:#ffb3aa;text-decoration:none;font-weight:700">Message us on WhatsApp</a> or reply to this email.<br>
-    <a href="${S}/account/" style="color:${C.mut}">My account</a> &nbsp;·&nbsp; <a href="${S}/terms/" style="color:${C.mut}">Terms</a> &nbsp;·&nbsp; <a href="${S}/privacy/" style="color:${C.mut}">Privacy</a> &nbsp;·&nbsp; <a href="${S}/return-policy/" style="color:${C.mut}">Return policy</a><br>
+    <a href="${S}/account/" style="color:${C.mut}">My account</a> &nbsp;·&nbsp; <a href="${S}/terms/" style="color:${C.mut}">Terms</a> &nbsp;·&nbsp; <a href="${S}/privacy/" style="color:${C.mut}">Privacy</a> &nbsp;·&nbsp; <a href="${S}/refund-policy/" style="color:${C.mut}">Refund policy</a><br>
     <span style="color:#6c7596">StreamX · Premium subscriptions for Bangladesh · Dhaka</span>
   </td></tr>
  </table>
@@ -53,9 +53,9 @@ const rows = (list) =>
     .join("")}</table>`;
 
 /* Item list: [{name, plan, q}] */
-const items = (list) =>
+const items = (list, pill = ["DELIVERED", "#0e2a1d", "#1d6b43", "#4ade80"]) =>
   `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid ${C.line};border-radius:14px;background:#0c1024">${list
-    .map((l, i) => `<tr><td style="padding:14px 16px;${i < list.length - 1 ? `border-bottom:1px solid ${C.line};` : ""}"><div style="font:800 15.5px ${FONT};color:${C.tx}">${esc(l.name)}${(l.q || 1) > 1 ? ` <span style="color:${C.mut};font-weight:600">× ${esc(l.q)}</span>` : ""}</div>${l.plan ? `<div style="font:400 13px ${FONT};color:${C.mut};margin-top:2px">${esc(l.plan)}</div>` : ""}</td><td align="right" style="padding:14px 16px;${i < list.length - 1 ? `border-bottom:1px solid ${C.line};` : ""}"><span style="display:inline-block;padding:4px 11px;border-radius:99px;background:#0e2a1d;border:1px solid #1d6b43;font:800 11.5px ${FONT};color:#4ade80;letter-spacing:.03em">DELIVERED</span></td></tr>`)
+    .map((l, i) => `<tr><td style="padding:14px 16px;${i < list.length - 1 ? `border-bottom:1px solid ${C.line};` : ""}"><div style="font:800 15.5px ${FONT};color:${C.tx}">${esc(l.name)}${(l.q || 1) > 1 ? ` <span style="color:${C.mut};font-weight:600">× ${esc(l.q)}</span>` : ""}</div>${l.plan ? `<div style="font:400 13px ${FONT};color:${C.mut};margin-top:2px">${esc(l.plan)}</div>` : ""}</td><td align="right" style="padding:14px 16px;${i < list.length - 1 ? `border-bottom:1px solid ${C.line};` : ""}"><span style="display:inline-block;padding:4px 11px;border-radius:99px;background:${pill[1]};border:1px solid ${pill[2]};font:800 11.5px ${FONT};color:${pill[3]};letter-spacing:.03em">${pill[0]}</span></td></tr>`)
     .join("")}</table>`;
 
 async function send({ to, subject, html, text, replyTo, idem, bcc }) {
@@ -93,7 +93,7 @@ const delivered = (req, ord) => {
       body: (lines.length ? items(lines) : "") + `<div style="height:14px"></div>` + rows([["Order", "#" + ref], ["Delivered", new Date(Date.now() + 6 * 3600000).toISOString().slice(0, 10) + " (Bangladesh time)"]]),
       cta: [S + "/account/", "View my subscriptions"],
       cta2: ["https://wa.me/" + WA + "?text=" + encodeURIComponent("Hi StreamX! I need help with my order #" + ref), "Get help on WhatsApp"],
-      note: "Sign in to your account with this email address (<b style=\"color:#c5cce2\">" + esc(ord.email || "") + "</b>) to see everything in one place. Something wrong with your account? Tell us within the warranty period and we will fix or replace it. See our <a href=\"" + S + "/return-policy/\" style=\"color:#ffb3aa\">return policy</a>." }),
+      note: "Sign in to your account with this email address (<b style=\"color:#c5cce2\">" + esc(ord.email || "") + "</b>) to see everything in one place. Something wrong with your account? Tell us within the warranty period and we will fix or replace it. See our <a href=\"" + S + "/refund-policy/\" style=\"color:#ffb3aa\">refund policy</a>." }),
     text: `Your StreamX order #${ref} is delivered.\n` + lines.map((l) => `- ${l.name} ${l.plan || ""} x${l.q || 1}`).join("\n") + `\nManage your subscriptions: ${S}/account/\nHelp: https://wa.me/${WA}`,
   };
 };
@@ -126,4 +126,26 @@ const orderCopy = (req, d) => {
   };
 };
 
-module.exports = { send, layout, signIn, delivered, profileChanged, orderCopy, esc, site };
+
+/* Sent when the owner marks an online order as refunded. r = {amount, fee, method, account, ref, note} */
+const refunded = (req, ord, r = {}) => {
+  const S = site(req), lines = (Array.isArray(ord.lines) ? ord.lines : []).filter(Boolean), first = (ord.name || "").trim().split(/\s+/)[0];
+  const ref = String(ord.mtid || "").slice(-8).toUpperCase(), tk = (n) => "৳" + Number(n).toLocaleString("en-US");
+  const paid = lines.reduce((t, l) => t + (Number(l.price) > 0 ? Number(l.price) * (l.q || 1) : 0), 0), amt = Number(r.amount) || 0, fee = Number(r.fee) || 0;
+  const day = new Date(Date.now() + 6 * 3600000).toISOString().slice(0, 10) + " (Bangladesh time)";
+  const refundRows = rows([["Order", "#" + ref], ["Amount paid", paid ? tk(paid) : ""], ["Refund charge", fee > 0 ? "− " + tk(fee) : ""], ["Amount refunded", amt > 0 ? tk(amt) : ""], ["Refunded to", [r.method, r.account].filter(Boolean).join(" · ")], ["Refund reference", r.ref || ""], ["Refund date", day]]);
+  const you = rows([["Name", ord.name || ""], ["Email", ord.email || ""], ["Mobile", ord.phone || ""]]);
+  const h = (t) => `<div style="font:800 12px ${FONT};letter-spacing:.12em;text-transform:uppercase;color:${C.mut};margin:18px 0 8px">${t}</div>`;
+  return {
+    subject: lines.length === 1 ? `Your ${lines[0].name} payment has been refunded` : "Your StreamX payment has been refunded",
+    html: layout({ req, preheader: "We have refunded your payment. You are always welcome back.", eyebrow: "Refund processed", title: first ? `${esc(first)}, your payment is refunded` : "Your payment is refunded",
+      intro: "We are sorry to see you go. We have refunded your payment, and the details are below. Thank you for giving StreamX a try." + (r.note ? "<br><br>" + esc(r.note) : ""),
+      body: (lines.length ? items(lines, ["REFUNDED", "#1b1f4a", "#4f5bd5", "#a5b4fc"]) : "") + h("Refund details") + refundRows + h("Your details") + you,
+      cta: [S + "/", "Browse subscriptions"],
+      cta2: ["https://wa.me/" + WA + "?text=" + encodeURIComponent("Hi StreamX! About my refunded order #" + ref), "Message us on WhatsApp"],
+      note: "You are always welcome at StreamX. Whenever you would like to come back, we will be glad to help. If any detail above looks wrong, reply to this email or message us and we will check it right away. See our <a href=\"" + S + "/refund-policy/\" style=\"color:#ffb3aa\">refund policy</a>." }),
+    text: `Your StreamX order #${ref} has been refunded.\n` + (amt > 0 ? `Amount refunded: ${tk(amt)}${fee > 0 ? ` (refund charge ${tk(fee)})` : ""}\n` : "") + ([r.method, r.account].filter(Boolean).length ? `Refunded to: ${[r.method, r.account].filter(Boolean).join(" ")}\n` : "") + (r.ref ? `Reference: ${r.ref}\n` : "") + `\nName: ${ord.name || ""}\nEmail: ${ord.email || ""}\nMobile: ${ord.phone || ""}\n\nYou are always welcome at StreamX.\nHelp: https://wa.me/${WA}`,
+  };
+};
+
+module.exports = { send, layout, signIn, delivered, refunded, profileChanged, orderCopy, esc, site };

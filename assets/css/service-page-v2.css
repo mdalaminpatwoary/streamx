@@ -137,3 +137,5 @@
 .hb-bar{top:76px}
 @media(max-width:620px){.hb-bar{top:72px}}
 @media(prefers-reduced-motion:reduce){.sp-buybar{transition:none}}
+
+.co-agree{margin:4px 0 8px;font-size:12.5px;line-height:1.55;color:#98a1bc;text-align:center}.co-agree a{color:#ff8a7c;text-decoration:underline;text-underline-offset:2px}.co-agree a:hover{color:#fff}

@@ -3,7 +3,7 @@
    Providers (OpenAI-compatible, both have a free tier): Groq first, Cerebras as the backup. Keys live in Vercel env vars:
      GROQ_API_KEY      (optional GROQ_MODEL, default openai/gpt-oss-20b)
      CEREBRAS_API_KEY  (optional CEREBRAS_MODEL, default llama3.1-8b)
-   The model only sees StreamX's own catalog, FAQ and return policy (loaded here, never from the browser), no account data. */
+   The model only sees StreamX's own catalog, FAQ and refund policy (loaded here, never from the browser), no account data. */
 const fs = require("fs");
 const path = require("path");
 const vm = require("vm");
@@ -51,7 +51,7 @@ function system(text) {
     "SERVICES: " + F.list,
     hit.length ? "DETAILS:\n" + hit.map(detail).join("\n") : "",
     "FAQ:\n" + F.faq,
-    F.ret ? "RETURN POLICY: " + F.ret : "",
+    F.ret ? "REFUND POLICY: " + F.ret : "",
   ].filter(Boolean).join("\n\n");
 }
 

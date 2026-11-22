@@ -414,3 +414,9 @@ h1{margin:10px 0 8px;font-size:clamp(30px,5vw,46px);line-height:1.1;letter-spaci
 .pf .rn-h b{color:#dfe5ff;font-weight:600;word-break:break-all}
 @media(max-width:560px){.ac-edit{margin-left:0;display:flex;width:max-content}}
 .ac-mbox label.pf-up{color:#fff;text-transform:none;letter-spacing:0;font:700 13.5px Manrope,system-ui,sans-serif;margin:0}
+
+.ac-eta{display:flex;gap:14px;align-items:flex-start;margin-top:14px;padding:14px 16px;border-radius:16px;border:1px solid rgba(245,158,11,.32);background:linear-gradient(135deg,rgba(245,158,11,.11),rgba(245,158,11,.03))}
+.ac-eta-i{flex:none;width:38px;height:38px;display:grid;place-items:center;border-radius:12px;background:rgba(245,158,11,.16);color:#f59e0b}.ac-eta-i svg{width:20px;height:20px}
+.ac-eta b{display:block;font-size:14.5px;color:#fff}.ac-eta p{margin:3px 0 0;font-size:13px;line-height:1.55;color:var(--mut)}
+.ac-eta-c{margin-top:8px!important}.ac-eta-c a{color:#ff8a7c;font-weight:700;text-decoration:underline;text-underline-offset:3px}.ac-eta-c a:hover{color:#fff}.ac-eta-c small{font-size:12px;color:#8a93b0}
+.ac-os.rf{color:#a5b4fc;background:rgba(129,140,248,.14);border:1px solid rgba(129,140,248,.4)}

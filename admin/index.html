@@ -7,7 +7,7 @@
 <meta name="robots" content="noindex,nofollow">
 <link rel="icon" href="/favicon.ico">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" onload="this.onload=null;this.rel='stylesheet'"><noscript><link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet"></noscript>
-<link rel="stylesheet" href="/assets/css/account.css?v=21">
+<link rel="stylesheet" href="/assets/css/account.css?v=31">
 <link rel="stylesheet" href="/assets/css/admin.css?v=12">
 </head>
 <body>
@@ -38,7 +38,7 @@
     </div>
 
     <section class="ad-pane ad-card" data-p="orders">
-      <div class="ac-bar"><b>Paid orders</b><select class="ac-in" id="of" style="max-width:210px"><option value="pending">Not delivered yet</option><option value="delivered">Delivered</option><option value="all">All</option></select></div>
+      <div class="ac-bar"><b>Paid orders</b><select class="ac-in" id="of" style="max-width:210px"><option value="pending">Not delivered yet</option><option value="delivered">Delivered</option><option value="refunded">Refunded</option><option value="all">All</option></select></div>
       <div class="ad-scroll"><table class="ad-tbl"><thead><tr><th>Paid (Dhaka)</th><th>Customer</th><th>Bought</th><th>Order ID</th><th>Delivery</th></tr></thead><tbody id="orows"></tbody></table></div>
       <p class="ac-note" id="ocnt"></p>
     </section>
@@ -167,9 +167,23 @@
       <div class="ad-prev" id="cprev"></div></div>
   </div>
   <div class="ad-df"><button class="ac-btn ac-ghost" type="button" onclick="document.getElementById('cdx').click()">Cancel</button><button class="ac-btn" id="csave" type="button" disabled>Save changes</button></div></dialog>
+<dialog id="rdlg" class="ad-dlg"><div class="ad-dh"><div><b>Mark as refunded</b><span id="rds"></span></div><button class="ad-x" id="rdx" type="button" aria-label="Close">✕</button></div>
+  <div class="ad-cb">
+    <div class="ad-sec"><div class="ad-lab">Refund details <small>(shown to the customer in the email)</small></div><div class="ad-grid2">
+      <div><label for="rda">Amount refunded (৳)</label><input class="ac-in" id="rda" inputmode="numeric" maxlength="8" autocomplete="off"></div>
+      <div><label for="rdf">Refund charge kept (৳) <em style="font-weight:400">optional</em></label><input class="ac-in" id="rdf" inputmode="numeric" maxlength="8" autocomplete="off" placeholder="0"></div>
+      <div><label for="rdm">Refunded to</label><select class="ac-in" id="rdm"><option>bKash</option><option>Nagad</option><option>Rocket</option><option>Upay</option><option>Bank transfer</option><option>Original payment method</option></select></div>
+      <div><label for="rdc">Account / number <em style="font-weight:400">optional</em></label><input class="ac-in" id="rdc" maxlength="60" autocomplete="off" placeholder="e.g. 01712345678"></div>
+      <div class="ad-wide"><label for="rdr">Refund reference / transaction ID <em style="font-weight:400">optional</em></label><input class="ac-in" id="rdr" maxlength="60" autocomplete="off"></div>
+      <div class="ad-wide"><label for="rdn">Message to the customer <em style="font-weight:400">optional</em></label><textarea class="ac-in" id="rdn" rows="2" maxlength="300" placeholder="Anything you want to add to the email"></textarea></div>
+    </div></div>
+    <div class="ad-sec"><label class="ad-sw"><input type="checkbox" id="rdt" checked><b></b><span>Email the customer</span></label>
+      <p class="ac-note" style="margin:8px 0 0">Send this only after the money has actually been sent back. The email includes the order, the refund details and the customer's details.</p></div>
+  </div>
+  <div class="ad-df"><button class="ac-btn ac-ghost" type="button" onclick="document.getElementById('rdx').click()">Cancel</button><button class="ac-btn" id="rdsave" type="button">Mark refunded</button></div></dialog>
 <div class="ad-toast" id="toast" role="status"></div>
 <script src="/assets/js/data/catalog.js"></script>
 <script src="/assets/js/data/countries.js?v=1"></script>
-<script src="/assets/js/admin.js?v=20"></script>
+<script src="/assets/js/admin.js?v=22"></script>
 </body>
 </html>

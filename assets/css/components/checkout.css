@@ -39,3 +39,5 @@
 .pay-cpm { min-height: 18px; margin: 8px 0 0; font-size: 13px; color: #b4bddb; }
 .pay-cpm.ok { color: #6ee7b7; } .pay-cpm.bad { color: #ff8a7e; }
 .pay-sum .pay-disc, .pay-sum .pay-disc b { color: #6ee7b7; }
+
+.pay-agree{margin:4px 0 8px;font-size:12.5px;line-height:1.55;color:#98a1bc;text-align:center}.pay-agree a{color:#ff8a7c;text-decoration:underline;text-underline-offset:2px}.pay-agree a:hover{color:#fff}

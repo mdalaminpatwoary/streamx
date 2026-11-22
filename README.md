@@ -38,7 +38,7 @@ assets/
 | WhatsApp avatar widget (names, messages) | `assets/js/features/chat-avatar.js` and `assets/css/components/chat-widget.css` |
 | Payment logos | `assets/img/pay/*.png` |
 | FAQ | `assets/js/data/faq.js` |
-| About / Terms / Return Policy text | `assets/js/data/policies.js` |
+| About / Terms / Refund Policy text | `assets/js/data/policies.js` |
 | "Try before you pay" quick list | `assets/js/features/trial.js` (`TRY_LIST`) |
 | Home hero text and order-card steps | `<section id="home">` in `index.html` (English text plus `data-bn` for Bangla) |
 | Home hero (3D service carousel, rolling brand, dot-grid canvas) | `assets/css/sections/hero-modern.css` and `assets/js/features/hero-motion.js` (services: `SV` list) |

@@ -118,7 +118,7 @@
   }
   var ORD = [], SUBS = [];
   function stats() {
-    var p = ORD.filter(function (o) { return (o.delivery || "pending") === "pending"; }).length, dn = ORD.length - p;
+    var p = ORD.filter(function (o) { return (o.delivery || "pending") === "pending"; }).length, dn = ORD.filter(function (o) { return o.delivery === "delivered"; }).length;
     var act = SUBS.filter(function (s) { return days(today, s.end_date) >= 0; }).length, soon = SUBS.filter(function (s) { var l = days(today, s.end_date); return l >= 0 && l <= 7; }).length;
     $("#s1").textContent = p; $("#s2").textContent = dn; $("#s3").textContent = act; $("#s4").textContent = soon; $("#tc1").textContent = p; $("#tc2").textContent = SUBS.length;
   }
@@ -265,17 +265,37 @@
   function drawOrders() {
     var f = $("#of").value, rows = ORD.filter(function (o) { return f === "all" || (o.delivery || "pending") === f; });
     $("#orows").innerHTML = rows.map(function (o) {
-      var dn = o.delivery === "delivered", t = new Date(Date.parse(o.paid_at || o.created_at) + 6 * 3600e3).toISOString().slice(0, 16).replace("T", " ");
+      var dn = o.delivery === "delivered", rf = o.delivery === "refunded", t = new Date(Date.parse(o.paid_at || o.created_at) + 6 * 3600e3).toISOString().slice(0, 16).replace("T", " ");
       var items = (o.lines || []).map(function (l) { return esc(l.name) + " · " + esc(l.plan) + (l.q > 1 ? " ×" + l.q : ""); }).join("<br>");
-      return '<tr><td data-l="Paid">' + esc(t) + '</td><td data-l="Customer"><div><b>' + esc(o.name || "") + "</b><br>" + esc(o.email) + "<br>" + esc(o.phone || "") + '</div></td><td data-l="Bought"><div>' + items + '</div></td><td data-l="Order ID" class="ad-id">' + esc(o.mtid) + '</td><td data-l="Delivery"><button class="ac-btn ac-sm' + (dn ? " ac-ghost" : "") + '" data-dv="' + esc(o.mtid) + '" data-to="' + (dn ? "pending" : "delivered") + '">' + (dn ? "Delivered ✓ (undo)" : "Mark delivered") + "</button></td></tr>";
+      return '<tr><td data-l="Paid">' + esc(t) + '</td><td data-l="Customer"><div><b>' + esc(o.name || "") + "</b><br>" + esc(o.email) + "<br>" + esc(o.phone || "") + '</div></td><td data-l="Bought"><div>' + items + '</div></td><td data-l="Order ID" class="ad-id">' + esc(o.mtid) + '</td><td data-l="Delivery"><div class="ad-btns">' + (rf ? '<span class="ad-pill warn">Refunded</span><button class="ac-btn ac-sm ac-ghost" data-dv="' + esc(o.mtid) + '" data-to="pending">Undo</button>' : '<button class="ac-btn ac-sm' + (dn ? " ac-ghost" : "") + '" data-dv="' + esc(o.mtid) + '" data-to="' + (dn ? "pending" : "delivered") + '">' + (dn ? "Delivered ✓ (undo)" : "Mark delivered") + '</button><button class="ac-btn ac-sm ac-ghost" data-dv="' + esc(o.mtid) + '" data-to="refunded">Refunded</button>') + "</div></td></tr>";
     }).join("");
     $("#ocnt").textContent = rows.length + " order" + (rows.length === 1 ? "" : "s") + ". Only paid orders appear here.";
   }
   $("#of").addEventListener("change", drawOrders);
+  var rdlg = $("#rdlg"), rcur = null;
+  function openRefund(id) {
+    var o = ORD.filter(function (x) { return x.mtid === id; })[0]; if (!o) return; rcur = o;
+    var tot = (o.lines || []).reduce(function (t, l) { return t + (l.price > 0 ? l.price * (l.q || 1) : 0); }, 0);
+    $("#rds").textContent = (o.name || "") + " · " + o.email; $("#rda").value = tot || ""; $("#rdf").value = ""; $("#rdc").value = o.phone || ""; $("#rdr").value = ""; $("#rdn").value = ""; $("#rdt").checked = true;
+    if (rdlg.showModal) rdlg.showModal(); else rdlg.setAttribute("open", "");
+  }
+  var closeR = function () { if (rdlg.close) rdlg.close(); else rdlg.removeAttribute("open"); };
+  $("#rdx").addEventListener("click", closeR);
+  $("#rdsave").addEventListener("click", function () {
+    if (!rcur) return; var b = this, id = rcur.mtid; b.disabled = true; b.textContent = "Saving…";
+    var refund = { amount: +$("#rda").value || 0, fee: +$("#rdf").value || 0, method: $("#rdm").value, account: $("#rdc").value, ref: $("#rdr").value, note: $("#rdn").value, notify: $("#rdt").checked };
+    api("?order=" + encodeURIComponent(id), { method: "PATCH", body: JSON.stringify({ delivery: "refunded", refund: refund }) })
+      .then(function (d) {
+        ORD.forEach(function (o) { if (o.mtid === id) { o.delivery = "refunded"; o.delivered_at = null; } });
+        closeR(); drawOrders(); stats();
+        toast(d.mailed ? "Marked as refunded. Email sent to the customer." : d.mailNote ? "Marked as refunded. " + d.mailNote : "Marked as refunded.", !d.mailed && !!d.mailNote);
+      }).catch(function (er) { toast(er.message || "Could not update the order.", 1); }).then(function () { b.disabled = false; b.textContent = "Mark refunded"; });
+  });
   $("#orows").addEventListener("click", function (e) {
     var b = e.target.closest("[data-dv]"); if (!b || b.disabled) return;
     var id = b.dataset.dv, to = b.dataset.to;
     if (to === "pending" && !confirm("Move this order back to Not delivered?")) return;
+    if (to === "refunded") { openRefund(id); return; }
     var label = b.textContent; b.disabled = true; b.textContent = "Saving…";
     api("?order=" + encodeURIComponent(id), { method: "PATCH", body: JSON.stringify({ delivery: to }) })
       .then(function (d) {

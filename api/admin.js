@@ -5,7 +5,7 @@
    DELETE /api/admin?id=<n>         remove one
    GET    /api/admin?view=orders    list paid orders (newest first) with delivery status
    PATCH  /api/admin?review=<id>  feature or unfeature a review {popular:true|false} (shown in the home page spotlight)
-   PATCH  /api/admin?order=<mtid>   set delivery  {delivery:"pending"|"delivered"}
+   PATCH  /api/admin?order=<mtid>   set delivery  {delivery:"pending"|"delivered"|"refunded"}
    GET    /api/admin?view=customers&q=<text>   list customers (profiles + purchase history)
    GET/POST/PATCH/DELETE /api/admin?view=coupons | ?coupon=new | ?coupon=<id>   coupon codes
    GET/POST/DELETE /api/admin?view=reviews | ?review=new | ?review=<id>   customer reviews
@@ -175,7 +175,7 @@ module.exports = async (req, res) => {
     if (req.method === "GET" && req.query && req.query.view === "orders")
       return res.status(200).json({ rows: await db.rest("GET", "orders?select=*&paid=eq.true&order=created_at.desc&limit=200") });
     if (req.method === "PATCH" && ord) {
-      const dv = body.delivery === "delivered" ? "delivered" : body.delivery === "pending" ? "pending" : "";
+      const dv = ["delivered", "pending", "refunded"].includes(body.delivery) ? body.delivery : "";
       if (!dv) return res.status(400).json({ error: "Invalid status." });
       const before = ((await db.rest("GET", `orders?mtid=eq.${db.q(ord)}&select=delivery`)) || [])[0];
       const row = (await db.rest("PATCH", `orders?mtid=eq.${db.q(ord)}`, { delivery: dv, delivered_at: dv === "delivered" ? new Date().toISOString() : null }, "return=representation"))[0];
@@ -189,6 +189,18 @@ module.exports = async (req, res) => {
           catch (e) { console.error("delivered email failed", e && e.message); mailNote = "Email to the customer failed: " + String(e && e.message || "unknown error").slice(0, 120); }
         }
       } else if (row && dv === "delivered") mailNote = "Customer was already emailed earlier.";
+      if (row && dv === "refunded" && !(before && before.delivery === "refunded")) {
+        const rf = body.refund && typeof body.refund === "object" ? body.refund : {};
+        if (rf.notify === false) mailNote = "Customer was not emailed (you turned it off).";
+        else if (!row.email) mailNote = "No email address on this order, so no email was sent.";
+        else if (!process.env.RESEND_API_KEY) mailNote = "Email is not configured (RESEND_API_KEY missing), so no email was sent.";
+        else {
+          try {
+            const mail = require("./_mail"), m = mail.refunded(req, row, { amount: Number(rf.amount) || 0, fee: Number(rf.fee) || 0, method: clean(rf.method, 40), account: clean(rf.account, 60), ref: clean(rf.ref, 60), note: clean(rf.note, 300) });
+            await mail.send({ to: row.email, subject: m.subject, html: m.html, text: m.text, idem: "refunded-" + row.mtid }); mailed = true;
+          } catch (e) { console.error("refund email failed", e && e.message); mailNote = "Email to the customer failed: " + String(e && e.message || "unknown error").slice(0, 120); }
+        }
+      }
       return res.status(200).json({ row, mailed, mailNote });
     }
     if (req.method === "GET") {

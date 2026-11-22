@@ -19,6 +19,9 @@ h1{margin:0 0 8px;font-size:26px}p{margin:0 0 6px;color:var(--mut);line-height:1
 .ref div{display:flex;justify-content:space-between;gap:12px;color:var(--mut)}.ref b{color:#fff;font-weight:600;text-align:right;word-break:break-word}
 .btn{display:block;margin-top:12px;padding:14px;border-radius:14px;font-weight:700;color:#fff;text-decoration:none;background:linear-gradient(90deg,#ED3124,#FF4F3F)}
 .btn.alt{background:transparent;border:1px solid var(--line)}
+.eta{margin:0 0 4px;padding:14px 16px;text-align:left;display:flex;gap:14px;align-items:flex-start;border-radius:16px;border:1px solid rgba(245,158,11,.32);background:linear-gradient(135deg,rgba(245,158,11,.11),rgba(245,158,11,.03))}
+.eta i{flex:none;width:38px;height:38px;display:grid;place-items:center;border-radius:12px;background:rgba(245,158,11,.16);color:#f59e0b}.eta svg{width:20px;height:20px}
+.eta b{display:block;font-size:14.5px}.eta p{margin:3px 0 0;font-size:13px;line-height:1.55}.eta .c{margin-top:8px}.eta a{color:#ff8a7c;font-weight:700;text-underline-offset:3px}.eta small{font-size:12px;color:#8a93b0}
 .spin{animation:s 1s linear infinite}@keyframes s{to{transform:rotate(360deg)}}
 </style>
 </head>
@@ -28,6 +31,7 @@ h1{margin:0 0 8px;font-size:26px}p{margin:0 0 6px;color:var(--mut);line-height:1
   <h1 id="h">Checking your payment…</h1>
   <p id="p">Please wait a moment. Do not close this page.</p>
   <div class="ref" id="ref" hidden></div>
+  <div class="eta" id="eta" hidden><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></i><div><b>Delivery in 30 minutes to 3 hours</b><p>Most accounts arrive within 30 minutes and some take up to 3 hours. We email you the moment it is ready.</p><p class="c">Do not want this subscription? <a id="etaC" target="_blank" rel="noopener" href="#">Request cancellation</a> <small>(charges may apply)</small></p></div></div>
   <div id="acts"></div>
 </main>
 <script>
@@ -47,7 +51,7 @@ h1{margin:0 0 8px;font-size:26px}p{margin:0 0 6px;color:var(--mut);line-height:1
     var st=String(d.status||"").toLowerCase();
     if(st==="success"){
       try{localStorage.removeItem("sx_cart")}catch(e){}
-      show("ok","✓","Payment received","Thank you! Your order is confirmed. We will deliver your subscription shortly. Keep the reference below.");done(d);acts.innerHTML+=' <a class="btn" href="/account/" style="background:transparent;border:1px solid rgba(255,255,255,.2)">My subscriptions</a>';
+      show("ok","✓","Payment received","Thank you! Your order is confirmed. Keep the reference below.");done(d);var e=document.getElementById("eta");e.hidden=false;document.getElementById("etaC").href=wa("Hi StreamX! I want to cancel my order. Order ref: "+(d.reference||t)+(d.epsTransactionId?", Transaction ID: "+d.epsTransactionId:"")+".");acts.innerHTML+=' <a class="btn" href="/account/" style="background:transparent;border:1px solid rgba(255,255,255,.2)">My subscriptions</a>';
     }else if(st==="pending"||st==="processing"||st==="initiated"){
       show("wait","…","Payment is processing","Your bank is still confirming. If money was deducted, send us the reference on WhatsApp.");done(d);
     }else{

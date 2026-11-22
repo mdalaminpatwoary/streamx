@@ -46,5 +46,17 @@
         }
       ]
     }
+  ],
+  "redirects": [
+    {
+      "source": "/return-policy",
+      "destination": "/refund-policy/",
+      "permanent": true
+    },
+    {
+      "source": "/return-policy/",
+      "destination": "/refund-policy/",
+      "permanent": true
+    }
   ]
 }
