@@ -223,3 +223,4 @@
 .sp-pc.has b{z-index:1;font-size:13.5px}
 @media(max-width:700px){.sp-pc{width:128px;padding:11px}.sp-pc b{font-size:13px}.sp-pc i{font-size:34px}.sp-pcs .sp-abtrack{animation-duration:38s}}
 @media(prefers-reduced-motion:reduce){.sp-pcs .sp-abtrack{animation:none}.sp-pcs{overflow-x:auto}.sp-pc{transform:none!important}}
+.sp-pc.clk{cursor:pointer}.sp-pc.clk:focus-visible{outline:2px solid #fff;outline-offset:3px}

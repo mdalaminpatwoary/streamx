@@ -40,17 +40,27 @@
     if (pb) { var m = pb.textContent.match(/^(\D*)([\d,]+)(.*)$/); if (m) { var to = +m[2].replace(/,/g, ""), s = performance.now(); (function up(t) { var k = Math.min(1, (t - s) / 1100), e = 1 - Math.pow(1 - k, 3); pb.textContent = m[1] + Math.round(to * e).toLocaleString("en-US") + m[3]; if (k < 1) requestAnimationFrame(up); })(s); } }
   }
 
-  /* 5. Live trending (TMDB via /api/trending). The section stays hidden if the data is unavailable. */
-  var ts = $("[data-trend]");
-  if (ts) {
-    var ids = ts.dataset.trend.split(","), names = ts.dataset.names.split(","), st = { p: ids[0], k: "movie" }, cache = {}, rail = $(".sp-rail", ts), note = $(".sp-tnote", ts);
-    var REG = { US: "United States", IN: "India", GB: "United Kingdom", BD: "Bangladesh" };
-    var paint = function (d) {
-      var list = (st.k === "movie" ? d.movies : d.tv) || [];
-      if (!list.length) { rail.innerHTML = '<p class="sp-empty">Nothing to show here right now.</p>'; return; }
-      rail.innerHTML = list.map(function (m, i) { return '<article class="sp-poster" style="--i:' + i + '" tabindex="0" role="button" aria-label="' + esc(m.t) + ': details and trailer" data-id="' + m.id + '" data-k="' + m.k + '"><span class="sp-rank" aria-hidden="true">' + (i + 1) + '</span><img src="https://image.tmdb.org/t/p/w342' + esc(m.p) + '" alt="' + esc(m.t) + ' poster" loading="lazy" width="342" height="513"><div class="sp-ov" aria-hidden="true"><i><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></i><b>Watch trailer</b></div><div><b>' + esc(m.t) + '</b><small>' + esc([m.y, m.v ? "★ " + m.v : ""].filter(Boolean).join(" · ")) + '</small></div></article>'; }).join("");
-      note.textContent = d.fallback ? "Local chart not available for this platform, showing the " + (REG[d.fallback] || d.fallback) + " chart. Data: TMDB." : "Chart for " + (REG[d.region] || d.region) + ". Data: TMDB.";
-    };
+  /* Newer title sheet (same one as the home page Trending): loaded only on first click, falls back to the built-in dialog. */
+  var sheetP = null;
+  function loadSheet() {
+    if (window.sxSheet) return Promise.resolve();
+    if (sheetP) return sheetP;
+    var l = document.createElement("link"); l.rel = "stylesheet"; l.href = "/assets/css/title-sheet.css?v=4"; document.head.appendChild(l);
+    var one = function (src) { return new Promise(function (ok, no) { var sc = document.createElement("script"); sc.src = src; sc.onload = ok; sc.onerror = no; document.head.appendChild(sc); }); };
+    var chain = Promise.resolve();
+    ["/assets/js/data/logos.js?v=20261122a", "/assets/js/features/mylist.js?v=1", "/assets/js/features/title-sheet.js?v=3"].forEach(function (u) { if (u.indexOf("logos") > -1 && typeof LOGOS !== "undefined") return; chain = chain.then(function () { return one(u); }); });
+    sheetP = chain.then(function () { if (!window.sxSheet) throw 0; }).catch(function (e) { sheetP = null; throw e; });
+    return sheetP;
+  }
+  function openTitle(id, k, from) {
+    loadSheet().then(function () { sxSheet.open(id, k, from); }).catch(function () { titleDialog()(id, k, from); });
+  }
+
+  /* Title details dialog: shared by the trending rail and the About poster strip. */
+  var ttOpen = null;
+  function titleDialog() {
+    if (ttOpen) return ttOpen;
+    var svcName = ((($("[data-trend]") || {}).dataset || {}).svc) || (($(".sp-hc-top b") || {}).textContent) || "";
     /* Title details dialog: same design and logic as the home page (trailer, IMDb link, "buy" card). */
     var dlg = document.createElement("div"); dlg.className = "tt"; dlg.hidden = true; dlg.setAttribute("role", "dialog"); dlg.setAttribute("aria-modal", "true");
     dlg.innerHTML = '<div class="tt-bg" data-x></div><div class="tt-box" tabindex="-1"><button class="tt-x" type="button" data-x aria-label="Close">×</button><div class="tt-in"></div></div>';
@@ -60,7 +70,7 @@
     var closeT = function () { dlg.hidden = true; tin.innerHTML = ""; document.documentElement.classList.remove("tt-open"); if (lastFocus) lastFocus.focus(); };
     dlg.addEventListener("click", function (e) { if (e.target.closest("[data-x]")) closeT(); });
     document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !dlg.hidden) closeT(); });
-    var svcName = ts.dataset.svc || "", svcLogo = ($(".sp-hcard .sp-logo") || {}).outerHTML || "";
+    var svcLogo = ($(".sp-hcard .sp-logo") || {}).outerHTML || "";
     var buyCard = function () { var svcFrom = ($(".sp-hcard .sp-from b") || {}).textContent || ""; return '<div class="tt-buy">' + svcLogo + '<div class="tt-buy-t"><small>Wanna watch it now?</small><b>Grab yours · ' + esc(svcName) + '</b>' + (svcFrom ? '<span>Plans from <strong>' + esc(svcFrom) + '</strong></span>' : '') + '</div><button class="btn grad-bg" type="button" data-buy>Buy now <i aria-hidden="true">→</i></button></div>'; };
     tin.addEventListener("click", function (e) { if (!e.target.closest("[data-buy]")) return; closeT(); var pl = document.getElementById("plans"); if (pl) pl.scrollIntoView({ behavior: "smooth" }); });
     var paintT = function (d) {
@@ -81,8 +91,23 @@
       var key = k + id, got = tcache[key] ? Promise.resolve(tcache[key]) : fetch("/api/title?id=" + id + "&k=" + k).then(function (r) { if (!r.ok) throw 0; return r.json(); }).then(function (d) { tcache[key] = d; return d; });
       got.then(function (d) { if (my === tTok && !dlg.hidden) paintT(d); }).catch(function () { if (my === tTok) tin.innerHTML = '<div class="tt-load"><span>Couldn\'t load details right now. Please try again.</span><button class="btn ghost" type="button" data-x>Close</button></div>'; });
     };
-    rail.addEventListener("click", function (e) { var c = e.target.closest(".sp-poster[data-id]"); if (c) openT(c.dataset.id, c.dataset.k, c); });
-    rail.addEventListener("keydown", function (e) { if ((e.key === "Enter" || e.key === " ") && e.target.matches(".sp-poster[data-id]")) { e.preventDefault(); openT(e.target.dataset.id, e.target.dataset.k, e.target); } });
+    ttOpen = openT; return openT;
+  }
+
+  /* 5. Live trending (TMDB via /api/trending). The section stays hidden if the data is unavailable. */
+  var ts = $("[data-trend]");
+  if (ts) {
+    var ids = ts.dataset.trend.split(","), names = ts.dataset.names.split(","), st = { p: ids[0], k: "movie" }, cache = {}, rail = $(".sp-rail", ts), note = $(".sp-tnote", ts);
+    var REG = { US: "United States", IN: "India", GB: "United Kingdom", BD: "Bangladesh" };
+    var paint = function (d) {
+      var list = (st.k === "movie" ? d.movies : d.tv) || [];
+      if (!list.length) { rail.innerHTML = '<p class="sp-empty">Nothing to show here right now.</p>'; return; }
+      rail.innerHTML = list.map(function (m, i) { return '<article class="sp-poster" style="--i:' + i + '" tabindex="0" role="button" aria-label="' + esc(m.t) + ': details and trailer" data-id="' + m.id + '" data-k="' + m.k + '"><span class="sp-rank" aria-hidden="true">' + (i + 1) + '</span><img src="https://image.tmdb.org/t/p/w342' + esc(m.p) + '" alt="' + esc(m.t) + ' poster" loading="lazy" width="342" height="513"><div class="sp-ov" aria-hidden="true"><i><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></i><b>Watch trailer</b></div><div><b>' + esc(m.t) + '</b><small>' + esc([m.y, m.v ? "★ " + m.v : ""].filter(Boolean).join(" · ")) + '</small></div></article>'; }).join("");
+      note.textContent = d.fallback ? "Local chart not available for this platform, showing the " + (REG[d.fallback] || d.fallback) + " chart. Data: TMDB." : "Chart for " + (REG[d.region] || d.region) + ". Data: TMDB.";
+    };
+    var openT = titleDialog();
+    rail.addEventListener("click", function (e) { var c = e.target.closest(".sp-poster[data-id]"); if (c) openTitle(c.dataset.id, c.dataset.k, c); });
+    rail.addEventListener("keydown", function (e) { if ((e.key === "Enter" || e.key === " ") && e.target.matches(".sp-poster[data-id]")) { e.preventDefault(); openTitle(e.target.dataset.id, e.target.dataset.k, e.target); } });
     var load = function (first) {
       var p = st.p; if (cache[p]) { paint(cache[p]); return Promise.resolve(); }
       return fetch("/api/trending?p=" + p + "&r=BD").then(function (r) { if (!r.ok) throw 0; return r.json(); }).then(function (d) { cache[p] = d; if (p === st.p) paint(d); if (first) { ts.hidden = false; var tl = $('.sp-nav nav a[href="#trending"]'); if (tl) tl.hidden = false; } }).catch(function () { if (!first) rail.innerHTML = '<p class="sp-empty">Trending is unavailable right now.</p>'; });
@@ -153,12 +178,18 @@
         var p = memo[t] || (memo[t] = fetch("/api/title?q=" + encodeURIComponent(t)).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }));
         p.then(function (d) {
           if (!d || !d.p) return;
-          var im = new Image(); im.alt = ""; im.loading = "lazy"; im.decoding = "async";
-          im.onload = function () { c.insertBefore(im, c.firstChild); c.classList.add("has"); };
+          var im = document.createElement("img"); im.alt = ""; im.decoding = "async";
+          im.onload = function () { c.classList.add("has"); };
+          im.onerror = function () { if (im.parentNode) im.parentNode.removeChild(im); };
+          c.insertBefore(im, c.firstChild);
+          if (d.id) { c.dataset.id = d.id; c.dataset.k = d.k; if (c.getAttribute("aria-hidden") !== "true") { c.tabIndex = 0; c.setAttribute("role", "button"); c.setAttribute("aria-label", (d.t || t) + ": details and trailer"); } c.classList.add("clk"); }
           im.src = "https://image.tmdb.org/t/p/w342" + d.p;
         });
       });
     }, { rootMargin: "200px" });
     io.observe(mq);
+    var go = function (c) { openTitle(c.dataset.id, c.dataset.k, c); };
+    mq.addEventListener("click", function (e) { var c = e.target.closest(".sp-pc[data-id]"); if (c) go(c); });
+    mq.addEventListener("keydown", function (e) { if ((e.key === "Enter" || e.key === " ") && e.target.matches(".sp-pc[data-id]")) { e.preventDefault(); go(e.target); } });
   })();
 })();
