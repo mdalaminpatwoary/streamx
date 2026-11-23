@@ -131,6 +131,9 @@
       if (pl) bo.observe(pl); if (en) bo.observe(en);
     }
     function upd() { if (bb) bb.classList.toggle("on", scrollY > 520 && !vis.p && !vis.e); }
+    /* Lock the nav's layout height: hiding the links row only changes the pill, never the page flow (this caused the flicker loop). */
+    function lock() { if (!nv) return; var c = nv.classList.contains("sp-compact"); nv.style.height = ""; nv.classList.remove("sp-compact"); var h = nv.offsetHeight; nv.style.height = h + "px"; if (c) nv.classList.add("sp-compact"); }
+    lock(); addEventListener("load", lock); addEventListener("resize", function () { clearTimeout(lock.t); lock.t = setTimeout(lock, 150); });
     function run() {
       tk = false; var y = scrollY;
       if (nv) { nv.classList.toggle("sp-scrolled", y > 30); if (y > 140 && y > last + 4) nv.classList.add("sp-compact"); else if (y < last - 4 || y < 60) nv.classList.remove("sp-compact"); }
