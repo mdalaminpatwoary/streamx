@@ -18,7 +18,7 @@
     {id:"viki",name:"Rakuten Viki",mono:"V",bg:"#0b8fe0",shop:"Viki"},
     {id:"mubi",name:"MUBI",mono:"M",bg:"#0a0a0a",shop:"MUBI"}
   ];
-  const REGIONS=[["BD","Bangladesh"],["IN","India"],["PK","Pakistan"],["LK","Sri Lanka"],["NP","Nepal"],["US","United States"],["GB","United Kingdom"],["CA","Canada"],["AU","Australia"],["AE","United Arab Emirates"],["SA","Saudi Arabia"],["SG","Singapore"],["MY","Malaysia"],["JP","Japan"],["KR","South Korea"],["DE","Germany"],["FR","France"],["BR","Brazil"]];
+  const REGIONS=[["CA","Canada"],["CN","China"],["CY","Cyprus"],["FI","Finland"],["FR","France"],["DE","Germany"],["HU","Hungary"],["IN","India"],["IT","Italy"],["KW","Kuwait"],["MY","Malaysia"],["MV","Maldives"],["NP","Nepal"],["OM","Oman"],["PK","Pakistan"],["QA","Qatar"],["SA","Saudi Arabia"],["SG","Singapore"],["KR","South Korea"],["ES","Spain"],["SE","Sweden"],["CH","Switzerland"],["TH","Thailand"],["AE","United Arab Emirates"],["GB","United Kingdom"],["US","United States"]];   // the 25 delivery countries + India (alphabetical, India in its place)
   const esc=t=>String(t).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
   const flag=c=>`https://flagcdn.com/48x36/${c.toLowerCase()}.png`;
   const ok=(v,list)=>list.includes(v);

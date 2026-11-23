@@ -60,7 +60,7 @@ const head = ({ title, desc, url, img, extra = "", noindex = false }) => `<!DOCT
 <meta name="theme-color" content="#0a0d1a">
 <link rel="icon" href="/favicon.ico" sizes="any"><link rel="apple-touch-icon" href="/assets/img/favicon/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" onload="this.onload=null;this.rel=\'stylesheet\'"><noscript><link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet"></noscript>
-<link rel="stylesheet" href="/assets/css/service-page.css?v=40"><link rel="stylesheet" href="/assets/css/service-page-v2.css?v=28"><link rel="stylesheet" href="/assets/css/title-modal.css?v=20261122b"><link rel="stylesheet" href="/assets/css/components/chat-widget.css?v=20261121c"><link rel="stylesheet" href="/assets/css/components/chatbot.css?v=32">
+<link rel="stylesheet" href="/assets/css/service-page.css?v=40"><link rel="stylesheet" href="/assets/css/service-page-v2.css?v=28"><link rel="stylesheet" href="/assets/css/title-modal.css?v=20261124g"><link rel="stylesheet" href="/assets/css/components/chat-widget.css?v=20261121c"><link rel="stylesheet" href="/assets/css/components/chatbot.css?v=42">
 ${extra}
 </head>`;
 

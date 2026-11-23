@@ -550,3 +550,7 @@
 .rm-cc,.rs-cc{display:inline-flex;align-items:center;gap:8px;padding:5px 12px;border:1px solid var(--line);border-radius:99px;background:rgba(255,255,255,.05);font:700 12.5px Manrope,sans-serif;color:#dfe4f5}
 .rm-head .rec{margin-right:8px}.rs-cc{margin-top:8px}
 .fl-i{width:20px;height:15px;border-radius:3px;object-fit:cover;flex:none}
+
+/* Frosted glass like the cart drawer: policy, customer story and feedback pop-ups (payment and age-check stay solid) */
+.mdl:not(.pay-m):not(#agate){background:rgba(0,0,0,.6);-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px)}
+.mdl:not(.pay-m):not(#agate) .mdlb,.rmb,.fdk-box{background:radial-gradient(420px circle at 100% 0%,rgba(79,107,255,.28),transparent 60%),radial-gradient(380px circle at 0% 100%,rgba(237,49,36,.2),transparent 60%),rgba(10,13,28,.6);-webkit-backdrop-filter:blur(26px) saturate(1.5);backdrop-filter:blur(26px) saturate(1.5);border-color:rgba(255,255,255,.1);box-shadow:0 30px 80px rgba(0,0,0,.5)}

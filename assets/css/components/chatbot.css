@@ -374,3 +374,6 @@ html.bt-lock,html.bt-lock body{overflow:hidden!important;overscroll-behavior:non
 
 button.bt-sv{width:100%;font:inherit;text-align:left;cursor:pointer}
 .bt-tile .bt-limg[src*="/chorki."],.bt-tile .bt-limg[src*="/faphouse."],.bt-tile .bt-limg[src*="/ullu."],.bt-tile .bt-limg[src*="/altt."]{padding:0;object-fit:cover;border-radius:inherit}
+
+/* Chat window: frosted glass like the cart drawer */
+.bt{background:radial-gradient(420px circle at 100% 0%,rgba(79,107,255,.28),transparent 60%),radial-gradient(380px circle at 0% 100%,rgba(237,49,36,.2),transparent 60%),rgba(10,13,28,.6);-webkit-backdrop-filter:blur(26px) saturate(1.5);backdrop-filter:blur(26px) saturate(1.5);border-color:rgba(255,255,255,.1);box-shadow:0 30px 80px rgba(0,0,0,.5)}

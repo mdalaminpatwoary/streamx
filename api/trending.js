@@ -18,7 +18,7 @@ const PLATFORMS = {
   viki: { re: /viki/i, id: 344 },
   mubi: { re: /^mubi$/i, id: 11 },
 };
-const REGIONS = new Set(["BD", "IN", "PK", "LK", "NP", "US", "GB", "CA", "AU", "AE", "SA", "SG", "MY", "JP", "KR", "DE", "FR", "BR"]);
+const REGIONS = new Set(["CA", "CN", "CY", "FI", "FR", "DE", "HU", "IT", "KW", "MY", "MV", "NP", "OM", "PK", "QA", "SA", "SG", "KR", "ES", "SE", "CH", "TH", "AE", "GB", "US", "IN"]); // the 25 delivery countries + India (JioHotstar)
 
 // Region used when the requested one has no data for that platform (default: US).
 const FALLBACK = { hotstar: "IN", zee5: "IN", sonyliv: "IN" };
