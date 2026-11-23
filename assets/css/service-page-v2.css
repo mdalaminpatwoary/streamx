@@ -162,6 +162,9 @@
 .sp-logo.img{overflow:hidden;background:none!important}.sp-logo.img img{width:100%;height:100%;object-fit:cover;display:block}
 /* Services hub cards: no colored top strip (everything else unchanged) */
 .hb-card::before{display:none}
+/* Services hub cards: same hover as the home product cards. Blue border, a fixed frosted glow (blue top right, soft red bottom left) and no brand-colored line or corner glow */
+.hb-card:hover{border-color:#4f6bff;box-shadow:0 0 28px rgba(79,107,255,.25),inset 0 1px 0 rgba(255,255,255,.14)}
+.hb-card::after{right:auto;top:auto;width:auto;height:auto;inset:0;border-radius:inherit;pointer-events:none;background:radial-gradient(240px circle at 100% 0%,rgba(79,107,255,.3),transparent 65%),radial-gradient(220px circle at 0% 100%,rgba(237,49,36,.14),transparent 65%),linear-gradient(160deg,rgba(255,255,255,.07),rgba(255,255,255,.015) 55%)}
 
 /* ===== About: branded showcase ===== */
 .sp-ab{position:relative;overflow:hidden;isolation:isolate}
