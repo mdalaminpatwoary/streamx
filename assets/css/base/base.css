@@ -641,3 +641,6 @@ html #why{--band:linear-gradient(180deg,rgba(255,255,255,.03),rgba(237,49,36,.05
 html #reviews{--band:linear-gradient(180deg,rgba(122,77,255,.08),rgba(79,107,255,.03))}
 html #faq{--band:linear-gradient(180deg,rgba(255,255,255,.03),rgba(40,170,200,.045))}
 html #cta{--band:linear-gradient(180deg,rgba(237,49,36,.09),rgba(255,138,92,.03))}
+
+/* Full-bleed app icons (Chorki, FapHouse): fill the tile, no white frame */
+.limg[src*="/chorki."],.limg[src*="/faphouse."],.limg[src*="/ullu."],.limg[src*="/altt."]{padding:0;background:none;object-fit:cover}

@@ -373,3 +373,4 @@ html.bt-lock,html.bt-lock body{overflow:hidden!important;overscroll-behavior:non
 .bt-card>.bt-ct{gap:10px}
 
 button.bt-sv{width:100%;font:inherit;text-align:left;cursor:pointer}
+.bt-tile .bt-limg[src*="/chorki."],.bt-tile .bt-limg[src*="/faphouse."],.bt-tile .bt-limg[src*="/ullu."],.bt-tile .bt-limg[src*="/altt."]{padding:0;object-fit:cover;border-radius:inherit}
