@@ -50,7 +50,7 @@
     "New: pay online straight from the chat. Pick a plan, tap Pay online, done.",
     "Tip: tell me your budget, like 'under 300', and I'll list what fits.",
     "Tip: ask me for the price of any service, I answer instantly.",
-    "Update: the Notice board in My account now shows our offers and updates.",
+    "Update: Announcements in My account now show our offers and updates.",
     "Update: My account now lists the devices signed in to your streaming plans.",
     "Tip: stuck? Type your problem in the Need help box in My account and send it on WhatsApp.",
     "Trick: tap a service name in my answers to open its plans straight away."
