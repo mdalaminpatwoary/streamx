@@ -39,14 +39,20 @@
     const id=String(t.id!=null?t.id:t.at+"|"+t.t),bell=document.getElementById("ntBell");
     if(!bell||store.get()===id)return;
     store.set(id); /* mark as seen straight away so a refresh never repeats it */
-    if(matchMedia("(prefers-reduced-motion: reduce)").matches){bell.classList.add("pop");return}
+    if(matchMedia("(prefers-reduced-motion: reduce)").matches){bell.classList.add("nt-pop-b");return}
     const k=KIND[t.k]?t.k:"info",el=document.createElement("a");
     el.className="nt-isl k-"+k;el.href="/notices/#"+k;el.setAttribute("role","status");
     el.innerHTML=`<div class="nt-isl-in"><span class="nt-ik"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg></span><div class="nt-it"><small>${KIND[k]}</small><b>${esc(t.t)}</b>${t.m?`<em>${esc(t.m)}</em>`:""}</div><button class="nt-isl-x" type="button" aria-label="Close">✕</button></div>`;
     const from=()=>{const r=bell.getBoundingClientRect(),ok=r.width>0&&r.top>=0&&r.bottom<=innerHeight;return ok?r:{left:innerWidth-62,top:12,width:42,height:42}};
     const put=(r)=>{el.style.left=r.left+"px";el.style.top=r.top+"px";el.style.width=r.width+"px";el.style.height=r.height+"px"};
     let timer,closed=false,hover=false;
-    const close=()=>{if(closed)return;closed=true;clearTimeout(timer);el.classList.remove("open");put(from());setTimeout(()=>{el.style.opacity="0"},520);setTimeout(()=>{el.remove();bell.classList.add("pop")},800)};
+    /* Close with a transform-only fly-back to the icon: no width/height/top animation, so the navbar is never overlapped or re-laid-out (Safari/Firefox glitch) */
+    const close=()=>{if(closed)return;closed=true;clearTimeout(timer);
+      const a=el.getBoundingClientRect(),b=from(),dx=b.left+b.width/2-(a.left+a.width/2),dy=b.top+b.height/2-(a.top+a.height/2);
+      el.style.transition="transform .45s cubic-bezier(.5,0,.75,0),opacity .35s ease .1s";
+      el.style.transformOrigin="50% 50%";el.style.pointerEvents="none";
+      requestAnimationFrame(()=>{el.style.transform=`translate(${dx}px,${dy}px) scale(.12)`;el.style.opacity="0"});
+      setTimeout(()=>{el.remove();bell.classList.add("nt-pop-b")},520)};
     const arm=()=>{clearTimeout(timer);timer=setTimeout(()=>{hover?arm():close()},6500)};
     el.addEventListener("mouseenter",()=>{hover=true});el.addEventListener("mouseleave",()=>{hover=false});
     el.querySelector(".nt-isl-x").addEventListener("click",ev=>{ev.preventDefault();ev.stopPropagation();close()});

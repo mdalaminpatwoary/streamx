@@ -76,9 +76,9 @@
 .nt-isl b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:800 14.5px Manrope,sans-serif}
 .nt-isl em{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#b4bddb;font:600 12.5px Manrope,sans-serif;font-style:normal}
 .nt-isl-x{flex:none;width:26px;height:26px;border:0;border-radius:50%;background:rgba(255,255,255,.1);color:#fff;font:700 13px/1 Manrope,sans-serif;cursor:pointer}
-#ntBell.pop{animation:ntPop .6s ease}
+#ntBell.nt-pop-b{animation:ntPop .6s ease}
 @keyframes ntPop{40%{transform:scale(1.22)}100%{transform:scale(1)}}
-@media(prefers-reduced-motion:reduce){.nt-isl,.nt-isl-in{transition:none}#ntBell.pop{animation:none}}
+@media(prefers-reduced-motion:reduce){.nt-isl,.nt-isl-in{transition:none}#ntBell.nt-pop-b{animation:none}}
 /* The megaphone icon replaces the "Notices" text link in the desktop menu (keeps the bar from overflowing); the phone menu keeps the link */
 @media(min-width:861px){#ntNav{display:none!important}}
 #ntBell{flex:none;box-sizing:border-box;width:42px;height:42px}
