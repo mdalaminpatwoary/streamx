@@ -114,3 +114,15 @@ html.ts-open{overflow:hidden}
 .ts-get:focus-visible{outline:2px solid #ff8a7e;outline-offset:3px}
 .ts-acts .ts-get{flex:1 1 100%;margin:0 0 2px}
 .ts-get .ts-lg{flex:none;width:40px;height:40px}
+
+/* Trailer autoplay (muted) in the header; speaker button at the top right */
+.ts-hero iframe{opacity:0;transition:opacity .9s ease;pointer-events:none}
+.ts-hero iframe.on{opacity:1}
+.ts-hero.auto{aspect-ratio:16/9;background-size:cover}
+.ts-hero.auto .ts-play{display:none}
+.ts-snd{position:absolute;right:62px;top:14px;z-index:4;display:grid;place-items:center;width:40px;height:40px;border-radius:50%;border:0;background:rgba(8,10,24,.65);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:#fff;cursor:pointer;transition:background .2s,transform .2s}
+.ts-snd[hidden]{display:none}
+.ts-snd:hover{background:rgba(255,255,255,.22);transform:scale(1.06)}
+.ts-snd svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+@media(max-width:760px){.ts-snd{top:10px;right:56px;width:36px;height:36px}}
+@media(prefers-reduced-motion:reduce){.ts-hero iframe{transition:none}}

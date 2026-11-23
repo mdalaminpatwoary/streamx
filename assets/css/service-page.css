@@ -409,3 +409,9 @@ body.sp-adult:not(.ok) .sp-age{display:grid}
 .hb-nb b{display:block;font-size:21px}.hb-nb b span{font-weight:600;color:var(--mut)}.hb-nb p{color:var(--mut);margin:10px 0 20px}
 @media(max-width:620px){.hb-bar{top:57px}.hb-count{display:none}.hb-grid{grid-template-columns:1fr}.hb-search kbd{display:none}.hb-search input{height:52px;padding-right:56px}.hb-sec{padding-top:34px}}
 @media(prefers-reduced-motion:reduce){.hb-card,.hb-card:hover{transition:none;transform:none}}
+
+/* Poster hover: frosted play button + quiet caption (matches home Trending) */
+.sp-poster>.sp-ov{background:linear-gradient(0deg,rgba(6,8,20,.78),rgba(6,8,20,.12) 62%,rgba(6,8,20,.18))}
+.sp-ov i{width:52px;height:52px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.55);-webkit-backdrop-filter:blur(10px) saturate(1.4);backdrop-filter:blur(10px) saturate(1.4);box-shadow:0 12px 30px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.35)}
+.sp-poster:hover .sp-ov i{background:rgba(255,255,255,.26)}
+.sp-poster>.sp-ov b{position:absolute;left:0;right:0;bottom:12px;text-align:center;font-size:10px;font-weight:600;letter-spacing:1.6px;text-transform:uppercase;color:rgba(255,255,255,.88)}

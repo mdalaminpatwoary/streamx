@@ -45,10 +45,10 @@
   function loadSheet() {
     if (window.sxSheet) return Promise.resolve();
     if (sheetP) return sheetP;
-    var l = document.createElement("link"); l.rel = "stylesheet"; l.href = "/assets/css/title-sheet.css?v=4"; document.head.appendChild(l);
+    var l = document.createElement("link"); l.rel = "stylesheet"; l.href = "/assets/css/title-sheet.css?v=5"; document.head.appendChild(l);
     var one = function (src) { return new Promise(function (ok, no) { var sc = document.createElement("script"); sc.src = src; sc.onload = ok; sc.onerror = no; document.head.appendChild(sc); }); };
     var chain = Promise.resolve();
-    ["/assets/js/data/logos.js?v=20261122a", "/assets/js/features/mylist.js?v=1", "/assets/js/features/title-sheet.js?v=3"].forEach(function (u) { if (u.indexOf("logos") > -1 && typeof LOGOS !== "undefined") return; chain = chain.then(function () { return one(u); }); });
+    ["/assets/js/data/logos.js?v=20261122a", "/assets/js/features/mylist.js?v=1", "/assets/js/features/title-sheet.js?v=5"].forEach(function (u) { if (u.indexOf("logos") > -1 && typeof LOGOS !== "undefined") return; chain = chain.then(function () { return one(u); }); });
     sheetP = chain.then(function () { if (!window.sxSheet) throw 0; }).catch(function (e) { sheetP = null; throw e; });
     return sheetP;
   }
@@ -178,7 +178,7 @@
   (function () {
     var mq = $(".sp-pcs[data-posters]"); if (!mq || !("IntersectionObserver" in window)) return;
     var norm = function (x) { return String(x || "").toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9]+/g, " ").trim(); };
-    var same = function (q, r) { q = norm(q); r = norm(r); return !!q && !!r && (q === r || q.indexOf(r) > -1 && r.length > 3 || r.indexOf(q) > -1 && q.length > 3); };
+    var same = function (q, r) { q = norm(q); r = norm(r); return !!q && !!r && (q === r || r.indexOf(q + " ") === 0 || q.indexOf(r) > -1 && r.length > 3); };
     var seen = false, io = new IntersectionObserver(function (es) {
       if (!es[0].isIntersecting || seen) return; seen = true; io.disconnect();
       var track = $(".sp-abtrack", mq), names = [];
