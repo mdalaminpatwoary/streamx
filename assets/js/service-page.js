@@ -141,4 +141,24 @@
     }
     addEventListener("scroll", function () { if (!tk) { tk = true; requestAnimationFrame(run); } }, { passive: true }); run();
   })();
+
+  /* 6. About: real posters on the popular-titles strip (TMDB via /api/title?q=). Falls back to the styled cards. */
+  (function () {
+    var mq = $(".sp-pcs[data-posters]"); if (!mq || !("IntersectionObserver" in window)) return;
+    var seen = false, io = new IntersectionObserver(function (es) {
+      if (!es[0].isIntersecting || seen) return; seen = true; io.disconnect();
+      var cards = [].slice.call(mq.querySelectorAll(".sp-pc")), memo = {};
+      cards.forEach(function (c) {
+        var t = (c.querySelector("b") || {}).textContent || ""; if (!t) return;
+        var p = memo[t] || (memo[t] = fetch("/api/title?q=" + encodeURIComponent(t)).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }));
+        p.then(function (d) {
+          if (!d || !d.p) return;
+          var im = new Image(); im.alt = ""; im.loading = "lazy"; im.decoding = "async";
+          im.onload = function () { c.insertBefore(im, c.firstChild); c.classList.add("has"); };
+          im.src = "https://image.tmdb.org/t/p/w342" + d.p;
+        });
+      });
+    }, { rootMargin: "200px" });
+    io.observe(mq);
+  })();
 })();

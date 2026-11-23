@@ -162,3 +162,64 @@
 .sp-logo.img{overflow:hidden;background:none!important}.sp-logo.img img{width:100%;height:100%;object-fit:cover;display:block}
 /* Services hub cards: no colored top strip (everything else unchanged) */
 .hb-card::before{display:none}
+
+/* ===== About: branded showcase ===== */
+.sp-ab{position:relative;overflow:hidden;isolation:isolate}
+.sp-ab::before{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(620px 420px at 18% 38%,color-mix(in srgb,var(--c) 22%,transparent),transparent 70%)}
+.sp-abgrid{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:56px;align-items:center}
+.sp-abvis{position:relative;width:100%;max-width:400px;aspect-ratio:1;margin:0 auto}
+.sp-abvis::before{content:"";position:absolute;inset:14%;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--c) 45%,transparent),transparent 68%);filter:blur(10px);animation:abPulse 5s ease-in-out infinite}
+.sp-abring{position:absolute;left:50%;top:50%;border-radius:50%;border:1px dashed color-mix(in srgb,var(--c) 60%,#fff);width:56%;height:56%;margin:-28% 0 0 -28%;animation:abSpin 26s linear infinite;opacity:.8}
+.sp-abring.r2{width:78%;height:78%;margin:-39% 0 0 -39%;border-style:solid;border-color:rgba(255,255,255,.1);animation-duration:40s;animation-direction:reverse}
+.sp-abring.r3{width:100%;height:100%;margin:-50% 0 0 -50%;border-color:rgba(255,255,255,.06);animation-duration:60s}
+.sp-abring::after{content:"";position:absolute;top:-4px;left:50%;width:8px;height:8px;margin-left:-4px;border-radius:50%;background:#fff;box-shadow:0 0 14px 2px color-mix(in srgb,var(--c) 80%,#fff)}
+.sp-ablogo{position:absolute;left:50%;top:50%;width:30%;aspect-ratio:1;transform:translate(-50%,-50%);animation:abFloat 6s ease-in-out infinite}
+.sp-ablogo .sp-logo{width:100%;height:100%;border-radius:26%;box-shadow:0 24px 50px -16px color-mix(in srgb,var(--c) 80%,#000),0 0 0 6px rgba(255,255,255,.06)}
+.sp-ablogo .sp-logo b{font-size:clamp(30px,5vw,48px)}
+.sp-abb{position:absolute;display:inline-flex;align-items:center;gap:7px;padding:9px 14px;border-radius:99px;font-size:13px;font-weight:700;color:#fff;white-space:nowrap;background:rgba(14,18,38,.82);border:1px solid rgba(255,255,255,.14);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);box-shadow:0 14px 30px -14px rgba(0,0,0,.7);animation:abBob 5s ease-in-out infinite}
+.sp-abb svg{width:16px;height:16px;color:color-mix(in srgb,var(--c) 55%,#fff)}
+.sp-abb.b1{left:-2%;top:16%}
+.sp-abb.b2{right:-2%;top:44%;animation-delay:-1.7s}
+.sp-abb.b3{left:6%;bottom:12%;animation-delay:-3.2s}
+.sp-abtxt h2::before{content:"About";display:block;margin-bottom:12px;color:var(--ac);font:800 12px Manrope,sans-serif;letter-spacing:1.6px;text-transform:uppercase}
+.sp-abtxt p{color:#b9c2de;margin:16px 0 0}
+.sp-abfor{margin-top:26px;padding:20px 22px;border-radius:18px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.09)}
+.sp-abfor h3{margin:0 0 8px;font-size:13px;letter-spacing:1.4px;text-transform:uppercase;color:var(--mut)}
+.sp-abfor .sp-list{list-style:none;padding:0;margin:0}
+.sp-abfor li{position:relative;margin:0;padding:9px 0 9px 32px;color:#d5dbf0;border-top:1px solid rgba(255,255,255,.06);opacity:0;transform:translateX(-12px);transition:opacity .6s ease,transform .6s ease}
+.sp-abfor li:first-child{border-top:0}
+.sp-abfor li::before{content:"";position:absolute;left:0;top:50%;width:20px;height:20px;margin-top:-10px;border-radius:50%;background:color-mix(in srgb,var(--c) 35%,transparent) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 12.5 4 4 8-9'/%3E%3C/svg%3E") center/12px no-repeat}
+.sp-abtxt.in .sp-abfor li{opacity:1;transform:none}
+.sp-abtxt.in .sp-abfor li:nth-child(2){transition-delay:.12s}.sp-abtxt.in .sp-abfor li:nth-child(3){transition-delay:.24s}.sp-abtxt.in .sp-abfor li:nth-child(4){transition-delay:.36s}.sp-abtxt.in .sp-abfor li:nth-child(5){transition-delay:.48s}
+.sp-abpop{margin-top:56px}
+.sp-abph{font-size:13px!important;letter-spacing:1.4px;text-transform:uppercase;color:var(--mut);font-weight:800;margin-bottom:16px}
+.sp-abmq{overflow:hidden;-webkit-mask:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+.sp-abtrack{display:flex;gap:12px;width:max-content;animation:abMarq 38s linear infinite}
+.sp-abmq:hover .sp-abtrack{animation-play-state:paused}
+@keyframes abSpin{to{transform:rotate(360deg)}}
+@keyframes abFloat{50%{transform:translate(-50%,calc(-50% - 8px))}}
+@keyframes abBob{50%{transform:translateY(-7px)}}
+@keyframes abPulse{50%{opacity:.6;transform:scale(1.06)}}
+@keyframes abMarq{to{transform:translateX(calc(-50% - 6px))}}
+@media(max-width:860px){.sp-abgrid{grid-template-columns:1fr;gap:34px}.sp-abvis{max-width:340px}.sp-abpop{margin-top:40px}}
+@media(max-width:420px){.sp-abb{font-size:12px;padding:7px 11px}.sp-abb.b2{right:0}.sp-abb.b1{left:0}}
+@media(prefers-reduced-motion:reduce){.sp-abring,.sp-ablogo,.sp-abb,.sp-abvis::before,.sp-abtrack{animation:none}.sp-abmq{overflow-x:auto}.sp-abfor li{opacity:1;transform:none}}
+
+/* About: angled poster marquee */
+.sp-abpop{margin-top:56px;margin-bottom:0}
+.sp-abmq.sp-pcs{margin-top:0;padding:26px 0 34px;-webkit-mask:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent);mask:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent)}
+.sp-pcs .sp-abtrack{gap:18px;padding-left:18px;animation:abMarq 46s linear infinite}
+.sp-pc{--r:-4deg;--y:0px;position:relative;flex:none;width:156px;aspect-ratio:2/3;border-radius:16px;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;padding:14px;color:#fff;background:linear-gradient(160deg,color-mix(in srgb,var(--c) 60%,#0a0d1a),color-mix(in srgb,var(--c) 14%,#0a0d1a));border:1px solid rgba(255,255,255,.14);box-shadow:0 22px 36px -22px rgba(0,0,0,.9);transform:translateY(var(--y)) rotate(var(--r));transition:transform .35s cubic-bezier(.2,.8,.2,1),border-color .25s}
+.sp-pc:nth-child(even){--r:3.5deg;--y:18px}
+.sp-pc:nth-child(3n){--r:-2deg}
+.sp-pc:hover{transform:translateY(-8px) rotate(0) scale(1.06);border-color:color-mix(in srgb,var(--c) 70%,#fff);z-index:2}
+.sp-pc::before{content:"";position:absolute;inset:0;background:radial-gradient(120% 70% at 100% 0,rgba(255,255,255,.16),transparent 60%)}
+.sp-pc i{position:absolute;top:8px;right:12px;font:800 42px/1 Manrope,sans-serif;font-style:normal;letter-spacing:-.04em;color:rgba(255,255,255,.14)}
+.sp-pc b{position:relative;font-size:15px;line-height:1.25;font-weight:800;text-shadow:0 2px 10px rgba(0,0,0,.5)}
+.sp-pc img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .5s}
+.sp-pc.has img{opacity:1}
+.sp-pc.has::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(6,8,20,.92),rgba(6,8,20,0) 55%)}
+.sp-pc.has i{display:none}
+.sp-pc.has b{z-index:1;font-size:13.5px}
+@media(max-width:700px){.sp-pc{width:128px;padding:11px}.sp-pc b{font-size:13px}.sp-pc i{font-size:34px}.sp-pcs .sp-abtrack{animation-duration:38s}}
+@media(prefers-reduced-motion:reduce){.sp-pcs .sp-abtrack{animation:none}.sp-pcs{overflow-x:auto}.sp-pc{transform:none!important}}
