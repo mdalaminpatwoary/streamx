@@ -53,7 +53,9 @@ async function activateOrder(mtid) {
     if (!gift && !(l.months >= 1)) continue;
     for (let k = 0; k < (l.q || 1); k++) {
       // A gift card is valid for 6 months from purchase and never stacks on an earlier one.
-      const row = await addSub({ email: ord.email, name: ord.name, phone: ord.phone, service: l.name, plan: l.plan, months: gift ? 6 : l.months, nostack: gift, source: "online", order_ref: mtid, line_idx: i * 20 + k });
+      const combo = l.name === "Entertainment Combo";   // two accounts (Netflix + Prime Video): one row each, same dates
+      const row = await addSub({ email: ord.email, name: ord.name, phone: ord.phone, service: l.name, plan: combo ? l.plan + " · Netflix" : l.plan, months: gift ? 6 : l.months, nostack: gift, source: "online", order_ref: mtid, line_idx: i * 20 + k });
+      if (combo && row) { try { const r2 = await addSub({ email: ord.email, name: ord.name, phone: ord.phone, service: l.name, plan: l.plan + " · Prime Video", months: l.months, nostack: true, start: row.start_date, source: "online", order_ref: mtid, line_idx: 1000 + i * 20 + k }); if (r2 && r2.id) { try { await require("./_sheet").syncSub(r2.id); } catch (e) { /* optional */ } } } catch (e) { console.error("combo second row not saved", e && e.message); } }
       if (gift && row && row.id) {
         const m = /\$\s?(\d+)/.exec(String(l.plan || ""));
         try { await rest("PATCH", `subscriptions?id=eq.${row.id}`, { gift_region: "US", gift_amount: m ? "$" + m[1] : null }); } catch (e) { console.error("gift details not saved", e && e.message); }

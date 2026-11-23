@@ -9,6 +9,7 @@
   var today = new Date(Date.now() + 6 * 3600e3).toISOString().slice(0, 10);
   var days = function (a, b) { return Math.round((Date.parse(b + "T00:00:00Z") - Date.parse(a + "T00:00:00Z")) / 86400000); };
   var isGift = function (n) { return /gift card$/i.test(n || ""); };
+  var isCombo = function (n) { return n === "Entertainment Combo"; }, COMBO_PARTS = ["Netflix", "Prime Video"];
   var isStream = function (n) { return PROD.some(function (p) { return p.name === n && p.cat === "Streaming"; }); };
 
   /* ---------- Account access editor (used in the Add form and in the edit dialog) ---------- */
@@ -91,7 +92,11 @@
     var name = $("#svc").value, p = P.filter(function (x) { return x.name === name; })[0], o = [], gift = isGift(name);
     $("#pwrap").hidden = gift;
     if (!gift) { p.variants.forEach(function (v) { v.plans.forEach(function (pl) { o.push({ t: (p.variants.length > 1 ? v.n + " · " : "") + pl.v, m: pl.m }); }); }); $("#pln").innerHTML = o.map(function (x) { return '<option data-m="' + x.m + '">' + esc(x.t) + "</option>"; }).join(""); }
-    var box = $("#accbox"); box.innerHTML = accessHTML({ mode: "email_pass" }, name, true); syncAccess(box.firstChild);
+    var box = $("#accbox");
+    if (isCombo(name)) { /* the combo is two separate accounts: Netflix + Prime Video, each with its own login */
+      box.innerHTML = COMBO_PARTS.map(function (n) { return '<div class="ad-part"><div class="ad-lab" style="margin:0 0 8px"><b>' + esc(n) + ' account</b></div>' + accessHTML({ mode: "email_pass" }, name, false) + "</div>"; }).join("");
+    } else box.innerHTML = accessHTML({ mode: "email_pass" }, name, true);
+    [].forEach.call(box.querySelectorAll(".ad-acc"), syncAccess);
   }
   $("#svc").addEventListener("change", plans); plans();
 
@@ -320,9 +325,11 @@
   var t; $("#q").addEventListener("input", function () { clearTimeout(t); t = setTimeout(list, 300); });
 
   $("#af").addEventListener("submit", function (e) {
-    e.preventDefault(); var f = e.target, m = $("#am"), name = f.service.value, gift = isGift(name), o = f.plan.selectedOptions[0], box = $("#accbox").firstChild, er = accessError(box);
+    e.preventDefault(); var f = e.target, m = $("#am"), name = f.service.value, gift = isGift(name), o = f.plan.selectedOptions[0], roots = [].slice.call($("#accbox").querySelectorAll(".ad-acc")), box = roots[0], er = "";
+    roots.forEach(function (r, i) { var x = accessError(r); if (x && !er) er = (roots.length > 1 ? COMBO_PARTS[i] + ": " : "") + x; });
     if (er) { m.className = "ac-msg"; m.textContent = er; return; }
     var acc = readAccess(box);
+    if (isCombo(name) && roots.length === 2) acc = { parts: roots.map(readAccess) };
     if (gift && !acc.gifts.length) { m.className = "ac-msg"; m.textContent = "Add at least one gift card with an amount."; return; }
     var body = Object.assign({ email: f.email.value, name: f.name.value, phone: f.phone.value, service: name, plan: gift ? "Gift card" : o.value, months: gift ? 6 : +o.dataset.m, start: f.start.value || null, notes: f.notes.value, price: f.price.value, pay_method: f.pay_method.value, txn_id: f.txn_id.value, channel: f.channel.value }, acc);
     api("", { method: "POST", body: JSON.stringify(body) })

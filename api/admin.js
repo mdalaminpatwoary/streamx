@@ -241,6 +241,20 @@ module.exports = async (req, res) => {
         return res.status(200).json(warn ? { row: rows[0], rows, warn } : { row: rows[0], rows });
       }
       if (!svc || !clean(body.plan, 80) || !(months >= 1 && months <= 60)) return res.status(400).json({ error: "Choose a service and plan." });
+      if (svc === "Entertainment Combo" && Array.isArray(body.parts) && body.parts.length === 2) {
+        // The combo is two accounts (Netflix + Prime Video): one subscription row each, same dates, grouped by a shared order reference.
+        const ref = "ADM" + Date.now().toString(36).toUpperCase(), names = ["Netflix", "Prime Video"], rows = [];
+        let warn = "";
+        for (let i = 0; i < 2; i++) {
+          const row = await addSub(Object.assign({}, base, { plan: clean(body.plan, 60) + " · " + names[i], order_ref: ref, line_idx: i, start: i ? rows[0].start_date : base.start, nostack: i > 0 }));
+          rows.push(row);
+          const lg = access.toRow(body.parts[i] || {});
+          if (lg && row && row.id) { try { await db.rest("PATCH", `subscriptions?id=eq.${row.id}`, lg); } catch (e) { console.error("login details not saved", e && e.message); warn = "Added, but some login details could not be saved. Run the latest SQL in Supabase."; } }
+        }
+        { const pw = await savePay(rows[0], body); if (pw) warn = warn || "Added, but " + pw; }
+        for (let i = 0; i < rows.length; i++) await sheet.syncSub(rows[i] && rows[i].id);
+        return res.status(200).json(warn ? { row: rows[0], rows, warn } : { row: rows[0], rows });
+      }
       const row = await addSub(Object.assign({}, base, { plan: clean(body.plan, 80) }));
       const lg = access.toRow(body);
       if (lg && row && row.id) { try { await db.rest("PATCH", `subscriptions?id=eq.${row.id}`, lg); } catch (e) { console.error("login details not saved", e && e.message); return res.status(200).json({ row, warn: "Added, but the login details could not be saved. Run the latest SQL in Supabase." }); } }
