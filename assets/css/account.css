@@ -421,3 +421,18 @@ h1{margin:10px 0 8px;font-size:clamp(30px,5vw,46px);line-height:1.1;letter-spaci
 .ac-eta-c{margin-top:8px!important}.ac-eta-c a{color:#ff8a7c;font-weight:700;text-decoration:underline;text-underline-offset:3px}.ac-eta-c a:hover{color:#fff}.ac-eta-c small{font-size:12px;color:#8a93b0}
 .ac-os.rf{color:#a5b4fc;background:rgba(129,140,248,.14);border:1px solid rgba(129,140,248,.4)}
 .ad-part+.ad-part{margin-top:18px}.ad-part>.ad-lab b{color:#fff;letter-spacing:.08em}
+
+/* Renew several plans together (same expiry date) */
+.ac-rg{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin:0 0 16px;padding:16px 18px;border-radius:18px;background:linear-gradient(135deg,rgba(245,158,11,.14),rgba(237,49,36,.10));border:1px solid rgba(245,158,11,.35)}
+.ac-rgi{min-width:0;display:grid;gap:3px}.ac-rgt{font:800 11px/1 inherit;letter-spacing:.14em;text-transform:uppercase;color:#fbbf24}.ac-rgi b{font-size:16px}.ac-rgi small{color:#a9b2cc;font-size:12.5px}
+#rm.multi .rn-sum{display:none}
+.rm-list{display:grid;gap:8px;margin:4px 0 14px}.rm-list[hidden]{display:none}
+.rm-row{display:grid;grid-template-columns:auto auto 1fr auto;align-items:center;gap:12px;padding:10px 12px;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);cursor:pointer;transition:border-color .2s,background .2s}
+.rm-row.on{border-color:rgba(251,191,36,.55);background:rgba(251,191,36,.07)}
+.rm-row input{width:18px;height:18px;accent-color:#ed3124}.rm-tile{display:grid}.rm-t{min-width:0;display:grid;gap:2px}.rm-t small{color:#98a1bc;font-size:12px}.rm-p{font-weight:800}
+.rm-list{margin-top:14px}
+#rm .rm-list .rm-row{display:grid;grid-template-columns:auto auto minmax(0,1fr) auto;align-items:center;gap:12px;margin:0;text-transform:none;letter-spacing:0;font-size:14px;font-weight:600;color:#fff}
+#rm .rm-list .rm-row b{font-size:14.5px;text-transform:none;letter-spacing:0;color:#fff}
+#rm .rm-list .rm-row small{text-transform:none;letter-spacing:0;font-size:12px;font-weight:500;color:#98a1bc}
+#rm .rm-list .rm-p{font-size:14px;font-weight:800;text-transform:none;letter-spacing:0}
+#rm .rm-list .rm-tile>*{width:40px;height:40px;font-size:18px}

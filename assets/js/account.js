@@ -27,6 +27,7 @@
     var p = PROD.filter(function (x) { return x.name === s.service; })[0]; if (!p) return null;
     var label = s.plan.indexOf(" · ") > -1 ? s.plan.split(" · ")[0] : "", vr = label ? p.variants.filter(function (v) { return v.n === label; })[0] : p.variants[0];
     var pl = vr && vr.plans.filter(function (x) { return x.m === s.months; })[0];
+    if (p.packs) { var pk = (label || s.plan).trim(); pl = p.variants[0].plans.filter(function (x) { return x.v === pk; })[0] || pl; vr = p.variants[0]; label = ""; } /* Entertainment Combo: priced by pack, rows are "Pack 1 · Netflix" */
     return pl ? { name: p.name, vr: label || undefined, v: pl.v, price: pl.p } : null;
   }
   var NM = { google: "Google", microsoft: "Microsoft" };
@@ -238,6 +239,27 @@
   function render(d) { renderCore(d); var pq = d.profile || {}; if (pq.editable !== false && !pq.phone && !snoozed()) setTimeout(function () { openProfile(true); }, 350); setTimeout(function () { var m = /renew=(\d+)/.exec(location.hash), b = m && document.querySelector('[data-renew="' + m[1] + '"]'); if (b) { try { history.replaceState(null, "", location.pathname); } catch (e) {} b.click(); } }, 0); }
   function greet() { var h = new Date().getHours(); return h >= 5 && h < 12 ? "Good morning" : h >= 12 && h < 17 ? "Good afternoon" : "Good evening"; }
   var ARW = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+  /* Renew several at once: renewable plans that share the same expiry date. The two accounts of a combo count as one plan. */
+  function renewGroups() {
+    if (!DATA) return [];
+    var items = [], seen = {};
+    DATA.subscriptions.forEach(function (s) {
+      if (isGift(s) || s._left < -7) return;
+      var pl = planOf(s); if (!pl) return;
+      var k = s.service === "Entertainment Combo" ? "c|" + (s.order_ref || s.id) + "|" + s.end_date : "s|" + s.id;
+      if (seen[k]) { seen[k].members.push(s); return; }
+      seen[k] = { s: s, pl: pl, members: [s] }; items.push(seen[k]);
+    });
+    var by = {}; items.forEach(function (it) { (by[it.s.end_date] = by[it.s.end_date] || []).push(it); });
+    return Object.keys(by).sort().map(function (d) { return { date: d, items: by[d] }; }).filter(function (g) { return g.items.length >= 2; });
+  }
+  function groupBanner() {
+    return renewGroups().slice(0, 3).map(function (g) {
+      var total = g.items.reduce(function (a, it) { return a + it.pl.price; }, 0), L = g.items[0].s._left;
+      return '<div class="ac-rg"><div class="ac-rgi"><span class="ac-rgt">Renew together</span><b>' + g.items.length + ' plans end on ' + fmt(g.date) + '</b><small>' + g.items.map(function (it) { return esc(it.s.service); }).join(" · ") + ' · ' + taka(total) + ' in one payment' + (L < 0 ? ' · renewal closes soon' : "") + '</small></div>' +
+        '<button type="button" class="ac-rp" data-renew-all="' + g.date + '"><span>Renew all</span>' + ARW + '</button></div>';
+    }).join("");
+  }
   /* Renew bar: what renewing costs and how long the offer lasts, one main action and a quiet WhatsApp option. */
   function renewBar(s, msg) {
     var L = s._left, wa = "https://wa.me/" + WA + "?text=" + encodeURIComponent(msg);
@@ -288,6 +310,7 @@
         '<div class="ac-m3"><span>Started<b>' + fmt(s.start_date) + '</b></span><span>Expires<b>' + fmt(s.end_date) + '</b></span><span>Order<b>' + ref + '</b></span></div>' +
         (s._left >= 0 ? loginBox(s) + helpBox(s) : "") + '</article>';
     }).join("");
+    if (rows.length) html = groupBanner() + html;
     if (arch.length) html = (html || "") + '<details class="ac-arch"><summary><span class="ac-archi">' + ic('<path d="M4 7h16M5 7v11a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7M9 11h6M6 4h12l1 3H5z"/>') + '</span><span class="ac-archt"><b>Subscription history</b><small>Past plans, kept for your records</small></span><em>' + arch.length + '</em><svg class="ac-archc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><ul class="ac-archl">' +
       arch.map(function (s) {
         var ag = -s._left, ref = s.order_ref ? "Order #" + esc(String(s.order_ref).slice(-8).toUpperCase()) : "";
@@ -457,8 +480,27 @@
   /* Renew: confirm the contact details, then open the EPS payment page. Expiry is extended automatically once payment is confirmed. */
   var rm = $("#rm"), cur = null;
   function closeRenew() { rm.hidden = true; document.documentElement.style.overflow = ""; }
+  var multi = null; /* {items:[{s,pl,members,on}]} while the "renew together" list is open */
+  function paintMulti() {
+    var on = multi.items.filter(function (x) { return x.on; }), total = on.reduce(function (a, x) { return a + x.pl.price; }, 0), box = $("#rmulti");
+    box.innerHTML = multi.items.map(function (x, i) {
+      var base = x.s.end_date > DATA.today ? x.s.end_date : DATA.today, end = new Date(Date.parse(base + "T00:00:00Z")); end.setUTCMonth(end.getUTCMonth() + x.s.months);
+      return '<label class="rm-row' + (x.on ? " on" : "") + '"><input type="checkbox" data-mi="' + i + '"' + (x.on ? " checked" : "") + '><span class="rm-tile">' + tile(x.s) + '</span><span class="rm-t"><b>' + esc(x.s.service) + '</b><small>' + esc(x.pl.v) + ' · until about ' + fmt(end.toISOString().slice(0, 10)) + '</small></span><span class="rm-p">' + taka(x.pl.price) + '</span></label>';
+    }).join("");
+    $("#rgo").disabled = !on.length; $("#rgo").textContent = on.length ? "Pay " + taka(total) + " securely" : "Select a plan to renew";
+  }
   $("#list").addEventListener("click", function (e) {
+    var all = e.target.closest("[data-renew-all]");
+    if (all && DATA) {
+      var g = renewGroups().filter(function (x) { return x.date === all.dataset.renewAll; })[0]; if (!g) return;
+      multi = { items: g.items.map(function (it) { return { s: it.s, pl: it.pl, on: true }; }) }; cur = null;
+      $("#rm").classList.add("multi"); $("#rmulti").hidden = false; $("#rmeye").textContent = "Renew together";
+      $("#rnn").textContent = "Each plan is added after its current expiry, so no days are lost. One payment covers all selected plans.";
+      $("#remail").value = DATA.email || ""; $("#rname").value = (DATA.contact && DATA.contact.name) || ""; $("#rphone").value = (DATA.contact && DATA.contact.phone) || "";
+      $("#re").textContent = ""; paintMulti(); rm.hidden = false; document.documentElement.style.overflow = "hidden"; return;
+    }
     var b = e.target.closest("[data-renew]"); if (!b || !DATA) return;
+    multi = null; $("#rm").classList.remove("multi"); $("#rmulti").hidden = true; $("#rmeye").textContent = "Renew subscription";
     cur = DATA.subscriptions.filter(function (x) { return String(x.id) === b.dataset.renew; })[0]; var pl = cur && planOf(cur); if (!pl) return;
     var base = cur.end_date > DATA.today ? cur.end_date : DATA.today, end = new Date(Date.parse(base + "T00:00:00Z")); end.setUTCMonth(end.getUTCMonth() + cur.months);
     $("#rtile").innerHTML = tile(cur); $("#rt").textContent = cur.service; $("#rn").textContent = cur.plan; $("#rp").textContent = taka(pl.price);
@@ -467,17 +509,19 @@
     $("#re").textContent = ""; $("#rgo").disabled = false; $("#rgo").textContent = "Pay " + taka(pl.price) + " securely";
     rm.hidden = false; document.documentElement.style.overflow = "hidden";
   });
+  $("#rmulti").addEventListener("change", function (e) { var c = e.target.closest("[data-mi]"); if (!c || !multi) return; multi.items[+c.dataset.mi].on = c.checked; paintMulti(); });
   rm.addEventListener("click", function (e) { if (e.target === rm || e.target.closest("[data-close]")) closeRenew(); });
   document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeRenew(); });
   $("#rf").addEventListener("submit", function (e) {
     e.preventDefault(); var pl = cur && planOf(cur), name = $("#rname").value.trim(), phone = $("#rphone").value.replace(/[\s\-()]/g, ""), er = $("#re"), go = $("#rgo");
-    if (!pl) return;
+    var mi = multi ? multi.items.filter(function (x) { return x.on; }) : null, label = go.textContent;
+    if (multi ? !mi.length : !pl) return;
     if (name.length < 2) { er.textContent = "Please enter your name."; return; }
     if (!/^(?:(?:\+?88)?01[3-9]\d{8}|\+[1-9]\d{7,14})$/.test(phone)) { er.textContent = "Enter a valid mobile number: 01712345678, or with country code, e.g. +358442354993."; return; }
     er.textContent = ""; go.disabled = true; go.textContent = "Opening secure payment…";
-    fetch("/api/checkout", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + get() }, body: JSON.stringify({ renew: true, name: name, phone: phone, items: [{ name: pl.name, vr: pl.vr, v: pl.v, q: 1 }] }) })
+    fetch("/api/checkout", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + get() }, body: JSON.stringify({ renew: true, name: name, phone: phone, items: multi ? mi.map(function (x) { return { name: x.pl.name, vr: x.pl.vr, v: x.pl.v, q: 1 }; }) : [{ name: pl.name, vr: pl.vr, v: pl.v, q: 1 }] }) })
       .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { if (r.status === 401) { set(null); closeRenew(); showLogin("Your session ended. Please sign in again."); throw new Error("signed out"); } if (!r.ok || !j.redirectUrl) throw new Error(j.error || "Online payment is unavailable right now. Please renew on WhatsApp."); location.href = j.redirectUrl; }); })
-      .catch(function (x) { if (x.message === "signed out") return; er.textContent = x.message; go.disabled = false; go.textContent = "Pay " + taka(pl.price) + " securely"; });
+      .catch(function (x) { if (x.message === "signed out") return; er.textContent = x.message; go.disabled = false; go.textContent = label; });
   });
 
   var ICO = {

@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" onload="this.onload=null;this.rel='stylesheet'"><noscript><link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet"></noscript>
 <script>try{if(localStorage.getItem("sx_session"))document.documentElement.classList.add("hs")}catch(e){}</script>
-<link rel="stylesheet" href="/assets/css/account.css?v=32">
+<link rel="stylesheet" href="/assets/css/account.css?v=34">
 <link rel="stylesheet" href="/assets/css/title-sheet.css?v=4">
 <link rel="stylesheet" href="/assets/css/account-v2.css?v=24">
 </head>
@@ -132,7 +132,8 @@
 <div class="ac-modal" id="rm" hidden role="dialog" aria-modal="true" aria-labelledby="rt">
   <form class="ac-card ac-mbox rn" id="rf" novalidate>
     <button class="ac-x" type="button" data-close aria-label="Close">✕</button>
-    <div class="ac-eyebrow">Renew subscription</div>
+    <div class="ac-eyebrow" id="rmeye">Renew subscription</div>
+    <div class="rm-list" id="rmulti" hidden></div>
     <div class="rn-sum">
       <span id="rtile"></span>
       <div class="rn-st"><h2 id="rt" class="rn-t"></h2><p class="rn-n" id="rn"></p></div>
@@ -159,7 +160,7 @@
 <script src="/assets/js/data/logos.js?v=20261122a"></script>
 <script src="/assets/js/data/countries.js?v=1"></script>
 <script src="/assets/js/features/receipt.js?v=1"></script>
-<script src="/assets/js/account.js?v=20261123c"></script>
+<script src="/assets/js/account.js?v=20261124a"></script>
 <script src="/assets/js/features/mylist.js?v=1"></script>
 <script src="/assets/js/features/title-sheet.js?v=3"></script>
 <script src="/assets/js/features/account-list.js?v=3"></script>
