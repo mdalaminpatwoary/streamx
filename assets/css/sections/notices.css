@@ -57,6 +57,7 @@
 
 /* Nav bell: opens the notice board, shows how many notices are active */
 #ntBell[hidden]{display:none}
+#ntCount[hidden]{display:none}
 #ntCount{position:absolute;top:-6px;right:-6px;min-width:20px;height:20px;padding:0 5px;border-radius:10px;background:var(--g);font:700 11px Manrope,sans-serif;display:grid;place-items:center;color:#fff}
 #ntBell.ring svg{transform-origin:50% 50%;animation:ntRing 1.6s ease 1s 2}
 @keyframes ntRing{0%,100%{transform:rotate(0)}10%{transform:rotate(14deg)}20%{transform:rotate(-12deg)}30%{transform:rotate(9deg)}40%{transform:rotate(-6deg)}50%{transform:rotate(0)}}

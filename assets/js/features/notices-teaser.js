@@ -5,6 +5,11 @@
   const KIND={info:"Update",price:"Price change",offer:"Offer",maintenance:"Maintenance",important:"Important"};
   const fmt=d=>new Date(d).toLocaleDateString("en-GB",{timeZone:"Asia/Dhaka",day:"numeric",month:"short",year:"numeric"});
   let LIST=[];
+  /* The number on the megaphone counts announcements not read yet. Opening the announcements, or reading the pop-up, marks them read and the number goes away until something new is posted. */
+  const RK="sx_notice_read",nkey=n=>String(n.id!=null?n.id:n.at+"|"+n.t);
+  const readSet=()=>{try{return new Set(JSON.parse(localStorage.getItem(RK)||"[]"))}catch(e){return new Set()}};
+  const badge=()=>{const el=document.getElementById("ntCount");if(!el)return;const r=readSet(),n=LIST.filter(x=>!r.has(nkey(x))).length;el.textContent=n;el.hidden=n===0};
+  const markRead=()=>{if(!LIST.length)return;const r=readSet();LIST.forEach(x=>r.add(nkey(x)));try{localStorage.setItem(RK,JSON.stringify([...r].slice(-200)))}catch(e){}badge()};
   /* Short view: tapping the megaphone opens a small glass panel with the latest announcements over a blurred page */
   const ICONS={info:'<path d="M12 8v5"/><path d="M12 16.5h.01"/><circle cx="12" cy="12" r="9"/>',price:'<path d="m3 17 6-6 4 4 8-8"/><path d="M15 7h6v6"/>',offer:'<path d="M20 12v8H4v-8"/><path d="M2 7h20v5H2z"/><path d="M12 20V7"/>',maintenance:'<path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"/>',important:'<path d="M12 3 2 20h20z"/><path d="M12 10v4"/><path d="M12 17.5h.01"/>'};
   let panel=null;
@@ -12,6 +17,7 @@
   const onKey=e=>{if(e.key==="Escape")closePanel()};
   const openPanel=()=>{
     if(panel||!LIST.length)return;
+    markRead();
     document.querySelectorAll(".nt-isl").forEach(x=>x.remove());
     const bell=document.getElementById("ntBell"),nb=document.querySelector(".navbar"),top=nb?Math.max(12,Math.round(nb.getBoundingClientRect().bottom+10)):76;
     const items=LIST.slice(0,4).map(n=>{const k=KIND[n.k]?n.k:"info";return `<a class="nt-pi k-${k}" href="/notices/#${k}"><span class="nt-pic"><svg viewBox="0 0 24 24" aria-hidden="true">${ICONS[k]}</svg></span><span class="nt-pit"><small>${n.pin?"📌 ":""}${KIND[k]} · ${fmt(n.at)}</small><b>${esc(n.t)}</b>${n.m?`<em>${esc(n.m)}</em>`:""}</span></a>`}).join("");
@@ -47,7 +53,7 @@
     const put=(r)=>{el.style.left=r.left+"px";el.style.top=r.top+"px";el.style.width=r.width+"px";el.style.height=r.height+"px"};
     let timer,closed=false,hover=false;
     /* Close with a transform-only fly-back to the icon: no width/height/top animation, so the navbar is never overlapped or re-laid-out (Safari/Firefox glitch) */
-    const root=document.documentElement,done=()=>{el.remove();root.classList.remove("nt-isl-on");bell.classList.add("nt-pop-b")};
+    const root=document.documentElement,done=()=>{markRead();el.remove();root.classList.remove("nt-isl-on");bell.classList.add("nt-pop-b")};
     const close=()=>{if(closed)return;closed=true;clearTimeout(timer);
       const a=el.getBoundingClientRect(),b=from(),dx=b.left+b.width/2-(a.left+a.width/2),dy=b.top+b.height/2-(a.top+a.height/2);
       el.style.transition="transform .45s cubic-bezier(.5,0,.75,0),opacity .35s ease .1s";
@@ -69,6 +75,7 @@
       if(Math.abs(dx0)>70||v>.5)swipe(dx0<0?-1:1);
       else{el.style.transition="transform .3s cubic-bezier(.2,.9,.25,1.2),opacity .2s ease";el.style.transform="";el.style.opacity="";arm()}};
     el.addEventListener("pointerup",up);el.addEventListener("pointercancel",up);
+    el.addEventListener("click",markRead);
     el.addEventListener("click",e=>{if(moved){e.preventDefault();moved=false}});
     const arm=()=>{clearTimeout(timer);timer=setTimeout(()=>{hover?arm():close()},6500)};
     el.addEventListener("mouseenter",()=>{hover=true});el.addEventListener("mouseleave",()=>{hover=false});
@@ -83,7 +90,8 @@
     const all=((d&&d.list)||[]).sort((a,b)=>(b.pin-a.pin)||(Date.parse(b.at)-Date.parse(a.at))),l=all.slice(0,3);
     if(!l.length)return;
     LIST=all;
-    const bell=document.getElementById("ntBell");if(bell){document.getElementById("ntCount").textContent=((d&&d.list)||[]).length;bell.hidden=false;}
+    const bell=document.getElementById("ntBell");if(bell){if(store.get()===nkey(l[0]))markRead(); /* the pop-up for the newest one was already shown before: counts as read */
+    badge();bell.hidden=false;}
     island(l[0]);
     document.getElementById("ntRow").innerHTML=l.map(n=>{const k=KIND[n.k]?n.k:"info";return `<a class="nt-card k-${k}" href="/notices/#${k}"><span class="nt-kind">${n.pin?"📌 ":""}${KIND[k]}</span><h3>${esc(n.t)}</h3>${n.m?`<p>${esc(n.m)}</p>`:""}<small>${fmt(n.at)}</small></a>`}).join("");
     sec.hidden=false;const nl=document.getElementById("ntNav");if(nl)nl.hidden=false;

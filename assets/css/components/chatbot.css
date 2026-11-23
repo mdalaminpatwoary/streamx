@@ -371,3 +371,5 @@ html.bt-lock,html.bt-lock body{overflow:hidden!important;overscroll-behavior:non
 .bt-card>.bt-ct .bt-tile{width:34px;height:34px;border-radius:10px;position:relative;overflow:hidden;box-shadow:0 6px 14px -8px rgba(0,0,0,.7),inset 0 0 0 1px rgba(255,255,255,.1)}
 .bt-card>.bt-ct .bt-tile.bt-logo svg{width:62%;height:62%}
 .bt-card>.bt-ct{gap:10px}
+
+button.bt-sv{width:100%;font:inherit;text-align:left;cursor:pointer}
