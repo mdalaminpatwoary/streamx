@@ -1,7 +1,8 @@
 /* POST /api/chat {messages:[{role:"user"|"assistant",content}]} -> {reply}
    Free AI answers for the chat assistant, used only when the site's own answers do not fit.
-   Providers (OpenAI-compatible, both have a free tier): Groq first, Cerebras as the backup. Keys live in Vercel env vars:
+   Providers (OpenAI-compatible, free tiers): Groq first, then Google Gemini, then Cerebras if their keys exist. Keys live in Vercel env vars:
      GROQ_API_KEY      (optional GROQ_MODEL, default openai/gpt-oss-20b)
+     GEMINI_API_KEY    (optional GEMINI_MODEL, default gemini-4-hydrogen)
      CEREBRAS_API_KEY  (optional CEREBRAS_MODEL, default llama3.1-8b)
    The model only sees StreamX's own catalog, FAQ and refund policy (loaded here, never from the browser), no account data. */
 const fs = require("fs");
@@ -11,6 +12,7 @@ const { products } = require("./_eps");
 
 const PROVIDERS = [
   { name: "groq", url: "https://api.groq.com/openai/v1/chat/completions", key: () => process.env.GROQ_API_KEY, model: () => process.env.GROQ_MODEL || "openai/gpt-oss-20b" },
+  { name: "gemini", url: "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", key: () => process.env.GEMINI_API_KEY, model: () => process.env.GEMINI_MODEL || "gemini-4-hydrogen" },
   { name: "cerebras", url: "https://api.cerebras.ai/v1/chat/completions", key: () => process.env.CEREBRAS_API_KEY, model: () => process.env.CEREBRAS_MODEL || "llama3.1-8b" },
 ];
 
@@ -72,7 +74,7 @@ async function ask(pr, msgs) {
   const r = await fetch(pr.url, {
     method: "POST",
     headers: { "content-type": "application/json", authorization: "Bearer " + pr.key() },
-    body: JSON.stringify(Object.assign({ model: pr.model(), messages: msgs, temperature: 0.3, max_tokens: 220 }, /gpt-oss/.test(pr.model()) ? { max_tokens: 700, reasoning_effort: "low" } : {})),
+    body: JSON.stringify(Object.assign({ model: pr.model(), messages: msgs, temperature: 0.3, max_tokens: 220 }, /gpt-oss|gemini/.test(pr.model()) ? { max_tokens: 700, reasoning_effort: "low" } : {})),
     signal: AbortSignal.timeout(12000),
   });
   if (!r.ok) throw new Error(pr.name + " HTTP " + r.status);
