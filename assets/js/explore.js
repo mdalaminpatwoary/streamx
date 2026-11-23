@@ -44,7 +44,7 @@
     function key_(e){if(e.key==="Escape")close()}
     d.addEventListener("click",function(e){if(e.target.closest("[data-x]"))close()});
     if(window.sxSwipe)sxSwipe(d.querySelector(".ex-plbox"),{bg:d.querySelector(".ex-plbg"),close:close});
-    var cv=d.querySelector(".ex-plc");if(cv)setTimeout(function(){cv.style.opacity="0";setTimeout(function(){cv.remove()},950)},4500);   /* cover image stays 4.5s, then the trailer fades in */
+    var cv=d.querySelector(".ex-plc");if(cv)setTimeout(function(){cv.style.opacity="0";setTimeout(function(){cv.remove()},950)},4000);   /* cover image stays 4s, then the trailer fades in */
     document.addEventListener("keydown",key_);document.body.style.overflow="hidden";document.body.appendChild(d);d.querySelector(".ex-plx").focus();
   }
   function card(m,i,c){
