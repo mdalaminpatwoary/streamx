@@ -126,3 +126,7 @@ html.ts-open{overflow:hidden}
 .ts-snd svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 @media(max-width:760px){.ts-snd{top:10px;right:56px;width:36px;height:36px}}
 @media(prefers-reduced-motion:reduce){.ts-hero iframe{transition:none}}
+
+/* Shield: YouTube's own pause / prev / next overlay must never be reachable or visible */
+.ts-hero.auto::after{content:"";position:absolute;inset:0;z-index:2}
+.ts-hero.auto iframe{pointer-events:none}

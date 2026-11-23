@@ -64,12 +64,12 @@
     if(rm||sd)return;
     var hero=inn.querySelector("#tsHero");if(!hero)return;
     var f=document.createElement("iframe"),my=tok,done=false,muted=true;
-    f.src="https://www.youtube-nocookie.com/embed/"+encodeURIComponent(d.yt)+"?autoplay=1&mute=1&controls=0&loop=1&playlist="+encodeURIComponent(d.yt)+"&playsinline=1&rel=0&modestbranding=1&iv_load_policy=3&disablekb=1&fs=0&enablejsapi=1";
+    f.src="https://www.youtube-nocookie.com/embed/"+encodeURIComponent(d.yt)+"?autoplay=1&mute=1&controls=0&playsinline=1&rel=0&modestbranding=1&iv_load_policy=3&disablekb=1&fs=0&enablejsapi=1";
     f.setAttribute("allow","autoplay; encrypted-media");f.setAttribute("aria-hidden","true");f.tabIndex=-1;f.title="";
     hero.classList.add("auto");hero.appendChild(f);
     var snd=document.createElement("button");snd.type="button";snd.className="ts-snd";snd.hidden=true;snd.setAttribute("aria-label","Turn trailer sound on");snd.innerHTML=ICON.mute;
     box.appendChild(snd);
-    var send=function(fn){try{f.contentWindow.postMessage(JSON.stringify({event:"command",func:fn,args:[]}),"*")}catch(e){}};
+    var send=function(fn,a){try{f.contentWindow.postMessage(JSON.stringify({event:"command",func:fn,args:a||[]}),"*")}catch(e){}};
     snd.onclick=function(){muted=!muted;send(muted?"mute":"unMute");snd.innerHTML=muted?ICON.mute:ICON.sound;snd.setAttribute("aria-label",muted?"Turn trailer sound on":"Turn trailer sound off")};
     var clean=function(){window.removeEventListener("message",on);if(snd.parentNode)snd.parentNode.removeChild(snd)};
     var fail=function(){if(done)return;done=true;clean();if(f.parentNode)f.parentNode.removeChild(f);hero.classList.remove("auto")};
@@ -78,6 +78,8 @@
       if(e.source!==f.contentWindow)return;var m;try{m=typeof e.data==="string"?JSON.parse(e.data):e.data}catch(x){return}
       if(!m)return;var st=m.event==="onStateChange"?m.info:(m.info&&m.info.playerState);
       if(st===1)playing();
+      else if(st===0){send("seekTo",[0,true]);send("playVideo")}   /* manual loop: a playlist would add prev/next buttons */
+      else if(st===2&&done)send("playVideo");                       /* never leave a paused frame with YouTube's own overlay */
     }
     window.addEventListener("message",on);
     f.onload=function(){try{f.contentWindow.postMessage(JSON.stringify({event:"listening",id:1,channel:"widget"}),"*")}catch(e){}};
