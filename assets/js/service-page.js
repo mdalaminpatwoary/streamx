@@ -167,24 +167,26 @@
     addEventListener("scroll", function () { if (!tk) { tk = true; requestAnimationFrame(run); } }, { passive: true }); run();
   })();
 
-  /* 6. About: real posters on the popular-titles strip (TMDB via /api/title?q=). Falls back to the styled cards. */
+  /* 6. About: real posters on the popular-titles strip (TMDB via /api/title?q=). Only entries that resolve to a real title with a poster are shown;
+     if fewer than 3 do (e.g. categories like "Local films"), the styled cards stay. */
   (function () {
     var mq = $(".sp-pcs[data-posters]"); if (!mq || !("IntersectionObserver" in window)) return;
+    var norm = function (x) { return String(x || "").toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9]+/g, " ").trim(); };
+    var same = function (q, r) { q = norm(q); r = norm(r); return !!q && !!r && (q === r || q.indexOf(r) > -1 && r.length > 3 || r.indexOf(q) > -1 && q.length > 3); };
     var seen = false, io = new IntersectionObserver(function (es) {
       if (!es[0].isIntersecting || seen) return; seen = true; io.disconnect();
-      var cards = [].slice.call(mq.querySelectorAll(".sp-pc")), memo = {};
-      cards.forEach(function (c) {
-        var t = (c.querySelector("b") || {}).textContent || ""; if (!t) return;
-        var p = memo[t] || (memo[t] = fetch("/api/title?q=" + encodeURIComponent(t)).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }));
-        p.then(function (d) {
-          if (!d || !d.p) return;
-          var im = document.createElement("img"); im.alt = ""; im.decoding = "async";
-          im.onload = function () { c.classList.add("has"); };
-          im.onerror = function () { if (im.parentNode) im.parentNode.removeChild(im); };
-          c.insertBefore(im, c.firstChild);
-          if (d.id) { c.dataset.id = d.id; c.dataset.k = d.k; if (c.getAttribute("aria-hidden") !== "true") { c.tabIndex = 0; c.setAttribute("role", "button"); c.setAttribute("aria-label", (d.t || t) + ": details and trailer"); } c.classList.add("clk"); }
-          im.src = "https://image.tmdb.org/t/p/w342" + d.p;
-        });
+      var track = $(".sp-abtrack", mq), names = [];
+      [].slice.call(track.querySelectorAll(".sp-pc b")).forEach(function (b) { var t = b.textContent; if (t && names.indexOf(t) < 0) names.push(t); });
+      Promise.all(names.map(function (t) {
+        return fetch("/api/title?q=" + encodeURIComponent(t)).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
+          .then(function (d) { return d && d.p && d.id && same(t, d.t) ? { t: d.t || t, id: d.id, k: d.k, p: d.p } : null; });
+      })).then(function (all) {
+        var ok = all.filter(Boolean); if (ok.length < 3) return;
+        var half = ok.slice(), n = ok.length; while (half.length < 10) half = half.concat(ok); if (half.length % 2) half = half.concat(ok);
+        var card = function (m, i, dup) {
+          return '<div class="sp-pc has clk" data-id="' + m.id + '" data-k="' + m.k + '"' + (dup ? ' aria-hidden="true"' : ' tabindex="0" role="button" aria-label="' + esc(m.t) + ': details and trailer"') + '><img src="https://image.tmdb.org/t/p/w342' + esc(m.p) + '" alt="" decoding="async"><i>' + ("0" + ((i % n) + 1)).slice(-2) + '</i><b>' + esc(m.t) + '</b></div>';
+        };
+        track.innerHTML = half.map(function (m, i) { return card(m, i, false); }).join("") + half.map(function (m, i) { return card(m, i, true); }).join("");
       });
     }, { rootMargin: "200px" });
     io.observe(mq);
