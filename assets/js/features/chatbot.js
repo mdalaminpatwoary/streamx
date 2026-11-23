@@ -368,7 +368,7 @@
   const colorOf=n=>{const p=PRODUCTS.find(x=>x.name===n);return p?p.color:"#1d2347"};
   const tileOf=n=>{const L=typeof LOGOS!=="undefined"&&typeof LOGO_OF!=="undefined"&&LOGOS[LOGO_OF[n]],p=PRODUCTS.find(q=>q.name===n);
     if(L&&L.p)return `<span class="bt-tile bt-logo" style="background:${esc(L.bg)};color:${esc(L.fg||"#fff")}"><svg viewBox="${esc(L.vb)}" aria-hidden="true"><path d="${L.p}"/></svg></span>`;
-    const sg=slug(n);return `<span class="bt-tile" style="background:${colorOf(n)}">${esc(((p&&p.icon)||n[0]||"?").toString().slice(0,2))}<img class="bt-limg" src="/assets/img/logos/${sg}.svg" alt="" loading="lazy" onerror="if(!this.dataset.t){this.dataset.t=1;this.src='/assets/img/logos/${sg}.png'}else this.remove()"></span>`};
+    const sg=slug(n);return `<span class="bt-tile" style="background:${colorOf(n)}">${esc(((p&&p.icon)||n[0]||"?").toString().slice(0,2))}<img class="bt-limg" src="/assets/img/logos/${sg}.svg" alt="" loading="lazy" onerror="if(!this.dataset.t){this.dataset.t=1;this.src='/assets/img/logos/${sg}.png?v=2'}else this.remove()"></span>`};
   const leftTxt=x=>x._left<0?(-x._left)+(x._left===-1?" day ago":" days ago"):x._left===0?"last day":x._left+(x._left===1?" day left":" days left");
   const owns=(x,p)=>{const a=norm(x.service),b=norm(p.name);return a===b||a.indexOf(b)>-1||b.indexOf(a)>-1};
   const I_EYE='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>';
