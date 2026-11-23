@@ -64,7 +64,7 @@
     if(rm||sd)return;
     var hero=inn.querySelector("#tsHero");if(!hero)return;
     var f=document.createElement("iframe"),my=tok,done=false,muted=true;
-    f.src="https://www.youtube-nocookie.com/embed/"+encodeURIComponent(d.yt)+"?autoplay=1&mute=1&controls=0&playsinline=1&rel=0&modestbranding=1&iv_load_policy=3&disablekb=1&fs=0&enablejsapi=1";
+    f.src="https://www.youtube-nocookie.com/embed/"+encodeURIComponent(d.yt)+"?autoplay=1&mute=1&controls=0&playsinline=1&rel=0&modestbranding=1&iv_load_policy=3&cc_load_policy=0&disablekb=1&fs=0&enablejsapi=1";
     f.setAttribute("allow","autoplay; encrypted-media");f.setAttribute("aria-hidden","true");f.tabIndex=-1;f.title="";
     hero.classList.add("auto");hero.appendChild(f);
     var snd=document.createElement("button");snd.type="button";snd.className="ts-snd";snd.hidden=true;snd.setAttribute("aria-label","Turn trailer sound on");snd.innerHTML=ICON.mute;
@@ -77,9 +77,15 @@
     function on(e){
       if(e.source!==f.contentWindow)return;var m;try{m=typeof e.data==="string"?JSON.parse(e.data):e.data}catch(x){return}
       if(!m)return;var st=m.event==="onStateChange"?m.info:(m.info&&m.info.playerState);
-      if(st===1)playing();
-      else if(st===0){send("seekTo",[0,true]);send("playVideo")}   /* manual loop: a playlist would add prev/next buttons */
-      else if(st===2&&done)send("playVideo");                       /* never leave a paused frame with YouTube's own overlay */
+      if(st===1){playing();f.classList.add("on");send("unloadModule",["captions"]);send("unloadModule",["cc"])}
+      else if(st===0||st===2||st===3){
+        /* any non-playing frame (end screen, pause, buffering) shows YouTube's own UI: hide it and resume */
+        if(done)f.classList.remove("on");
+        if(st===0)send("seekTo",[0,true]);
+        if(done)send("playVideo");
+      }
+      /* loop a moment before the end so the end screen ("More videos") never appears */
+      var inf=m.info;if(inf&&typeof inf.currentTime==="number"&&inf.duration>3&&inf.currentTime>inf.duration-0.6){send("seekTo",[0,true])}
     }
     window.addEventListener("message",on);
     f.onload=function(){try{f.contentWindow.postMessage(JSON.stringify({event:"listening",id:1,channel:"widget"}),"*")}catch(e){}};
