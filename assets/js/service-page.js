@@ -34,9 +34,6 @@
 
   /* 3. Hero: cursor light, particle network, decoded headline, count-up price */
   var hero = $(".sp-hero");
-  if (hero && FINE && !RM) {
-    hero.addEventListener("pointermove", function (e) { var b = hero.getBoundingClientRect(); hero.style.setProperty("--mx", (e.clientX - b.left) + "px"); hero.style.setProperty("--my", (e.clientY - b.top) + "px"); });
-  }
   if (hero && !RM) {
     /* count up the starting price */
     var pb = $(".sp-from b");
