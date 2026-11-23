@@ -100,7 +100,7 @@
     f.setAttribute("allow","autoplay; encrypted-media");f.setAttribute("aria-hidden","true");f.tabIndex=-1;f.title="";
     hero.classList.add("auto");hero.appendChild(f);
     var snd=document.createElement("button");snd.type="button";snd.className="ts-snd";snd.hidden=true;snd.setAttribute("aria-label","Turn trailer sound on");snd.innerHTML=ICON.mute;
-    box.appendChild(snd);
+    box.insertBefore(snd,inn);
     var send=function(fn,a){try{f.contentWindow.postMessage(JSON.stringify({event:"command",func:fn,args:a||[]}),"*")}catch(e){}};
     var nocc=function(){send("unloadModule",["captions"]);send("unloadModule",["cc"]);send("setOption",["captions","track",{}])};   /* captions always off, whatever the viewer's YouTube settings */
     [600,1500,3000,6000].forEach(function(ms){setTimeout(function(){if(my===tok&&f.parentNode)nocc()},ms)});
