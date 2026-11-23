@@ -20,6 +20,7 @@ const taka = n => "৳" + n.toLocaleString("en-US");
 const wa = t => `https://wa.me/${WA}?text=${encodeURIComponent(t)}`;
 const ADULT = run("ADULT_PAGES");
 const isAdult = p => p.cat === "18+";
+const OG_V = { chorki: 2, "entertainment-combo": 2 }; // bump when a share image is redrawn so WhatsApp refetches it
 const pages = PRODUCTS.filter(p => p.cat !== "18+" || ADULT.includes(p.name));
 const open18 = pages.filter(p => !isAdult(p));   // pages shown in the hub, sitemap, share images and "related" lists
 const allPrices = p => { const a = p.variants.flatMap(v => v.plans.map(x => x.p)), b = a.filter(x => x > 0); return b.length ? b : [0]; };
@@ -114,7 +115,7 @@ function reviewsHtml(p) {
 function servicePage(p) {
   const combo = PRODUCTS.find(x => x.packs && (PARTS[x.name] || []).includes(LOGO_OF[p.name]) && x !== p);
   const s = slug(p.name), c = CONTENT[p.name] || { h: p.desc, about: [p.desc], pop: [], popLabel: "Highlights", best: [], faq: [] };
-  const url = `${SITE}/services/${s}/`, img = isAdult(p) ? `${SITE}/assets/img/og/home.jpg` : `${SITE}/assets/img/og/${s}.jpg`;
+  const url = `${SITE}/services/${s}/`, img = isAdult(p) ? `${SITE}/assets/img/og/home.jpg` : `${SITE}/assets/img/og/${s}.jpg${OG_V[s] ? "?v=" + OG_V[s] : ""}`;
   const from = lo(p), cheap = p.variants.flatMap(v => v.plans).find(x => x.p === from);
   const unit = p.gift ? "" : p.packs ? " / month" : "";
   const title = p.ask ? `${p.name} in Bangladesh – price on WhatsApp | StreamX` : `Buy ${p.name} in Bangladesh – from ${taka(from)} | StreamX`;

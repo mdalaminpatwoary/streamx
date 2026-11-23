@@ -4,7 +4,10 @@ const fs = require("fs"), path = require("path"), { chromium } = require("playwr
 const ROOT = path.join(__dirname, ".."), list = JSON.parse(fs.readFileSync(path.join(__dirname, "og-list.json"), "utf8"));
 const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;");
 const logoBrand = "data:image/png;base64," + fs.readFileSync(path.join(ROOT, "assets/img/brand/logo.png")).toString("base64");
+const png = n => "data:image/png;base64," + fs.readFileSync(path.join(ROOT, "assets/img/logos/" + n + ".png")).toString("base64");
 const tile = it => {
+  if (it.pair) { const [a, b] = it.pair.map(s => list.find(x => x.slug === s)); return `<div class="pr">${[a, b].map(x => tile(Object.assign({}, x, { pair: null, small: true }))).join("")}</div>`; }
+  if (it.img) return `<div class="lg" style="background:#fff;overflow:hidden"><img src="${png(it.img)}" style="width:100%;height:100%;object-fit:cover"></div>`;
   const L = it.logo;
   if (!L) return `<div class="lg" style="background:${it.color}"><b>${esc(it.name[0])}</b></div>`;
   return `<div class="lg${L.r ? " r" : ""}" style="background:${L.bg}"><svg viewBox="${L.vb}" fill="${L.fg}" style="width:${L.a > 2.4 ? 80 : 62}%;${L.a > 2.4 ? "height:auto" : "height:62%"}"><path d="${L.p}"/></svg></div>`;
@@ -16,7 +19,7 @@ const page = (it, home) => `<!doctype html><meta charset="utf-8"><style>
 .in{position:absolute;inset:0;padding:64px 72px;display:flex;flex-direction:column;justify-content:space-between}
 .top{display:flex;align-items:center;gap:16px;font-weight:800;font-size:28px}.top img{width:56px;height:56px;border-radius:14px}
 .mid{display:flex;align-items:center;gap:56px}
-.lg{width:250px;height:250px;border-radius:62px;display:grid;place-items:center;flex:none;box-shadow:0 30px 70px #000a}.lg.r{border-radius:50%}.lg svg{display:block}.lg b{font-size:120px}
+.lg{width:250px;height:250px;border-radius:62px;display:grid;place-items:center;flex:none;box-shadow:0 30px 70px #000a}.lg.r{border-radius:50%}.pr{position:relative;width:250px;height:250px;flex:none}.pr .lg{position:absolute;width:170px;height:170px;border-radius:44px}.pr .lg:first-child{left:0;top:0}.pr .lg:last-child{right:0;bottom:0;box-shadow:0 30px 70px #000c}.pr .lg b{font-size:80px}.lg svg{display:block}.lg b{font-size:120px}
 h1{font-size:${home ? 78 : 80}px;line-height:1.02;letter-spacing:-2.5px;font-weight:800}h1 span{color:#ed3124}
 p{margin-top:20px;font-size:34px;color:#c4cbe3;font-weight:600}
 .bot{display:flex;justify-content:space-between;align-items:center;font-size:26px;color:#98a1bc;font-weight:600}
@@ -28,7 +31,9 @@ p{margin-top:20px;font-size:34px;color:#c4cbe3;font-weight:600}
 (async () => {
   const b = await chromium.launch(), pg = await b.newPage({ viewport: { width: 1200, height: 630 } });
   fs.mkdirSync(path.join(ROOT, "assets/img/og"), { recursive: true });
+  const only = process.argv.slice(2);
   for (const it of [{ slug: "home" }, ...list]) {
+    if (only.length && !only.includes(it.slug)) continue;
     await pg.setContent(page(it, it.slug === "home")); await pg.waitForTimeout(150);
     await pg.screenshot({ path: path.join(ROOT, "assets/img/og", it.slug + ".jpg"), type: "jpeg", quality: 88 });
   }
