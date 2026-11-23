@@ -81,7 +81,7 @@ h1{margin:10px 0 8px;font-size:clamp(30px,5vw,46px);line-height:1.1;letter-spaci
 .ac-perks i{flex:none;display:grid;place-items:center;width:44px;height:44px;border-radius:13px;color:#ff6a5c;background:rgba(237,49,36,.12);border:1px solid rgba(237,49,36,.28)}
 .ac-perks svg{width:21px;height:21px}
 .ac-login{padding:34px 32px;box-shadow:0 30px 80px -40px rgba(0,0,0,.8)}
-.ac-lt{margin:0;font-size:26px;letter-spacing:-.02em}
+.ac-lt{margin:0 0 24px;font-size:26px;letter-spacing:-.02em}
 .ac-ls{margin:4px 0 22px;color:var(--mut);font-size:14.5px}
 .ac-login .ac-soc{margin-bottom:0}
 .ac-login .ac-or{margin:18px 0 16px}
