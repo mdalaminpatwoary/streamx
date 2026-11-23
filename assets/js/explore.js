@@ -36,13 +36,14 @@
     var img=m.b?"https://image.tmdb.org/t/p/w780"+esc(m.b):"https://image.tmdb.org/t/p/w342"+esc(m.p);
     return '<article class="ex-card ex-vc" style="--i:'+(i%20)+'" tabindex="0" role="button" aria-label="Play trailer: '+esc(m.t)+'" data-yt="'+esc(m.yt)+'" data-t="'+esc(m.t)+'"><div class="ex-po"><img src="'+img+'" alt="'+esc(m.t)+' trailer thumbnail" loading="lazy" width="780" height="439"><span class="ex-play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>'+(m.v?'<span class="ex-v">★ '+m.v+"</span>":"")+'</div><h3>'+esc(m.t)+"</h3><p>"+esc(m.vt||"Official trailer")+"</p></article>";
   }
-  function player(key,title){
+  function player(key,title,img){
     var d=document.createElement("div");d.className="ex-pl";d.setAttribute("role","dialog");d.setAttribute("aria-modal","true");d.setAttribute("aria-label",title+" trailer");
-    d.innerHTML='<div class="ex-plbg" data-x></div><div class="ex-plbox"><button type="button" class="ex-plx" data-x aria-label="Close trailer">&times;</button><div class="ex-plv"><iframe src="https://www.youtube-nocookie.com/embed/'+encodeURIComponent(key)+'?autoplay=1&rel=0&modestbranding=1" title="'+esc(title)+' trailer" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe></div><p>'+esc(title)+"</p></div>";
+    d.innerHTML='<div class="ex-plbg" data-x></div><div class="ex-plbox"><button type="button" class="ex-plx" data-x aria-label="Close trailer">&times;</button><div class="ex-plv"><iframe src="https://www.youtube-nocookie.com/embed/'+encodeURIComponent(key)+'?autoplay=1&mute=1&controls=0&playsinline=1&loop=1&playlist='+encodeURIComponent(key)+'&rel=0&modestbranding=1&iv_load_policy=3&cc_load_policy=0&disablekb=1&fs=0" title="'+esc(title)+' trailer" allow="autoplay; encrypted-media" tabindex="-1"></iframe>'+(img?'<div class="ex-plc" style="background:#000 url(\''+esc(img)+'\') center/cover no-repeat"></div>':"")+'</div><p>'+esc(title)+"</p></div>";
     var prev=document.activeElement;
     function close(){document.removeEventListener("keydown",key_);d.remove();document.body.style.overflow="";if(prev&&prev.focus)prev.focus()}
     function key_(e){if(e.key==="Escape")close()}
     d.addEventListener("click",function(e){if(e.target.closest("[data-x]"))close()});
+    var cv=d.querySelector(".ex-plc");if(cv)setTimeout(function(){cv.style.opacity="0";setTimeout(function(){cv.remove()},950)},4500);   /* cover image stays 4.5s, then the trailer fades in */
     document.addEventListener("keydown",key_);document.body.style.overflow="hidden";document.body.appendChild(d);d.querySelector(".ex-plx").focus();
   }
   function card(m,i,c){
@@ -99,7 +100,7 @@
       var sg=b.closest(".tp-seg");if(sg){sg.querySelectorAll("button").forEach(function(x){x.classList.toggle("on",x===b)});st.k=b.dataset.v;thumbs(sec);
         if(c.genres)get({a:"genres",k:st.k}).then(function(d){c._g=d.genres.map(function(g){return[String(g.id),g.n]});st.chip=c._g[0][0];drawChips(c._g);load(true)});else load(true)}
     });
-    sec.addEventListener("click",function(e){var el=e.target.closest(".ex-card");if(el&&el.dataset.yt){player(el.dataset.yt,el.dataset.t);return}if(el&&window.sxSheet)sxSheet.open(el.dataset.id,el.dataset.k,el,idx[el.dataset.k+":"+el.dataset.id])});
+    sec.addEventListener("click",function(e){var el=e.target.closest(".ex-card");if(el&&el.dataset.yt){var im=el.querySelector("img");player(el.dataset.yt,el.dataset.t,im&&im.getAttribute("src"));return}if(el&&window.sxSheet)sxSheet.open(el.dataset.id,el.dataset.k,el,idx[el.dataset.k+":"+el.dataset.id])});
     sec.addEventListener("keydown",function(e){if((e.key==="Enter"||e.key===" ")&&e.target.matches(".ex-card")){e.preventDefault();e.target.click()}});
     return sec;
   }

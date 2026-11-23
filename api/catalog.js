@@ -8,6 +8,15 @@ const API = "https://api.themoviedb.org/3";
 const HOUR = 3600 * 1000;
 
 const { mapProviders } = require("./_providers");
+/* The visitor's country (2 letters) from the host's IP lookup; US when unknown. */
+const countryOf = (req) => { const c = String((req.headers && (req.headers["x-vercel-ip-country"] || req.headers["cf-ipcountry"])) || "").toUpperCase(); return /^[A-Z]{2}$/.test(c) && c !== "XX" && c !== "T1" ? c : "US"; };
+/* Runs fn(region) for the visitor's country; when that gives fewer than 5 titles with posters (no data there), runs it for the US instead. */
+async function withUS(cc, fn) {
+  let d = null;
+  if (cc !== "US") { try { d = await fn(cc); } catch (e) { d = null; } }
+  if (d && (d.results || []).filter((r) => r.poster_path).length >= 5) return { data: d, reg: cc };
+  return { data: await fn("US"), reg: "US" };
+}
 const db = require("./_db");
 const PROV_ID = { netflix: 8, "prime-video": 9, "amazon-prime-video": 9, disneyplus: 337, hulu: 15, "hbo-max": 1899, crunchyroll: 283, paramountplus: 531, "apple-tv": 350, peacock: 386, jiohotstar: 122, zee5: 232, sonyliv: 237, viki: 344, mubi: 11 };
 const cache = new Map(); // key -> { at, body }
@@ -90,7 +99,7 @@ const item = (r, k, g) => ({
   o: (r.overview || "").slice(0, 170),
 });
 
-async function build(l, k) {
+async function build(l, k, cc) {
   const g = await genreMap();
   if (l === "top") {
     // TMDB lists 20 per page, so the top 250 is 13 pages.
@@ -100,7 +109,7 @@ async function build(l, k) {
     return rows.slice(0, 250).map((r) => item(r, k, g));
   }
   let data;
-  if (k === "movie") data = await tmdb("/discover/movie", { language: "en-US", sort_by: "popularity.desc", "primary_release_date.gte": today(), with_release_type: "2|3", region: "US", page: 1 });
+  if (k === "movie") data = (await withUS(cc, (rg) => tmdb("/discover/movie", { language: "en-US", sort_by: "popularity.desc", "primary_release_date.gte": today(), with_release_type: "2|3", region: rg, page: 1 }))).data;
   else data = await tmdb("/discover/tv", { language: "en-US", sort_by: "popularity.desc", "first_air_date.gte": today(), page: 1 });
   const rows = (data.results || []).filter((r) => r.poster_path).slice(0, 20);
   const pl = await Promise.all(rows.map((r) => platformsCached(k, r.id)));
@@ -111,22 +120,25 @@ async function build(l, k) {
 /* ---------- Explore hub: GET /api/catalog?a=hub&s=<section>&k=movie|tv&page=1[&g=<genre id>][&p=<platform>] and a=genres, a=births ---------- */
 const hubCache = new Map(); // key -> { at, body }
 const HUB = new Set(["nowplaying", "upcoming", "toprated", "boxoffice", "popular", "airing", "genre", "platform", "anime", "trailers"]);
-async function hubList(sec, k, page, genre, plat, mode) {
+async function hubList(sec, k, page, genre, plat, mode, cc) {
   const g = await genreMap();
   const base = { language: "en-US", page, include_adult: "false" };
-  let data;
-  if (sec === "nowplaying") data = await tmdb("/movie/now_playing", { ...base, region: "US" });
+  let data, reg = "";
+  const rgn = async (fn) => { const r = await withUS(cc, fn); reg = r.reg; return r.data; }; // region-aware: visitor's country, else US
+  if (sec === "nowplaying") data = await rgn((rg) => tmdb("/movie/now_playing", { ...base, region: rg }));
   else if (sec === "upcoming") data = k === "tv"
     ? await tmdb("/discover/tv", { ...base, sort_by: "popularity.desc", "first_air_date.gte": today() })
-    : await tmdb("/discover/movie", { ...base, sort_by: "popularity.desc", "primary_release_date.gte": today(), with_release_type: "2|3", region: "US" });
+    : await rgn((rg) => tmdb("/discover/movie", { ...base, sort_by: "popularity.desc", "primary_release_date.gte": today(), with_release_type: "2|3", region: rg }));
   else if (sec === "toprated") data = await tmdb(`/${k}/top_rated`, base);
   else if (sec === "boxoffice") data = await tmdb("/discover/movie", { ...base, sort_by: "revenue.desc", "vote_count.gte": 500 });
-  else if (sec === "popular") data = await tmdb(`/${k}/popular`, base);
+  else if (sec === "popular") data = await rgn((rg) => k === "tv"
+    ? tmdb("/discover/tv", { ...base, sort_by: "popularity.desc", watch_region: rg, with_watch_monetization_types: "flatrate|free|ads|rent|buy" })
+    : tmdb("/movie/popular", { ...base, region: rg }));
   else if (sec === "airing") data = await tmdb("/tv/airing_today", base);
   else if (sec === "genre") data = await tmdb(`/discover/${k}`, { ...base, sort_by: "popularity.desc", with_genres: genre, "vote_count.gte": 50 });
   else if (sec === "trailers") {
     // Latest trailers: new and upcoming titles, each with its newest official YouTube trailer.
-    data = k === "tv" ? await tmdb("/tv/on_the_air", base) : await tmdb("/movie/upcoming", { ...base, region: "US" });
+    data = k === "tv" ? await tmdb("/tv/on_the_air", base) : await rgn((rg) => tmdb("/movie/upcoming", { ...base, region: rg }));
     const rows = (data.results || []).filter((r) => r.poster_path || r.backdrop_path);
     const vids = await Promise.all(rows.map((r) => tmdb(`/${k}/${r.id}/videos`, { language: "en-US" }).catch(() => ({ results: [] }))));
     const out = [];
@@ -135,19 +147,19 @@ async function hubList(sec, k, page, genre, plat, mode) {
       if (t) out.push({ ...item(r, k, g), yt: t.key, vt: String(t.name || "").slice(0, 80), vd: String(t.published_at || "").slice(0, 10), b: r.backdrop_path || "" });
     });
     out.sort((a, b) => b.vd.localeCompare(a.vd));
-    return { page: data.page || page, pages: Math.min(data.total_pages || 1, 25), list: out };
+    return { page: data.page || page, pages: Math.min(data.total_pages || 1, 25), list: out, reg };
   } else if (sec === "anime") {
     // Anime = Japanese-language animation. Modes: popular, top (best rated), new (latest releases), crunchyroll.
     const A = { ...base, with_genres: "16", with_original_language: "ja" };
     const dk = k === "tv" ? "first_air_date" : "primary_release_date";
     if (mode === "top") Object.assign(A, { sort_by: "vote_average.desc", "vote_count.gte": k === "tv" ? 300 : 500 });
     else if (mode === "new") Object.assign(A, { sort_by: dk + ".desc", [dk + ".lte"]: today(), "vote_count.gte": 10 });
-    else if (mode === "crunchyroll") Object.assign(A, { sort_by: "popularity.desc", with_watch_providers: 283, watch_region: "US", with_watch_monetization_types: "flatrate" });
+    else if (mode === "crunchyroll") Object.assign(A, { sort_by: "popularity.desc", with_watch_providers: 283, with_watch_monetization_types: "flatrate" });
     else A.sort_by = "popularity.desc";
-    data = await tmdb(`/discover/${k}`, A);
-  } else data = await tmdb(`/discover/${k}`, { ...base, sort_by: "popularity.desc", with_watch_providers: plat, watch_region: "US", with_watch_monetization_types: "flatrate" });
+    data = mode === "crunchyroll" ? await rgn((rg) => tmdb(`/discover/${k}`, { ...A, watch_region: rg })) : await tmdb(`/discover/${k}`, A);
+  } else data = await (plat === 122 ? (async () => { reg = "IN"; return tmdb(`/discover/${k}`, { ...base, sort_by: "popularity.desc", with_watch_providers: plat, watch_region: "IN", with_watch_monetization_types: "flatrate" }); })() : rgn((rg) => tmdb(`/discover/${k}`, { ...base, sort_by: "popularity.desc", with_watch_providers: plat, watch_region: rg, with_watch_monetization_types: "flatrate" })));
   const kind = sec === "nowplaying" || sec === "boxoffice" ? "movie" : sec === "airing" ? "tv" : k;
-  return { page: data.page || page, pages: Math.min(data.total_pages || 1, 25), list: (data.results || []).filter((r) => r.poster_path).map((r) => item(r, kind, g)) };
+  return { page: data.page || page, pages: Math.min(data.total_pages || 1, 25), list: (data.results || []).filter((r) => r.poster_path).map((r) => item(r, kind, g)), reg };
 }
 
 const PEOPLE = /actor|actress|singer|songwriter|rapper|musician|director|filmmaker|film|comedian|model|producer|screenwriter|presenter|television|dancer|youtuber|influencer|cricketer|footballer|athlete|player|composer|band/i;
@@ -217,6 +229,7 @@ module.exports = async (req, res) => {
   try {
     if (req.method !== "GET") return res.status(405).json({ error: "Method not allowed" });
     const k = req.query.k === "tv" ? "tv" : "movie";
+    const cc = countryOf(req);
     // Reviews (managed in Admin): public list, and the screenshot of one review's original
     if (req.query.a === "reviews") {
       if (!db.enabled()) return res.status(503).json({ error: "off" });
@@ -324,19 +337,19 @@ module.exports = async (req, res) => {
       const genre = String(req.query.g || "").replace(/[^0-9]/g, "").slice(0, 6), plat = PROV_ID[String(req.query.p || "").toLowerCase()];
       if (sec === "genre" && !genre) return res.status(400).json({ error: "Pick a genre" });
       if (sec === "platform" && !plat) return res.status(400).json({ error: "Unknown platform" });
-      const mode = ["popular", "top", "new", "crunchyroll"].includes(req.query.m) ? req.query.m : "popular", key = [sec, k, page, genre, plat, mode].join("|"), hit = hubCache.get(key);
-      res.setHeader("Cache-Control", "public, s-maxage=3600, stale-while-revalidate=86400");
+      const mode = ["popular", "top", "new", "crunchyroll"].includes(req.query.m) ? req.query.m : "popular", regional = ["nowplaying", "upcoming", "popular", "trailers", "platform"].includes(sec) || (sec === "anime" && mode === "crunchyroll"), key = [sec, k, page, genre, plat, mode, regional ? cc : ""].join("|"), hit = hubCache.get(key);
+      res.setHeader("Cache-Control", regional ? "private, max-age=3600" : "public, s-maxage=3600, stale-while-revalidate=86400"); // region lists differ per visitor
       if (hit && Date.now() - hit.at < HOUR) return res.status(200).json(hit.body);
-      const body = { s: sec, k, ...(await hubList(sec, k, page, genre, plat, mode)) };
+      const body = { s: sec, k, ...(await hubList(sec, k, page, genre, plat, mode, cc)) };
       if (hubCache.size > 400) hubCache.clear();
       hubCache.set(key, { at: Date.now(), body });
       return res.status(200).json(body);
     }
-    const l = req.query.l === "soon" ? "soon" : "top", key = l + k;
+    const l = req.query.l === "soon" ? "soon" : "top", key = l + k + (l === "soon" ? cc : "");
     const hit = cache.get(key);
-    res.setHeader("Cache-Control", "public, s-maxage=3600, stale-while-revalidate=86400");
+    res.setHeader("Cache-Control", l === "soon" ? "private, max-age=3600" : "public, s-maxage=3600, stale-while-revalidate=86400");
     if (hit && Date.now() - hit.at < 3 * HOUR) return res.status(200).json(hit.body);
-    const body = { l, k, list: await build(l, k), at: new Date().toISOString() };
+    const body = { l, k, list: await build(l, k, cc), at: new Date().toISOString() };
     cache.set(key, { at: Date.now(), body });
     return res.status(200).json(body);
   } catch (e) {
