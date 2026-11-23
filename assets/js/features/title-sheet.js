@@ -96,12 +96,14 @@
     if(rm||sd)return;
     var hero=inn.querySelector("#tsHero");if(!hero)return;
     var f=document.createElement("iframe"),my=tok,done=false,muted=true;
-    f.src="https://www.youtube-nocookie.com/embed/"+encodeURIComponent(d.yt)+"?autoplay=1&mute=1&controls=0&playsinline=1&rel=0&modestbranding=1&iv_load_policy=3&cc_load_policy=0&disablekb=1&fs=0&enablejsapi=1";
+    f.src="https://www.youtube-nocookie.com/embed/"+encodeURIComponent(d.yt)+"?autoplay=1&mute=1&controls=0&playsinline=1&rel=0&modestbranding=1&iv_load_policy=3&cc_load_policy=0&cc_lang_pref=zz&disablekb=1&fs=0&enablejsapi=1";
     f.setAttribute("allow","autoplay; encrypted-media");f.setAttribute("aria-hidden","true");f.tabIndex=-1;f.title="";
     hero.classList.add("auto");hero.appendChild(f);
     var snd=document.createElement("button");snd.type="button";snd.className="ts-snd";snd.hidden=true;snd.setAttribute("aria-label","Turn trailer sound on");snd.innerHTML=ICON.mute;
     box.appendChild(snd);
     var send=function(fn,a){try{f.contentWindow.postMessage(JSON.stringify({event:"command",func:fn,args:a||[]}),"*")}catch(e){}};
+    var nocc=function(){send("unloadModule",["captions"]);send("unloadModule",["cc"]);send("setOption",["captions","track",{}])};   /* captions always off, whatever the viewer's YouTube settings */
+    [600,1500,3000,6000].forEach(function(ms){setTimeout(function(){if(my===tok&&f.parentNode)nocc()},ms)});
     snd.onclick=function(){muted=!muted;send(muted?"mute":"unMute");snd.innerHTML=muted?ICON.mute:ICON.sound;snd.setAttribute("aria-label",muted?"Turn trailer sound on":"Turn trailer sound off")};
     var clean=function(){window.removeEventListener("message",on);if(snd.parentNode)snd.parentNode.removeChild(snd)};
     var fail=function(){if(done)return;done=true;clean();if(f.parentNode)f.parentNode.removeChild(f);hero.classList.remove("auto")};
@@ -109,7 +111,9 @@
     function on(e){
       if(e.source!==f.contentWindow)return;var m;try{m=typeof e.data==="string"?JSON.parse(e.data):e.data}catch(x){return}
       if(!m)return;var st=m.event==="onStateChange"?m.info:(m.info&&m.info.playerState);
-      if(st===1){playing();send("unloadModule",["captions"]);send("unloadModule",["cc"])}
+      if(st===1)playing();
+      if(st===1||st===3||st===5)nocc();
+      if(st===1){}
       else if(st===0||st===2){
         /* ended / paused frames show YouTube's own UI: hide them and resume (buffering, state 3, is left alone:
            a play command during buffering makes YouTube flash its big pause icon) */
