@@ -34,7 +34,9 @@
   const act=(label,a,d,extra)=>`<button type="button" class="bt-btn${extra||""}" data-act="${a}" ${d||""}>${label}</button>`;
   const waBtn=t=>btn("Chat on WhatsApp",wa(t||"Hi StreamX!"),"  bt-wa");
   const chips=a=>`<div class="bt-chips">${a.map((x,i)=>`<button type="button" class="bt-chip" style="--i:${i}" data-q="${esc(x)}">${esc(x)}</button>`).join("")}</div>`;
-  const faq=i=>FAQS[i]?`<p>${esc(FAQS[i][1])}</p>`:"";
+  /* FAQ answers are found by their question text (not by position), so reordering the FAQ never breaks the chat */
+  const FAQK={0:/how do i order/i,1:/how long does delivery/i,2:/login details/i,4:/safe to buy/i,5:/try the service/i,6:/account stops working/i,7:/need a vpn/i,8:/gift cards/i,9:/choose how long/i};
+  const faq=i=>{const re=FAQK[i],f=re?FAQS.find(x=>re.test(x[0])):FAQS[i];return f?`<p>${esc(f[1])}</p>`:""};
   const cheap=n=>LIST.map(p=>[p,minOf(p)]).filter(x=>x[1]>0&&(!n||x[1]<=n)).sort((a,b)=>a[1]-b[1]);
   const logo=(f,a)=>`<img src="/assets/img/pay/${f}" alt="${a}" height="22" onerror="this.replaceWith(Object.assign(document.createElement('span'),{textContent:this.alt}))">`;
   const mini=a=>`<ul class="bt-mini">${a.map(x=>`<li><a href="/#plan=${slug(x[0].name)}" data-close>${esc(x[0].name)}</a><b>${x[1]?"from "+taka(x[1]):"ask us"}</b></li>`).join("")}</ul>`;
@@ -670,7 +672,20 @@
       else if(/ devices$/i.test(text)&&findProducts(norm(text))[0]){const p=findProducts(norm(text))[0];ctx.p=p;r={h:`<div class="bt-card"><div class="bt-ct">${esc(p.name)}</div>${deviceLines(p)}<div class="bt-row">${btn("View plans","#plan="+slug(p.name))}</div></div>`,c:ctxChips(p)}}
       else r=answer(text);
     }catch(e){r={h:`<p>Sorry, something went wrong. Please message us on WhatsApp.</p>`+waBtn("Hi StreamX! "+text)}}
-    bot(r);
+    bot(suggest(r,text));
+  }
+  /* Suggestion chips follow the conversation: never repeat a question the customer already asked, and offer the next things people usually ask about this product (devices, price, delivery, payment, renewal) */
+  function suggest(r,text){
+    if(!r||!Array.isArray(r.c))return r;
+    const key=x=>String(x).toLowerCase().replace(/[?!.]/g,"").replace(/\s+/g," ").trim(),asked=ctx.asked||(ctx.asked=new Set()),human=/^talk to a human$/i;
+    asked.add(key(text));
+    const keep=r.c.filter(x=>human.test(x)||!asked.has(key(x))),out=[];
+    keep.forEach(x=>{if(!human.test(x)&&out.indexOf(x)<0)out.push(x)});
+    const pr=ctx.p,justDev=/ devices$/i.test(text.trim());
+    const fill=pr?(justDev?[pr.name+" price","How fast is delivery?","How do I pay online?","How do I renew?","Refund policy"]:[pr.name+" devices","How do I pay online?","How fast is delivery?","How do I renew?","Refund policy"]):["Prices & plans","How do I pay online?","How fast is delivery?","Refund policy"];
+    for(const f of fill){if(out.length>=2)break;if(!asked.has(key(f))&&out.indexOf(f)<0)out.push(f)}
+    out.push("Talk to a human");
+    return Object.assign({},r,{c:out.slice(0,3)});
   }
   function reply(userText,r){strip();add("bt-u",userText,true);bot(r)}
   function doAct(el){
