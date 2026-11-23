@@ -39,7 +39,8 @@
   const faq=i=>{const re=FAQK[i],f=re?FAQS.find(x=>re.test(x[0])):FAQS[i];return f?`<p>${esc(f[1])}</p>`:""};
   const cheap=n=>LIST.map(p=>[p,minOf(p)]).filter(x=>x[1]>0&&(!n||x[1]<=n)).sort((a,b)=>a[1]-b[1]);
   const logo=(f,a)=>`<img src="/assets/img/pay/${f}" alt="${a}" height="22" onerror="this.replaceWith(Object.assign(document.createElement('span'),{textContent:this.alt}))">`;
-  const mini=a=>`<ul class="bt-mini">${a.map(x=>`<li><a href="/#plan=${slug(x[0].name)}" data-close>${esc(x[0].name)}</a><b>${x[1]?"from "+taka(x[1]):"ask us"}</b></li>`).join("")}</ul>`;
+  /* Service rows: the whole row is one tap target, with the real brand logo, the name, its group and the starting price */
+  const mini=a=>`<div class="bt-svl">${a.map(x=>{const p=x[0];return `<a class="bt-sv" href="/#plan=${slug(p.name)}" data-close aria-label="${esc(p.name)}, ${x[1]?"from "+taka(x[1]):"ask us"}">${tileOf(p.name)}<span class="bt-sn"><b>${esc(p.name)}</b><small>${esc(p.cat==="Bundle"?"Bundles":(p.cat||"Service"))}</small></span><span class="bt-sp">${x[1]?`<em>from</em>${taka(x[1])}`:"Ask us"}</span><svg class="bt-sc" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a>`}).join("")}</div>`;
 
   /* combo packs that include this service (e.g. Entertainment Combo = Netflix + Prime Video) */
   const comboOf=p=>{if(p.cat==="Bundle")return[];const n=norm(p.name).trim().replace(/^amazon /,"");return LIST.filter(b=>b.cat==="Bundle"&&b.packs&&norm(b.desc+" "+b.name).indexOf(" "+n)>-1)};
@@ -367,7 +368,7 @@
   const colorOf=n=>{const p=PRODUCTS.find(x=>x.name===n);return p?p.color:"#1d2347"};
   const tileOf=n=>{const L=typeof LOGOS!=="undefined"&&typeof LOGO_OF!=="undefined"&&LOGOS[LOGO_OF[n]],p=PRODUCTS.find(q=>q.name===n);
     if(L&&L.p)return `<span class="bt-tile bt-logo" style="background:${esc(L.bg)};color:${esc(L.fg||"#fff")}"><svg viewBox="${esc(L.vb)}" aria-hidden="true"><path d="${L.p}"/></svg></span>`;
-    return `<span class="bt-tile" style="background:${colorOf(n)}">${esc(((p&&p.icon)||n[0]||"?").toString().slice(0,2))}</span>`};
+    const sg=slug(n);return `<span class="bt-tile" style="background:${colorOf(n)}">${esc(((p&&p.icon)||n[0]||"?").toString().slice(0,2))}<img class="bt-limg" src="/assets/img/logos/${sg}.svg" alt="" loading="lazy" onerror="if(!this.dataset.t){this.dataset.t=1;this.src='/assets/img/logos/${sg}.png'}else this.remove()"></span>`};
   const leftTxt=x=>x._left<0?(-x._left)+(x._left===-1?" day ago":" days ago"):x._left===0?"last day":x._left+(x._left===1?" day left":" days left");
   const owns=(x,p)=>{const a=norm(x.service),b=norm(p.name);return a===b||a.indexOf(b)>-1||b.indexOf(a)>-1};
   const I_EYE='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>';
