@@ -168,6 +168,11 @@
 .pc:hover::before {
   opacity: 1;
 }
+/* No red/blue gradient line on top of the card: the plain blue border is enough */
+.pc::before,
+.pc:hover::before {
+  display: none;
+}
 .pc .ico {
   width: 60px;
   height: 60px;
