@@ -366,3 +366,8 @@ html.bt-lock,html.bt-lock body{overflow:hidden!important;overscroll-behavior:non
 .bt-sv .bt-sc{position:relative;flex:none;width:16px;height:16px;fill:none;stroke:#7d89b8;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;transition:transform .2s,stroke .2s}
 .bt-sv:hover .bt-sc{transform:translateX(3px);stroke:#ffb3aa}
 @media(max-width:380px){.bt-sv .bt-sn small{display:none}}
+
+/* Real brand logo in service card headers */
+.bt-card>.bt-ct .bt-tile{width:34px;height:34px;border-radius:10px;position:relative;overflow:hidden;box-shadow:0 6px 14px -8px rgba(0,0,0,.7),inset 0 0 0 1px rgba(255,255,255,.1)}
+.bt-card>.bt-ct .bt-tile.bt-logo svg{width:62%;height:62%}
+.bt-card>.bt-ct{gap:10px}

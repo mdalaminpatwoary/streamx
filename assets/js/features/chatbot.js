@@ -47,10 +47,10 @@
   const packRows=b=>`<ul>${b.packs.slice(0,4).map(k=>`<li><span>${esc(k.n)}<small class="bt-sm"> ${esc(k.tag||"")}</small></span><b>${taka(k.p)}${k.old>k.p?` <s>${taka(k.old)}</s>`:""}</b></li>`).join("")}</ul>`;
   function comboHtml(b){
     const best=b.packs.reduce((m,k)=>Math.max(m,(k.old||k.p)-k.p),0);
-    return `<div class="bt-combo"><div class="bt-pt">Combo deal<em>${best?"Save up to "+taka(best):"Better together"}</em></div><p class="bt-cd">${esc(b.name)}: ${esc(b.desc)}, together in one pack (monthly price).</p>${packRows(b)}<div class="bt-row">${act("Choose combo &amp; pay online","pick",`data-i="${idx(b)}"`," bt-go")}${btn("View combo","#plan="+slug(b.name))}</div></div>`;
+    return `<div class="bt-combo"><div class="bt-pt">Combo deal<em>${best?"Save up to "+taka(best):"Better together"}</em></div><p class="bt-cd">${esc(b.name)}: ${esc(b.desc)}, together in one pack (monthly price).</p>${packRows(b)}<div class="bt-row">${act("Buy this combo","pick",`data-i="${idx(b)}"`," bt-go")}${btn("View combo","#plan="+slug(b.name))}</div></div>`;
   }
   function productCard(p){
-    if(p.packs)return `<div class="bt-card"><div class="bt-ct">${esc(p.name)}<em>${esc(p.cat)}</em></div><p class="bt-cd">${esc(p.desc)}, together in one pack (monthly price).</p>${packRows(p)}<p class="bt-pn"><i></i>Pay online with bKash, Nagad, Rocket, Upay or card</p><div class="bt-row">${act("Choose pack &amp; pay online","pick",`data-i="${idx(p)}"`," bt-go")}${btn("View combo","#plan="+slug(p.name))}${btn("WhatsApp",wa("Hi StreamX! I want the "+p.name+"."),"  bt-wa")}</div></div>`;
+    if(p.packs)return `<div class="bt-card"><div class="bt-ct">${tileOf(p.name)}${esc(p.name)}<em>${esc(p.cat)}</em></div><p class="bt-cd">${esc(p.desc)}, together in one pack (monthly price).</p>${packRows(p)}<p class="bt-pn"><i></i>Pay online with bKash, Nagad, Rocket, Upay or card</p><div class="bt-row">${act("Buy this combo","pick",`data-i="${idx(p)}"`," bt-go")}${btn("Full details","#plan="+slug(p.name))}${btn("Ask on WhatsApp",wa("Hi StreamX! I want the "+p.name+"."),"  bt-wa")}</div></div>`;
     const cb=comboOf(p).map(comboHtml).join("");
     return productCard1(p)+cb;
   }
@@ -58,16 +58,16 @@
     const rows=p.variants.slice(0,4).map(v=>{const x=pl0(v);return x?`<li><span>${esc(v.n)}</span><b>${x.ask?"Ask on WhatsApp":taka(x.p)+`<small> / ${esc(x.once?"one-time":x.v.toLowerCase())}</small>`}</b></li>`:""}).join("");
     const long=p.variants.map(v=>v.plans&&v.plans[v.plans.length-1]).filter(Boolean).sort((a,b)=>b.m-a.m)[0];
     const gift=p.gift&&typeof GIFT!=="undefined";
-    return `<div class="bt-card"><div class="bt-ct">${esc(p.name)}<em>${esc(p.cat)}</em></div><p class="bt-cd">${esc(p.desc)}</p>`+
+    return `<div class="bt-card"><div class="bt-ct">${tileOf(p.name)}${esc(p.name)}<em>${esc(p.cat)}</em></div><p class="bt-cd">${esc(p.desc)}</p>`+
       (gift?`<p class="bt-cd">US region. ${taka(GIFT.rate(5))} per $1, any amount from $${GIFT.min} to $${GIFT.max} in steps of $${GIFT.step}.</p>`:rows?`<ul>${rows}</ul>`:"")+
       (!gift&&long&&long.m>1?`<p class="bt-cd">Longer plans cost less per month, up to ${esc(long.v.toLowerCase())}.</p>`:"")+
       (canPick(p)?`<p class="bt-pn"><i></i>Pay online with bKash, Nagad, Rocket, Upay or card</p>`:"")+
-      `<div class="bt-row">${canPick(p)?act("Choose plan &amp; pay online","pick",`data-i="${idx(p)}"`," bt-go"):""}${btn("View plans","#plan="+slug(p.name))}${btn("WhatsApp",wa("Hi StreamX! I want "+p.name+"."),"  bt-wa")}</div></div>`;
+      `<div class="bt-row">${canPick(p)?act("Buy now","pick",`data-i="${idx(p)}"`," bt-go"):""}${btn(canPick(p)?"Full details":"View plans","#plan="+slug(p.name))}${btn(canPick(p)?"Ask on WhatsApp":"Order on WhatsApp",wa("Hi StreamX! I want "+p.name+"."),"  bt-wa")}</div></div>`;
   }
   const featOf=p=>{const f=p.variants[0].f||[];return f[0]||p.desc};
   function deviceLines(p){return `<ul class="bt-ul">`+p.variants.slice(0,4).map(v=>`<li><b>${esc(v.n)}</b>: ${esc((v.f||[]).find(x=>/mobile|tablet|web|tv|android|apple|device/i.test(x))||v.line)}</li>`).join("")+`</ul>`}
   function explainHtml(p){
-    return `<div class="bt-card"><div class="bt-ct">${esc(p.name)}<em>Plan types</em></div><ul class="bt-ul">`+p.variants.map(v=>{const x=pl0(v);return `<li><b>${esc(v.n)}</b>${v.tag?` <em class="bt-tg">${esc(v.tag)}</em>`:""}<br><span class="bt-cd">${esc(v.line)}</span>${x?`<br><span class="bt-pr">${x.ask?"price on WhatsApp":`from ${taka(x.p)} / ${esc(x.v.toLowerCase())}`}</span>`:""}</li>`}).join("")+`</ul>${canPick(p)?`<div class="bt-row">${act("Choose plan &amp; pay online","pick",`data-i="${idx(p)}"`," bt-go")}</div>`:""}</div>`;
+    return `<div class="bt-card"><div class="bt-ct">${tileOf(p.name)}${esc(p.name)}<em>Plan types</em></div><ul class="bt-ul">`+p.variants.map(v=>{const x=pl0(v);return `<li><b>${esc(v.n)}</b>${v.tag?` <em class="bt-tg">${esc(v.tag)}</em>`:""}<br><span class="bt-cd">${esc(v.line)}</span>${x?`<br><span class="bt-pr">${x.ask?"price on WhatsApp":`from ${taka(x.p)} / ${esc(x.v.toLowerCase())}`}</span>`:""}</li>`}).join("")+`</ul>${canPick(p)?`<div class="bt-row">${act("Buy now","pick",`data-i="${idx(p)}"`," bt-go")}</div>`:""}</div>`;
   }
   function compareHtml(ps){
     const row=(k,f)=>`<tr><th>${k}</th>${ps.map(p=>`<td>${f(p)}</td>`).join("")}</tr>`;
@@ -103,7 +103,7 @@
   }
   function sumHtml(i,vi,k){
     const p=PRODUCTS[i],v=p.variants[vi],x=v.plans[k],d=`data-i="${i}" data-v="${vi}" data-k="${k}"`;
-    return `<div class="bt-card bt-sum"><div class="bt-ct">${esc(p.name)}<em>${esc(x.v)}</em></div><p class="bt-cd">${p.variants.length>1?esc(v.n)+" · ":""}${esc(v.line)}</p><div class="bt-big">${taka(x.p)}</div>`+
+    return `<div class="bt-card bt-sum"><div class="bt-ct">${tileOf(p.name)}${esc(p.name)}<em>${esc(x.v)}</em></div><p class="bt-cd">${p.variants.length>1?esc(v.n)+" · ":""}${esc(v.line)}</p><div class="bt-big">${taka(x.p)}</div>`+
       ((v.notes||[]).length?`<ul class="bt-notes">${v.notes.map(n=>`<li>${esc(n)}</li>`).join("")}</ul>`:"")+
       `<div class="bt-row">${act("Pay online","buy",d," bt-go")}${act("Add to cart","cart",d)}${btn("WhatsApp",wa(`Hi StreamX! I want ${p.name}${p.variants.length>1?" – "+v.n:""} (${x.v}) - ${taka(x.p)}.`),"  bt-wa")}</div><p class="bt-pn"><i></i>Secure payment on EPS: bKash, Nagad, Rocket, Upay or card</p></div>`;
   }
@@ -118,7 +118,7 @@
   }
   function valueHtml(p){
     const rows=p.variants.map(v=>{const a=v.plans||[];if(a.length<2)return"";const f=a[0],l=a[a.length-1],m1=l.p/l.m,sv=Math.round((1-m1/(f.p/f.m))*100);return sv>=3?`<li><span>${esc(v.n)}<small class="bt-sm"> ${esc(l.v)}</small></span><b>${taka(Math.round(m1))}/mo <small>save ${sv}%</small></b></li>`:""}).join("");
-    return rows?`<div class="bt-card"><div class="bt-ct">${esc(p.name)}<em>Best value</em></div><ul>${rows}</ul><p class="bt-cd">The longest plan has the lowest price per month.</p><div class="bt-row">${canPick(p)?act("Choose plan &amp; pay online","pick",`data-i="${idx(p)}"`," bt-go"):""}${btn("View plans","#plan="+slug(p.name))}</div></div>`:"";
+    return rows?`<div class="bt-card"><div class="bt-ct">${tileOf(p.name)}${esc(p.name)}<em>Best value</em></div><ul>${rows}</ul><p class="bt-cd">The longest plan has the lowest price per month.</p><div class="bt-row">${canPick(p)?act("Buy now","pick",`data-i="${idx(p)}"`," bt-go"):""}${btn("Full details","#plan="+slug(p.name))}</div></div>`:"";
   }
   function valueReply(t){
     const p=findProducts(norm(t))[0]||ctx.p;
@@ -280,12 +280,12 @@
     /* follow-ups about the product we were just discussing */
     if(!ps.length&&ctx.p){
       if(/(\d+\s*(month|year|m\b|y\b)|monthly|yearly|annual|duration|how long)/.test(ql)&&canPick(ctx.p))return{h:typeHtml(ctx.p),c:null};
-      if(best&&["devices"].indexOf(best[0])>-1)return{h:`<div class="bt-card"><div class="bt-ct">${esc(ctx.p.name)}</div>${deviceLines(ctx.p)}</div>`,c:ctxChips(ctx.p)};
+      if(best&&["devices"].indexOf(best[0])>-1)return{h:`<div class="bt-card"><div class="bt-ct">${tileOf(ctx.p.name)}${esc(ctx.p.name)}</div>${deviceLines(ctx.p)}</div>`,c:ctxChips(ctx.p)};
       if(!best&&/\b(it|this|that|price|plans?|cost)\b/.test(ql)){ps=[ctx.p]}
     }
     if(ps.length&&(!best||LITE.indexOf(best[0])>-1&&best[0]!=="payment"&&best[0]!=="login")){
       const dev=best&&best[0]==="devices";ctx.p=ps[0];
-      return{h:(dev?`<p>Supported devices:</p>`:"")+ps.map(p=>dev?`<div class="bt-card"><div class="bt-ct">${esc(p.name)}</div>${deviceLines(p)}<div class="bt-row">${btn("View plans","#plan="+slug(p.name))}</div></div>`:productCard(p)).join(""),c:ctxChips(ps[0])};
+      return{h:(dev?`<p>Supported devices:</p>`:"")+ps.map(p=>dev?`<div class="bt-card"><div class="bt-ct">${tileOf(p.name)}${esc(p.name)}</div>${deviceLines(p)}<div class="bt-row">${btn("View plans","#plan="+slug(p.name))}</div></div>`:productCard(p)).join(""),c:ctxChips(ps[0])};
     }
     if(ps.length&&best&&best[0]==="problem")return best[2](t+" ("+ps[0].name+")");
     if(best)return best[2](t);
@@ -681,7 +681,7 @@
     try{
       if(/^talk to a human$/i.test(text))r=INT.find(i=>i[0]==="human")[2]();
       else if(/^help me choose$/i.test(text))r=INT.find(i=>i[0]==="choose")[2]();
-      else if(/ devices$/i.test(text)&&findProducts(norm(text))[0]){const p=findProducts(norm(text))[0];ctx.p=p;r={h:`<div class="bt-card"><div class="bt-ct">${esc(p.name)}</div>${deviceLines(p)}<div class="bt-row">${btn("View plans","#plan="+slug(p.name))}</div></div>`,c:ctxChips(p)}}
+      else if(/ devices$/i.test(text)&&findProducts(norm(text))[0]){const p=findProducts(norm(text))[0];ctx.p=p;r={h:`<div class="bt-card"><div class="bt-ct">${tileOf(p.name)}${esc(p.name)}</div>${deviceLines(p)}<div class="bt-row">${btn("View plans","#plan="+slug(p.name))}</div></div>`,c:ctxChips(p)}}
       else r=answer(text);
     }catch(e){r={h:`<p>Sorry, something went wrong. Please message us on WhatsApp.</p>`+waBtn("Hi StreamX! "+text)}}
     bot(suggest(r,text));
