@@ -47,18 +47,35 @@
     const put=(r)=>{el.style.left=r.left+"px";el.style.top=r.top+"px";el.style.width=r.width+"px";el.style.height=r.height+"px"};
     let timer,closed=false,hover=false;
     /* Close with a transform-only fly-back to the icon: no width/height/top animation, so the navbar is never overlapped or re-laid-out (Safari/Firefox glitch) */
+    const root=document.documentElement,done=()=>{el.remove();root.classList.remove("nt-isl-on");bell.classList.add("nt-pop-b")};
     const close=()=>{if(closed)return;closed=true;clearTimeout(timer);
       const a=el.getBoundingClientRect(),b=from(),dx=b.left+b.width/2-(a.left+a.width/2),dy=b.top+b.height/2-(a.top+a.height/2);
       el.style.transition="transform .45s cubic-bezier(.5,0,.75,0),opacity .35s ease .1s";
       el.style.transformOrigin="50% 50%";el.style.pointerEvents="none";
       requestAnimationFrame(()=>{el.style.transform=`translate(${dx}px,${dy}px) scale(.12)`;el.style.opacity="0"});
-      setTimeout(()=>{el.remove();bell.classList.add("nt-pop-b")},520)};
+      setTimeout(done,520)};
+    /* Swipe left or right (like a phone notification) to dismiss: follows the finger, then slides off the screen */
+    const swipe=dir=>{if(closed)return;closed=true;clearTimeout(timer);el.style.pointerEvents="none";
+      el.style.transition="transform .32s cubic-bezier(.4,0,.8,.4),opacity .28s ease";
+      requestAnimationFrame(()=>{el.style.transform=`translateX(${dir*(innerWidth+40)}px)`;el.style.opacity="0"});
+      setTimeout(done,360)};
+    let sx=0,sy=0,dx0=0,drag=false,moved=false,t0=0;
+    el.style.touchAction="pan-y";el.draggable=false;el.style.userSelect="none";el.style.webkitUserDrag="none";el.addEventListener("dragstart",e=>e.preventDefault());
+    el.addEventListener("pointerdown",e=>{if(closed||e.target.closest(".nt-isl-x"))return;drag=true;moved=false;sx=e.clientX;sy=e.clientY;dx0=0;t0=Date.now();try{el.setPointerCapture(e.pointerId)}catch(_){}});
+    el.addEventListener("pointermove",e=>{if(!drag||closed)return;const x=e.clientX-sx;if(!moved&&Math.abs(x)<6)return;moved=true;dx0=x;clearTimeout(timer);
+      el.style.transition="none";el.style.transform=`translateX(${x}px)`;el.style.opacity=String(Math.max(.25,1-Math.abs(x)/(innerWidth*.6)))});
+    const up=()=>{if(!drag)return;drag=false;if(!moved){arm();return}
+      const v=Math.abs(dx0)/Math.max(1,Date.now()-t0);
+      if(Math.abs(dx0)>70||v>.5)swipe(dx0<0?-1:1);
+      else{el.style.transition="transform .3s cubic-bezier(.2,.9,.25,1.2),opacity .2s ease";el.style.transform="";el.style.opacity="";arm()}};
+    el.addEventListener("pointerup",up);el.addEventListener("pointercancel",up);
+    el.addEventListener("click",e=>{if(moved){e.preventDefault();moved=false}});
     const arm=()=>{clearTimeout(timer);timer=setTimeout(()=>{hover?arm():close()},6500)};
     el.addEventListener("mouseenter",()=>{hover=true});el.addEventListener("mouseleave",()=>{hover=false});
     el.querySelector(".nt-isl-x").addEventListener("click",ev=>{ev.preventDefault();ev.stopPropagation();close()});
-    put(from());document.body.appendChild(el);
+    put(from());document.body.appendChild(el);document.documentElement.classList.add("nt-isl-on");
     requestAnimationFrame(()=>requestAnimationFrame(()=>{
-      const w=Math.min(520,innerWidth-24),nb=document.querySelector(".navbar"),top=nb?Math.max(12,nb.getBoundingClientRect().bottom+10):80;
+      const w=Math.min(520,innerWidth-24),top=Math.max(12,innerHeight-68-20); /* bottom of the screen, like a footer toast */
       put({left:(innerWidth-w)/2,top:top,width:w,height:68});el.classList.add("open");arm();
     }));
   };

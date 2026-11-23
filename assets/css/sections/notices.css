@@ -116,3 +116,9 @@ html.nt-lock{overflow:hidden}
 .nt-grab i{display:block;width:46px;height:5px;border-radius:99px;background:rgba(255,255,255,.34);transition:background .2s,width .2s}
 .nt-grab:active i{background:rgba(255,255,255,.6);width:56px}
 @media(max-width:1024px),(pointer:coarse){.nt-grab{display:flex}}
+
+/* While the announcement pill is showing, the chat bubble steps aside, then returns with a small bounce */
+.cw{transition:opacity .35s ease,transform .5s cubic-bezier(.2,.9,.25,1.25)}
+html.nt-isl-on .cw{opacity:0;transform:translateY(24px) scale(.6);pointer-events:none!important}
+html.nt-isl-on .cw *{pointer-events:none!important}
+@media(prefers-reduced-motion:reduce){.cw{transition:none}}
