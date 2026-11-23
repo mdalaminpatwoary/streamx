@@ -6,7 +6,19 @@ const db = require("./_db");
 const FIELDS = ["id", "created_at", "name", "email", "phone", "service", "plan", "months", "start_date", "end_date", "price", "pay_method", "txn_id", "channel", "notes", "source", "order_ref", "manual_id"];
 /* A value that starts with = + - or @ would be read by Google Sheets as a formula (for example +44 phone numbers), so it is stored as plain text. */
 const safe = (v) => (typeof v === "string" && /^[=+\-@]/.test(v) ? "'" + v : v);
-const slim = (r) => { const o = {}; FIELDS.forEach((k) => { o[k] = r[k] == null ? "" : safe(r[k]); }); return o; };
+/* One phone format in the sheet: +<country code><number>, so the same number is never listed twice in different spellings (01…, 880…, +880 1…). */
+const intl = (v) => {
+  const s = String(v == null ? "" : v).trim();
+  if (!s) return "";
+  const d = s.replace(/[^\d+]/g, "");
+  if (/^\+\d{8,15}$/.test(d)) return d;
+  const n = d.replace(/\+/g, "");
+  if (/^00\d{8,15}$/.test(n)) return "+" + n.slice(2);
+  if (/^0\d{10}$/.test(n)) return "+88" + n;
+  if (/^880\d{10}$/.test(n)) return "+" + n;
+  return s;
+};
+const slim = (r) => { const o = {}; FIELDS.forEach((k) => { o[k] = r[k] == null ? "" : safe(k === "phone" ? intl(r[k]) : r[k]); }); return o; };
 const enabled = () => !!process.env.SHEETS_WEBHOOK_URL;
 
 /* Returns "" when the sheet accepted the data, otherwise a short reason. */
