@@ -134,3 +134,6 @@ html.ts-open{overflow:hidden}
 /* Crop YouTube's own chrome (title bar, "More videos", logo) by over-scaling the player inside the clipped hero */
 .ts-hero.auto{overflow:hidden}
 .ts-hero.auto iframe{position:absolute;inset:0;width:100%;height:100%;border:0;transform:scale(1.38);transform-origin:50% 50%}
+
+/* Keep the hero's layers (video, shield, gradient) inside their own stacking context so they can't cover the poster */
+.ts-hero{z-index:0;isolation:isolate}
