@@ -75,8 +75,14 @@ module.exports = async (req, res) => {
   res.setHeader("Content-Type", "application/json; charset=utf-8");
   try {
     if (req.method !== "GET") return res.status(405).json({ error: "Method not allowed" });
+    // The visitor's country, read from their IP address by the host (used to pick the default region).
+    if (req.query.geo) {
+      res.setHeader("Cache-Control", "no-store");
+      const c = String(req.headers["x-vercel-ip-country"] || "").toUpperCase();
+      return res.status(200).json({ c: /^[A-Z]{2}$/.test(c) ? c : "" });
+    }
     const p = String(req.query.p || "");
-    const r = String(req.query.r || "BD").toUpperCase();
+    const r = p === "hotstar" ? "IN" : String(req.query.r || "US").toUpperCase(); // JioHotstar: India only
     if (!PLATFORMS[p] || !REGIONS.has(r)) return res.status(400).json({ error: "Unknown platform or region" });
 
     // Some regions (e.g. Bangladesh) have no availability data in TMDB: fall back to a region that does.

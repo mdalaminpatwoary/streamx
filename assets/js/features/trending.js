@@ -25,8 +25,11 @@
   /* "New": released in the last 30 days */
   const isNew=m=>{const t=Date.parse(m.d||"");return t>0&&Date.now()-t>=0&&Date.now()-t<30*864e5};
 
-  // Defaults: movies, United States (India for JioHotstar). A region the visitor picks themselves is remembered.
-  const homeRegion=p=>["hotstar","zee5","sonyliv"].includes(p)?"IN":"US";
+  // Defaults: movies, in the visitor's own country (from their IP address); the United States when that country isn't in the list.
+  // JioHotstar is India only. A region the visitor picks themselves is remembered.
+  let geo="US";
+  const homeRegion=p=>["hotstar","zee5","sonyliv"].includes(p)?"IN":geo;
+  const R=()=>st.p==="hotstar"?"IN":st.r;
   let st={p:"netflix",r:"US",k:"movie",manual:false};
   try{const s=JSON.parse(localStorage.getItem("sx_trend2")||"{}");
     if(ok(s.p,PLATFORMS.map(x=>x.id)))st.p=s.p;
@@ -50,18 +53,18 @@
     const a=tabs.querySelector(".tr-tab.on");slide(tabs,a,ink);slide(seg,seg.querySelector("button.on"),thumb);
     if(a&&tabs.scrollWidth>tabs.clientWidth)tabs.scrollTo({left:a.offsetLeft-tabs.clientWidth/2+a.offsetWidth/2,behavior:"smooth"});
   }
-  tabs.onclick=e=>{const b=e.target.closest(".tr-tab");if(!b||b.dataset.p===st.p)return;st.p=b.dataset.p;if(!st.manual){st.r=homeRegion(st.p);paintRegion()}save();paintControls();load()};
+  tabs.onclick=e=>{const b=e.target.closest(".tr-tab");if(!b||b.dataset.p===st.p)return;st.p=b.dataset.p;if(!st.manual)st.r=homeRegion(st.p);paintRegion();save();paintControls();load()};
   seg.onclick=e=>{const b=e.target.closest("button");if(!b||b.dataset.k===st.k)return;st.k=b.dataset.k;save();paintControls();render()};
   addEventListener("resize",()=>shown&&paintControls());
 
   // ---------- Region picker ----------
   const btn=$("#trRegBtn"),pop=$("#trPop"),list=$("#trRegList"),rq=$("#trRegQ");
   function paintRegion(){
-    const r=REGIONS.find(x=>x[0]===st.r);$("#trRegName").textContent=r[1];
+    const r=REGIONS.find(x=>x[0]===R());$("#trRegName").textContent=r[1];
     const f=$("#trFlag");f.style.visibility="";f.src=flag(r[0]);f.onerror=()=>{f.style.visibility="hidden"};
   }
   function fillList(q=""){
-    list.innerHTML=REGIONS.filter(r=>r[1].toLowerCase().includes(q.toLowerCase())).map(r=>`<li role="option" tabindex="0" data-r="${r[0]}" aria-selected="${r[0]===st.r}"><img src="${flag(r[0])}" alt="" width="22" height="16" loading="lazy" onerror="this.style.visibility='hidden'">${r[1]}</li>`).join("")||`<li aria-disabled="true">No match</li>`;
+    list.innerHTML=REGIONS.filter(r=>(st.p!=="hotstar"||r[0]==="IN")&&r[1].toLowerCase().includes(q.toLowerCase())).map(r=>`<li role="option" tabindex="0" data-r="${r[0]}" aria-selected="${r[0]===R()}"><img src="${flag(r[0])}" alt="" width="22" height="16" loading="lazy" onerror="this.style.visibility='hidden'">${r[1]}</li>`).join("")||`<li aria-disabled="true">No match</li>`;
   }
   function openPop(o){
     pop.hidden=!o;btn.setAttribute("aria-expanded",o);
@@ -69,7 +72,7 @@
   }
   btn.onclick=()=>openPop(pop.hidden);
   rq.oninput=()=>fillList(rq.value);
-  const pick=li=>{if(!li||!li.dataset.r)return;st.r=li.dataset.r;st.manual=true;save();paintRegion();openPop(false);btn.focus();load()};
+  const pick=li=>{if(!li||!li.dataset.r)return;if(st.p==="hotstar"){openPop(false);btn.focus();return}st.r=li.dataset.r;st.manual=true;save();paintRegion();openPop(false);btn.focus();load()};
   list.onclick=e=>pick(e.target.closest("li"));
   list.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();pick(e.target.closest("li"))}};
   document.addEventListener("click",e=>{if(!pop.hidden&&!$("#trReg").contains(e.target))openPop(false)});
@@ -84,7 +87,7 @@
     const j=await res.json();cache.set(key,{t:Date.now(),j});return j;
   }
   const pl=()=>PLATFORMS.find(x=>x.id===st.p);
-  const regionName=()=>REGIONS.find(x=>x[0]===st.r)[1];
+  const regionName=()=>REGIONS.find(x=>x[0]===R())[1];
   let data=null;
 
   function skeleton(){
@@ -93,7 +96,7 @@
   async function load(){
     const my=++token;skeleton();cta();
     try{
-      const j=await fetchTop(st.p,st.r);
+      const j=await fetchTop(st.p,R());
       if(my!==token)return;
       data=j;render();paintLive();
       if(!shown){shown=true;sec.hidden=false;const n=$("#trNav");if(n)n.hidden=false;requestAnimationFrame(()=>{paintControls();if(window.realignHash)realignHash()})}
@@ -190,7 +193,7 @@
   async function refresh(){
     if(!shown||document.hidden)return;
     try{
-      const j=await fetchTop(st.p,st.r);
+      const j=await fetchTop(st.p,R());
       if(!data||j.at!==data.at){const same=JSON.stringify(j.movies.map(x=>x.id))===JSON.stringify(data&&data.movies.map(x=>x.id));data=j;if(!same)render()}
       paintLive();
     }catch(e){}
@@ -199,5 +202,10 @@
   setInterval(refresh,10*60*1000);
   document.addEventListener("visibilitychange",()=>{if(!document.hidden)refresh()});
 
-  paintRegion();paintControls();load();
+  /* Ask the server which country the visitor is in (it reads it from the IP address); wait at most 1.5 s, then use the United States. */
+  const geoReady=Promise.race([
+    fetch("/api/trending?geo=1").then(r=>r.ok?r.json():null).then(j=>{const c=String(j&&j.c||"").toUpperCase();if(ok(c,REGIONS.map(x=>x[0])))geo=c}).catch(()=>{}),
+    new Promise(r=>setTimeout(r,1500))
+  ]).then(()=>{if(!st.manual){st.r=homeRegion(st.p);paintRegion()}});
+  paintRegion();paintControls();geoReady.then(load);
 })();
