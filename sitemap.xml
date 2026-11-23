@@ -49,4 +49,9 @@
 <url><loc>https://streamx.bd/services/facebook-services/</loc><lastmod>2026-11-22</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
 <url><loc>https://streamx.bd/services/facebook-bin/</loc><lastmod>2026-11-22</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
 <url><loc>https://streamx.bd/services/entertainment-combo/</loc><lastmod>2026-11-22</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url>
+    <loc>https://streamx.bd/top-rated/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
 </urlset>

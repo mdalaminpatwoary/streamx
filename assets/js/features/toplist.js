@@ -32,7 +32,7 @@
   function endCard(show){
     if(PAGE)return;const e=grid.querySelector(".tp-endc");
     if(!show){if(e)e.remove();return}
-    if(!e&&!grid.querySelector(".tp-msg"))grid.insertAdjacentHTML("beforeend",`<a class="tp-endc" href="${st.l==="soon"?"/top/#soon":"/top/"}"><b>See everything</b><span>Browse the full list</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>`);
+    if(!e&&!grid.querySelector(".tp-msg"))grid.insertAdjacentHTML("beforeend",`<a class="tp-endc" href="${st.l==="soon"?"/top-rated/#soon":"/top-rated/"}"><b>See everything</b><span>Browse the full list</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>`);
   }
   function paintStates(){
     if(!window.sxList)return;
@@ -62,7 +62,7 @@
     const left=rows.length-shown.length;
     more.hidden=PAGE?left<=0:true;more.textContent=`Show ${Math.min(STEP,left)} more`;
     if(!PAGE){lastRows=rows;lastSoon=soon;endCard(left<=0&&rows.length>FIRST)}
-    if(all){all.hidden=mine;all.href=soon?"/top/#soon":"/top/";all.firstChild.textContent=soon?"Explore all upcoming ":"Explore all 250 "}
+    if(all){all.hidden=mine;all.href=soon?"/top-rated/#soon":"/top-rated/";all.firstChild.textContent=soon?"Explore all upcoming ":"Explore all 250 "}
     if(cnt)cnt.textContent=`Showing ${shown.length} of ${rows.length}`;
     wantPl(shown.map(x=>x.m));paintStates();
   }

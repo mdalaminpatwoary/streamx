@@ -570,7 +570,7 @@
     if(/\b(wishlist|wish list|watchlist|watch list|want to watch|saved titles?)\b/.test(ql)&&!/\b(how|what is)\b/.test(ql))return myLists("wish");
     if(/\b(watched|already seen|seen list|my seen|what have i (watched|seen))\b/.test(ql)&&/\b(my|i|list|have)\b/.test(ql)&&!/where|which platform/.test(ql))return myLists("watched");
     if(/(which|what|any|list).{0,25}(streaming|ott|movie|series).{0,20}(platforms?|services?|apps?)|(platforms?|services?) (do you|you) (have|provide|offer|sell)|(streaming|ott) (platforms?|services?) (on|at|in) streamx|which ott/.test(ql))return streamingList();
-    if(/^(top rated|top 250|best (movies|series|shows)|highest rated)\b/.test(ql))return{h:`<p>The Top 250 movies and series, with where to watch each one, are on our Top rated page. You can also save titles to your wishlist there.</p><div class="bt-row">${btn("Open Top 250","/top/"," bt-go")}</div>`,c:["My wishlist","What streaming services do you have?"]};
+    if(/^(top rated|top 250|best (movies|series|shows)|highest rated)\b/.test(ql))return{h:`<p>The Top 250 movies and series, with where to watch each one, are on our Top rated page. You can also save titles to your wishlist there.</p><div class="bt-row">${btn("Open Top 250","/top-rated/"," bt-go")}</div>`,c:["My wishlist","What streaming services do you have?"]};
     const pl=PLAT.find(x=>x[1].test(ql));
     const k=/\b(series|shows?|tv)\b/.test(ql)?"tv":"movie";
     if(pl&&/\b(what|which|show|best|popular|top|good|new|recommend|suggest|latest|trending)\b/.test(ql)&&/\b(on|in)\b/.test(ql)&&(/\b(movies?|series|shows?|watch|titles?|content|films?)\b/.test(ql)||/\b(what|which)('?s| is| are)? (on|in)\b/.test(ql))&&!/\b(price|cost|plans?|buy|subscribe|login)\b/.test(ql))return onPlatform(pl,k);

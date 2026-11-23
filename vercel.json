@@ -49,6 +49,16 @@
   ],
   "redirects": [
     {
+      "source": "/top",
+      "destination": "/top-rated/",
+      "permanent": true
+    },
+    {
+      "source": "/top/",
+      "destination": "/top-rated/",
+      "permanent": true
+    },
+    {
       "source": "/return-policy",
       "destination": "/refund-policy/",
       "permanent": true
