@@ -48,7 +48,7 @@
     var l = document.createElement("link"); l.rel = "stylesheet"; l.href = "/assets/css/title-sheet.css?v=10"; document.head.appendChild(l);
     var one = function (src) { return new Promise(function (ok, no) { var sc = document.createElement("script"); sc.src = src; sc.onload = ok; sc.onerror = no; document.head.appendChild(sc); }); };
     var chain = Promise.resolve();
-    ["/assets/js/data/logos.js?v=20261122a", "/assets/js/features/mylist.js?v=1", "/assets/js/features/title-sheet.js?v=18"].forEach(function (u) { if (u.indexOf("logos") > -1 && typeof LOGOS !== "undefined") return; chain = chain.then(function () { return one(u); }); });
+    ["/assets/js/data/logos.js?v=20261122a", "/assets/js/features/mylist.js?v=1", "/assets/js/features/title-sheet.js?v=19"].forEach(function (u) { if (u.indexOf("logos") > -1 && typeof LOGOS !== "undefined") return; chain = chain.then(function () { return one(u); }); });
     sheetP = chain.then(function () { if (!window.sxSheet) throw 0; }).catch(function (e) { sheetP = null; throw e; });
     return sheetP;
   }
@@ -83,7 +83,7 @@
         (d.dir ? '<p class="tt-dir"><small>' + (d.k === "tv" ? "Created by" : "Director") + '</small> ' + esc(d.dir) + '</p>' : "") +
         (d.cast && d.cast.length ? '<div class="tt-cast">' + d.cast.slice(0, 6).map(function (c) { return "<div>" + (c.p ? '<img src="https://image.tmdb.org/t/p/w185' + esc(c.p) + '" alt="" loading="lazy">' : '<span class="tt-ph">' + esc(c.n[0] || "") + '</span>') + "<b>" + esc(c.n) + "</b><small>" + esc(c.c) + "</small></div>"; }).join("") + '</div>' : "") +
         '<div class="tt-act">' + (d.imdb ? '<a class="btn imdb" href="https://www.imdb.com/title/' + esc(d.imdb) + '/" target="_blank" rel="noopener"><b>IMDb</b> View ratings &amp; reviews ↗</a>' : '<a class="btn ghost" href="https://www.imdb.com/find/?q=' + encodeURIComponent(d.t) + '" target="_blank" rel="noopener">Search on IMDb ↗</a>') + (d.yt ? '<a class="btn ghost" href="https://www.youtube.com/watch?v=' + esc(d.yt) + '" target="_blank" rel="noopener">Open on YouTube ↗</a>' : "") + '</div></div>';
-      var pb = $("#ttPlay"); if (pb) pb.onclick = function () { $("#ttMedia").innerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/' + encodeURIComponent(d.yt) + '?autoplay=1&mute=1&controls=0&playsinline=1&loop=1&playlist=' + encodeURIComponent(d.yt) + '&rel=0&modestbranding=1&iv_load_policy=3&cc_load_policy=0&disablekb=1&fs=0" title="' + esc(d.t) + ' trailer" allow="autoplay; encrypted-media" tabindex="-1" style="opacity:0;transition:opacity .9s ease"></iframe>'; setTimeout(function () { var f = document.querySelector("#ttMedia iframe"); if (f) f.style.opacity = "1"; }, 3500); };   /* cover (backdrop) stays 3.5s, muted, no controls */
+      var pb = $("#ttPlay"); if (pb) pb.onclick = function () { $("#ttMedia").innerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/' + encodeURIComponent(d.yt) + '?autoplay=1&mute=1&controls=0&playsinline=1&loop=1&playlist=' + encodeURIComponent(d.yt) + '&rel=0&modestbranding=1&iv_load_policy=3&cc_load_policy=0&disablekb=1&fs=0" title="' + esc(d.t) + ' trailer" allow="autoplay; encrypted-media" tabindex="-1" style="opacity:0;transition:opacity .9s ease"></iframe>'; setTimeout(function () { var f = document.querySelector("#ttMedia iframe"); if (f) f.style.opacity = "1"; }, 3800); };   /* cover (backdrop) stays 3.8s, muted, no controls */
     };
     var openT = function (id, k, from) {
       lastFocus = from; var my = ++tTok; dlg.hidden = false; document.documentElement.classList.add("tt-open");

@@ -157,7 +157,7 @@
           ${d.yt?`<a class="btn ghost" href="https://www.youtube.com/watch?v=${esc(d.yt)}" target="_blank" rel="noopener">Open on YouTube ↗</a>`:""}</div>
       </div>`;
     const pb=$("#ttPlay");
-    if(pb)pb.onclick=()=>{{$("#ttMedia").innerHTML=`<iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(d.yt)}?autoplay=1&mute=1&controls=0&playsinline=1&loop=1&playlist=${encodeURIComponent(d.yt)}&rel=0&modestbranding=1&iv_load_policy=3&cc_load_policy=0&disablekb=1&fs=0" title="${esc(d.t)} trailer" allow="autoplay; encrypted-media" tabindex="-1" style="opacity:0;transition:opacity .9s ease"></iframe>`;setTimeout(()=>{const f=document.querySelector("#ttMedia iframe");if(f)f.style.opacity="1"},3500)}};   /* cover (backdrop) stays 3.5s, muted, no controls */
+    if(pb)pb.onclick=()=>{{$("#ttMedia").innerHTML=`<iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(d.yt)}?autoplay=1&mute=1&controls=0&playsinline=1&loop=1&playlist=${encodeURIComponent(d.yt)}&rel=0&modestbranding=1&iv_load_policy=3&cc_load_policy=0&disablekb=1&fs=0" title="${esc(d.t)} trailer" allow="autoplay; encrypted-media" tabindex="-1" style="opacity:0;transition:opacity .9s ease"></iframe>`;setTimeout(()=>{const f=document.querySelector("#ttMedia iframe");if(f)f.style.opacity="1"},3800)}};   /* cover (backdrop) stays 3.8s, muted, no controls */
   }
   async function openT(id,k,from){
     lastFocus=from;const my=++tTok;dlg.hidden=false;document.documentElement.classList.add("tt-open");
