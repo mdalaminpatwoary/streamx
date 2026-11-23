@@ -167,6 +167,12 @@
     addEventListener("scroll", function () { if (!tk) { tk = true; requestAnimationFrame(run); } }, { passive: true }); run();
   })();
 
+  /* About strip: cards without a poster carry the service logo so they never look empty. */
+  (function () {
+    var lg = $(".sp-ablogo .sp-logo"); if (!lg) return;
+    $$(".sp-pcs .sp-pc").forEach(function (c) { var w = document.createElement("span"); w.className = "sp-pclg"; w.setAttribute("aria-hidden", "true"); w.appendChild(lg.cloneNode(true)); c.insertBefore(w, c.firstChild); });
+  })();
+
   /* 6. About: real posters on the popular-titles strip (TMDB via /api/title?q=). Only entries that resolve to a real title with a poster are shown;
      if fewer than 3 do (e.g. categories like "Local films"), the styled cards stay. */
   (function () {
@@ -178,7 +184,7 @@
       var track = $(".sp-abtrack", mq), names = [];
       [].slice.call(track.querySelectorAll(".sp-pc b")).forEach(function (b) { var t = b.textContent; if (t && names.indexOf(t) < 0) names.push(t); });
       Promise.all(names.map(function (t) {
-        return fetch("/api/title?q=" + encodeURIComponent(t)).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
+        return fetch("/api/title?q=" + encodeURIComponent(t) + (mq.dataset.lang ? "&l=" + encodeURIComponent(mq.dataset.lang) : "")).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
           .then(function (d) { return d && d.p && d.id && same(t, d.t) ? { t: d.t || t, id: d.id, k: d.k, p: d.p } : null; });
       })).then(function (all) {
         var ok = all.filter(Boolean); if (ok.length < 3) return;

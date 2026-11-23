@@ -216,11 +216,17 @@
 .sp-pc::before{content:"";position:absolute;inset:0;background:radial-gradient(120% 70% at 100% 0,rgba(255,255,255,.16),transparent 60%)}
 .sp-pc i{position:absolute;top:8px;right:12px;font:800 42px/1 Manrope,sans-serif;font-style:normal;letter-spacing:-.04em;color:rgba(255,255,255,.14)}
 .sp-pc b{position:relative;font-size:15px;line-height:1.25;font-weight:800;text-shadow:0 2px 10px rgba(0,0,0,.5)}
-.sp-pc img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .5s}
-.sp-pc.has img{opacity:1}
+.sp-pc>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .5s}
+.sp-pc.has>img{opacity:1}
 .sp-pc.has::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(6,8,20,.92),rgba(6,8,20,0) 55%)}
 .sp-pc.has i{display:none}
 .sp-pc.has b{z-index:1;font-size:13.5px}
 @media(max-width:700px){.sp-pc{width:128px;padding:11px}.sp-pc b{font-size:13px}.sp-pc i{font-size:34px}.sp-pcs .sp-abtrack{animation-duration:38s}}
 @media(prefers-reduced-motion:reduce){.sp-pcs .sp-abtrack{animation:none}.sp-pcs{overflow-x:auto}.sp-pc{transform:none!important}}
 .sp-pc.clk{cursor:pointer}.sp-pc.clk:focus-visible{outline:2px solid #fff;outline-offset:3px}
+.sp-pclg{position:absolute;left:50%;top:40%;width:60px;height:60px;transform:translate(-50%,-50%);z-index:0;filter:drop-shadow(0 14px 22px rgba(0,0,0,.45))}
+.sp-pclg .sp-logo{width:100%;height:100%;border-radius:16px}
+.sp-pclg .sp-logo b{font-size:26px}
+.sp-pc.has .sp-pclg{display:none}
+@media(max-width:700px){.sp-pclg{width:50px;height:50px}}
+.sp-pclg img{position:static;opacity:1;width:100%;height:100%;object-fit:cover;display:block}

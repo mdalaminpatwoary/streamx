@@ -1,5 +1,5 @@
 /* GET /api/title?id=<tmdb id>&k=movie|tv : details, cast, IMDb link and trailer for one title (TMDB).
-   GET /api/title?q=<name> : poster lookup by name -> { id, k, t, p }. */
+   GET /api/title?q=<name>[&l=<original language>] : poster lookup by name -> { id, k, t, p }. */
 const API = "https://api.themoviedb.org/3";
 const { mapProviders } = require("./_providers");
 
@@ -24,7 +24,8 @@ module.exports = async (req, res) => {
       const q = String(req.query.q).replace(/[\u0000-\u001f<>]/g, "").trim().slice(0, 80);
       if (!q) return res.status(400).json({ error: "Bad query" });
       const r = await tmdb("/search/multi", { query: q, include_adult: "false", language: "en-US" });
-      const hit = ((r && r.results) || []).find((x) => (x.media_type === "movie" || x.media_type === "tv") && x.poster_path);
+      const lg = /^[a-z]{2}$/.test(String(req.query.l || "")) ? String(req.query.l) : "";
+      const hit = ((r && r.results) || []).find((x) => (x.media_type === "movie" || x.media_type === "tv") && x.poster_path && (!lg || x.original_language === lg));
       res.setHeader("Cache-Control", "public, s-maxage=604800, stale-while-revalidate=2592000");
       return res.status(200).json(hit ? { id: hit.id, k: hit.media_type, t: hit.title || hit.name || "", p: hit.poster_path } : { p: "" });
     }
