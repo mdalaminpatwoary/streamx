@@ -566,6 +566,8 @@
     }
   }
   function watchRoute(q,ql,t){
+    /* "Which movie should I watch today / tonight?", "suggest a series", "I am bored": a recommendation request, never a title search (the word "today" is not a movie) */
+    if(/\b(which|what|any)\b.{0,30}\b(movies?|films?|series|shows?|anime|cartoons?)\b.{0,40}\b(watch|see|stream)\b|\b(should|shall|can|could|may|might) (i|we) (watch|see)\b|\b(suggest|recommend)\w*\b.{0,25}\b(movies?|films?|series|shows?|anime|something|anything)\b|\b(something|anything|nothing) (good |new |nice )?to (watch|see)\b|\b(i am|im|i'm) bored\b|\bwatch (today|tonight|this weekend)\b|\bmovie (for|of) (today|tonight|the day)\b/.test(ql)&&!/\b(where|available|streaming on|stream on|price|cost)\b/.test(ql)&&!PLAT.some(x=>x[1].test(ql)))return{h:`<p>Here is how to pick something good tonight: the Trending section shows what is popular right now, and the Top rated list is a safe bet. If you tell me a platform or a mood, like Netflix thriller or a light comedy, I can narrow it down.</p><div class="bt-row">${btn("See what's trending","/#trending"," bt-go")}${btn("Top rated","/top-rated/")}${btn("Open Explore hub","/explore/")}</div>`,c:["Top rated","Prices & plans","What streaming services do you have?"]};
     const iq=infoQ(t);if(iq){const r=titleInfo(iq[0],iq[1]);if(r)return r}
     if(/\b(wishlist|wish list|watchlist|watch list|want to watch|saved titles?)\b/.test(ql)&&!/\b(how|what is)\b/.test(ql))return myLists("wish");
     if(/\b(watched|already seen|seen list|my seen|what have i (watched|seen))\b/.test(ql)&&/\b(my|i|list|have)\b/.test(ql)&&!/where|which platform/.test(ql))return myLists("watched");
