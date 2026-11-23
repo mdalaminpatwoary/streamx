@@ -107,7 +107,7 @@
     snd.onclick=function(){muted=!muted;send(muted?"mute":"unMute");snd.innerHTML=muted?ICON.mute:ICON.sound;snd.setAttribute("aria-label",muted?"Turn trailer sound on":"Turn trailer sound off")};
     var clean=function(){window.removeEventListener("message",on);if(snd.parentNode)snd.parentNode.removeChild(snd)};
     var fail=function(){if(done)return;done=true;clean();if(f.parentNode)f.parentNode.removeChild(f);hero.classList.remove("auto")};
-    var rv=0,first=true,playing=function(){done=true;clearTimeout(rv);var wait=first?4000:800;first=false;rv=setTimeout(function(){f.classList.add("on")},wait)};   /* first reveal: the cover image stays ~4s so the viewer never sees YouTube's play / loading icons */   /* reveal after YouTube's own state-change icon has faded */
+    var rv=0,first=true,playing=function(){done=true;clearTimeout(rv);var wait=first?3500:800;first=false;rv=setTimeout(function(){f.classList.add("on")},wait)};   /* first reveal: the cover image stays ~3.5s so the viewer never sees YouTube's play / loading icons */   /* reveal after YouTube's own state-change icon has faded */
     function on(e){
       if(e.source!==f.contentWindow)return;var m;try{m=typeof e.data==="string"?JSON.parse(e.data):e.data}catch(x){return}
       if(!m)return;var st=m.event==="onStateChange"?m.info:(m.info&&m.info.playerState);
