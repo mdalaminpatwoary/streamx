@@ -78,8 +78,9 @@
       if(e.source!==f.contentWindow)return;var m;try{m=typeof e.data==="string"?JSON.parse(e.data):e.data}catch(x){return}
       if(!m)return;var st=m.event==="onStateChange"?m.info:(m.info&&m.info.playerState);
       if(st===1){playing();f.classList.add("on");send("unloadModule",["captions"]);send("unloadModule",["cc"])}
-      else if(st===0||st===2||st===3){
-        /* any non-playing frame (end screen, pause, buffering) shows YouTube's own UI: hide it and resume */
+      else if(st===0||st===2){
+        /* ended / paused frames show YouTube's own UI: hide them and resume (buffering, state 3, is left alone:
+           a play command during buffering makes YouTube flash its big pause icon) */
         if(done)f.classList.remove("on");
         if(st===0)send("seekTo",[0,true]);
         if(done)send("playVideo");
