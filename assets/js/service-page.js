@@ -45,10 +45,10 @@
   function loadSheet() {
     if (window.sxSheet) return Promise.resolve();
     if (sheetP) return sheetP;
-    var l = document.createElement("link"); l.rel = "stylesheet"; l.href = "/assets/css/title-sheet.css?v=8"; document.head.appendChild(l);
+    var l = document.createElement("link"); l.rel = "stylesheet"; l.href = "/assets/css/title-sheet.css?v=9"; document.head.appendChild(l);
     var one = function (src) { return new Promise(function (ok, no) { var sc = document.createElement("script"); sc.src = src; sc.onload = ok; sc.onerror = no; document.head.appendChild(sc); }); };
     var chain = Promise.resolve();
-    ["/assets/js/data/logos.js?v=20261122a", "/assets/js/features/mylist.js?v=1", "/assets/js/features/title-sheet.js?v=10"].forEach(function (u) { if (u.indexOf("logos") > -1 && typeof LOGOS !== "undefined") return; chain = chain.then(function () { return one(u); }); });
+    ["/assets/js/data/logos.js?v=20261122a", "/assets/js/features/mylist.js?v=1", "/assets/js/features/title-sheet.js?v=11"].forEach(function (u) { if (u.indexOf("logos") > -1 && typeof LOGOS !== "undefined") return; chain = chain.then(function () { return one(u); }); });
     sheetP = chain.then(function () { if (!window.sxSheet) throw 0; }).catch(function (e) { sheetP = null; throw e; });
     return sheetP;
   }
