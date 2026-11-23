@@ -157,3 +157,5 @@
 .sp-tilting::after{display:none!important}
 /* Hero glow: the original cursor glow (same size and strength), now fixed at the left */
 .sp-hero{--mx:-6%;--my:40%}
+/* No hover glow on cards: plan cards, posters, related cards keep only the lift and border highlight */
+.sp-vcard:hover,.sp-poster:hover,.hb-card:hover{box-shadow:none}

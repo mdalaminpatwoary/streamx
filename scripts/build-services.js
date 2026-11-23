@@ -58,7 +58,7 @@ const head = ({ title, desc, url, img, extra = "", noindex = false }) => `<!DOCT
 <meta name="theme-color" content="#0a0d1a">
 <link rel="icon" href="/favicon.ico" sizes="any"><link rel="apple-touch-icon" href="/assets/img/favicon/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" onload="this.onload=null;this.rel=\'stylesheet\'"><noscript><link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet"></noscript>
-<link rel="stylesheet" href="/assets/css/service-page.css?v=39"><link rel="stylesheet" href="/assets/css/service-page-v2.css?v=15"><link rel="stylesheet" href="/assets/css/title-modal.css?v=20261122b"><link rel="stylesheet" href="/assets/css/components/chat-widget.css?v=20261121c"><link rel="stylesheet" href="/assets/css/components/chatbot.css?v=32">
+<link rel="stylesheet" href="/assets/css/service-page.css?v=39"><link rel="stylesheet" href="/assets/css/service-page-v2.css?v=16"><link rel="stylesheet" href="/assets/css/title-modal.css?v=20261122b"><link rel="stylesheet" href="/assets/css/components/chat-widget.css?v=20261121c"><link rel="stylesheet" href="/assets/css/components/chatbot.css?v=32">
 ${extra}
 </head>`;
 
@@ -135,7 +135,7 @@ function servicePage(p) {
     { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: faqs.map(([q, a]) => ({ "@type": "Question", name: q, acceptedAnswer: { "@type": "Answer", text: a } })) }
   ];
   const mn = v => { const b = v.plans.filter(x => x.p > 0).map(x => x.p); return b.length ? Math.min(...b) : 0; };
-  const qp = (p.gift ? [5, 10, 25, 50].map(a => ["$" + a + " card", a * 130]) : p.packs ? p.packs.map(k => [k.n, k.p]) : p.variants.map(v => [v.n, mn(v)])).slice(0, 5);
+  const qp = (p.gift ? [5, 10, 25, 50].map(a => ["$" + a + " card", a * 130]) : p.packs ? p.packs.map(k => [k.n, k.p]) : p.variants.length === 1 && p.variants[0].plans.filter(x => !x.u).length > 1 ? p.variants[0].plans.filter(x => !x.u).map(x => [x.v, x.ask ? 0 : x.p]) : p.variants.map(v => [v.n, mn(v)])).slice(0, 5);
   const orderMsg = `Hi StreamX! I want to buy ${p.name}.`;
   return head({ title, desc, url, img, noindex: isAdult(p), extra: isAdult(p) ? "" : `<script type="application/ld+json">${JSON.stringify(ld)}</script>` }) + `
 <body style="--c:${GLOW[p.name] || p.color}"${isAdult(p) ? ' class="sp-adult"' : ""}>${isAdult(p) ? AGE : ""}
