@@ -139,3 +139,18 @@
 @media(prefers-reduced-motion:reduce){.sp-buybar{transition:none}}
 
 .co-agree{margin:4px 0 8px;font-size:12.5px;line-height:1.55;color:#98a1bc;text-align:center}.co-agree a{color:#ff8a7c;text-decoration:underline;text-underline-offset:2px}.co-agree a:hover{color:#fff}
+
+/* Combo pack purchase row: info box (price, regular, save) with Buy now on top, Add to cart below, both full width with icons */
+.sp-rw:has(.sp-row.pk){flex-direction:column;gap:8px}
+.sp-row.pk{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"pr sv" "rg rg" "buy buy";align-items:center;gap:6px 10px;padding:14px;min-width:0;flex:none}
+.sp-row.pk span{display:contents}
+.sp-row.pk b{grid-area:pr;font-size:26px;line-height:1.1;font-weight:800;white-space:nowrap}
+.sp-row.pk b em{font-style:normal;font-size:12px;font-weight:600;color:#9aa4c7;margin-left:6px}
+.sp-row.pk u{grid-area:sv;justify-self:end;text-decoration:none;padding:3px 10px;border-radius:99px;background:rgba(46,204,113,.14);color:#4ade80;font-weight:700;font-size:11.5px;white-space:nowrap}
+.sp-row.pk small{grid-area:rg;font-size:12.5px;font-weight:500;color:#9aa4c7}
+.sp-row.pk small s{opacity:.8}
+.sp-row.pk i{grid-area:buy;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:8px;padding:12px 16px;border-radius:12px;font-size:14px}
+.sp-row.pk i::before{content:"";width:18px;height:18px;background:currentColor;-webkit-mask:var(--bolt) center/contain no-repeat;mask:var(--bolt) center/contain no-repeat}
+.sp-row.pk{--bolt:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M13 2 4 14h7l-1 8 9-12h-7z'/%3E%3C/svg%3E")}
+.sp-rw:has(.sp-row.pk) .sp-add{width:100%;height:46px;display:flex;align-items:center;justify-content:center;gap:8px;font:700 14px Manrope,system-ui,sans-serif}
+.sp-rw:has(.sp-row.pk) .sp-add::after{content:"Add to cart"}

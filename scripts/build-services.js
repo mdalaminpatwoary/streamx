@@ -58,7 +58,7 @@ const head = ({ title, desc, url, img, extra = "", noindex = false }) => `<!DOCT
 <meta name="theme-color" content="#0a0d1a">
 <link rel="icon" href="/favicon.ico" sizes="any"><link rel="apple-touch-icon" href="/assets/img/favicon/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" onload="this.onload=null;this.rel=\'stylesheet\'"><noscript><link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet"></noscript>
-<link rel="stylesheet" href="/assets/css/service-page.css?v=39"><link rel="stylesheet" href="/assets/css/service-page-v2.css?v=3"><link rel="stylesheet" href="/assets/css/title-modal.css?v=20261122b"><link rel="stylesheet" href="/assets/css/components/chat-widget.css?v=20261121c"><link rel="stylesheet" href="/assets/css/components/chatbot.css?v=32">
+<link rel="stylesheet" href="/assets/css/service-page.css?v=39"><link rel="stylesheet" href="/assets/css/service-page-v2.css?v=7"><link rel="stylesheet" href="/assets/css/title-modal.css?v=20261122b"><link rel="stylesheet" href="/assets/css/components/chat-widget.css?v=20261121c"><link rel="stylesheet" href="/assets/css/components/chatbot.css?v=32">
 ${extra}
 </head>`;
 
@@ -99,7 +99,7 @@ function comboHtml(p) {
   if (!combo || combo === p) return "";
   const cs = slug(combo.name), others = (PARTS[combo.name] || []).filter(k => k !== LOGO_OF[p.name]).map(k => (PRODUCTS.find(x => LOGO_OF[x.name] === k) || {}).name).filter(Boolean);
   return `<section class="sp-sec sp-combo" id="combo"><div class="sp-wrap"><div class="sp-thead"><div><span class="sp-eyebrow">Save more, together</span><h2>${esc(p.name)}${others.length ? " + " + esc(others.join(" + ")) : ""} combo packs</h2><p class="sp-sub">Get ${esc(p.name)} with ${esc(others.join(" and ") || "more")} in one monthly price, and save compared with buying each separately.</p></div><a class="sp-btn sp-ghost sp-sm" href="/services/${cs}/">About the combo</a></div>
-<div class="sp-vgrid">${combo.packs.map((k, i) => `<div class="sp-vcard sp-rv"><div class="sp-vh"><h3>${esc(k.n)}</h3><span class="sp-tag">${esc(k.tag)}</span></div><p>${esc(k.sub)}</p><ul class="sp-ft">${k.f.map(x => `<li>${esc(x)}</li>`).join("")}</ul><div class="sp-rows"><a class="sp-row" href="/#plan=${cs}&v=0&k=${i}"${buy(combo.name, "", k.n, combo.variants[0].n, k.p)}><span>Per month<small>Regular <s>${taka(k.old)}</s> · Save ${taka(k.old - k.p)}</small></span><b>${taka(k.p)}</b><i>Buy</i></a></div></div>`).join("")}</div></div></section>`;
+<div class="sp-vgrid">${combo.packs.map((k, i) => `<div class="sp-vcard sp-rv"><div class="sp-vh"><h3>${esc(k.n)}</h3><span class="sp-tag">${esc(k.tag)}</span></div><p>${esc(k.sub)}</p><ul class="sp-ft">${k.f.map(x => `<li>${esc(x)}</li>`).join("")}</ul><div class="sp-rows"><a class="sp-row pk" href="/#plan=${cs}&v=0&k=${i}"${buy(combo.name, "", k.n, combo.variants[0].n, k.p)}><b>${taka(k.p)}<em>/ month</em></b><i>Buy now</i><span><small>Regular <s>${taka(k.old)}</s></small><u>Save ${taka(k.old - k.p)}</u></span></a></div></div>`).join("")}</div></div></section>`;
 }
 function reviewsHtml(p) {
   const list = []; // reviews are loaded in the browser from the admin-managed list (/api/catalog?a=reviews)
