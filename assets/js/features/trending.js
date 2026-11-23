@@ -130,6 +130,7 @@
   document.body.appendChild(dlg);
   const tin=dlg.querySelector(".tt-in"),tbox=dlg.querySelector(".tt-box");let lastFocus=null,tTok=0;const tcache=new Map();
   const mins=n=>n?(n>=60?Math.floor(n/60)+"h "+(n%60?n%60+"m":""):n+"m"):"";
+  if(window.sxSwipe)sxSwipe(tbox,{bg:dlg.querySelector(".tt-bg"),close:()=>closeT()});
   function closeT(){dlg.hidden=true;tin.innerHTML="";document.documentElement.classList.remove("tt-open");if(lastFocus)lastFocus.focus()}
   dlg.addEventListener("click",e=>{if(e.target.closest("[data-x]"))closeT()});
   document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!dlg.hidden)closeT()});
@@ -156,7 +157,7 @@
           ${d.yt?`<a class="btn ghost" href="https://www.youtube.com/watch?v=${esc(d.yt)}" target="_blank" rel="noopener">Open on YouTube ↗</a>`:""}</div>
       </div>`;
     const pb=$("#ttPlay");
-    if(pb)pb.onclick=()=>{$("#ttMedia").innerHTML=`<iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(d.yt)}?autoplay=1&rel=0&modestbranding=1" title="${esc(d.t)} trailer" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`};
+    if(pb)pb.onclick=()=>{{$("#ttMedia").innerHTML=`<iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(d.yt)}?autoplay=1&mute=1&controls=0&playsinline=1&loop=1&playlist=${encodeURIComponent(d.yt)}&rel=0&modestbranding=1&iv_load_policy=3&cc_load_policy=0&disablekb=1&fs=0" title="${esc(d.t)} trailer" allow="autoplay; encrypted-media" tabindex="-1" style="opacity:0;transition:opacity .9s ease"></iframe>`;setTimeout(()=>{const f=document.querySelector("#ttMedia iframe");if(f)f.style.opacity="1"},4500)}};   /* cover (backdrop) stays 4.5s, muted, no controls */
   }
   async function openT(id,k,from){
     lastFocus=from;const my=++tTok;dlg.hidden=false;document.documentElement.classList.add("tt-open");

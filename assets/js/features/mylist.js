@@ -19,7 +19,7 @@
     if(!d){
       d=document.createElement("div");d.id="sxNudge";d.className="sx-nudge";d.hidden=true;d.setAttribute("role","dialog");d.setAttribute("aria-modal","true");d.setAttribute("aria-labelledby","sxNudgeT");
       d.innerHTML='<div class="sx-nudge-bg" data-x></div><div class="sx-nudge-box"><div class="sx-nudge-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></div><h3 id="sxNudgeT">Sign in to save titles</h3><p id="sxNudgeP"></p><div class="sx-nudge-act"><a class="ts-btn pri" href="/account/">Sign in</a><button class="ts-btn" type="button" data-x>Not now</button></div></div>';
-      document.body.appendChild(d);
+      document.body.appendChild(d);if(window.sxSwipe)sxSwipe(d.querySelector(".sx-nudge-box"),{bg:d.querySelector(".sx-nudge-bg"),close:function(){d.hidden=true}});
       d.addEventListener("click",function(e){if(e.target.closest("[data-x]"))d.hidden=true});
       document.addEventListener("keydown",function(e){if(e.key==="Escape"&&!d.hidden)d.hidden=true});
     }
