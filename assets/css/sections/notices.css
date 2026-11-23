@@ -46,7 +46,6 @@
 /* Home teaser */
 .nt-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
 .nt-card{--k:#7c8cff;display:block;position:relative;padding:20px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.02));color:inherit;text-decoration:none;overflow:hidden;transition:border-color .3s,transform .3s}
-.nt-card::before{content:"";position:absolute;inset:0 0 auto 0;height:3px;background:var(--k)}
 .nt-card:hover{transform:translateY(-3px);border-color:color-mix(in srgb,var(--k) 55%,var(--line))}
 .nt-kind{display:inline-block;padding:3px 10px;border-radius:99px;background:color-mix(in srgb,var(--k) 16%,transparent);color:var(--k);font:800 11px Manrope,sans-serif;letter-spacing:.08em;text-transform:uppercase}
 .nt-card h3{margin:12px 0 6px;font:800 17px/1.35 Manrope,sans-serif;text-wrap:balance}
