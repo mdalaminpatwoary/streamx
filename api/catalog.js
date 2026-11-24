@@ -119,7 +119,25 @@ async function build(l, k, cc) {
 
 /* ---------- Explore hub: GET /api/catalog?a=hub&s=<section>&k=movie|tv&page=1[&g=<genre id>][&p=<platform>] and a=genres, a=births ---------- */
 const hubCache = new Map(); // key -> { at, body }
-const HUB = new Set(["nowplaying", "upcoming", "toprated", "boxoffice", "popular", "airing", "genre", "platform", "anime", "kdrama", "bollywood", "trailers"]);
+const HUB = new Set(["nowplaying", "upcoming", "toprated", "boxoffice", "popular", "airing", "genre", "platform", "anime", "kdrama", "bollywood", "oscars", "awards", "trailers"]);
+const oscarCache = new Map(); // "title|year" -> item (titles never change)
+async function oscarItem(row, g) {
+  const key = row[0] + "|" + row[1];
+  let it = oscarCache.get(key);
+  if (!it) {
+    const find = async (extra) => { const r = await tmdb("/search/movie", { query: row[0], include_adult: "false", language: "en-US", ...extra }).catch(() => null); return r && (r.results || []).filter((x) => x.poster_path).sort((a, b) => b.vote_count - a.vote_count)[0]; };
+    // film year first; a festival premiere and a theatrical release can fall in different years, so retry within a year either side
+    let hit;
+    if (row[3] === "bn") { // Bengali-language films: titles are romanised in many ways, so accept only a Bengali film released within a year of the award year
+      const r = await tmdb("/search/movie", { query: row[0], include_adult: "false", language: "en-US" }).catch(() => null);
+      hit = r && (r.results || []).filter((x) => x.poster_path && x.original_language === "bn" && Math.abs(parseInt((x.release_date || "0").slice(0, 4), 10) - row[1]) <= 1).sort((a, b) => b.vote_count - a.vote_count)[0];
+    } else hit = (await find({ year: row[1] })) || (await find({ primary_release_year: row[1] + 1 })) || (await find({ primary_release_year: row[1] - 1 }));
+    if (!hit) return null;
+    it = item(hit, "movie", g);
+    oscarCache.set(key, it);
+  }
+  return { ...it, aw: row[2] };
+}
 async function hubList(sec, k, page, genre, plat, mode, cc) {
   const g = await genreMap();
   const base = { language: "en-US", page, include_adult: "false" };
@@ -157,6 +175,17 @@ async function hubList(sec, k, page, genre, plat, mode, cc) {
     else if (mode === "crunchyroll") Object.assign(A, { sort_by: "popularity.desc", with_watch_providers: 283, with_watch_monetization_types: "flatrate" });
     else A.sort_by = "popularity.desc";
     data = mode === "crunchyroll" ? await rgn((rg) => tmdb(`/discover/${k}`, { ...A, watch_region: rg })) : await tmdb(`/discover/${k}`, A);
+  } else if (sec === "oscars") {
+    const O = require("./_oscars");
+    const rows = mode === "bestpicture" ? O.BEST_PICTURE : mode === "nominees" ? O.NOMINEES_2026 : O.WINNERS_2026;
+    const part = rows.slice((page - 1) * 20, page * 20);
+    const list = (await Promise.all(part.map((r) => oscarItem(r, g)))).filter(Boolean);
+    return { page, pages: Math.max(1, Math.ceil(rows.length / 20)), list, reg };
+  } else if (sec === "awards") {
+    const rows = require("./_awards")[mode] || require("./_awards").goldenglobes;
+    const part = rows.slice((page - 1) * 20, page * 20);
+    const list = (await Promise.all(part.map((r) => oscarItem(r, g)))).filter(Boolean);
+    return { page, pages: Math.max(1, Math.ceil(rows.length / 20)), list, reg };
   } else if (sec === "kdrama" || sec === "bollywood") {
     // Korean (K-drama) or Hindi (Bollywood) titles. Modes: popular, top (best rated), new (latest releases), netflix (on Netflix in the visitor's country), jiohotstar (on JioHotstar, India catalogue).
     const A = { ...base, with_original_language: sec === "kdrama" ? "ko" : "hi" };
@@ -173,7 +202,10 @@ async function hubList(sec, k, page, genre, plat, mode, cc) {
   return { page: data.page || page, pages: Math.min(data.total_pages || 1, 25), list: (data.results || []).filter((r) => r.poster_path).map((r) => item(r, kind, g)), reg };
 }
 
-const PEOPLE = /actor|actress|singer|songwriter|rapper|musician|director|filmmaker|film|comedian|model|producer|screenwriter|presenter|television|dancer|youtuber|influencer|cricketer|footballer|athlete|player|composer|band/i;
+const PEOPLE = /\b(actor|actress|actors|singer|singers|songwriter|rapper|musician|pop star|film|filmmaker|movie|comedian|stand-up|entertainer|performer|producer|screenwriter|television|tv (host|presenter|personality)|presenter|dancer|choreographer|composer|cinematographer|animator|voice actor|stunt)\b/i;
+const NOT_ENT = /\b(footballer|cricketer|athlete|sprinter|swimmer|boxer|wrestler|tennis|golfer|politician|statesman|prime minister|president|general|soldier|physicist|chemist|mathematician|economist|philosopher|astronaut|scientist|businessman|banker|bishop|priest|racing driver|basketball|baseball|hockey|rugby|olympic)\b/i;
+/* Entertainment only: a film, TV or music role must come before any sport, politics or science role in the description. */
+const isEntertainer = (desc) => { const a = desc.search(PEOPLE), b = desc.search(NOT_ENT); return a >= 0 && (b < 0 || a < b); };
 const birthCache = new Map(); // "MM/DD" -> { at, list }
 async function birthdays() {
   const d = today(), mm = d.slice(5, 7), dd = d.slice(8, 10), key = mm + "/" + dd;
@@ -185,7 +217,7 @@ async function birthdays() {
   const seen = new Set(), list = [];
   for (const b of (await r.json()).births || []) {
     const pg = (b.pages || [])[0];
-    if (!pg || !pg.title || seen.has(pg.title) || !b.year || !PEOPLE.test(pg.description || "")) continue;
+    if (!pg || !pg.title || seen.has(pg.title) || !b.year || !isEntertainer(pg.description || "")) continue;
     seen.add(pg.title);
     list.push({ n: String(pg.titles && pg.titles.normalized || pg.title).slice(0, 80), y: b.year, age: yr - b.year, d: String(pg.description || "").slice(0, 90), img: (pg.thumbnail && pg.thumbnail.source) || "", u: (pg.content_urls && pg.content_urls.desktop && pg.content_urls.desktop.page) || "" });
   }
@@ -348,7 +380,7 @@ module.exports = async (req, res) => {
       const genre = String(req.query.g || "").replace(/[^0-9]/g, "").slice(0, 6), plat = PROV_ID[String(req.query.p || "").toLowerCase()];
       if (sec === "genre" && !genre) return res.status(400).json({ error: "Pick a genre" });
       if (sec === "platform" && !plat) return res.status(400).json({ error: "Unknown platform" });
-      const mode = ["popular", "top", "new", "crunchyroll", "netflix", "jiohotstar"].includes(req.query.m) ? req.query.m : "popular", regional = ["nowplaying", "upcoming", "popular", "trailers", "platform"].includes(sec) || (sec === "anime" && mode === "crunchyroll") || ((sec === "kdrama" || sec === "bollywood") && mode === "netflix"), key = [sec, k, page, genre, plat, mode, regional ? cc : ""].join("|"), hit = hubCache.get(key);
+      const mode = ["popular", "top", "new", "crunchyroll", "netflix", "jiohotstar", "winners", "nominees", "bestpicture", "goldenglobes", "bafta", "cannes", "filmfare", "national", "bangladesh"].includes(req.query.m) ? req.query.m : "popular", regional = ["nowplaying", "upcoming", "popular", "trailers", "platform"].includes(sec) || (sec === "anime" && mode === "crunchyroll") || ((sec === "kdrama" || sec === "bollywood") && mode === "netflix"), key = [sec, k, page, genre, plat, mode, regional ? cc : ""].join("|"), hit = hubCache.get(key);
       res.setHeader("Cache-Control", regional ? "private, max-age=3600" : "public, s-maxage=3600, stale-while-revalidate=86400"); // region lists differ per visitor
       if (hit && Date.now() - hit.at < HOUR) return res.status(200).json(hit.body);
       const body = { s: sec, k, ...(await hubList(sec, k, page, genre, plat, mode, cc)) };

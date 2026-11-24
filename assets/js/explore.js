@@ -7,6 +7,8 @@
   var ANIME=[["popular","Popular"],["top","Top rated"],["new","New releases"],["crunchyroll","On Crunchyroll"]];
   var KDRAMA=[["popular","Popular"],["top","Top rated"],["new","New releases"],["netflix","On Netflix"]];
   var BOLLY=[["popular","Popular"],["top","Top rated"],["new","New releases"],["netflix","On Netflix"],["jiohotstar","On JioHotstar"]];
+  var OSCAR=[["winners","2026 winners"],["nominees","2026 nominees"],["bestpicture","Best Picture winners"]];
+  var AWARDS=[["goldenglobes","Golden Globes"],["bafta","BAFTA"],["cannes","Cannes Palme d'Or"],["filmfare","Filmfare (India)"],["national","National Film Awards (India)"],["bangladesh","Bangladesh National Film Awards"]];
   var KIND=[["movie","Movies"],["tv","Series"]];
   var NEWSC=[["all","All"],["movies","Movies"],["tv","TV & series"],["people","Stars"],["boxoffice","Box office"]];
   var SECS=[
@@ -19,11 +21,13 @@
     {id:"anime",nav:"Anime",eye:"Anime",h:"Anime <span class=\"grad\">worldwide.</span>",sub:"Japanese anime series and films: what is popular, best rated, newly released and streaming on Crunchyroll.",s:"anime",kinds:true,chips:ANIME,mode:true},
     {id:"kdrama",nav:"K-drama",eye:"Korean",h:"K-drama <span class=\"grad\">and Korean cinema.</span>",sub:"Korean series and films: what is popular, best rated, newly released and streaming on Netflix where you are.",s:"kdrama",k:"tv",kinds:true,chips:KDRAMA,mode:true},
     {id:"bollywood",nav:"Bollywood",eye:"Hindi",h:"Bollywood <span class=\"grad\">and Hindi cinema.</span>",sub:"Hindi movies and series: what is popular, best rated, newly released and streaming on Netflix or JioHotstar.",s:"bollywood",k:"movie",kinds:true,chips:BOLLY,mode:true},
+    {id:"oscars",nav:"Oscars",eye:"Academy Awards",h:"The <span class=\"grad\">Oscars.</span>",sub:"The 98th Academy Awards (March 2026): this year's winners and nominees, and every Best Picture winner since 1990.",s:"oscars",k:"movie",chips:OSCAR,mode:true},
+    {id:"awards",nav:"Film awards",eye:"Awards",h:"Film awards <span class=\"grad\">worldwide.</span>",sub:"Top-prize winners of the Golden Globes, BAFTA and Cannes, India's Filmfare and National Film Awards, and Bangladesh's National Film Awards, newest first.",s:"awards",k:"movie",chips:AWARDS,mode:true},
     {id:"genres",nav:"Genres",eye:"Categories",h:"Browse by <span class=\"grad\">genre.</span>",sub:"Choose a genre to explore every available title, most popular first.",s:"genre",kinds:true,genres:true},
     {id:"boxoffice",nav:"Box office",eye:"Earnings",h:"Box office <span class=\"grad\">hits.</span>",sub:"The highest-grossing movies of all time, ranked by worldwide revenue.",s:"boxoffice",k:"movie",rank:true},
     {id:"popular",nav:"Popular now",eye:"Right now",h:"Popular <span class=\"grad\">right now.</span>",sub:"What everyone is watching this week.",s:"popular",kinds:true},
     {id:"airing",nav:"Airing today",eye:"Series",h:"Series airing <span class=\"grad\">today.</span>",sub:"Episodes releasing today.",s:"airing",k:"tv"},
-    {id:"birthdays",nav:"Birthdays",eye:"Celebrities",h:"Born <span class=\"grad\">today.</span>",sub:"Actors, singers, filmmakers and athletes celebrating a birthday today.",births:true}
+    {id:"birthdays",nav:"Birthdays",eye:"Celebrities",h:"Born <span class=\"grad\">today.</span>",sub:"Actors, actresses, singers and filmmakers celebrating a birthday today.",births:true}
   ];
   SECS.forEach(function(c){c.rail=true});
   function arrows(sec,sc){var a=sec.querySelector(".ex-arr");if(!a)return;a.addEventListener("click",function(e){var b=e.target.closest("button[data-dir]");if(!b)return;sc.scrollBy({left:(+b.dataset.dir)*Math.max(240,sc.clientWidth*.8),behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"})});
@@ -56,7 +60,7 @@
     if(c.video)return vcard(m,i);
     idx[m.k+":"+m.id]=m;
     var dt="";if(c.date&&m.d){var d=new Date(m.d+"T00:00:00");if(!isNaN(d))dt='<span class="ex-dt">'+d.getDate()+" "+MON[d.getMonth()]+(d.getFullYear()!==new Date().getFullYear()?" "+d.getFullYear():"")+"</span>"}
-    return '<article class="ex-card" style="--i:'+(i%20)+'" tabindex="0" role="button" aria-label="'+esc(m.t)+': details and trailer" data-id="'+m.id+'" data-k="'+m.k+'"><div class="ex-po"><img src="https://image.tmdb.org/t/p/w342'+esc(m.p)+'" alt="'+esc(m.t)+' poster" loading="lazy" width="342" height="513">'+(c.rank?'<span class="ex-rk">#'+(c._n+i+1)+"</span>":"")+(m.v?'<span class="ex-v">★ '+m.v+"</span>":"")+dt+'</div><h3>'+esc(m.t)+"</h3><p>"+esc(m.y||"")+(m.g&&m.g.length?" · "+esc(m.g.slice(0,2).join(", ")):"")+"</p></article>";
+    return '<article class="ex-card" style="--i:'+(i%20)+'" tabindex="0" role="button" aria-label="'+esc(m.t)+': details and trailer" data-id="'+m.id+'" data-k="'+m.k+'"><div class="ex-po"><img src="https://image.tmdb.org/t/p/w342'+esc(m.p)+'" alt="'+esc(m.t)+' poster" loading="lazy" width="342" height="513">'+(c.rank?'<span class="ex-rk">#'+(c._n+i+1)+"</span>":"")+(m.v?'<span class="ex-v">★ '+m.v+"</span>":"")+(m.aw?'<span class="ex-aw">\u{1F3C6} '+esc(m.aw)+"</span>":"")+dt+'</div><h3>'+esc(m.t)+"</h3><p>"+esc(m.y||"")+(m.g&&m.g.length?" · "+esc(m.g.slice(0,2).join(", ")):"")+"</p></article>";
   }
   function seg(opts,on,attr){return '<div class="tp-seg" role="group" data-seg="'+attr+'"><span class="tp-thumb" aria-hidden="true"></span>'+opts.map(function(o){return '<button type="button" data-v="'+o[0]+'"'+(o[0]===on?' class="on"':"")+">"+o[1]+"</button>"}).join("")+"</div>"}
   function thumbs(el){el.querySelectorAll(".tp-seg").forEach(function(s){var on=s.querySelector("button.on"),t=s.querySelector(".tp-thumb");if(on&&t){t.style.width=on.offsetWidth+"px";t.style.transform="translateX("+on.offsetLeft+"px)"}})}
@@ -114,9 +118,10 @@
     box.innerHTML='<div class="ex-msg" style="grid-column:1/-1">Loading…</div>';
     get({a:"births"}).then(function(d){
       var dt=new Date((d.date||"")+"T00:00:00"),sub=document.querySelector("#birthdays .ex-head p");
-      if(sub&&!isNaN(dt))sub.textContent="Actors, singers, filmmakers and athletes celebrating a birthday on "+dt.getDate()+" "+MON[dt.getMonth()]+".";
+      if(sub&&!isNaN(dt))sub.textContent="Actors, actresses, singers and filmmakers celebrating a birthday on "+dt.getDate()+" "+MON[dt.getMonth()]+".";
       if(!d.list||!d.list.length){box.innerHTML='<div class="ex-msg" style="grid-column:1/-1"><b>No celebrity birthdays found for today</b>Check back tomorrow.</div>';return}
-      box.innerHTML=d.list.map(function(p){var inner=(p.img?'<img src="'+esc(p.img)+'" alt="'+esc(p.n)+'" loading="lazy" width="64" height="64">':"<i>"+esc(p.n[0]||"?")+"</i>")+"<div><b>"+esc(p.n)+"</b><small>"+esc(p.d)+"</small><em>Turns "+p.age+" · born "+p.y+"</em></div>";
+      var CAKE='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21h18"/><path d="M5 21v-7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v7"/><path d="M5 17c1.5 1 2.5 1 4 0s2.5-1 4 0 2.5 1 4 0"/><path d="M12 13V9.5"/><path d="M12 9.5c-.9 0-1.4-.6-1.4-1.4 0-1 1.4-2.4 1.4-2.4s1.4 1.4 1.4 2.4c0 .8-.5 1.4-1.4 1.4z"/></svg>';
+      box.innerHTML=d.list.map(function(p){var inner='<div class="ex-bp">'+(p.img?'<img src="'+esc(p.img)+'" alt="'+esc(p.n)+'" loading="lazy" width="320" height="427" referrerpolicy="no-referrer">':"<i>"+esc(p.n[0]||"?")+"</i>")+'</div><span class="ex-bage">'+CAKE+"Turns "+p.age+'</span><div class="ex-bi"><b>'+esc(p.n)+"</b><small>"+esc(p.d)+"</small><em>Born "+p.y+"</em></div>";
         return p.u?'<a class="ex-b" href="'+esc(p.u)+'" target="_blank" rel="noopener">'+inner+"</a>":'<div class="ex-b">'+inner+"</div>"}).join("");
     }).catch(function(){box.innerHTML='<div class="ex-msg" style="grid-column:1/-1"><b>Couldn\'t load birthdays right now</b>Please try again later.</div>'});
   }
