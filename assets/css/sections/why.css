@@ -514,3 +514,61 @@
 .fm-foot{padding:12px 6px 2px;text-align:center;font:400 11.5px/1.6 Manrope,sans-serif;color:#7d86a3}.fm-foot b{color:#ffb3aa;font-weight:700}
 @media(max-width:900px){#why .bw-m{grid-template-columns:1fr;gap:26px}.fm{justify-self:center}}
 @media(max-width:420px){.fm-rows div{flex-direction:column;align-items:flex-start;gap:2px}.fm-rows b{text-align:left}}
+
+/* Order of the purchase: 01 pay, 02 mail, 03 My Account, 04 warranty, 05 help */
+#why .bw-e,#why .bw-m,#why .bw-d{grid-column:span 12}#why .bw-b{grid-column:span 7}#why .bw-c{grid-column:span 5}
+#why .bw-e,#why .bw-d{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,440px);column-gap:clamp(24px,5vw,56px);align-items:start}
+#why .bw-e .bw-no,#why .bw-e h3,#why .bw-e>p,#why .bw-e .bw-ul,#why .bw-d .bw-no,#why .bw-d h3,#why .bw-d>p{grid-column:1}
+#why .bw-e .pg{grid-column:2;grid-row:1/6;align-self:center;padding-top:0;margin:0}
+#why .bw-d .bw-chat{grid-column:2;grid-row:1/5;align-self:center;max-width:440px;width:100%}
+#why .bw-m{grid-template-columns:minmax(0,440px) minmax(0,1fr);gap:clamp(24px,5vw,56px);align-items:center}
+#why .bw-m .fm{grid-column:1;grid-row:1;justify-self:start}
+#why .bw-m .fm-cap{grid-column:2;grid-row:1}
+.bw-ul{list-style:none;margin:18px 0 0;padding:0;display:grid;gap:10px}
+.bw-ul li{display:flex;align-items:center;gap:10px;color:#c5cce2;font:600 13.5px Manrope,sans-serif}
+.bw-ul li::before{content:"";flex:none;width:18px;height:18px;border-radius:50%;background:rgba(74,222,128,.14) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234ade80' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 12.5 4 4 8-9'/%3E%3C/svg%3E") center/11px no-repeat}
+@media(max-width:1000px){#why .bw-b,#why .bw-c{grid-column:span 12}
+ #why .bw-e,#why .bw-d,#why .bw-m{grid-template-columns:1fr}
+ #why .bw-e .pg,#why .bw-d .bw-chat{grid-column:1;grid-row:auto;margin-top:20px}
+ #why .bw-m .fm,#why .bw-m .fm-cap{grid-column:1}#why .bw-m .fm{grid-row:2;justify-self:center}#why .bw-m .fm-cap{grid-row:1}}
+
+/* 01: payment gateway then a success message */
+.pg{margin-top:auto;padding-top:22px}
+.pg-win{position:relative;height:292px;border-radius:18px;overflow:hidden;background:#0b0e20;border:1px solid rgba(255,255,255,.11);box-shadow:0 22px 50px -26px rgba(0,0,0,.8);padding:0 0 16px;display:flex;flex-direction:column}
+.pg-hd{display:flex;align-items:center;gap:8px;padding:12px 16px;background:rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.08);font:700 12px Manrope,sans-serif;color:#c5cce2}
+.pg-hd svg{width:14px;height:14px;fill:none;stroke:#4ade80;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.pg-hd em{margin-left:auto;font-style:normal;color:#8d96b4;font-weight:600}
+.pg-or{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:16px 16px 0;padding:12px 14px;border-radius:12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08)}
+.pg-or b{display:block;color:#fff;font:700 14px Manrope,sans-serif}.pg-or small{display:block;color:#98a1bc;font:500 12px Manrope,sans-serif;margin-top:2px}
+.pg-or strong{color:#fff;font:800 20px Manrope,sans-serif;letter-spacing:-.01em}
+.pg-mt{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin:14px 16px 0}
+.pg-mt img{width:100%;height:34px;object-fit:contain;padding:6px;border-radius:10px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1)}
+.pg-btn{position:relative;margin:auto 16px 0;height:44px;border-radius:999px;display:grid;place-items:center;background:linear-gradient(90deg,#ed3124,#ff4f3f);color:#fff;font:700 14px Manrope,sans-serif;overflow:hidden}
+.pg-btn .a,.pg-btn .b{grid-area:1/1;display:inline-flex;align-items:center;gap:8px}
+.pg-btn .b{opacity:0}
+.pg-btn u{width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;animation:pgSp .7s linear infinite}
+.pg-ok{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;background:radial-gradient(240px circle at 50% 38%,rgba(34,197,94,.2),transparent 70%),#0b0e20;opacity:0;padding:0 18px}
+.pg-ok svg{width:68px;height:68px;margin-bottom:4px}
+.pg-ok .r{fill:rgba(34,197,94,.12);stroke:#22c55e;stroke-width:3;stroke-dasharray:164;stroke-dashoffset:164}
+.pg-ok .c{fill:none;stroke:#4ade80;stroke-width:5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:44;stroke-dashoffset:44}
+.pg-ok b{color:#fff;font:800 19px Manrope,sans-serif;letter-spacing:-.01em}.pg-ok small{color:#98a1bc;font:600 12.5px Manrope,sans-serif}
+.pg-ok em{margin-top:8px;font:700 11.5px Manrope,sans-serif;font-style:normal;color:#4ade80;background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.28);padding:6px 12px;border-radius:999px}
+.bw.in .pg-mt img.sel{animation:pgSel 9s .3s infinite}
+.bw.in .pg-btn{animation:pgPress 9s .3s infinite}
+.bw.in .pg-btn .a{animation:pgA 9s .3s infinite}
+.bw.in .pg-btn .b{animation:pgB 9s .3s infinite}
+.bw.in .pg-ok{animation:pgOk 9s .3s infinite}
+.bw.in .pg-ok .r{animation:pgR 9s .3s infinite}
+.bw.in .pg-ok .c{animation:pgC 9s .3s infinite}
+.bw.in .pg-ok b,.bw.in .pg-ok small,.bw.in .pg-ok em{animation:pgT 9s .3s infinite}
+@keyframes pgSp{to{transform:rotate(360deg)}}
+@keyframes pgSel{0%,10%{border-color:rgba(255,255,255,.1);background:rgba(255,255,255,.07);transform:none}16%,100%{border-color:#ff6a8a;background:rgba(226,19,110,.2);transform:translateY(-2px)}}
+@keyframes pgPress{0%,34%{transform:none}37%{transform:scale(.96)}40%,100%{transform:none}}
+@keyframes pgA{0%,38%{opacity:1}42%,100%{opacity:0}}
+@keyframes pgB{0%,38%{opacity:0}42%,56%{opacity:1}60%,100%{opacity:0}}
+@keyframes pgOk{0%,57%{opacity:0}62%,90%{opacity:1}96%,100%{opacity:0}}
+@keyframes pgR{0%,60%{stroke-dashoffset:164}70%,100%{stroke-dashoffset:0}}
+@keyframes pgC{0%,68%{stroke-dashoffset:44}76%,100%{stroke-dashoffset:0}}
+@keyframes pgT{0%,66%{opacity:0;transform:translateY(6px)}74%,100%{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.pg-ok{opacity:1;animation:none!important}.pg-ok .r,.pg-ok .c{stroke-dashoffset:0;animation:none!important}.pg-ok b,.pg-ok small,.pg-ok em{animation:none!important}}
+#why .bw-e .bw-no,#why .bw-d .bw-no{justify-self:start}
