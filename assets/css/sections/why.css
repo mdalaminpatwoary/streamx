@@ -242,16 +242,22 @@
 .bc-chips{display:flex;flex-wrap:wrap;gap:8px}
 .bc-chips em{font-style:normal;padding:7px 13px;border-radius:99px;font:700 12px Manrope,sans-serif;color:#dfe5ff;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.16);opacity:0;transform:translateY(8px) scale(.9)}
 .bc-chips em:first-child{color:#fff;background:linear-gradient(135deg,#ff5a45,#ed3124);border-color:transparent;box-shadow:0 8px 20px -6px rgba(237,49,36,.7)}
-#why .bw.in .bw-chat .m1{animation:bcM1 9s .6s infinite}
-#why .bw.in .bw-chat .ty{animation:bcTy 9s .6s infinite}
-#why .bw.in .bw-chat .m2{animation:bcM2 9s .6s infinite}
-#why .bw.in .bc-chips em:nth-child(1){animation:bcC1 9s .6s infinite}
-#why .bw.in .bc-chips em:nth-child(2){animation:bcC2 9s .6s infinite}
-@keyframes bcM1{0%{opacity:0;transform:translateY(10px) scale(.96)}6%,92%{opacity:1;transform:none}100%{opacity:0}}
-@keyframes bcTy{0%,14%{opacity:0}17%,32%{opacity:1}35%,100%{opacity:0}}
-@keyframes bcM2{0%,33%{opacity:0;clip-path:inset(0 100% 0 0)}34%{opacity:1;clip-path:inset(0 100% 0 0)}52%,92%{opacity:1;clip-path:inset(0 0 0 0)}100%{opacity:0;clip-path:inset(0 0 0 0)}}
-@keyframes bcC1{0%,54%{opacity:0;transform:translateY(8px) scale(.9)}60%{opacity:1;transform:none}70%{transform:scale(1.08)}74%,92%{opacity:1;transform:none}100%{opacity:0}}
-@keyframes bcC2{0%,58%{opacity:0;transform:translateY(8px) scale(.9)}64%,92%{opacity:1;transform:none}100%{opacity:0}}
+#why .bw.in .bw-chat .m1{animation:bcM1 13s .6s infinite}
+#why .bw.in .bc-bot:not(.bc-bot2) .ty{animation:bcTy 13s .6s infinite}
+#why .bw.in .bw-chat .m2{animation:bcM2 13s .6s infinite}
+#why .bw.in .bc-chips em:nth-child(1){animation:bcC1 13s .6s infinite}
+#why .bw.in .bc-chips em:nth-child(2){animation:bcC2 13s .6s infinite}
+#why .bw.in .bw-chat .m3{animation:bcM3 13s .6s infinite}
+#why .bw.in .bc-bot2 .ty{animation:bcTy2 13s .6s infinite}
+#why .bw.in .bw-chat .m4{animation:bcM4 13s .6s infinite}
+@keyframes bcM1{0%{opacity:0;transform:translateY(10px) scale(.96)}4%,94%{opacity:1;transform:none}98%,100%{opacity:0}}
+@keyframes bcTy{0%,9%{opacity:0}11%,21%{opacity:1}23%,100%{opacity:0}}
+@keyframes bcM2{0%,22%{opacity:0;clip-path:inset(0 100% 0 0)}23%{opacity:1;clip-path:inset(0 100% 0 0)}34%,94%{opacity:1;clip-path:inset(0 0 0 0)}98%,100%{opacity:0;clip-path:inset(0 0 0 0)}}
+@keyframes bcC1{0%,36%{opacity:0;transform:translateY(8px) scale(.9)}40%,47%{opacity:1;transform:none}49%{transform:scale(1.1)}51%{transform:scale(.94)}54%,100%{opacity:0;transform:scale(.94)}}
+@keyframes bcC2{0%,38%{opacity:0;transform:translateY(8px) scale(.9)}42%,50%{opacity:1;transform:none}54%,100%{opacity:0}}
+@keyframes bcM3{0%,52%{opacity:0;transform:translateY(10px) scale(.96)}57%,94%{opacity:1;transform:none}98%,100%{opacity:0}}
+@keyframes bcTy2{0%,60%{opacity:0}62%,70%{opacity:1}72%,100%{opacity:0}}
+@keyframes bcM4{0%,71%{opacity:0;clip-path:inset(0 100% 0 0)}72%{opacity:1;clip-path:inset(0 100% 0 0)}84%,94%{opacity:1;clip-path:inset(0 0 0 0)}98%,100%{opacity:0;clip-path:inset(0 0 0 0)}}
 @media(prefers-reduced-motion:reduce){
   .ba-done,.bc-chips em,#why .bw-chat .m2{opacity:1!important;transform:none!important;clip-path:none!important}
   .ba-bar u{width:100%}.bw-chat .ty{display:none}.bw-nodes .bd{transform:none}.ba::before{display:none}
@@ -572,3 +578,19 @@
 @keyframes pgT{0%,66%{opacity:0;transform:translateY(6px)}74%,100%{opacity:1;transform:none}}
 @media(prefers-reduced-motion:reduce){.pg-ok{opacity:1;animation:none!important}.pg-ok .r,.pg-ok .c{stroke-dashoffset:0;animation:none!important}.pg-ok b,.pg-ok small,.pg-ok em{animation:none!important}}
 #why .bw-e .bw-no,#why .bw-d .bw-no{justify-self:start}
+img.fm-lg{display:block;object-fit:cover;background:none;border-radius:11px}
+#why .bw>div.fm{padding-top:0;margin-top:0}
+
+/* chat: proper spacing and the second step (tap, then the reply) */
+#why .bw-chat{gap:16px;min-height:318px;padding-top:0}
+#why .bw-chat b{padding:12px 16px;line-height:1.5}
+#why .bc-head{margin-bottom:2px}
+.bc-act{display:grid}
+.bc-act .bc-chips,.bc-act .m3{grid-area:1/1}
+.bc-chips{gap:10px;padding:2px 0 0}
+.bc-chips em{padding:9px 16px}
+#why .bw-chat .m3{align-self:center;justify-self:end;background:#168a52;border-bottom-right-radius:4px;max-width:70%}
+#why .bw-chat .m4{grid-area:1/1;align-self:start;max-width:92%;background:#1c2244;border:1px solid rgba(255,255,255,.1);border-bottom-left-radius:4px;clip-path:inset(0 100% 0 0)}
+.bw-chat .m4 em{font-style:normal}
+@media(prefers-reduced-motion:reduce){#why .bw-chat .m3,.bw-chat .bc-bot2 .ty{display:none}#why .bw-chat .m4{opacity:1!important;transform:none!important;clip-path:none!important}}
+#why .bw-chat .ty{justify-self:start;width:max-content}
