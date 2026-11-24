@@ -201,7 +201,14 @@
   color: #ff7c70;
 }
 #drawer {
-  transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+  visibility: hidden;
+  transition:
+    transform 0.65s cubic-bezier(0.16, 1, 0.3, 1),
+    visibility 0s linear 0.65s;
+}
+#drawer.open {
+  visibility: visible;
+  transition-delay: 0s;
 }
 #overlay {
   -webkit-backdrop-filter: blur(0);
