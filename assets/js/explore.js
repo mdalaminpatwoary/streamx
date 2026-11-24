@@ -15,6 +15,7 @@
   var KIND=[["movie","Movies"],["tv","Series"]];
   var NEWSC=[["all","All"],["movies","Movies"],["tv","TV & series"],["people","Stars"],["boxoffice","Box office"]];
   var SECS=[
+    {id:"today",nav:"Releasing today",eye:"Today",h:"Movies releasing <span class=\"grad\">today.</span>",sub:"Movies that open in cinemas or arrive digitally today, most popular first.",s:"today",k:"movie",rank:false,date:true},
     {id:"theaters",nav:"In theaters",eye:"Cinema",h:"In theaters <span class=\"grad\">now.</span>",sub:"Movies playing in cinemas right now, most popular first.",s:"nowplaying",k:"movie",rank:false},
     {id:"soon",nav:"Coming soon",eye:"Releases",h:"Coming <span class=\"grad\">soon.</span>",sub:"Every upcoming movie and series, with the release date on each poster.",s:"upcoming",kinds:true,date:true},
     {id:"trailers",nav:"Trailers",eye:"Trailers",h:"Latest <span class=\"grad\">trailers.</span>",sub:"The newest official trailers for upcoming and currently airing movies and series. Tap to watch here.",s:"trailers",kinds:true,video:true},

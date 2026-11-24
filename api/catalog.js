@@ -155,7 +155,7 @@ async function build(l, k, cc) {
 
 /* ---------- Explore hub: GET /api/catalog?a=hub&s=<section>&k=movie|tv&page=1[&g=<genre id>][&p=<platform>] and a=genres, a=births ---------- */
 const hubCache = new Map(); // key -> { at, body }
-const HUB = new Set(["nowplaying", "upcoming", "toprated", "boxoffice", "popular", "airing", "genre", "platform", "anime", "kdrama", "bollywood", "oscars", "awards", "disc", "trailers"]);
+const HUB = new Set(["today", "nowplaying", "upcoming", "toprated", "boxoffice", "popular", "airing", "genre", "platform", "anime", "kdrama", "bollywood", "oscars", "awards", "disc", "trailers"]);
 /* Language and curated collections for the Explore hub (sec "disc"). Each key is a TMDB discover recipe. */
 const DISC = {
   bn_pop: { lang: "bn" }, bn_top: { lang: "bn", top: 1, vc: 30 }, bn_new: { lang: "bn", fresh: 1 },
@@ -186,7 +186,8 @@ async function hubList(sec, k, page, genre, plat, mode, cc) {
   const base = { language: "en-US", page, include_adult: "false" };
   let data, reg = "";
   const rgn = async (fn) => { const r = await withUS(cc, fn); reg = r.reg; return r.data; }; // region-aware: visitor's country, else US
-  if (sec === "nowplaying") data = await rgn((rg) => tmdb("/movie/now_playing", { ...base, region: rg }));
+  if (sec === "today") data = await rgn((rg) => tmdb("/discover/movie", { ...base, sort_by: "popularity.desc", "primary_release_date.gte": today(), "primary_release_date.lte": today(), with_release_type: "2|3|4", region: rg }));
+  else if (sec === "nowplaying") data = await rgn((rg) => tmdb("/movie/now_playing", { ...base, region: rg }));
   else if (sec === "upcoming") data = k === "tv"
     ? await tmdb("/discover/tv", { ...base, sort_by: "popularity.desc", "first_air_date.gte": today() })
     : await rgn((rg) => tmdb("/discover/movie", { ...base, sort_by: "popularity.desc", "primary_release_date.gte": today(), with_release_type: "2|3", region: rg }));
@@ -252,7 +253,7 @@ async function hubList(sec, k, page, genre, plat, mode, cc) {
     if (mode === "jiohotstar") { reg = "IN"; data = await tmdb(`/discover/${k}`, A); }
     else data = mode === "netflix" ? await rgn((rg) => tmdb(`/discover/${k}`, { ...A, watch_region: rg })) : await tmdb(`/discover/${k}`, A);
   } else data = await (plat === 122 ? (async () => { reg = "IN"; return tmdb(`/discover/${k}`, { ...base, sort_by: "popularity.desc", with_watch_providers: plat, watch_region: "IN", with_watch_monetization_types: "flatrate" }); })() : rgn((rg) => tmdb(`/discover/${k}`, { ...base, sort_by: "popularity.desc", with_watch_providers: plat, watch_region: rg, with_watch_monetization_types: "flatrate" })));
-  const kind = sec === "nowplaying" || sec === "boxoffice" ? "movie" : sec === "airing" ? "tv" : k;
+  const kind = sec === "today" || sec === "nowplaying" || sec === "boxoffice" ? "movie" : sec === "airing" ? "tv" : k;
   const out = (data.results || []).filter((r) => r.poster_path).map((r) => item(r, kind, g));
   return { page: data.page || page, pages: Math.min(data.total_pages || 1, 25), list: out, reg };
 }
