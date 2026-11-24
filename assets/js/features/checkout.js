@@ -48,7 +48,7 @@ function sessEmail(){try{var t=localStorage.getItem("sx_session");if(!t)return "
     lockEmail();
     cp = null; paintSum();
     const wl = $("#checkout"); if (wl) $("#payWa").href = wl.href;
-    $("#payNote").value = ""; $("#payCpM").textContent = ""; $("#payCpM").className = "pay-cpm"; $("#payCp").value = (function () { try { return (new URLSearchParams(location.search).get("coupon") || sessionStorage.getItem("sx_cp") || "").toUpperCase().slice(0, 24); } catch (e) { return ""; } })();
+    $("#payCpM").textContent = ""; $("#payCpM").className = "pay-cpm"; $("#payCp").value = (function () { try { return (new URLSearchParams(location.search).get("coupon") || sessionStorage.getItem("sx_cp") || "").toUpperCase().slice(0, 24); } catch (e) { return ""; } })();
     err.textContent = ""; go.disabled = false;
     m.classList.add("show"); openCart(false); setTimeout(() => $("#payName").focus(), 300);
   }
@@ -60,7 +60,7 @@ function sessEmail(){try{var t=localStorage.getItem("sx_session");if(!t)return "
 
   f.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const note = $("#payNote").value.trim(), name = $("#payName").value.trim(), phone = $("#payPhone").value.replace(/[\s\-()]/g, ""), se = sessEmail(), email = se || $("#payEmail").value.trim();
+    const note = "", name = $("#payName").value.trim(), phone = $("#payPhone").value.replace(/[\s\-()]/g, ""), se = sessEmail(), email = se || $("#payEmail").value.trim();
     if (name.length < 2) return (err.textContent = "Please enter your name.");
     if (!PHONE.test(phone)) return (err.textContent = "Enter a valid mobile number: 01712345678, or with country code, e.g. +358442354993.");
     if (!EMAIL.test(email)) return (err.textContent = "Enter a valid email address.");
