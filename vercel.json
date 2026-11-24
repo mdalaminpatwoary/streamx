@@ -57,6 +57,16 @@
   ],
   "redirects": [
     {
+      "source": "/services/gemini-pro",
+      "destination": "/services/gemini-plus/",
+      "permanent": true
+    },
+    {
+      "source": "/services/gemini-pro/",
+      "destination": "/services/gemini-plus/",
+      "permanent": true
+    },
+    {
       "source": "/top",
       "destination": "/top-rated/",
       "permanent": true

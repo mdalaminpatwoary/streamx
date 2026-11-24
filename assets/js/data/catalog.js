@@ -12,7 +12,13 @@ const GC=a=>({m:1,v:"$"+a,p:a*GIFT.rate(a),u:"card",gc:a});
 const PRIVF=["Profile name and PIN protected","Customizable profile","Instant delivery"];
 const SH={1:180,6:800,12:1200},PR={1:250,6:1100,12:1900};
 const ASKN="Price on request, we reply on WhatsApp";
-const GEMF=["5 TB Google storage","Activated on your own email"];
+const GEMB=["400 GB storage shared across Google Photos, Drive and Gmail","Gemini app with 2x the usage limits of a non-AI plan, plus Hydrogen models","Google Flow with higher access to Google's creative models, 200 Flow credits a month","Gemini in Gmail, Calendar and Meet","Gemini Notebook with higher limits and up to 100 sources per notebook","Share your storage with up to 5 others","No login access needed"];
+const GEMI=[...GEMB,"Redeem link provided","No card required to activate"],GEMFM=[...GEMB,"Invite sent to your email address"];
+const GEMV=()=>[
+ V("Family Invite + Full warranty","Full warranty","Family invite sent to your email address, with a full 6-month warranty.",[...GEMFM,"Full warranty"],[],{6:400}),
+ V("Family Invite + Activation warranty","Activation warranty","Family invite sent to your email address, with an activation warranty.",[...GEMFM,"Activation warranty"],["Activation warranty only"],{6:250}),
+ V("Individual + Full warranty","Full warranty","Individual account activated with a redeem link, with a full 6-month warranty.",[...GEMI,"Full warranty"],[],{6:1000}),
+ V("Individual + Activation warranty","Activation warranty","Individual account activated with a redeem link, with an activation warranty.",[...GEMI,"Activation warranty"],["Activation warranty only"],{6:500})];
 // 18+ services that also get their own (age-gated, not search-indexed) page under /services/.
 const ADULT_PAGES=["Ullu","ALTT","Atrangii"];
 // [name, category, brand color, short description, [plan types]]
@@ -89,16 +95,8 @@ const CATALOG=[
  V("Standard","","A premium VPN for private, secure browsing.",["Single-device access"],[],{1:300,6:1500,12:2000})]],
 ["Claude","AI Tools","#d97757","Claude AI on your own email, renewable and ready for multiple devices.",[
  V("Pro","","Claude activated on your own email.",["Activated on your own email","Renewable","Multi-device access"],[],{1:2700})]],
-["Gemini Pro","AI Tools","#4285f4","Gemini Pro with 5 TB Google storage, on long-lasting 18-month plans.",[
- V("Family","No warranty","Family plan activated on your own email.",GEMF,["No warranty"],{18:250}),
- V("Family + Warranty","6-month warranty","Family plan with a 6-month warranty.",[...GEMF,"6-month warranty"],[],{18:500}),
- V("Individual","No warranty","Individual plan that can be shared with up to 5 people.",[...GEMF,"Can be shared with up to 5 people"],["No warranty"],{18:500}),
- V("Individual + Warranty","6-month warranty","Individual plan with a 6-month warranty.",[...GEMF,"Can be shared with up to 5 people","6-month warranty"],[],{18:1000})]],
-["Google One","Productivity","#4285f4","5 TB of cloud storage with Gemini Pro included, on your own email.",[
- V("Family","No warranty","Family plan with 5 TB storage and Gemini Pro.",[...GEMF,"Includes Gemini Pro"],["No warranty"],{18:250}),
- V("Family + Warranty","6-month warranty","Family plan with a 6-month warranty.",[...GEMF,"Includes Gemini Pro","6-month warranty"],[],{18:500}),
- V("Individual","No warranty","Individual plan that can be shared with up to 5 people.",[...GEMF,"Includes Gemini Pro","Can be shared with up to 5 people"],["No warranty"],{18:500}),
- V("Individual + Warranty","6-month warranty","Individual plan with a 6-month warranty.",[...GEMF,"Includes Gemini Pro","Can be shared with up to 5 people","6-month warranty"],[],{18:1000})]],
+["Gemini Plus","AI Tools","#4285f4","Google's Gemini plan with 400 GB storage, Google Flow and Gemini in Gmail, on 6-month plans. No login access needed.",GEMV()],
+["Google One","Productivity","#4285f4","400 GB of shared Google storage with Gemini included, on 6-month plans. No login access needed.",GEMV()],
 ["CapCut","Productivity","#111827","Pro video editing, as a ready-made account or on your own email.",[
  V("Ready-made Account","Instant","A ready-to-use Pro account, delivered instantly.",["Pro plan","Instant delivery"],[],{1:450}),
  V("On Your Email","Pro","The Pro plan activated on your own email.",["Pro plan","Activated on your own email"],[SLOW],{1:800,6:2500,12:4500})]],

@@ -16,7 +16,7 @@
   const ctx={p:null,interest:null};
 
   /* ---------- product detection (with typo tolerance) ---------- */
-  const ALIAS={"prime":"Amazon Prime Video","yt":"YouTube Premium","youtube":"YouTube Premium","gpt":"ChatGPT","chat gpt":"ChatGPT","hotstar":"JioHotstar","disney":"Disney+","nord":"NordVPN","express vpn":"ExpressVPN","google drive":"Google One","gemini":"Gemini Pro","adobe":"Adobe Express","apple music":"Apple Music","icloud":"Apple Gift Card","itunes":"Apple Gift Card","app store":"Apple Gift Card","bybit":"Bybit Card","redot":"RedotPay","poke pay":"PokePay"};
+  const ALIAS={"prime":"Amazon Prime Video","yt":"YouTube Premium","youtube":"YouTube Premium","gpt":"ChatGPT","chat gpt":"ChatGPT","hotstar":"JioHotstar","disney":"Disney+","nord":"NordVPN","express vpn":"ExpressVPN","google drive":"Google One","gemini":"Gemini Plus","adobe":"Adobe Express","apple music":"Apple Music","icloud":"Apple Gift Card","itunes":"Apple Gift Card","app store":"Apple Gift Card","bybit":"Bybit Card","redot":"RedotPay","poke pay":"PokePay"};
   const SKIP=["gift","the","one","pro","card","video"];
   const KEYS=[];
   LIST.forEach(p=>{const n=norm(p.name).trim();KEYS.push([n,p]);const f=n.split(" ")[0];if(f.length>=4&&f!==n&&SKIP.indexOf(f)<0)KEYS.push([f,p])});

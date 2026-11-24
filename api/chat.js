@@ -60,7 +60,7 @@ function detail(p) {
   const vs = p.variants.map((v) => `${v.n}${v.line ? " - " + v.line : ""}${v.f && v.f.length ? " Includes: " + v.f.join(", ") + "." : ""}${v.notes && v.notes.length ? " Note: " + v.notes.join("; ") + "." : ""} Prices: ` + v.plans.map((x) => `${x.v} ৳${x.p}`).join(", ")).join("\n  ");
   return `${p.name} (${p.cat}): ${String(p.desc || "").slice(0, 200)}\n  ${vs}`.slice(0, 2200);
 }
-const ALIAS = { prime: "amazon prime video", amazon: "amazon prime video", yt: "youtube premium", youtube: "youtube premium", gpt: "chatgpt", openai: "chatgpt", hotstar: "jiohotstar", jio: "jiohotstar", disney: "disney+", hbo: "hbo max", max: "hbo max", paramount: "paramount+", apple: "apple music", itunes: "itunes gift card", vpn: "nordvpn", nord: "nordvpn", express: "expressvpn", gemini: "gemini pro", google: "google one", anime: "crunchyroll", bkash: "", combo: "entertainment combo" };
+const ALIAS = { prime: "amazon prime video", amazon: "amazon prime video", yt: "youtube premium", youtube: "youtube premium", gpt: "chatgpt", openai: "chatgpt", hotstar: "jiohotstar", jio: "jiohotstar", disney: "disney+", hbo: "hbo max", max: "hbo max", paramount: "paramount+", apple: "apple music", itunes: "itunes gift card", vpn: "nordvpn", nord: "nordvpn", express: "expressvpn", gemini: "gemini plus", google: "google one", anime: "crunchyroll", bkash: "", combo: "entertainment combo" };
 function matchProducts(text) {
   const t = " " + text.toLowerCase().replace(/[^a-z0-9+ ]/g, " ") + " ";
   const hit = new Map();

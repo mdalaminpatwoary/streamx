@@ -9,7 +9,7 @@
 
   // Services shown in the carousel / ticker (key in LOGOS, label, regex to find the shop product for its price)
   // The original premium 12, plus six more popular services. Every tile opens its own service page.
-  const PICK=["Netflix","Spotify","YouTube Premium","Amazon Prime Video","ChatGPT","Disney+","Apple Music","Canva","Claude","HBO Max","Udemy","Adobe Express","Gemini Pro","Crunchyroll"];
+  const PICK=["Netflix","Spotify","YouTube Premium","Amazon Prime Video","ChatGPT","Disney+","Apple Music","Canva","Claude","HBO Max","Udemy","Adobe Express","Gemini Plus","Crunchyroll"];
   const SV=PICK.map(n=>(typeof PRODUCTS!=="undefined"?PRODUCTS:[]).find(p=>p.name===n)).filter(p=>p&&LOGOS[LOGO_OF[p.name]]).map(p=>{
     const k=LOGO_OF[p.name],L=LOGOS[k];
     const from=Math.min(...p.variants.flatMap(v=>v.plans.map(x=>x.p)));
