@@ -53,7 +53,7 @@
 <link rel="stylesheet" href="assets/css/title-sheet.css?v=11">
 <link rel="stylesheet" href="assets/css/sections/bundles.css?v=20261119zz">
 <link rel="stylesheet" href="assets/css/sections/pricing.css?v=20261121b">
-<link rel="stylesheet" href="assets/css/sections/why.css?v=20261120a">
+<link rel="stylesheet" href="assets/css/sections/why.css?v=20261124b">
 <link rel="stylesheet" href="assets/css/sections/stats.css?v=20261119zz">
 <link rel="stylesheet" href="assets/css/sections/world.css?v=10">
 <link rel="stylesheet" href="assets/css/sections/how-it-works.css?v=20261121b">
@@ -260,7 +260,7 @@
     <span class="tp-count" id="tlCount" aria-live="polite"></span>
   </div>
   <div class="tp-grid" id="tlGrid" aria-live="polite"></div>
-  <div class="tp-foot"><button class="tp-more" type="button" id="tlMore" hidden>Show 20 more</button><a class="tp-all" id="tlAll" href="/top-rated/" hidden>Explore all 250 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
+  <button class="tp-more" type="button" id="tlMore" hidden>Show 20 more</button>
 </section>
 <section id="world" class="wrap sec">
   <div class="hhead rv">
@@ -319,23 +319,23 @@
   <div class="bw-grid" id="bwGrid">
     <article class="bw bw-a" style="--k:0">
       <span class="bw-no">01</span>
-      <h3>Fast from the first message</h3>
-      <p>Once your payment is confirmed, many plans are delivered within minutes. Plans activated on your own email can take a little longer, and each plan says so.</p>
+      <h3>Delivered on your mail</h3>
+      <p>Once your payment is confirmed, your subscription details are sent to your email. Many plans arrive within minutes; plans activated on your own email can take a little longer, and each plan says so.</p>
       <div class="bw-big" aria-hidden="true"><b>Often in <span class="grad">minutes.</span></b></div>
       <div class="bw-flow" aria-hidden="true">
         <div class="bw-stars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-        <div class="bw-line"><u></u><s><svg viewBox="0 0 24 24"><path d="M3 8.5 12 4l9 4.5v7L12 20l-9-4.5zM3 8.5l9 4.5 9-4.5M12 13v7"/></svg></s></div>
+        <div class="bw-line"><u></u><s><svg viewBox="0 0 24 24"><rect x="3" y="5.5" width="18" height="13" rx="2.5"/><path d="m3.5 7.5 8.5 6 8.5-6"/></svg></s></div>
         <div class="bw-nodes">
           <span class="n1"><em>Order placed</em><i><svg viewBox="0 0 24 24"><path d="M6 6h15l-2 9H8zM6 6 5 3H2"/><circle cx="9" cy="20" r="1"/><circle cx="18" cy="20" r="1"/></svg><b></b></i>Order</span>
           <span class="n2"><em>Payment confirmed</em><i><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18"/></svg><b></b></i>Pay</span>
-          <span class="n3"><em>Delivered</em><i><svg viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></svg><b></b><q><u style="--a:0"></u><u style="--a:45"></u><u style="--a:90"></u><u style="--a:135"></u><u style="--a:180"></u><u style="--a:225"></u><u style="--a:270"></u><u style="--a:315"></u></q></i>Delivered</span>
+          <span class="n3"><em><svg viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></svg>Mail received</em><i><svg class="env" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2.5"/><path class="fl" d="m3.5 8 8.5 6 8.5-6"/></svg><ins class="bd">1</ins><b></b><span class="orb"></span><q><u style="--a:0"></u><u style="--a:45"></u><u style="--a:90"></u><u style="--a:135"></u><u style="--a:180"></u><u style="--a:225"></u><u style="--a:270"></u><u style="--a:315"></u></q></i>Your inbox</span>
         </div>
       </div>
     </article>
     <article class="bw bw-b" style="--k:1">
       <span class="bw-no">02</span>
-      <h3>Fixed, clear prices</h3>
-      <p>The price you see is the price you pay, in BDT, with no hidden charges.</p>
+      <h3>Buy automatically, no person needed</h3>
+      <p>Pick a plan, pay online and your order is processed automatically, with no one to wait for. Prices are fixed in BDT with no hidden charges.</p>
       <div class="bw-prices" id="bwPrices" aria-hidden="true"></div>
     </article>
     <article class="bw bw-c" style="--k:2">
@@ -349,9 +349,14 @@
     </article>
     <article class="bw bw-d" style="--k:3">
       <span class="bw-no">04</span>
-      <h3>Real people on WhatsApp</h3>
-      <p>Questions about a plan, payment or delivery? We reply directly, any time.</p>
-      <div class="bw-chat" aria-hidden="true"><b class="m1">Hi, I need help with my plan</b><span class="ty"><i></i><i></i><i></i></span><b class="m2">Sure! How can we help? 👋</b></div>
+      <h3>Get help from our chatbot</h3>
+      <p>Questions about a plan, payment or delivery? Ask the StreamX chatbot and get an instant answer, any time.</p>
+      <div class="bw-chat" aria-hidden="true">
+        <div class="bc-head"><span class="bc-av"><svg viewBox="0 0 24 24"><rect x="4" y="8" width="16" height="11" rx="4"/><path d="M12 8V5M9.5 13.5v1M14.5 13.5v1"/><circle cx="12" cy="4" r="1"/></svg><i></i></span><span class="bc-t"><strong>StreamX Assistant</strong><small><u></u>Online · replies instantly</small></span></div>
+        <b class="m1">Netflix under ৳200?</b>
+        <div class="bc-bot"><span class="ty"><i></i><i></i><i></i></span><b class="m2"><em>Yes! Netflix Share Profile is <u>৳180</u> / month. Want it in your cart?</em></b></div>
+        <div class="bc-chips"><em>Add to cart</em><em>See other plans</em></div>
+      </div>
     </article>
     <article class="bw bw-e" style="--k:4">
       <span class="bw-no">05</span>
@@ -533,7 +538,7 @@
 <script src="assets/js/avatar-nav.js?v=1" defer></script><script src="assets/js/account-menu.js?v=20261124g" defer></script>
 <script src="assets/js/features/cart.js?v=20261120a"></script>
 <script src="assets/js/features/checkout.js?v=20261123c"></script>
-<script src="assets/js/features/why.js?v=20261122a"></script>
+<script src="assets/js/features/why.js?v=20261124a"></script>
 <script src="assets/js/features/faq.js?v=20261122a"></script>
 <script src="assets/js/layout/header.js?v=20261121e"></script>
 <script src="assets/js/features/policies.js?v=20261123a"></script>

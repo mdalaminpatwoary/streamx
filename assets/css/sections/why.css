@@ -161,3 +161,99 @@
 
 /* Phones: the step labels pop up above the icons, so leave room for them (they used to overlap "Often in minutes.") */
 @media(max-width:1000px){#why .bw-a .bw-flow{padding-top:70px}#why .bw-a .bw-big{padding-bottom:4px}}
+
+/* ===== Why StreamX: animations for the updated cards ===== */
+
+/* 01 Delivered on your mail: envelope travels the line, light streams along it, inbox opens with a badge and an orbit ring */
+.bw-line{background:linear-gradient(90deg,transparent,rgba(255,255,255,.6),transparent) -80px 0/80px 100% no-repeat,rgba(255,255,255,.1)}
+.bw.in .bw-line{animation:bwStream 2.2s linear infinite}
+@keyframes bwStream{to{background-position:calc(100% + 80px) 0}}
+.bw-nodes .n3 em{display:inline-flex;align-items:center;gap:6px}
+.bw-nodes .n3 em svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.bw-nodes i>svg.env{width:24px;height:24px}
+.bw-nodes .env .fl{transform-box:fill-box;transform-origin:50% 0}
+.bw.in .env .fl{animation:bwFlap 7s .4s infinite}
+@keyframes bwFlap{0%,60%{transform:scaleY(1)}66%,90%{transform:scaleY(-.95)}98%,100%{transform:scaleY(1)}}
+.bw-nodes .bd{position:absolute;top:-8px;right:-8px;min-width:19px;height:19px;padding:0 5px;display:grid;place-items:center;border-radius:99px;background:#ed3124;color:#fff;font:800 11px Manrope,sans-serif;text-decoration:none;box-shadow:0 6px 16px rgba(237,49,36,.6),0 0 0 3px #0b0e1e;transform:scale(0)}
+.bw.in .bd{animation:bwBadge 7s .4s infinite}
+@keyframes bwBadge{0%,63%{transform:scale(0)}68%{transform:scale(1.35)}73%,92%{transform:scale(1)}98%,100%{transform:scale(0)}}
+.bw-nodes .orb{position:absolute;inset:-8px;border-radius:50%;border:1.5px dashed rgba(82,224,154,.75);opacity:0;pointer-events:none}
+.bw.in .orb{animation:bwOrb 7s .4s infinite}
+@keyframes bwOrb{0%,60%{opacity:0;transform:rotate(0) scale(.85)}66%{opacity:.9}92%{opacity:.7;transform:rotate(300deg) scale(1)}100%{opacity:0;transform:rotate(360deg) scale(1.1)}}
+
+/* 02 Buy automatically: an order that runs itself, step by step */
+.ba{position:relative;display:flex;flex-direction:column;gap:14px;padding:14px 14px 16px;border-radius:18px;overflow:hidden;background:linear-gradient(160deg,rgba(255,255,255,.07),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.1)}
+.ba::before{content:"";position:absolute;left:0;right:0;top:0;height:60px;background:linear-gradient(180deg,rgba(79,107,255,.0),rgba(79,107,255,.18),rgba(79,107,255,0));transform:translateY(-70px);pointer-events:none}
+.bw.in .ba::before{animation:baScan 3.2s linear infinite}
+@keyframes baScan{to{transform:translateY(340px)}}
+.ba-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.ba-badge{display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:99px;font:800 10.5px Manrope,sans-serif;letter-spacing:1.6px;color:#9fb0ff;background:rgba(79,107,255,.14);border:1px solid rgba(79,107,255,.4)}
+.ba-badge i{width:6px;height:6px;border-radius:50%;background:#7f95ff;box-shadow:0 0 10px #7f95ff;animation:cw-dot 1.2s ease-in-out infinite}
+.ba-id{font:700 11px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--mut);letter-spacing:.5px}
+.ba-id b{color:#fff;font-weight:700}
+.ba-item{display:flex;align-items:center;gap:12px;padding:10px 14px 10px 10px;border-radius:14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);transition:opacity .26s,transform .26s,filter .26s}
+.ba-item.sw{opacity:0;transform:translateY(-8px) scale(.97);filter:blur(4px)}
+.ba-item .lg{width:34px;height:34px;border-radius:10px;flex:none}
+.ba-item span{flex:1;min-width:0;font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ba-item small{margin-left:8px;color:var(--mut);font-weight:600;font-size:12px}
+.ba-item b{font:800 17px Manrope,sans-serif;font-variant-numeric:tabular-nums;color:#ff8a7c}
+.ba-steps{position:relative;display:grid;grid-template-columns:repeat(4,1fr);margin:0;padding:0;list-style:none}
+.ba-steps li{position:relative;display:flex;flex-direction:column;align-items:center;gap:8px;font-size:11.5px;font-weight:700;color:var(--mut)}
+.ba-steps li i{position:relative;z-index:1;width:11px;height:11px;border-radius:50%;border:1.5px solid rgba(255,255,255,.25);background:transparent}
+.ba-bar{position:relative;height:3px;margin:-4px 12.5% 0;border-radius:3px;background:rgba(255,255,255,.1)}
+.ba-bar u{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:3px;background:linear-gradient(90deg,#4f6bff,#ed3124 70%,#35d07f);box-shadow:0 0 16px rgba(79,107,255,.7)}
+.bw.in .ba-bar u{animation:baFill 6.4s cubic-bezier(.5,0,.3,1) infinite}
+@keyframes baFill{0%{width:0;opacity:1}78%,92%{width:100%;opacity:1}100%{width:100%;opacity:0}}
+.ba-done{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;color:#7ff0b6;opacity:0;transform:translateY(8px)}
+.ba-done svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.bw.in .ba-done{animation:baDone 6.4s ease infinite}
+@keyframes baDone{0%,72%{opacity:0;transform:translateY(8px)}80%,92%{opacity:1;transform:none}100%{opacity:0}}
+.bw.in .ba-steps li{animation-duration:6.4s;animation-iteration-count:infinite}
+.bw.in .ba-steps li i{animation-duration:6.4s;animation-iteration-count:infinite}
+.bw.in .ba-steps li:nth-child(1){animation-name:baS0}.bw.in .ba-steps li:nth-child(1) i{animation-name:baD0}
+.bw.in .ba-steps li:nth-child(2){animation-name:baS1}.bw.in .ba-steps li:nth-child(2) i{animation-name:baD1}
+.bw.in .ba-steps li:nth-child(3){animation-name:baS2}.bw.in .ba-steps li:nth-child(3) i{animation-name:baD2}
+.bw.in .ba-steps li:nth-child(4){animation-name:baS3}.bw.in .ba-steps li:nth-child(4) i{animation-name:baD3}
+@keyframes baS0{0%,2%{color:var(--mut)}6%,88%{color:#fff}96%,100%{color:var(--mut)}}
+@keyframes baD0{0%,2%{background:transparent;border-color:rgba(255,255,255,.25);box-shadow:none;transform:scale(1)}5%{transform:scale(1.5)}8%,88%{background:#ff5a45;border-color:transparent;box-shadow:0 0 14px rgba(237,49,36,.8);transform:scale(1)}96%,100%{background:transparent;border-color:rgba(255,255,255,.25);box-shadow:none}}
+@keyframes baS1{0%,22%{color:var(--mut)}26%,88%{color:#fff}96%,100%{color:var(--mut)}}
+@keyframes baD1{0%,22%{background:transparent;border-color:rgba(255,255,255,.25);box-shadow:none;transform:scale(1)}25%{transform:scale(1.5)}28%,88%{background:#ff5a45;border-color:transparent;box-shadow:0 0 14px rgba(237,49,36,.8);transform:scale(1)}96%,100%{background:transparent;border-color:rgba(255,255,255,.25);box-shadow:none}}
+@keyframes baS2{0%,42%{color:var(--mut)}46%,88%{color:#fff}96%,100%{color:var(--mut)}}
+@keyframes baD2{0%,42%{background:transparent;border-color:rgba(255,255,255,.25);box-shadow:none;transform:scale(1)}45%{transform:scale(1.5)}48%,88%{background:#ff5a45;border-color:transparent;box-shadow:0 0 14px rgba(237,49,36,.8);transform:scale(1)}96%,100%{background:transparent;border-color:rgba(255,255,255,.25);box-shadow:none}}
+@keyframes baS3{0%,62%{color:var(--mut)}66%,88%{color:#fff}96%,100%{color:var(--mut)}}
+@keyframes baD3{0%,62%{background:transparent;border-color:rgba(255,255,255,.25);box-shadow:none;transform:scale(1)}65%{transform:scale(1.5)}68%,88%{background:#35d07f;border-color:transparent;box-shadow:0 0 14px rgba(53,208,127,.8);transform:scale(1)}96%,100%{background:transparent;border-color:rgba(255,255,255,.25);box-shadow:none}}
+
+/* 04 chatbot: header with live status, streaming answer, quick replies */
+#why .bw-chat{gap:10px;min-height:190px;position:relative}
+.bc-head{display:flex;align-items:center;gap:10px}
+.bc-av{position:relative;display:grid;place-items:center;width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,#4f6bff,#8a4fff 55%,#ed3124);box-shadow:0 10px 24px -8px rgba(79,107,255,.8)}
+.bc-av svg{width:20px;height:20px;fill:none;stroke:#fff;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.bc-av i{position:absolute;inset:-5px;border-radius:15px;border:1px solid rgba(127,149,255,.55);animation:bcPulse 2.4s ease-out infinite}
+@keyframes bcPulse{0%{opacity:.9;transform:scale(.9)}100%{opacity:0;transform:scale(1.35)}}
+.bc-t{display:flex;flex-direction:column;gap:2px;min-width:0}
+.bc-t strong{font-size:13px;font-weight:800}
+.bc-t small{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:var(--mut)}
+.bc-t small u{width:6px;height:6px;border-radius:50%;background:#35d07f;box-shadow:0 0 8px #35d07f;animation:cw-dot 1.6s ease-in-out infinite}
+.bc-bot{display:grid}
+#why .bw-chat .ty{position:static;grid-area:1/1;align-self:start}
+#why .bw-chat .m2{grid-area:1/1;align-self:start;max-width:92%;clip-path:inset(0 100% 0 0)}
+.bw-chat .m2 em{font-style:normal}
+.bw-chat .m2 u{text-decoration:none;color:#ffd166;font-weight:800}
+.bc-chips{display:flex;flex-wrap:wrap;gap:8px}
+.bc-chips em{font-style:normal;padding:7px 13px;border-radius:99px;font:700 12px Manrope,sans-serif;color:#dfe5ff;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.16);opacity:0;transform:translateY(8px) scale(.9)}
+.bc-chips em:first-child{color:#fff;background:linear-gradient(135deg,#ff5a45,#ed3124);border-color:transparent;box-shadow:0 8px 20px -6px rgba(237,49,36,.7)}
+#why .bw.in .bw-chat .m1{animation:bcM1 9s .6s infinite}
+#why .bw.in .bw-chat .ty{animation:bcTy 9s .6s infinite}
+#why .bw.in .bw-chat .m2{animation:bcM2 9s .6s infinite}
+#why .bw.in .bc-chips em:nth-child(1){animation:bcC1 9s .6s infinite}
+#why .bw.in .bc-chips em:nth-child(2){animation:bcC2 9s .6s infinite}
+@keyframes bcM1{0%{opacity:0;transform:translateY(10px) scale(.96)}6%,92%{opacity:1;transform:none}100%{opacity:0}}
+@keyframes bcTy{0%,14%{opacity:0}17%,32%{opacity:1}35%,100%{opacity:0}}
+@keyframes bcM2{0%,33%{opacity:0;clip-path:inset(0 100% 0 0)}34%{opacity:1;clip-path:inset(0 100% 0 0)}52%,92%{opacity:1;clip-path:inset(0 0 0 0)}100%{opacity:0;clip-path:inset(0 0 0 0)}}
+@keyframes bcC1{0%,54%{opacity:0;transform:translateY(8px) scale(.9)}60%{opacity:1;transform:none}70%{transform:scale(1.08)}74%,92%{opacity:1;transform:none}100%{opacity:0}}
+@keyframes bcC2{0%,58%{opacity:0;transform:translateY(8px) scale(.9)}64%,92%{opacity:1;transform:none}100%{opacity:0}}
+@media(prefers-reduced-motion:reduce){
+  .ba-done,.bc-chips em,#why .bw-chat .m2{opacity:1!important;transform:none!important;clip-path:none!important}
+  .ba-bar u{width:100%}.bw-chat .ty{display:none}.bw-nodes .bd{transform:none}.ba::before{display:none}
+}
+@media(max-width:480px){.ba-steps li{font-size:10.5px}.ba-item small{display:none}}
