@@ -48,6 +48,11 @@
     for(let i=0;i<need.length;i+=12){const ch=need.slice(i,i+12);ch.forEach(m=>asked[m.k+":"+m.id]=1);
       fetch(`/api/catalog?a=pv&k=${st.k}&ids=${ch.map(m=>m.id).join(",")}`).then(r=>r.ok?r.json():null).then(d=>{if(d&&d.pv)Object.keys(d.pv).forEach(id=>{pv[d.k+":"+id]=d.pv[id]});ch.forEach(m=>{if(!pv[m.k+":"+m.id])pv[m.k+":"+m.id]={reg:"",list:[]}});fillPl()}).catch(()=>{ch.forEach(m=>{pv[m.k+":"+m.id]={reg:"",list:[]}});fillPl()})}
   }
+  function setCnt(n,t,soon){
+    if(!cnt)return;
+    if(PAGE){cnt.textContent=`Showing ${n} of ${t}`;return}
+    cnt.innerHTML=`<span class="tp-cn"><b>${n}</b><em>of ${t}</em><span>${soon?"upcoming titles":"titles"}</span></span><i class="tp-cbar" style="--p:${t?Math.min(100,Math.round(n/t*100)):0}%"></i>`;
+  }
   function paint(){
     const mine=st.l==="wish"||st.l==="watched";
     const d=mine?{list:(window.sxList&&sxList.authed()?sxList.all().filter(x=>x.s===st.l&&x.k===st.k):[])}:cache[st.l+st.k];if(!d)return;
@@ -65,7 +70,7 @@
     more.hidden=PAGE?left<=0:true;more.textContent=`Show ${Math.min(STEP,left)} more`;
     if(!PAGE){lastRows=rows;lastSoon=soon;endCard(left<=0&&rows.length>FIRST)}
     if(all){all.hidden=mine;all.href=soon?"/top-rated/#soon":"/top-rated/";all.firstChild.textContent=soon?"Explore all upcoming ":"Explore all 250 "}
-    if(cnt)cnt.textContent=`Showing ${shown.length} of ${rows.length}`;
+    setCnt(shown.length,rows.length,soon);
     wantPl(shown.map(x=>x.m));paintStates();
   }
   function load(first){
@@ -99,7 +104,7 @@
         const add=lastRows.slice(from,st.n);
         const e=grid.querySelector(".tp-endc");if(e)e.remove();
         grid.insertAdjacentHTML("beforeend",add.map((x,i)=>card(x.m,x.r,i,lastSoon)).join(""));
-        wantPl(add.map(x=>x.m));paintStates();if(cnt)cnt.textContent=`Showing ${st.n} of ${lastRows.length}`;
+        wantPl(add.map(x=>x.m));paintStates();setCnt(st.n,lastRows.length,lastSoon);
         endCard(st.n>=lastRows.length);busy=false;requestAnimationFrame(sync);
       },650);
     };

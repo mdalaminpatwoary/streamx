@@ -124,10 +124,10 @@ async function build(l, k, cc) {
   const IN = ["hi", "ta", "te", "ml", "kn", "bn", "mr", "pa"];
   const WORLD = ["fr", "es", "zh", "de", "it", "tr", "th", "pt", "id", "ru", "ar", "pl", "ja"];
   const cat = (r) => { const o = r.original_language, an = (r.genre_ids || []).includes(16); return o === "ja" && an ? "anime" : o === "ko" ? "korea" : IN.includes(o) ? "india" : o === "en" ? "hollywood" : "world"; };
-  const CAP = { hollywood: 160, india: 110, korea: 70, anime: 70, world: 130 };
+  const CAP = { hollywood: 260, india: 160, korea: 100, anime: 100, world: 200 };
   // The same depth as Explore's Coming soon (popularity ranked, several pages), plus language-specific lists so every industry is covered.
   const calls = [];
-  for (let pg = 1; pg <= 8; pg++) calls.push({ ...(mv ? { region: cc } : {}), page: pg });
+  for (let pg = 1; pg <= 25; pg++) calls.push({ ...(mv ? { region: cc } : {}), page: pg });
   [["en", 3], ...IN.map((l) => [l, 2]), ["ko", 3], ...WORLD.map((l) => [l, 1])].forEach(([l, n]) => { for (let pg = 1; pg <= n; pg++) calls.push({ with_original_language: l, page: pg }); });
   calls.push({ with_original_language: "ja", with_genres: "16", page: 1 }, { with_original_language: "ja", with_genres: "16", page: 2 }, { with_original_language: "ja", with_genres: "16", page: 3 });
   const pages = await Promise.all(calls.map((x) => tmdb(path, { ...base, ...x }).catch(() => ({ results: [] }))));
