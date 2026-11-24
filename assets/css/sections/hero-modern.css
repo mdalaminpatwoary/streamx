@@ -75,10 +75,9 @@
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  animation:
-    hx-word 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards,
-    hx-shimmer 6s ease-in-out infinite;
-  animation-delay: calc(0.15s + var(--i) * 0.07s), 0s;
+  background-size: 100% 100%;
+  animation: hx-word 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-delay: calc(0.15s + var(--i) * 0.07s);
 }
 .hx-lead {
   max-width: 540px;
@@ -289,7 +288,6 @@
   .hero-text>.cta{order:6;align-self:stretch}
   .hero-text>.hx-pay{order:7}
   .hero-text>.hx-trust{order:8}
-  .hero-text>.hx-title .grad{background-size:220% 100%;animation:hxShine 4.5s linear infinite}
 }
 @keyframes hxShine{to{background-position:-220% 0}}
 @media(prefers-reduced-motion:reduce){.hero-text>.hx-title .grad{animation:none}}
