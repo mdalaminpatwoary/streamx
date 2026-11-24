@@ -14,7 +14,6 @@
     {id:"appletv",name:"Apple TV+",mono:"tv+",bg:"#1d1d1f",shop:"Apple TV+"},
     {id:"peacock",name:"Peacock",mono:"P",bg:"#111",shop:"Peacock"},
     {id:"zee5",name:"ZEE5",logo:"zee5",shop:"ZEE5"},
-    {id:"sonyliv",name:"SonyLIV",mono:"SL",bg:"#1b2a49",shop:"SonyLIV"},
     {id:"viki",name:"Rakuten Viki",mono:"V",bg:"#0b8fe0",shop:"Viki"},
     {id:"mubi",name:"MUBI",mono:"M",bg:"#0a0a0a",shop:"MUBI"}
   ];
@@ -28,7 +27,7 @@
   // Defaults: movies, in the visitor's own country (from their IP address); the United States when that country isn't in the list.
   // JioHotstar is India only. A region the visitor picks themselves is remembered.
   let geo="US";
-  const homeRegion=p=>["hotstar","zee5","sonyliv"].includes(p)?"IN":geo;
+  const homeRegion=p=>["hotstar","zee5"].includes(p)?"IN":geo;
   const R=()=>st.p==="hotstar"?"IN":st.r;
   let st={p:"netflix",r:"US",k:"movie",manual:false};
   try{const s=JSON.parse(localStorage.getItem("sx_trend2")||"{}");

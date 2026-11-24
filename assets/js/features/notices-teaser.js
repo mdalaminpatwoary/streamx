@@ -93,7 +93,16 @@
     const bell=document.getElementById("ntBell");if(bell){if(store.get()===nkey(l[0]))markRead(); /* the pop-up for the newest one was already shown before: counts as read */
     badge();bell.hidden=false;}
     island(l[0]);
-    document.getElementById("ntRow").innerHTML=l.map(n=>{const k=KIND[n.k]?n.k:"info";return `<a class="nt-card k-${k}" href="/notices/#${k}"><span class="nt-kind">${n.pin?"📌 ":""}${KIND[k]}</span><h3>${esc(n.t)}</h3>${n.m?`<p>${esc(n.m)}</p>`:""}<small>${fmt(n.at)}</small></a>`}).join("");
+    /* A row you scroll sideways: the first few updates appear with a soft stagger, and more load in (with a shimmer placeholder) as you reach the end */
+    const row=document.getElementById("ntRow"),STEP=4;let shown=0,busy=false;
+    const card=(n,i)=>{const k=KIND[n.k]?n.k:"info";return `<a class="nt-card k-${k} nt-in" style="--i:${i}" href="/notices/#${k}"><span class="nt-kind">${n.pin?"\u{1F4CC} ":""}${KIND[k]}</span><h3>${esc(n.t)}</h3>${n.m?`<p>${esc(n.m)}</p>`:""}<small>${fmt(n.at)}</small></a>`};
+    const skel=()=>{const s=document.createElement("div");s.className="nt-card nt-sk";s.setAttribute("aria-hidden","true");s.innerHTML="<i></i><i></i><i></i><i></i>";return s};
+    const add=()=>{const part=all.slice(shown,shown+STEP);row.insertAdjacentHTML("beforeend",part.map((n,i)=>card(n,i)).join(""));shown+=part.length};
+    const more=()=>{if(busy||shown>=all.length)return;busy=true;const s1=skel(),s2=skel();row.append(s1,s2);
+      setTimeout(()=>{s1.remove();s2.remove();add();busy=false;if(row.scrollWidth-row.clientWidth-row.scrollLeft<80)more()},650)};
+    row.addEventListener("scroll",()=>{if(row.scrollWidth-row.clientWidth-row.scrollLeft<140)more()},{passive:true});
+    row.innerHTML="";add();
+    if(row.scrollWidth<=row.clientWidth+4&&shown<all.length)more();
     sec.hidden=false;const nl=document.getElementById("ntNav");if(nl)nl.hidden=false;
   }).catch(()=>{});
   setTimeout(run,900); /* short pause so the page settles before the island pops out */
