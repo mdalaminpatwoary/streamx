@@ -5,6 +5,7 @@
   var MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   var PLAT=[["netflix","Netflix"],["prime-video","Prime Video"],["disneyplus","Disney+"],["hbo-max","HBO Max"],["crunchyroll","Crunchyroll"],["jiohotstar","JioHotstar"],["paramountplus","Paramount+"],["hulu","Hulu"],["apple-tv","Apple TV+"],["peacock","Peacock"],["zee5","ZEE5"],["sonyliv","SonyLIV"],["viki","Rakuten Viki"],["mubi","MUBI"]];
   var ANIME=[["popular","Popular"],["top","Top rated"],["new","New releases"],["crunchyroll","On Crunchyroll"]];
+  var KDRAMA=[["popular","Popular"],["top","Top rated"],["new","New releases"],["netflix","On Netflix"]];
   var KIND=[["movie","Movies"],["tv","Series"]];
   var NEWSC=[["all","All"],["movies","Movies"],["tv","TV & series"],["people","Stars"],["boxoffice","Box office"]];
   var SECS=[
@@ -15,6 +16,7 @@
     {id:"platforms",nav:"By platform",eye:"Streaming",h:"Trending on <span class=\"grad\">every platform.</span>",sub:"Pick a platform to see its most popular movies and series. Get the matching plan from StreamX.",s:"platform",kinds:true,chips:PLAT},
     {id:"top",nav:"Top rated",eye:"Charts",h:"All-time <span class=\"grad\">top rated.</span>",sub:"The best-rated movies and series ever, ranked by TMDB user score.",s:"toprated",kinds:true,rank:true},
     {id:"anime",nav:"Anime",eye:"Anime",h:"Anime <span class=\"grad\">worldwide.</span>",sub:"Japanese anime series and films: what is popular, best rated, newly released and streaming on Crunchyroll.",s:"anime",kinds:true,chips:ANIME,mode:true},
+    {id:"kdrama",nav:"K-drama",eye:"Korean",h:"K-drama <span class=\"grad\">and Korean cinema.</span>",sub:"Korean series and films: what is popular, best rated, newly released and streaming on Netflix where you are.",s:"kdrama",k:"tv",kinds:true,chips:KDRAMA,mode:true},
     {id:"genres",nav:"Genres",eye:"Categories",h:"Browse by <span class=\"grad\">genre.</span>",sub:"Choose a genre to explore every available title, most popular first.",s:"genre",kinds:true,genres:true},
     {id:"boxoffice",nav:"Box office",eye:"Earnings",h:"Box office <span class=\"grad\">hits.</span>",sub:"The highest-grossing movies of all time, ranked by worldwide revenue.",s:"boxoffice",k:"movie",rank:true},
     {id:"popular",nav:"Popular now",eye:"Right now",h:"Popular <span class=\"grad\">right now.</span>",sub:"What everyone is watching this week.",s:"popular",kinds:true},
@@ -62,7 +64,7 @@
     sec.className="ex-sec"+(c.video?" ex-vsec":"")+(c.news?" ex-nsec":"")+(c.rail?" ex-rail":"");sec.innerHTML='<div class="ex-head"><div><div class="ac-eyebrow">'+c.eye+"</div><h2>"+c.h+"</h2></div>"+(c.sub?"<p>"+c.sub+"</p>":"")+(c.rail?'<div class="ex-arr"><button type="button" data-dir="-1" aria-label="Scroll left">&#8592;</button><button type="button" data-dir="1" aria-label="Scroll right">&#8594;</button></div>':"")+"</div>";
     if(c.births){sec.insertAdjacentHTML("beforeend",'<div class="ex-bd" id="exBd"></div>');arrows(sec,sec.querySelector("#exBd"));return sec}
     var bar="";
-    if(c.kinds)bar+=seg(KIND,"movie","k");
+    if(c.kinds)bar+=seg(KIND,c.k||"movie","k");
     var st={k:c.k||"movie",page:0,pages:1,chip:c.chips?c.chips[0][0]:"",n:0,loading:false};
     c._st=st;
     sec.insertAdjacentHTML("beforeend",(bar||c.chips||c.genres?'<div class="ex-bar">'+bar+(c.chips||c.genres?'<div class="ex-chips" role="group" aria-label="Filter"></div>':"")+"</div>":"")+'<div class="ex-grid" aria-live="polite"></div><div class="ex-foot"><button type="button" class="ex-more" hidden>Load 20 more</button></div>');

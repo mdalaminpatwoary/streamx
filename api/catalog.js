@@ -119,7 +119,7 @@ async function build(l, k, cc) {
 
 /* ---------- Explore hub: GET /api/catalog?a=hub&s=<section>&k=movie|tv&page=1[&g=<genre id>][&p=<platform>] and a=genres, a=births ---------- */
 const hubCache = new Map(); // key -> { at, body }
-const HUB = new Set(["nowplaying", "upcoming", "toprated", "boxoffice", "popular", "airing", "genre", "platform", "anime", "trailers"]);
+const HUB = new Set(["nowplaying", "upcoming", "toprated", "boxoffice", "popular", "airing", "genre", "platform", "anime", "kdrama", "trailers"]);
 async function hubList(sec, k, page, genre, plat, mode, cc) {
   const g = await genreMap();
   const base = { language: "en-US", page, include_adult: "false" };
@@ -157,6 +157,15 @@ async function hubList(sec, k, page, genre, plat, mode, cc) {
     else if (mode === "crunchyroll") Object.assign(A, { sort_by: "popularity.desc", with_watch_providers: 283, with_watch_monetization_types: "flatrate" });
     else A.sort_by = "popularity.desc";
     data = mode === "crunchyroll" ? await rgn((rg) => tmdb(`/discover/${k}`, { ...A, watch_region: rg })) : await tmdb(`/discover/${k}`, A);
+  } else if (sec === "kdrama") {
+    // Korean-language titles. Modes: popular, top (best rated), new (latest releases), netflix (Korean titles on Netflix in the visitor's country).
+    const A = { ...base, with_original_language: "ko" };
+    const dk = k === "tv" ? "first_air_date" : "primary_release_date";
+    if (mode === "top") Object.assign(A, { sort_by: "vote_average.desc", "vote_count.gte": k === "tv" ? 200 : 400 });
+    else if (mode === "new") Object.assign(A, { sort_by: dk + ".desc", [dk + ".lte"]: today(), "vote_count.gte": 5 });
+    else if (mode === "netflix") Object.assign(A, { sort_by: "popularity.desc", with_watch_providers: 8, with_watch_monetization_types: "flatrate" });
+    else Object.assign(A, { sort_by: "popularity.desc", "vote_count.gte": 20 });
+    data = mode === "netflix" ? await rgn((rg) => tmdb(`/discover/${k}`, { ...A, watch_region: rg })) : await tmdb(`/discover/${k}`, A);
   } else data = await (plat === 122 ? (async () => { reg = "IN"; return tmdb(`/discover/${k}`, { ...base, sort_by: "popularity.desc", with_watch_providers: plat, watch_region: "IN", with_watch_monetization_types: "flatrate" }); })() : rgn((rg) => tmdb(`/discover/${k}`, { ...base, sort_by: "popularity.desc", with_watch_providers: plat, watch_region: rg, with_watch_monetization_types: "flatrate" })));
   const kind = sec === "nowplaying" || sec === "boxoffice" ? "movie" : sec === "airing" ? "tv" : k;
   return { page: data.page || page, pages: Math.min(data.total_pages || 1, 25), list: (data.results || []).filter((r) => r.poster_path).map((r) => item(r, kind, g)), reg };
@@ -337,7 +346,7 @@ module.exports = async (req, res) => {
       const genre = String(req.query.g || "").replace(/[^0-9]/g, "").slice(0, 6), plat = PROV_ID[String(req.query.p || "").toLowerCase()];
       if (sec === "genre" && !genre) return res.status(400).json({ error: "Pick a genre" });
       if (sec === "platform" && !plat) return res.status(400).json({ error: "Unknown platform" });
-      const mode = ["popular", "top", "new", "crunchyroll"].includes(req.query.m) ? req.query.m : "popular", regional = ["nowplaying", "upcoming", "popular", "trailers", "platform"].includes(sec) || (sec === "anime" && mode === "crunchyroll"), key = [sec, k, page, genre, plat, mode, regional ? cc : ""].join("|"), hit = hubCache.get(key);
+      const mode = ["popular", "top", "new", "crunchyroll", "netflix"].includes(req.query.m) ? req.query.m : "popular", regional = ["nowplaying", "upcoming", "popular", "trailers", "platform"].includes(sec) || (sec === "anime" && mode === "crunchyroll") || (sec === "kdrama" && mode === "netflix"), key = [sec, k, page, genre, plat, mode, regional ? cc : ""].join("|"), hit = hubCache.get(key);
       res.setHeader("Cache-Control", regional ? "private, max-age=3600" : "public, s-maxage=3600, stale-while-revalidate=86400"); // region lists differ per visitor
       if (hit && Date.now() - hit.at < HOUR) return res.status(200).json(hit.body);
       const body = { s: sec, k, ...(await hubList(sec, k, page, genre, plat, mode, cc)) };
