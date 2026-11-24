@@ -2,21 +2,22 @@
 (function(){
   const grid=$("#bwGrid");if(!grid)return;
   const calm=matchMedia("(prefers-reduced-motion: reduce)").matches,fine=matchMedia("(pointer:fine)").matches;
-  // Autopilot: an order that runs itself (order > verify > assign > send), one real product and price per round
+  // My Account preview: a compact copy of the account page's subscription card, animated through access, expiry date, auto renew and receipt
   const pr=$("#bwPrices");
-  const lock='<span class="bw-lock"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Price locked</span>';
-  const pick=["Netflix","Spotify","Amazon Prime Video","ChatGPT","YouTube Premium","Disney+"].map(n=>PRODUCTS.find(p=>p.name===n)).filter(Boolean);
-  const list=pick.length?pick:PRODUCTS.filter(p=>p.cat!=="18+").slice(0,5);
-  const label=p=>{const f=entry(p);return p.name+" \u00b7 "+(p.ask?"Ask":taka(f.p))};
-  const oid=()=>String(1000+Math.floor(Math.random()*9000));
-  const I={cart:'<path d="M6 6h15l-2 9H8zM6 6 5 3H2"/><circle cx="9" cy="20" r="1"/><circle cx="18" cy="20" r="1"/>',shield:'<path d="M12 3 5 6v5c0 4.5 3 8 7 10 4-2 7-5.5 7-10V6z"/><path d="m9 12 2.2 2.2L15.5 10"/>',key:'<circle cx="8" cy="15" r="3.5"/><path d="m10.5 12.5 8-8M15 8l2.5 2.5M17.5 5.5 20 8"/>',mail:'<rect x="3" y="6" width="18" height="13" rx="2.5"/><path d="m3.5 8 8.5 6 8.5-6"/>'};
-  const nodes=[["cart","Order"],["shield","Verify"],["key","Assign"],["mail","Send"]];
-  pr.innerHTML=`<div class="ap"><i class="ap-c a"></i><i class="ap-c b"></i><i class="ap-c c"></i><i class="ap-c d"></i>
-    <div class="ap-top"><span class="ap-badge"><i></i>AUTOPILOT</span><span class="ap-zero"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.6"/><path d="M5 20c.8-3.6 3.6-5.4 7-5.4s6.2 1.8 7 5.4"/><path class="ap-x" d="M3.5 3.5 20.5 20.5"/></svg>0 people needed</span></div>
-    <div class="ap-pipe"><div class="ap-line"><u id="apBar"></u></div><ol>${nodes.map((n,k)=>`<li style="--s:${k}"><i><svg viewBox="0 0 24 24">${I[n[0]]}</svg></i><span>${n[1]}</span></li>`).join("")}</ol></div>
-    <div class="ap-log"><p class="l0"><em>00:00.0</em>order received <b id="apItem">${label(list[0])}</b></p><p class="l1"><em>00:00.6</em>payment verified <b>OK</b></p><p class="l2"><em>00:01.3</em>access assigned <b id="apId">#SX-${oid()}</b></p><p class="l3"><em>00:02.4</em>sent to your email <b>OK</b></p></div></div>${lock}`;
-  let n=0;const item=$("#apItem"),idEl=$("#apId"),bar=$("#apBar");
-  if(!calm&&list.length>1)bar.addEventListener("animationiteration",()=>{n=(n+1)%list.length;item.textContent=label(list[n]);idEl.textContent="#SX-"+oid()});
+  const fd=d=>d.toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"});
+  const now=new Date(),st=new Date(now.getTime()-6*864e5),en=new Date(now.getTime()+24*864e5);
+  const ic=p=>`<svg viewBox="0 0 24 24" aria-hidden="true">${p}</svg>`;
+  pr.innerHTML=`<div class="mc">
+    <div class="mc-rail"><i class="mc-hl"></i><span>${ic('<rect x="3" y="11" width="18" height="9" rx="2"/><path d="M7 11V8a5 5 0 0 1 10 0v3"/>')}Access</span><span>${ic('<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/>')}Expiry date</span><span>${ic('<path d="M21 12a8.5 8.5 0 0 1-14.6 5.9M3 12A8.5 8.5 0 0 1 17.6 6.1M17.6 3v3.1h-3.1M6.4 21v-3.1h3.1"/>')}Auto renew</span><span>${ic('<path d="M7 3h10v18l-2.5-1.7L12 21l-2.5-1.7L7 21zM10 8h4M10 12h4"/>')}Receipt</span></div>
+    <article class="mc-card">
+      <div class="mc-hd">${ptile({name:"Netflix"})}<div class="mc-id"><b>Netflix<em>Active</em></b><small>Share Profile</small></div>
+        <div class="mc-ring"><svg viewBox="0 0 64 64"><circle class="bg" cx="32" cy="32" r="27"/><circle class="fg" cx="32" cy="32" r="27"/></svg><div><b>24</b><small>days left</small></div></div></div>
+      <div class="mc-m"><span>Started<b>${fd(st)}</b></span><span class="ex">Expires<b>${fd(en)}</b></span><span>Order<b>#SX-2810</b></span></div>
+      <div class="mc-login"><div class="mc-r"><small>Email</small><b>name@example.com</b></div><div class="mc-r mc-pw"><small>Password</small><b><s class="m">\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022</s><s class="v">Nx7pR2mQ</s></b><i>${ic('<path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="2.6"/>')}</i></div></div>
+      <div class="mc-ft"><div class="mc-ar"><span class="mc-tg"><u></u></span><span class="mc-at">Auto renew<small class="mc-rn">Renews ${en.toLocaleDateString("en-GB",{day:"numeric",month:"short"})}</small></span></div>
+        <button type="button" class="mc-rc" tabindex="-1">${ic('<path d="M12 3v12m0 0-4.5-4.5M12 15l4.5-4.5M5 21h14"/>')}<span class="a">Download receipt</span><span class="b">Receipt saved</span><u class="mc-p"></u></button></div>
+      <div class="mc-sheet"><b>RECEIPT</b><span>#SX-2810</span><i></i><i></i><i class="s"></i><em>Paid \u2713</em></div>
+    </article></div>`;
   const cards=[...grid.querySelectorAll(".bw")];
   // Spotlight + tilt
   cards.forEach(c=>{
