@@ -133,3 +133,20 @@
 .tp-endc svg{width:22px;height:22px;fill:none;stroke:#ff8a7e;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
 .tp-endc:hover{background:linear-gradient(135deg,#ff5b4d,#ff8a4d);border-color:transparent}.tp-endc:hover *{color:#fff;stroke:#fff}
 @media(prefers-reduced-motion:reduce){.tp-spin{animation-duration:2s}.tp-ldc{animation:none}}
+
+/* Home Awards section: chip toggle + the same poster rail */
+.aw-chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:2px 0 4px;margin:22px 0 14px;-webkit-overflow-scrolling:touch}
+.aw-chips::-webkit-scrollbar{display:none}
+.aw-chips button{flex:0 0 auto;padding:10px 16px;border:0;border-radius:999px;background:rgba(255,255,255,.06);color:var(--mut);font:700 13px Manrope,sans-serif;cursor:pointer;white-space:nowrap;transition:background .25s,color .25s}
+.aw-chips button:hover{background:rgba(255,255,255,.1);color:#fff}
+.aw-chips button.on{background:linear-gradient(135deg,rgba(232,178,52,.95),rgba(186,128,20,.95));color:#1b1303}
+.aw-bar{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin:0 0 26px}
+.aw-note{margin:0;color:var(--mut);font:600 13px Manrope,sans-serif}
+.aw-badge{position:absolute;left:8px;right:8px;bottom:8px;z-index:2;padding:5px 9px;border-radius:12px;background:linear-gradient(135deg,rgba(232,178,52,.95),rgba(186,128,20,.95));font:800 10.5px/1.25 Manrope,sans-serif;color:#1b1303;text-align:center;box-shadow:0 6px 16px -6px rgba(0,0,0,.6);pointer-events:none}
+#awGrid{display:flex;gap:6px 22px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;scroll-padding-left:4px;padding:6px 4px 22px;margin:0 -4px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+#awGrid::-webkit-scrollbar{display:none}
+#awGrid>.tp-card{flex:0 0 clamp(168px,17vw,214px);scroll-snap-align:start}
+#awGrid>.tp-msg,#awGrid>.tp-sk{flex:1 0 100%}
+#awGrid .tp-pw{padding-left:0}#awGrid .tp-info{padding-left:0}
+#awGrid .tp-sk{display:flex;gap:22px}#awGrid .tp-sk i{flex:0 0 clamp(168px,17vw,214px)}
+@media(max-width:640px){#awGrid{gap:6px 16px;margin:0 -16px;padding-left:16px;padding-right:16px;scroll-padding-left:16px}#awGrid>.tp-card{flex-basis:44vw}}

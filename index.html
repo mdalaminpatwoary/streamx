@@ -49,7 +49,7 @@
 <link rel="stylesheet" href="assets/css/sections/products.css?v=20261124b">
 <link rel="stylesheet" href="assets/css/sections/trending.css?v=20261123a">
 <link rel="stylesheet" href="assets/css/sections/notices.css?v=15">
-<link rel="stylesheet" href="assets/css/sections/toplist.css?v=20261122b">
+<link rel="stylesheet" href="assets/css/sections/toplist.css?v=20261124a">
 <link rel="stylesheet" href="assets/css/title-sheet.css?v=11">
 <link rel="stylesheet" href="assets/css/sections/bundles.css?v=20261119zz">
 <link rel="stylesheet" href="assets/css/sections/pricing.css?v=20261121b">
@@ -183,15 +183,20 @@
 </section>
 
 <section id="toplist" class="wrap sec" hidden>
-  <div class="hhead rv"><div><span class="eyebrow">Charts</span><h2>Top rated <span class="grad">&amp; coming soon.</span></h2></div><p>The best-rated movies and series of all time, which StreamX service carries them, and what releases next.</p></div>
+  <div class="hhead rv"><div><span class="eyebrow">Releases</span><h2>Coming <span class="grad">soon.</span></h2></div><p>Upcoming movies and series, the release dates to watch, and which StreamX service will carry them.</p></div>
   <div class="tp-bar">
-    <div class="tp-seg" id="tlKind" role="group" aria-label="Chart"><span class="tp-thumb" aria-hidden="true"></span><button type="button" data-l="top" class="on">Top rated</button><button type="button" data-l="soon">Coming soon</button><button type="button" data-l="wish">Wishlist</button><button type="button" data-l="watched">Watched</button></div>
     <div class="tp-seg" id="tlType" role="group" aria-label="Show"><span class="tp-thumb" aria-hidden="true"></span><button type="button" data-k="movie" class="on">Movies</button><button type="button" data-k="tv">Series</button></div>
     <span class="tp-count" id="tlCount" aria-live="polite"></span>
   </div>
   <div class="tp-grid" id="tlGrid" aria-live="polite"></div>
   <div class="tp-foot"><button class="tp-more" type="button" id="tlMore" hidden>Show 20 more</button><a class="tp-all" id="tlAll" href="/top-rated/" hidden>Explore all 250 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
-  <div class="tp-hub"><p>Want more? Browse trending on every platform, upcoming releases, movies in theaters, genres, box office hits and today's celebrity birthdays.</p><a class="tp-hubl" href="/explore/">View all details in Explore <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
+</section>
+<section id="awardsec" class="wrap sec">
+  <div class="hhead rv"><div><span class="eyebrow">Awards</span><h2>Award <span class="grad">winners.</span></h2></div><p>Oscars, Golden Globes, BAFTA, Cannes, Filmfare and more. Pick an award to see its winners.</p></div>
+  <div class="aw-chips" id="awChips" role="tablist" aria-label="Awards"></div>
+  <div class="aw-bar"><p class="aw-note" id="awNote"></p><span class="tp-count" id="awCount" aria-live="polite"></span></div>
+  <div class="tp-grid soon" id="awGrid" aria-live="polite"></div>
+  <div class="tp-hub"><p>More awards, nominees and Bangladeshi and Indian honours are in Explore.</p><a class="tp-hubl" href="/explore/#oscars">See all awards in Explore <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
 </section>
 
 <section id="how" class="wrap sec">
@@ -550,7 +555,8 @@
 <script src="assets/js/features/mylist.js?v=2"></script>
 <script src="assets/js/features/title-sheet.js?v=20"></script>
 <script src="assets/js/features/notices-teaser.js?v=12" defer></script>
-<script src="assets/js/features/toplist.js?v=20261122b"></script>
+<script src="assets/js/features/toplist.js?v=20261124b"></script>
+<script src="assets/js/features/awards-home.js?v=20261124a"></script>
 <script src="assets/js/features/chatbot.js?v=20261124r"></script>
 <script src="assets/js/features/chat-avatar.js?v=20261121j"></script>
 <script src="assets/js/layout/premium-motion.js?v=20261119zz"></script>

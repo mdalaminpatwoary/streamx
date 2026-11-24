@@ -1,4 +1,4 @@
-/* Top rated and Coming soon (home section) and the full Top 250 page. Data from /api/catalog; wishlist/watched from window.sxList; details from window.sxSheet. */
+/* Coming soon (home section) and the full Top 250 page. Data from /api/catalog; wishlist/watched from window.sxList; details from window.sxSheet. */
 (function(){
   const sec=document.getElementById("toplist");if(!sec)return;
   const PAGE=sec.dataset.mode==="page";
@@ -8,7 +8,7 @@
   const MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   const FIRST=PAGE?50:12,STEP=PAGE?50:20;
   let lastRows=[],lastSoon=false,busy=false;
-  const st={l:"top",k:"movie",n:FIRST,q:"",hide:false},cache={},pv={},asked={},idx={};
+  const st={l:PAGE?"top":"soon",k:"movie",n:FIRST,q:"",hide:false},cache={},pv={},asked={},idx={};
   const logo=n=>{const key=NAME[n]||n,L=typeof LOGOS!=="undefined"&&typeof LOGO_OF!=="undefined"&&LOGOS[LOGO_OF[key]];
     return L&&L.p?`<span class="tp-lg" style="background:${esc(L.bg)};color:${esc(L.fg||"#fff")}"><svg viewBox="${esc(L.vb)}" aria-hidden="true"><path d="${L.p}"/></svg></span>`:`<span class="tp-lg" style="background:#1d2347">${esc((n||"?")[0])}</span>`};
   const ICON={mark:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg>',check:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>',star:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2.8 2.7 5.8 6.3.8-4.6 4.4 1.2 6.3L12 17l-5.6 3.1 1.2-6.3L3 9.4l6.3-.8z"/></svg>'};
@@ -54,6 +54,7 @@
     const soon=st.l==="soon";
     if(mine&&!(window.sxList&&sxList.authed())){grid.className="tp-grid";grid.innerHTML=`<div class="tp-msg"><b>Sign in to see your ${st.l==="wish"?"wishlist":"watched list"}</b>Save titles from any poster and they will be here on every device.<br><a class="tp-all" style="margin-top:16px" href="/account/">Sign in</a></div>`;more.hidden=true;if(all)all.hidden=true;if(cnt)cnt.textContent="";sec.hidden=false;return}
     let rows=(d.list||[]).map((m,i)=>({m,r:i+1}));
+    if(soon)rows.sort((a,b)=>(a.m.d?Date.parse(a.m.d):9e15)-(b.m.d?Date.parse(b.m.d):9e15));
     if(PAGE){const q=st.q.trim().toLowerCase();if(q)rows=rows.filter(x=>x.m.t.toLowerCase().includes(q));if(st.hide&&window.sxList)rows=rows.filter(x=>sxList.get(x.m.k,x.m.id)!=="watched")}
     grid.className="tp-grid"+(soon?" soon":"");
     if(!rows.length){grid.innerHTML=`<div class="tp-msg"><b>${st.q||st.hide?"No titles match":mine?(st.l==="wish"?"Your wishlist is empty":"Nothing marked as watched yet"):"Nothing to show right now"}</b>${st.q||st.hide?"Try a different search or turn off the filter.":mine?"Tap the "+(st.l==="wish"?"bookmark":"tick")+" on any poster to add titles here.":"Please check back soon."}</div>`;more.hidden=true;if(all)all.hidden=PAGE;if(cnt)cnt.textContent="";return}
@@ -74,8 +75,8 @@
       .catch(()=>{if(first&&!PAGE)return;grid.innerHTML=`<div class="tp-msg"><b>Couldn't load this list right now</b>Please try again in a moment.</div>`;sec.hidden=false})
   }
   function thumb(el){const on=el.querySelector("button.on"),t=el.querySelector(".tp-thumb");if(on&&t){t.style.width=on.offsetWidth+"px";t.style.transform=`translateX(${on.offsetLeft}px)`}}
-  function seg(id,attr){const el=document.getElementById(id);el.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;st[attr]=b.dataset[attr];st.n=FIRST;syncSegs();load(false);if(PAGE)try{history.replaceState(null,"",st.l==="soon"?"#soon":location.pathname)}catch(x){}})}
-  function syncSegs(){[["tlKind","l"],["tlType","k"]].forEach(([id,a])=>{const el=document.getElementById(id);el.querySelectorAll("button").forEach(b=>b.classList.toggle("on",b.dataset[a]===st[a]));thumb(el)})}
+  function seg(id,attr){const el=document.getElementById(id);if(!el)return;el.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;st[attr]=b.dataset[attr];st.n=FIRST;syncSegs();load(false);if(PAGE)try{history.replaceState(null,"",st.l==="soon"?"#soon":location.pathname)}catch(x){}})}
+  function syncSegs(){[["tlKind","l"],["tlType","k"]].forEach(([id,a])=>{const el=document.getElementById(id);if(!el)return;el.querySelectorAll("button").forEach(b=>b.classList.toggle("on",b.dataset[a]===st[a]));thumb(el)})}
   seg("tlKind","l");seg("tlType","k");
   if(!PAGE){
     const rail=document.createElement("div");rail.className="tp-rail";grid.parentNode.insertBefore(rail,grid);rail.appendChild(grid);
