@@ -121,29 +121,24 @@ async function build(l, k, cc) {
   const base = mv ? { language: "en-US", sort_by: "popularity.desc", "primary_release_date.gte": td, with_release_type: "2|3", page: 1 }
     : { language: "en-US", sort_by: "popularity.desc", "first_air_date.gte": td, page: 1 };
   const path = mv ? "/discover/movie" : "/discover/tv";
-  const src = (c, extra, cap) => ({ c, extra, cap });
   const IN = ["hi", "ta", "te", "ml", "kn", "bn", "mr", "pa"];
-  const WORLD = ["fr", "es", "zh", "de", "it", "tr", "th", "pt", "id", "ru", "ar", "pl"];
-  const sources = [
-    src("hollywood", { with_original_language: "en", ...(mv ? { region: "US" } : {}) }, 40),
-    ...IN.map((l) => src("india", { with_original_language: l }, 14)),
-    src("korea", { with_original_language: "ko" }, 30),
-    src("anime", { with_original_language: "ja", with_genres: "16" }, 30),
-    src("world", { with_original_language: "ja", without_genres: "16" }, 10),
-    ...WORLD.map((l) => src("world", { with_original_language: l }, 10)),
-  ];
-  const pages = await Promise.all(sources.map((s) => tmdb(path, { ...base, ...s.extra }).catch(() => ({ results: [] }))));
-  // the visitor's own region first for Hollywood titles when it has data (keeps local release dates)
-  if (mv && cc !== "US") { try { const lr = await tmdb(path, { ...base, with_original_language: "en", region: cc }); if ((lr.results || []).filter((r) => r.poster_path).length >= 5) pages[0] = lr; } catch (e) { /* keep US */ } }
-  const seen = new Set(), rows = [];
-  pages.forEach((pg, i) => {
-    let n = 0;
-    for (const r of pg.results || []) {
-      if (!r.poster_path || seen.has(r.id) || n >= sources[i].cap) continue;
-      seen.add(r.id); n++;
-      rows.push({ ...item(r, k, g), c: sources[i].c });
-    }
-  });
+  const WORLD = ["fr", "es", "zh", "de", "it", "tr", "th", "pt", "id", "ru", "ar", "pl", "ja"];
+  const cat = (r) => { const o = r.original_language, an = (r.genre_ids || []).includes(16); return o === "ja" && an ? "anime" : o === "ko" ? "korea" : IN.includes(o) ? "india" : o === "en" ? "hollywood" : "world"; };
+  const CAP = { hollywood: 160, india: 110, korea: 70, anime: 70, world: 130 };
+  // The same depth as Explore's Coming soon (popularity ranked, several pages), plus language-specific lists so every industry is covered.
+  const calls = [];
+  for (let pg = 1; pg <= 8; pg++) calls.push({ ...(mv ? { region: cc } : {}), page: pg });
+  [["en", 3], ...IN.map((l) => [l, 2]), ["ko", 3], ...WORLD.map((l) => [l, 1])].forEach(([l, n]) => { for (let pg = 1; pg <= n; pg++) calls.push({ with_original_language: l, page: pg }); });
+  calls.push({ with_original_language: "ja", with_genres: "16", page: 1 }, { with_original_language: "ja", with_genres: "16", page: 2 }, { with_original_language: "ja", with_genres: "16", page: 3 });
+  const pages = await Promise.all(calls.map((x) => tmdb(path, { ...base, ...x }).catch(() => ({ results: [] }))));
+  const seen = new Set(), rows = [], cnt = {};
+  for (const pg of pages) for (const r of pg.results || []) {
+    if (!r.poster_path || seen.has(r.id)) continue;
+    const c = cat(r);
+    if ((cnt[c] = (cnt[c] || 0) + 1) > CAP[c]) continue;
+    seen.add(r.id);
+    rows.push({ ...item(r, k, g), c });
+  }
   rows.sort((a, b) => (a.d ? Date.parse(a.d) : 9e15) - (b.d ? Date.parse(b.d) : 9e15));
   // platforms for the nearest releases now; the page asks for the rest as they come into view
   const head = rows.slice(0, 40);
