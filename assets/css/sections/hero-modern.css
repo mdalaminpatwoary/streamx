@@ -75,9 +75,12 @@
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  background-size: 100% 100%;
-  animation: hx-word 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  animation-delay: calc(0.15s + var(--i) * 0.07s);
+  background-size: 220% 100%;
+  will-change: background-position;
+  animation:
+    hx-word 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards,
+    hx-shimmer 8s ease-in-out infinite;
+  animation-delay: calc(0.15s + var(--i) * 0.07s), 1.5s;
 }
 .hx-lead {
   max-width: 540px;
