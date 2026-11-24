@@ -8,7 +8,10 @@
   var KDRAMA=[["popular","Popular"],["top","Top rated"],["new","New releases"],["netflix","On Netflix"]];
   var BOLLY=[["popular","Popular"],["top","Top rated"],["new","New releases"],["netflix","On Netflix"],["jiohotstar","On JioHotstar"]];
   var OSCAR=[["winners","2026 winners"],["nominees","2026 nominees"],["bestpicture","Best Picture winners"]];
-  var AWARDS=[["goldenglobes","Golden Globes"],["bafta","BAFTA"],["cannes","Cannes Palme d'Or"],["filmfare","Filmfare (India)"],["national","National Film Awards (India)"],["bangladesh","Bangladesh National Film Awards"]];
+  var BANGLA=[["bn_pop","Popular"],["bn_top","Top rated"],["bn_new","New releases"]];
+  var SOUTH=[["te","Telugu"],["ta","Tamil"],["ml","Malayalam"],["kn","Kannada"]];
+  var WORLD=[["tr","Turkish"],["es","Spanish"],["fr","French"],["ja","Japanese"],["th","Thai"]];
+  var PICKS=[["gems","Hidden gems"],["truth","True stories"],["classics","Classics"],["hero","Superheroes"]];
   var KIND=[["movie","Movies"],["tv","Series"]];
   var NEWSC=[["all","All"],["movies","Movies"],["tv","TV & series"],["people","Stars"],["boxoffice","Box office"]];
   var SECS=[
@@ -22,7 +25,16 @@
     {id:"kdrama",nav:"K-drama",eye:"Korean",h:"K-drama <span class=\"grad\">and Korean cinema.</span>",sub:"Korean series and films: what is popular, best rated, newly released and streaming on Netflix where you are.",s:"kdrama",k:"tv",kinds:true,chips:KDRAMA,mode:true},
     {id:"bollywood",nav:"Bollywood",eye:"Hindi",h:"Bollywood <span class=\"grad\">and Hindi cinema.</span>",sub:"Hindi movies and series: what is popular, best rated, newly released and streaming on Netflix or JioHotstar.",s:"bollywood",k:"movie",kinds:true,chips:BOLLY,mode:true},
     {id:"oscars",nav:"Oscars",eye:"Academy Awards",h:"The <span class=\"grad\">Oscars.</span>",sub:"The 98th Academy Awards (March 2026): this year's winners and nominees, and every Best Picture winner since 1990.",s:"oscars",k:"movie",chips:OSCAR,mode:true},
-    {id:"awards",nav:"Film awards",eye:"Awards",h:"Film awards <span class=\"grad\">worldwide.</span>",sub:"Top-prize winners of the Golden Globes, BAFTA and Cannes, India's Filmfare and National Film Awards, and Bangladesh's National Film Awards, newest first.",s:"awards",k:"movie",chips:AWARDS,mode:true},
+    {id:"globes",nav:"Golden Globes",eye:"Awards",h:"Golden <span class=\"grad\">Globes.</span>",sub:"Best Motion Picture – Drama winners, newest first.",s:"awards",k:"movie",m:"goldenglobes"},
+    {id:"bafta",nav:"BAFTA",eye:"Awards",h:"BAFTA <span class=\"grad\">Best Film.</span>",sub:"The British Academy Film Awards: every Best Film winner of the last 20 years, newest first.",s:"awards",k:"movie",m:"bafta"},
+    {id:"cannes",nav:"Cannes",eye:"Awards",h:"Cannes <span class=\"grad\">Palme d'Or.</span>",sub:"The top prize of the Cannes Film Festival, newest first.",s:"awards",k:"movie",m:"cannes"},
+    {id:"filmfare",nav:"Filmfare",eye:"Awards",h:"Filmfare <span class=\"grad\">Best Film.</span>",sub:"India's Filmfare Awards: the Best Film winners of the last 20 years, newest first.",s:"awards",k:"movie",m:"filmfare"},
+    {id:"nfa",nav:"National Film Awards",eye:"Awards",h:"National Film Awards <span class=\"grad\">(India).</span>",sub:"Best Feature Film winners of India's National Film Awards, newest first.",s:"awards",k:"movie",m:"national"},
+    {id:"bdfa",nav:"Bangladesh Awards",eye:"Awards",h:"Bangladesh National <span class=\"grad\">Film Awards.</span>",sub:"Best Film winners of the Bangladesh National Film Awards, newest first.",s:"awards",k:"movie",m:"bangladesh"},
+    {id:"bangla",nav:"Bangla",eye:"Bangla",h:"Bangla <span class=\"grad\">cinema.</span>",sub:"Bengali-language movies and series: what is popular, best rated and newly released.",s:"disc",k:"movie",kinds:true,chips:BANGLA,mode:true},
+    {id:"south",nav:"South Indian",eye:"South India",h:"South Indian <span class=\"grad\">cinema.</span>",sub:"Telugu, Tamil, Malayalam and Kannada movies and series, most popular first.",s:"disc",k:"movie",kinds:true,chips:SOUTH,mode:true},
+    {id:"world",nav:"World cinema",eye:"World",h:"World <span class=\"grad\">cinema.</span>",sub:"Turkish, Spanish, French, Japanese and Thai titles that people are watching right now.",s:"disc",k:"tv",kinds:true,chips:WORLD,mode:true},
+    {id:"picks",nav:"Curated picks",eye:"Curated",h:"Curated <span class=\"grad\">picks.</span>",sub:"Hidden gems, true stories, timeless classics and superhero hits.",s:"disc",k:"movie",kinds:true,chips:PICKS,mode:true},
     {id:"genres",nav:"Genres",eye:"Categories",h:"Browse by <span class=\"grad\">genre.</span>",sub:"Choose a genre to explore every available title, most popular first.",s:"genre",kinds:true,genres:true},
     {id:"boxoffice",nav:"Box office",eye:"Earnings",h:"Box office <span class=\"grad\">hits.</span>",sub:"The highest-grossing movies of all time, ranked by worldwide revenue.",s:"boxoffice",k:"movie",rank:true},
     {id:"popular",nav:"Popular now",eye:"Right now",h:"Popular <span class=\"grad\">right now.</span>",sub:"What everyone is watching this week.",s:"popular",kinds:true},
@@ -84,7 +96,7 @@
       if(c.genres&&!gid)return;
       st.loading=true;more.disabled=true;
       if(!reset&&!grid.querySelector(".ex-sk"))grid.insertAdjacentHTML("beforeend",'<div class="ex-sk ex-skm" aria-hidden="true">'+"<i></i>".repeat(4)+"</div>");
-      (c.news?get({a:"news",c:st.chip,page:st.page+1}):get({a:"hub",s:c.s,k:st.k,page:st.page+1,g:gid,p:c.chips&&!c.mode?st.chip:"",m:c.mode?st.chip:""})).then(function(d){
+      (c.news?get({a:"news",c:st.chip,page:st.page+1}):get({a:"hub",s:c.s,k:st.k,page:st.page+1,g:gid,p:c.chips&&!c.mode?st.chip:"",m:c.mode?st.chip:(c.m||"")})).then(function(d){
         var sk=grid.querySelector(".ex-sk");if(sk)sk.remove();
         st.page=d.page;st.pages=d.pages;
         c._n=st.n;var rows=d.list||[];

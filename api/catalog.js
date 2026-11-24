@@ -119,7 +119,14 @@ async function build(l, k, cc) {
 
 /* ---------- Explore hub: GET /api/catalog?a=hub&s=<section>&k=movie|tv&page=1[&g=<genre id>][&p=<platform>] and a=genres, a=births ---------- */
 const hubCache = new Map(); // key -> { at, body }
-const HUB = new Set(["nowplaying", "upcoming", "toprated", "boxoffice", "popular", "airing", "genre", "platform", "anime", "kdrama", "bollywood", "oscars", "awards", "trailers"]);
+const HUB = new Set(["nowplaying", "upcoming", "toprated", "boxoffice", "popular", "airing", "genre", "platform", "anime", "kdrama", "bollywood", "oscars", "awards", "disc", "trailers"]);
+/* Language and curated collections for the Explore hub (sec "disc"). Each key is a TMDB discover recipe. */
+const DISC = {
+  bn_pop: { lang: "bn" }, bn_top: { lang: "bn", top: 1, vc: 30 }, bn_new: { lang: "bn", fresh: 1 },
+  te: { lang: "te" }, ta: { lang: "ta" }, ml: { lang: "ml" }, kn: { lang: "kn" },
+  tr: { lang: "tr" }, es: { lang: "es" }, fr: { lang: "fr" }, ja: { lang: "ja", noanim: 1 }, th: { lang: "th" },
+  gems: { gem: 1 }, truth: { kw: "9672", top: 1, vc: 300 }, classics: { old: 1 }, hero: { kw: "9715" },
+};
 const oscarCache = new Map(); // "title|year" -> item (titles never change)
 async function oscarItem(row, g) {
   const key = row[0] + "|" + row[1];
@@ -186,6 +193,17 @@ async function hubList(sec, k, page, genre, plat, mode, cc) {
     const part = rows.slice((page - 1) * 20, page * 20);
     const list = (await Promise.all(part.map((r) => oscarItem(r, g)))).filter(Boolean);
     return { page, pages: Math.max(1, Math.ceil(rows.length / 20)), list, reg };
+  } else if (sec === "disc") {
+    const D = DISC[mode] || DISC.gems, dk = k === "tv" ? "first_air_date" : "primary_release_date";
+    const A = { ...base, sort_by: "popularity.desc", "vote_count.gte": 10 };
+    if (D.lang) A.with_original_language = D.lang;
+    if (D.kw) A.with_keywords = D.kw;
+    if (D.noanim) A.without_genres = "16";
+    if (D.top) Object.assign(A, { sort_by: "vote_average.desc", "vote_count.gte": D.vc || (k === "tv" ? 200 : 500) });
+    if (D.gem) Object.assign(A, { sort_by: "vote_average.desc", "vote_average.gte": 7.4, "vote_count.gte": 150, "vote_count.lte": 2500 });
+    if (D.old) Object.assign(A, { [dk + ".lte"]: "1989-12-31", sort_by: "vote_average.desc", "vote_count.gte": k === "tv" ? 200 : 1000 });
+    if (D.fresh) Object.assign(A, { sort_by: dk + ".desc", [dk + ".lte"]: today(), "vote_count.gte": 3 });
+    data = await tmdb(`/discover/${k}`, A);
   } else if (sec === "kdrama" || sec === "bollywood") {
     // Korean (K-drama) or Hindi (Bollywood) titles. Modes: popular, top (best rated), new (latest releases), netflix (on Netflix in the visitor's country), jiohotstar (on JioHotstar, India catalogue).
     const A = { ...base, with_original_language: sec === "kdrama" ? "ko" : "hi" };
@@ -380,7 +398,7 @@ module.exports = async (req, res) => {
       const genre = String(req.query.g || "").replace(/[^0-9]/g, "").slice(0, 6), plat = PROV_ID[String(req.query.p || "").toLowerCase()];
       if (sec === "genre" && !genre) return res.status(400).json({ error: "Pick a genre" });
       if (sec === "platform" && !plat) return res.status(400).json({ error: "Unknown platform" });
-      const mode = ["popular", "top", "new", "crunchyroll", "netflix", "jiohotstar", "winners", "nominees", "bestpicture", "goldenglobes", "bafta", "cannes", "filmfare", "national", "bangladesh"].includes(req.query.m) ? req.query.m : "popular", regional = ["nowplaying", "upcoming", "popular", "trailers", "platform"].includes(sec) || (sec === "anime" && mode === "crunchyroll") || ((sec === "kdrama" || sec === "bollywood") && mode === "netflix"), key = [sec, k, page, genre, plat, mode, regional ? cc : ""].join("|"), hit = hubCache.get(key);
+      const mode = ["popular", "top", "new", "crunchyroll", "netflix", "jiohotstar", "winners", "nominees", "bestpicture", "goldenglobes", "bafta", "cannes", "filmfare", "national", "bangladesh", ...Object.keys(DISC)].includes(req.query.m) ? req.query.m : "popular", regional = ["nowplaying", "upcoming", "popular", "trailers", "platform"].includes(sec) || (sec === "anime" && mode === "crunchyroll") || ((sec === "kdrama" || sec === "bollywood") && mode === "netflix"), key = [sec, k, page, genre, plat, mode, regional ? cc : ""].join("|"), hit = hubCache.get(key);
       res.setHeader("Cache-Control", regional ? "private, max-age=3600" : "public, s-maxage=3600, stale-while-revalidate=86400"); // region lists differ per visitor
       if (hit && Date.now() - hit.at < HOUR) return res.status(200).json(hit.body);
       const body = { s: sec, k, ...(await hubList(sec, k, page, genre, plat, mode, cc)) };
