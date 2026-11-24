@@ -217,7 +217,12 @@ async function hubList(sec, k, page, genre, plat, mode, cc) {
     else data = mode === "netflix" ? await rgn((rg) => tmdb(`/discover/${k}`, { ...A, watch_region: rg })) : await tmdb(`/discover/${k}`, A);
   } else data = await (plat === 122 ? (async () => { reg = "IN"; return tmdb(`/discover/${k}`, { ...base, sort_by: "popularity.desc", with_watch_providers: plat, watch_region: "IN", with_watch_monetization_types: "flatrate" }); })() : rgn((rg) => tmdb(`/discover/${k}`, { ...base, sort_by: "popularity.desc", with_watch_providers: plat, watch_region: rg, with_watch_monetization_types: "flatrate" })));
   const kind = sec === "nowplaying" || sec === "boxoffice" ? "movie" : sec === "airing" ? "tv" : k;
-  return { page: data.page || page, pages: Math.min(data.total_pages || 1, 25), list: (data.results || []).filter((r) => r.poster_path).map((r) => item(r, kind, g)), reg };
+  const out = (data.results || []).filter((r) => r.poster_path).map((r) => item(r, kind, g));
+  if (sec === "genre") { // which StreamX services carry each title (names only for services we sell)
+    const pv = await Promise.all(out.map((x) => platformsCached(kind, x.id)));
+    out.forEach((x, i) => { x.pl = pv[i].list.filter((q) => q.s); });
+  }
+  return { page: data.page || page, pages: Math.min(data.total_pages || 1, 25), list: out, reg };
 }
 
 const PEOPLE = /\b(actor|actress|actors|singer|singers|songwriter|rapper|musician|pop star|film|filmmaker|movie|comedian|stand-up|entertainer|performer|producer|screenwriter|television|tv (host|presenter|personality)|presenter|dancer|choreographer|composer|cinematographer|animator|voice actor|stunt)\b/i;

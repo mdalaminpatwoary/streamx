@@ -35,12 +35,29 @@
     {id:"south",nav:"South Indian",eye:"South India",h:"South Indian <span class=\"grad\">cinema.</span>",sub:"Telugu, Tamil, Malayalam and Kannada movies and series, most popular first.",s:"disc",k:"movie",kinds:true,chips:SOUTH,mode:true},
     {id:"world",nav:"World cinema",eye:"World",h:"World <span class=\"grad\">cinema.</span>",sub:"Turkish, Spanish, French, Japanese and Thai titles that people are watching right now.",s:"disc",k:"tv",kinds:true,chips:WORLD,mode:true},
     {id:"picks",nav:"Curated picks",eye:"Curated",h:"Curated <span class=\"grad\">picks.</span>",sub:"Hidden gems, true stories, timeless classics and superhero hits.",s:"disc",k:"movie",kinds:true,chips:PICKS,mode:true},
-    {id:"genres",nav:"Genres",eye:"Categories",h:"Browse by <span class=\"grad\">genre.</span>",sub:"Choose a genre to explore every available title, most popular first.",s:"genre",kinds:true,genres:true},
     {id:"boxoffice",nav:"Box office",eye:"Earnings",h:"Box office <span class=\"grad\">hits.</span>",sub:"The highest-grossing movies of all time, ranked by worldwide revenue.",s:"boxoffice",k:"movie",rank:true},
     {id:"popular",nav:"Popular now",eye:"Right now",h:"Popular <span class=\"grad\">right now.</span>",sub:"What everyone is watching this week.",s:"popular",kinds:true},
     {id:"airing",nav:"Airing today",eye:"Series",h:"Series airing <span class=\"grad\">today.</span>",sub:"Episodes releasing today.",s:"airing",k:"tv"},
     {id:"birthdays",nav:"Birthdays",eye:"Celebrities",h:"Born <span class=\"grad\">today.</span>",sub:"Actors, actresses, singers and filmmakers celebrating a birthday today.",births:true}
   ];
+  /* one section per genre; TMDB uses different ids for series (null = movies only) */
+  var GENRES=[
+    ["action","Action","Action <span class=\"grad\">and adventure.</span>","Explosive, fast-paced movies and series, most popular first.",28,10759],
+    ["comedy","Comedy","Comedy <span class=\"grad\">picks.</span>","Movies and series that are made to make you laugh.",35,35],
+    ["drama","Drama","Drama <span class=\"grad\">picks.</span>","Character-driven stories, most popular first.",18,18],
+    ["romance","Romance","Romance <span class=\"grad\">picks.</span>","Love stories on the big and small screen.",10749,null],
+    ["thriller","Thriller","Thrillers <span class=\"grad\">and suspense.</span>","Edge-of-your-seat movies, most popular first.",53,null],
+    ["horror","Horror","Horror <span class=\"grad\">picks.</span>","Scary movies for the brave, most popular first.",27,null],
+    ["scifi","Sci-Fi & Fantasy","Sci-fi <span class=\"grad\">and fantasy.</span>","Other worlds, future tech and epic magic.",878,10765],
+    ["crime","Crime","Crime <span class=\"grad\">stories.</span>","Heists, detectives and the criminal underworld.",80,80],
+    ["mystery","Mystery","Mystery <span class=\"grad\">picks.</span>","Whodunnits and puzzles that keep you guessing.",9648,9648],
+    ["animation","Animation","Animation <span class=\"grad\">picks.</span>","Animated movies and series for every age.",16,16],
+    ["family","Family","Family <span class=\"grad\">picks.</span>","Titles the whole family can watch together.",10751,10751],
+    ["docu","Documentary","Documentary <span class=\"grad\">picks.</span>","True stories, nature and the world as it is.",99,99],
+    ["war","War & history","War <span class=\"grad\">and history.</span>","Wartime epics and stories from the past.",10752,10768]
+  ];
+  (function(){var at=SECS.map(function(x){return x.id}).indexOf("boxoffice");if(at<0)at=SECS.length;
+    SECS.splice.apply(SECS,[at,0].concat(GENRES.map(function(g){return {id:"g-"+g[0],nav:g[1],grp:"g-"+GENRES[0][0],eye:"Genre",h:g[2],sub:g[3],s:"genre",k:"movie",gid:g[4],tvg:g[5],kinds:!!g[5]}})))})();
   SECS.forEach(function(c){c.rail=true});
   function arrows(sec,sc){var a=sec.querySelector(".ex-arr");if(!a)return;a.addEventListener("click",function(e){var b=e.target.closest("button[data-dir]");if(!b)return;sc.scrollBy({left:(+b.dataset.dir)*Math.max(240,sc.clientWidth*.8),behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"})});
     function fade(){var l=sc.scrollLeft<4,r=sc.scrollLeft+sc.clientWidth>=sc.scrollWidth-4,bs=a.querySelectorAll("button");bs[0].disabled=l;bs[1].disabled=r}sc.addEventListener("scroll",fade,{passive:true});fade();new MutationObserver(fade).observe(sc,{childList:true})}
@@ -77,6 +94,7 @@
     });
   }
   function act(e){
+    if(e.target.closest(".ex-svc"))return true;
     var a=e.target.closest(".tp-act");if(!a)return false;
     var el=a.closest(".ex-card"),m=el&&idx[el.dataset.k+":"+el.dataset.id];
     e.preventDefault();e.stopPropagation();
@@ -85,12 +103,19 @@
   }
   var pt;new MutationObserver(function(){clearTimeout(pt);pt=setTimeout(paintStates,60)}).observe(document.body,{childList:true,subtree:true});
   if(window.sxList){sxList.onChange(paintStates);sxList.load().then(paintStates)}
+  /* minimal "on StreamX" marks: logos of the services we sell that carry the title (data comes from /api/catalog for genre sections) */
+  function sxLogo(n){var L=typeof LOGOS!=="undefined"&&typeof LOGO_OF!=="undefined"&&LOGOS[LOGO_OF[n==="Prime Video"?"Amazon Prime Video":n]];
+    return L&&L.p?'<span class="tp-lg" style="background:'+esc(L.bg)+";color:"+esc(L.fg||"#fff")+'"><svg viewBox="'+esc(L.vb)+'" aria-hidden="true"><path d="'+L.p+'"/></svg></span>':'<span class="tp-lg" style="background:#1d2347">'+esc((n||"?")[0])+"</span>"}
+  function onSx(m){
+    if(!m.pl||!m.pl.length)return"";
+    return '<div class="ex-sx" aria-label="Available on StreamX">'+m.pl.slice(0,3).map(function(p){return '<a class="ex-svc" href="/services/'+esc(p.s)+'/" title="Get '+esc(p.n)+' on StreamX" aria-label="Get '+esc(p.n)+' on StreamX">'+sxLogo(p.n)+"</a>"}).join("")+(m.pl.length>3?'<span class="ex-sxn">+'+(m.pl.length-3)+"</span>":"")+"</div>";
+  }
   function card(m,i,c){
     if(c.news)return ncard(m,i);
     if(c.video)return vcard(m,i);
     idx[m.k+":"+m.id]=m;
     var dt="";if(c.date&&m.d){var d=new Date(m.d+"T00:00:00");if(!isNaN(d))dt='<span class="ex-dt">'+d.getDate()+" "+MON[d.getMonth()]+(d.getFullYear()!==new Date().getFullYear()?" "+d.getFullYear():"")+"</span>"}
-    return '<article class="ex-card" style="--i:'+(i%20)+'" tabindex="0" role="button" aria-label="'+esc(m.t)+': details and trailer" data-id="'+m.id+'" data-k="'+m.k+'"><div class="ex-po"><img src="https://image.tmdb.org/t/p/w342'+esc(m.p)+'" alt="'+esc(m.t)+' poster" loading="lazy" width="342" height="513">'+(c.rank?'<span class="ex-rk">#'+(c._n+i+1)+"</span>":"")+(m.v?'<span class="ex-v">★ '+m.v+"</span>":"")+(m.aw?'<span class="ex-aw">\u{1F3C6} '+esc(m.aw)+"</span>":"")+dt+'<span class="tp-seen">Watched</span>'+ACTS+'</div><h3>'+esc(m.t)+"</h3><p>"+esc(m.y||"")+(m.g&&m.g.length?" · "+esc(m.g.slice(0,2).join(", ")):"")+"</p></article>";
+    return '<article class="ex-card" style="--i:'+(i%20)+'" tabindex="0" role="button" aria-label="'+esc(m.t)+': details and trailer" data-id="'+m.id+'" data-k="'+m.k+'"><div class="ex-po"><img src="https://image.tmdb.org/t/p/w342'+esc(m.p)+'" alt="'+esc(m.t)+' poster" loading="lazy" width="342" height="513">'+(c.rank?'<span class="ex-rk">#'+(c._n+i+1)+"</span>":"")+(m.v?'<span class="ex-v">★ '+m.v+"</span>":"")+(m.aw?'<span class="ex-aw">\u{1F3C6} '+esc(m.aw)+"</span>":"")+dt+'<span class="tp-seen">Watched</span>'+ACTS+'</div><h3>'+esc(m.t)+"</h3><p>"+esc(m.y||"")+(m.g&&m.g.length?" · "+esc(m.g.slice(0,2).join(", ")):"")+"</p>"+onSx(m)+"</article>";
   }
   function seg(opts,on,attr){return '<div class="tp-seg" role="group" data-seg="'+attr+'"><span class="tp-thumb" aria-hidden="true"></span>'+opts.map(function(o){return '<button type="button" data-v="'+o[0]+'"'+(o[0]===on?' class="on"':"")+">"+o[1]+"</button>"}).join("")+"</div>"}
   function thumbs(el){el.querySelectorAll(".tp-seg").forEach(function(s){var on=s.querySelector("button.on"),t=s.querySelector(".tp-thumb");if(on&&t){t.style.width=on.offsetWidth+"px";t.style.transform="translateX("+on.offsetLeft+"px)"}})}
@@ -110,7 +135,7 @@
     function load(reset){
       if(st.loading)return;
       if(reset){st.page=0;st.n=0;skeleton()}
-      var gid=c.genres?st.chip:"";
+      var gid=c.genres?st.chip:(c.gid?(st.k==="tv"?c.tvg:c.gid):"");
       if(c.genres&&!gid)return;
       st.loading=true;more.disabled=true;
       if(!reset&&!grid.querySelector(".ex-sk"))grid.insertAdjacentHTML("beforeend",'<div class="ex-sk ex-skm" aria-hidden="true">'+"<i></i>".repeat(4)+"</div>");
@@ -189,11 +214,11 @@
     if(window.sxList){sxList.onChange(mine);sxList.load().then(mine)}
   })();
   SECS.forEach(function(c){var s=build(c);root.appendChild(s);c._el=s});
-  nav.innerHTML=SECS.map(function(c){return '<a href="#'+c.id+'">'+c.nav+"</a>"}).join("");
+  nav.innerHTML=SECS.filter(function(c){return !c.grp||c.grp===c.id}).map(function(c){return '<a href="#'+c.id+'">'+(c.grp?"Genres":c.nav)+"</a>"}).join("");
   var io=new IntersectionObserver(function(es){es.forEach(function(e){if(!e.isIntersecting)return;io.unobserve(e.target);var c=SECS.filter(function(x){return x._el===e.target})[0];if(!c)return;if(c.births)births();else c._start()})},{rootMargin:"500px 0px"});
   SECS.forEach(function(c){io.observe(c._el)});
   /* highlight the section in view */
-  var links=[].slice.call(nav.querySelectorAll("a")),so=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){links.forEach(function(a){a.classList.toggle("on",a.getAttribute("href")==="#"+e.target.id)});var on=nav.querySelector("a.on");if(on)nav.scrollTo({left:on.offsetLeft-16,behavior:"smooth"})}})},{rootMargin:"-45% 0px -50% 0px"});
+  var links=[].slice.call(nav.querySelectorAll("a")),so=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){var tid=(e.target.id.indexOf("g-")===0?"g-"+GENRES[0][0]:e.target.id);links.forEach(function(a){a.classList.toggle("on",a.getAttribute("href")==="#"+tid)});var on=nav.querySelector("a.on");if(on)nav.scrollTo({left:on.offsetLeft-16,behavior:"smooth"})}})},{rootMargin:"-45% 0px -50% 0px"});
   SECS.forEach(function(c){so.observe(c._el)});
   addEventListener("resize",function(){thumbs(root)});
   if(document.fonts&&document.fonts.ready)document.fonts.ready.then(function(){thumbs(root)});

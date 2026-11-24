@@ -134,3 +134,10 @@
 .ex-card.is-seen .ex-po img{filter:saturate(.55) brightness(.8)}
 @media(hover:hover){.ex-po .tp-act:not(.on){opacity:0}.ex-card:hover .tp-act,.ex-po .tp-act:focus-visible{opacity:1}}
 @media(hover:none),(max-width:640px){.ex-po .tp-act{opacity:1!important;width:32px;height:32px}}
+
+/* "on StreamX" logos under a poster (genre sections) */
+.ex-sx{display:flex;align-items:center;gap:6px;margin-top:8px}
+.ex-svc{display:inline-flex;border-radius:7px;line-height:0;opacity:.9;transition:opacity .2s,transform .2s}
+.ex-svc:hover,.ex-svc:focus-visible{opacity:1;transform:translateY(-1px)}
+.ex-svc .tp-lg{width:22px;height:22px;border-radius:7px}
+.ex-sxn{color:var(--mut);font:700 11px Manrope,sans-serif}
