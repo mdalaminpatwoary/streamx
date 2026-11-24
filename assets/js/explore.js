@@ -67,12 +67,30 @@
     var cv=d.querySelector(".ex-plc");if(cv)setTimeout(function(){cv.style.opacity="0";setTimeout(function(){cv.remove()},950)},4000);   /* cover image stays 4s, then the trailer fades in */
     document.addEventListener("keydown",key_);document.body.style.overflow="hidden";document.body.appendChild(d);d.querySelector(".ex-plx").focus();
   }
+  var ACTS='<div class="tp-acts"><button class="tp-act" type="button" data-act="wish" aria-pressed="false" aria-label="Add to wishlist" title="Wishlist"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button><button class="tp-act" type="button" data-act="watched" aria-pressed="false" aria-label="Mark as watched" title="Watched"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></div>';
+  function paintStates(){
+    if(!window.sxList)return;
+    document.querySelectorAll(".ex-card[data-k]").forEach(function(c){
+      var st=sxList.get(c.dataset.k,c.dataset.id);
+      c.classList.toggle("is-wish",st==="wish");c.classList.toggle("is-seen",st==="watched");
+      c.querySelectorAll(".tp-act").forEach(function(b){var on=b.dataset.act===st;b.classList.toggle("on",on);b.setAttribute("aria-pressed",on);b.setAttribute("aria-label",b.dataset.act==="wish"?(on?"Remove from wishlist":"Add to wishlist"):(on?"Unmark as watched":"Mark as watched"))});
+    });
+  }
+  function act(e){
+    var a=e.target.closest(".tp-act");if(!a)return false;
+    var el=a.closest(".ex-card"),m=el&&idx[el.dataset.k+":"+el.dataset.id];
+    e.preventDefault();e.stopPropagation();
+    if(window.sxList&&m)sxList.toggle({k:m.k,id:m.id,t:m.t,p:m.p,y:m.y,v:m.v},a.dataset.act);
+    return true;
+  }
+  var pt;new MutationObserver(function(){clearTimeout(pt);pt=setTimeout(paintStates,60)}).observe(document.body,{childList:true,subtree:true});
+  if(window.sxList){sxList.onChange(paintStates);sxList.load().then(paintStates)}
   function card(m,i,c){
     if(c.news)return ncard(m,i);
     if(c.video)return vcard(m,i);
     idx[m.k+":"+m.id]=m;
     var dt="";if(c.date&&m.d){var d=new Date(m.d+"T00:00:00");if(!isNaN(d))dt='<span class="ex-dt">'+d.getDate()+" "+MON[d.getMonth()]+(d.getFullYear()!==new Date().getFullYear()?" "+d.getFullYear():"")+"</span>"}
-    return '<article class="ex-card" style="--i:'+(i%20)+'" tabindex="0" role="button" aria-label="'+esc(m.t)+': details and trailer" data-id="'+m.id+'" data-k="'+m.k+'"><div class="ex-po"><img src="https://image.tmdb.org/t/p/w342'+esc(m.p)+'" alt="'+esc(m.t)+' poster" loading="lazy" width="342" height="513">'+(c.rank?'<span class="ex-rk">#'+(c._n+i+1)+"</span>":"")+(m.v?'<span class="ex-v">★ '+m.v+"</span>":"")+(m.aw?'<span class="ex-aw">\u{1F3C6} '+esc(m.aw)+"</span>":"")+dt+'</div><h3>'+esc(m.t)+"</h3><p>"+esc(m.y||"")+(m.g&&m.g.length?" · "+esc(m.g.slice(0,2).join(", ")):"")+"</p></article>";
+    return '<article class="ex-card" style="--i:'+(i%20)+'" tabindex="0" role="button" aria-label="'+esc(m.t)+': details and trailer" data-id="'+m.id+'" data-k="'+m.k+'"><div class="ex-po"><img src="https://image.tmdb.org/t/p/w342'+esc(m.p)+'" alt="'+esc(m.t)+' poster" loading="lazy" width="342" height="513">'+(c.rank?'<span class="ex-rk">#'+(c._n+i+1)+"</span>":"")+(m.v?'<span class="ex-v">★ '+m.v+"</span>":"")+(m.aw?'<span class="ex-aw">\u{1F3C6} '+esc(m.aw)+"</span>":"")+dt+'<span class="tp-seen">Watched</span>'+ACTS+'</div><h3>'+esc(m.t)+"</h3><p>"+esc(m.y||"")+(m.g&&m.g.length?" · "+esc(m.g.slice(0,2).join(", ")):"")+"</p></article>";
   }
   function seg(opts,on,attr){return '<div class="tp-seg" role="group" data-seg="'+attr+'"><span class="tp-thumb" aria-hidden="true"></span>'+opts.map(function(o){return '<button type="button" data-v="'+o[0]+'"'+(o[0]===on?' class="on"':"")+">"+o[1]+"</button>"}).join("")+"</div>"}
   function thumbs(el){el.querySelectorAll(".tp-seg").forEach(function(s){var on=s.querySelector("button.on"),t=s.querySelector(".tp-thumb");if(on&&t){t.style.width=on.offsetWidth+"px";t.style.transform="translateX("+on.offsetLeft+"px)"}})}
@@ -121,7 +139,7 @@
       var sg=b.closest(".tp-seg");if(sg){sg.querySelectorAll("button").forEach(function(x){x.classList.toggle("on",x===b)});st.k=b.dataset.v;thumbs(sec);
         if(c.genres)get({a:"genres",k:st.k}).then(function(d){c._g=d.genres.map(function(g){return[String(g.id),g.n]});st.chip=c._g[0][0];drawChips(c._g);load(true)});else load(true)}
     });
-    sec.addEventListener("click",function(e){var el=e.target.closest(".ex-card");if(el&&el.dataset.yt){var im=el.querySelector("img");player(el.dataset.yt,el.dataset.t,im&&im.getAttribute("src"));return}if(el&&window.sxSheet)sxSheet.open(el.dataset.id,el.dataset.k,el,idx[el.dataset.k+":"+el.dataset.id])});
+    sec.addEventListener("click",function(e){if(act(e))return;var el=e.target.closest(".ex-card");if(el&&el.dataset.yt){var im=el.querySelector("img");player(el.dataset.yt,el.dataset.t,im&&im.getAttribute("src"));return}if(el&&window.sxSheet)sxSheet.open(el.dataset.id,el.dataset.k,el,idx[el.dataset.k+":"+el.dataset.id])});
     sec.addEventListener("keydown",function(e){if((e.key==="Enter"||e.key===" ")&&e.target.matches(".ex-card")){e.preventDefault();e.target.click()}});
     return sec;
   }
@@ -162,7 +180,7 @@
     f.addEventListener("submit",function(e){e.preventDefault();clearTimeout(timer);run(true)});
     clr.addEventListener("click",function(){inp.value="";clr.hidden=true;run(true);inp.focus()});
     g.addEventListener("scroll",function(){if(!more.hidden&&!st.loading&&g.scrollLeft+g.clientWidth>g.scrollWidth-320)run(false)},{passive:true});
-    res.addEventListener("click",function(e){var el=e.target.closest(".ex-card");if(el&&window.sxSheet)sxSheet.open(el.dataset.id,el.dataset.k,el,idx[el.dataset.k+":"+el.dataset.id])});
+    res.addEventListener("click",function(e){if(act(e))return;var el=e.target.closest(".ex-card");if(el&&window.sxSheet)sxSheet.open(el.dataset.id,el.dataset.k,el,idx[el.dataset.k+":"+el.dataset.id])});
     res.addEventListener("keydown",function(e){if((e.key==="Enter"||e.key===" ")&&e.target.matches(".ex-card")){e.preventDefault();e.target.click()}});
     document.addEventListener("keydown",function(e){if(e.key==="/"&&!/input|textarea/i.test((e.target.tagName||""))){e.preventDefault();inp.focus()}});
     /* My list badge */

@@ -126,3 +126,11 @@
 .ex-bi em{display:block;margin-top:6px;color:#8e98c0;font:700 11px Manrope,sans-serif;font-style:normal;letter-spacing:.02em}
 .ex-rail .ex-b{flex:none;width:210px;scroll-snap-align:start}
 @media(prefers-reduced-motion:reduce){.ex-b,.ex-bp img{transition:none}}
+
+/* wishlist / watched buttons on Explore posters */
+.ex-po .tp-acts{top:42px}
+.ex-po .tp-seen{left:8px;bottom:42px}
+.ex-card.is-seen .tp-seen{display:block}
+.ex-card.is-seen .ex-po img{filter:saturate(.55) brightness(.8)}
+@media(hover:hover){.ex-po .tp-act:not(.on){opacity:0}.ex-card:hover .tp-act,.ex-po .tp-act:focus-visible{opacity:1}}
+@media(hover:none),(max-width:640px){.ex-po .tp-act{opacity:1!important;width:32px;height:32px}}

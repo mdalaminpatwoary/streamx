@@ -151,3 +151,4 @@
 #awGrid .tp-sk{display:flex;gap:22px}#awGrid .tp-sk i{flex:0 0 clamp(168px,17vw,214px)}
 @media(max-width:640px){#awGrid{gap:6px 16px;margin:0 -16px;padding-left:16px;padding-right:16px;scroll-padding-left:16px}#awGrid>.tp-card{flex-basis:44vw}}
 #toplist:not([data-mode="page"]) .tp-bar{margin-top:22px}
+#awGrid .tp-seen{bottom:42px}
