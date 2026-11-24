@@ -116,12 +116,40 @@ async function build(l, k, cc) {
     for (const pg of pages) for (const r of pg.results || []) { if (r.poster_path && !seen.has(r.id)) { seen.add(r.id); rows.push(r); } }
     return rows.slice(0, 250).map((r) => item(r, k, g));
   }
-  let data;
-  if (k === "movie") data = (await withUS(cc, (rg) => tmdb("/discover/movie", { language: "en-US", sort_by: "popularity.desc", "primary_release_date.gte": today(), with_release_type: "2|3", region: rg, page: 1 }))).data;
-  else data = await tmdb("/discover/tv", { language: "en-US", sort_by: "popularity.desc", "first_air_date.gte": today(), page: 1 });
-  const rows = (data.results || []).filter((r) => r.poster_path).slice(0, 20);
-  const pl = await Promise.all(rows.map((r) => platformsCached(k, r.id)));
-  return rows.map((r, i) => ({ ...item(r, k, g), pl: pl[i].list, reg: pl[i].reg }));
+  // Upcoming releases from every industry: each source is one TMDB discover query tagged with a category (c).
+  const td = today(), mv = k === "movie";
+  const base = mv ? { language: "en-US", sort_by: "popularity.desc", "primary_release_date.gte": td, with_release_type: "2|3", page: 1 }
+    : { language: "en-US", sort_by: "popularity.desc", "first_air_date.gte": td, page: 1 };
+  const path = mv ? "/discover/movie" : "/discover/tv";
+  const src = (c, extra, cap) => ({ c, extra, cap });
+  const IN = ["hi", "ta", "te", "ml", "kn", "bn", "mr", "pa"];
+  const WORLD = ["fr", "es", "zh", "de", "it", "tr", "th", "pt", "id", "ru", "ar", "pl"];
+  const sources = [
+    src("hollywood", { with_original_language: "en", ...(mv ? { region: "US" } : {}) }, 40),
+    ...IN.map((l) => src("india", { with_original_language: l }, 14)),
+    src("korea", { with_original_language: "ko" }, 30),
+    src("anime", { with_original_language: "ja", with_genres: "16" }, 30),
+    src("world", { with_original_language: "ja", without_genres: "16" }, 10),
+    ...WORLD.map((l) => src("world", { with_original_language: l }, 10)),
+  ];
+  const pages = await Promise.all(sources.map((s) => tmdb(path, { ...base, ...s.extra }).catch(() => ({ results: [] }))));
+  // the visitor's own region first for Hollywood titles when it has data (keeps local release dates)
+  if (mv && cc !== "US") { try { const lr = await tmdb(path, { ...base, with_original_language: "en", region: cc }); if ((lr.results || []).filter((r) => r.poster_path).length >= 5) pages[0] = lr; } catch (e) { /* keep US */ } }
+  const seen = new Set(), rows = [];
+  pages.forEach((pg, i) => {
+    let n = 0;
+    for (const r of pg.results || []) {
+      if (!r.poster_path || seen.has(r.id) || n >= sources[i].cap) continue;
+      seen.add(r.id); n++;
+      rows.push({ ...item(r, k, g), c: sources[i].c });
+    }
+  });
+  rows.sort((a, b) => (a.d ? Date.parse(a.d) : 9e15) - (b.d ? Date.parse(b.d) : 9e15));
+  // platforms for the nearest releases now; the page asks for the rest as they come into view
+  const head = rows.slice(0, 40);
+  const pl = await Promise.all(head.map((r) => platformsCached(k, r.id)));
+  head.forEach((r, i) => { r.pl = pl[i].list; r.reg = pl[i].reg; });
+  return rows;
 }
 
 

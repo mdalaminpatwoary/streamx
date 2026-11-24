@@ -152,3 +152,8 @@
 @media(max-width:640px){#awGrid{gap:6px 16px;margin:0 -16px;padding-left:16px;padding-right:16px;scroll-padding-left:16px}#awGrid>.tp-card{flex-basis:44vw}}
 #toplist:not([data-mode="page"]) .tp-bar{margin-top:22px}
 #awGrid .tp-seen{bottom:42px}
+.tp-cats{display:flex;gap:8px;margin:-14px 0 26px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.tp-cats::-webkit-scrollbar{display:none}
+.tp-cats button{flex:none;padding:8px 15px;border-radius:999px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:var(--mut);font:700 12.5px Manrope,sans-serif;cursor:pointer;transition:color .25s,background .25s,border-color .25s}
+.tp-cats button:hover{color:#fff}
+.tp-cats button.on{color:#fff;background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.28)}
