@@ -1,0 +1,11 @@
+/* Phones: while the cart or the chat is open, freeze everything behind it. Nothing moving behind a blurred panel means nothing to re-blur, so no flicker. */
+@media (max-width: 700px), (pointer: coarse) {
+  body:has(#drawer.open) *:not(#drawer):not(#drawer *),
+  body:has(.cw-open) *:not(.cw-open):not(.cw-open *) {
+    animation-play-state: paused !important;
+  }
+  body:has(#drawer.open) .hx-bg,
+  body:has(.cw-open) .hx-bg {
+    display: none;
+  }
+}

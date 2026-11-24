@@ -653,15 +653,14 @@
 /* "Price on request" plans (Facebook services) */
 .pcard .amt.ask b { font-size: 26px; line-height: 1.1; letter-spacing: -.01em; }
 .pcard .actions a.btn { display: inline-flex; align-items: center; justify-content: center; text-decoration: none; flex: 1 1 100%; }
-/* Phones: blur layers inside a sliding drawer make the GPU flicker. Use solid panels and calm the endless animations. */
+/* Phones: while the cart is open the page behind it is paused (see panel-pause.css), so the frosted glass can stay without flicker.
+   Only the nested blurs and the endless button animations are removed, because they are the costly ones. */
 @media (max-width: 700px), (pointer: coarse) {
   #drawer {
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-    background: #0b0f21;
+    -webkit-backdrop-filter: blur(18px) saturate(1.4);
+    backdrop-filter: blur(18px) saturate(1.4);
+    background: rgba(10, 13, 28, 0.74);
     transform: translateZ(0);
-    will-change: transform;
-    contain: paint;
   }
   #overlay,
   #overlay.show {
