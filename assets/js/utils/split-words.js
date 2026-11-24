@@ -7,7 +7,7 @@ function splitWords(root){
         const f=document.createDocumentFragment();
         c.textContent.split(/(\s+)/).forEach(t=>{
           if(!t)return;
-          if(/^\s+$/.test(t)){f.appendChild(document.createTextNode(" "));return}
+          if(/^\s+$/.test(t)){const last=f.lastChild;if(last&&last.classList&&last.classList.contains("w"))last.textContent+=" ";else f.appendChild(document.createTextNode(" "));return}
           const w=document.createElement("span");w.className="w";w.style.setProperty("--i",i++);w.textContent=t;f.appendChild(w);
         });
         c.replaceWith(f);

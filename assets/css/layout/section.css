@@ -87,6 +87,7 @@ details p {
 }
 .w {
   display: inline-block;
+  white-space: pre;
   opacity: 0;
   transform: translateY(16px);
   filter: blur(8px);
