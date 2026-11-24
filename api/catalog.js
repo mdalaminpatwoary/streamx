@@ -446,9 +446,14 @@ module.exports = async (req, res) => {
     const hit = cache.get(key);
     res.setHeader("Cache-Control", l === "soon" ? "private, max-age=3600" : "public, s-maxage=3600, stale-while-revalidate=86400");
     if (hit && Date.now() - hit.at < 3 * HOUR) return res.status(200).json(hit.body);
-    const body = { l, k, list: await build(l, k, cc), at: new Date().toISOString() };
-    cache.set(key, { at: Date.now(), body });
-    return res.status(200).json(body);
+    // Stale-while-revalidate: an older copy (up to 7 days) is served at once while a fresh one is built; if the rebuild fails the old copy still answers.
+    const fresh = () => build(l, k, cc).then((list) => { const body = { l, k, list, at: new Date().toISOString() }; cache.set(key, { at: Date.now(), body }); return body; });
+    if (hit && Date.now() - hit.at < 7 * 24 * HOUR) {
+      if (!hit.busy) { hit.busy = 1; fresh().catch(() => { hit.busy = 0; }); }
+      return res.status(200).json(hit.body);
+    }
+    try { return res.status(200).json(await fresh()); }
+    catch (e) { if (hit) return res.status(200).json(hit.body); throw e; }
   } catch (e) {
     console.error("catalog error", e && e.message);
     res.setHeader("Cache-Control", "no-store");

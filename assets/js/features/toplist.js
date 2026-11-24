@@ -59,6 +59,7 @@
     const soon=st.l==="soon";
     if(mine&&!(window.sxList&&sxList.authed())){grid.className="tp-grid";grid.innerHTML=`<div class="tp-msg"><b>Sign in to see your ${st.l==="wish"?"wishlist":"watched list"}</b>Save titles from any poster and they will be here on every device.<br><a class="tp-all" style="margin-top:16px" href="/account/">Sign in</a></div>`;more.hidden=true;if(all)all.hidden=true;if(cnt)cnt.textContent="";sec.hidden=false;return}
     let rows=(d.list||[]).map((m,i)=>({m,r:i+1}));
+    if(soon){const t0=new Date(Date.now()+6*36e5).toISOString().slice(0,10);rows=rows.filter(x=>!x.m.d||x.m.d>=t0)}
     if(soon&&st.c!=="all")rows=rows.filter(x=>x.m.c===st.c);
     if(soon)rows.sort((a,b)=>(a.m.d?Date.parse(a.m.d):9e15)-(b.m.d?Date.parse(b.m.d):9e15));
     if(PAGE){const q=st.q.trim().toLowerCase();if(q)rows=rows.filter(x=>x.m.t.toLowerCase().includes(q));if(st.hide&&window.sxList)rows=rows.filter(x=>sxList.get(x.m.k,x.m.id)!=="watched")}
@@ -76,9 +77,20 @@
   function load(first){
     if(st.l==="wish"||st.l==="watched"){const go=()=>{sec.hidden=false;paint()};return window.sxList?sxList.load().then(go,go):(go(),Promise.resolve())}
     const key=st.l+st.k;if(cache[key]){paint();return Promise.resolve()}
-    if(!first){grid.className="tp-grid";grid.innerHTML=`<div class="tp-sk">${"<i></i>".repeat(PAGE?10:5)}</div>`;more.hidden=true}
-    return fetch(`/api/catalog?l=${st.l}&k=${st.k}`).then(r=>{if(!r.ok)throw 0;return r.json()}).then(d=>{cache[key]=d;if(st.l==="soon")(d.list||[]).forEach(m=>{if(m.pl)pv[m.k+":"+m.id]={reg:m.reg,list:m.pl}});if(first)sec.hidden=false;if(key===st.l+st.k)paint()})
-      .catch(()=>{if(first&&!PAGE)return;grid.innerHTML=`<div class="tp-msg"><b>Couldn't load this list right now</b>Please try again in a moment.</div>`;sec.hidden=false})
+    // Coming soon is kept in this browser: the saved list shows at once on a repeat visit, then a fresh one replaces it quietly.
+    const LS="sxSoon:"+st.k,soonKey=st.l==="soon";
+    let saved=null;
+    if(soonKey){try{const j=JSON.parse(localStorage.getItem(LS)||"null");if(j&&j.list&&j.list.length&&Date.now()-j.at<7*864e5)saved=j}catch(x){}}
+    const apply=d=>{cache[key]=d;(d.list||[]).forEach(m=>{if(m.pl)pv[m.k+":"+m.id]={reg:m.reg,list:m.pl}})};
+    if(saved){apply({list:saved.list});sec.hidden=false;paint()}
+    if(!first&&!saved){grid.className="tp-grid";grid.innerHTML=`<div class="tp-sk">${"<i></i>".repeat(PAGE?10:5)}</div>`;more.hidden=true}
+    return fetch(`/api/catalog?l=${st.l}&k=${st.k}`).then(r=>{if(!r.ok)throw 0;return r.json()}).then(d=>{
+      if(soonKey){try{localStorage.setItem(LS,JSON.stringify({at:Date.now(),list:d.list||[]}))}catch(x){}}
+      const same=saved&&saved.list.length===(d.list||[]).length&&saved.list.every((m,i)=>m.id===d.list[i].id);
+      apply(d);if(first)sec.hidden=false;
+      // a fresh list repaints the row only when it changed and the visitor has not started scrolling
+      if(key===st.l+st.k&&(!saved||(!same&&grid.scrollLeft<8)))paint();
+    }).catch(()=>{if(saved)return;if(first&&!PAGE)return;grid.innerHTML=`<div class="tp-msg"><b>Couldn't load this list right now</b>Please try again in a moment.</div>`;sec.hidden=false})
   }
   function thumb(el){const on=el.querySelector("button.on"),t=el.querySelector(".tp-thumb");if(on&&t){t.style.width=on.offsetWidth+"px";t.style.transform=`translateX(${on.offsetLeft}px)`}}
   function seg(id,attr){const el=document.getElementById(id);if(!el)return;el.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;st[attr]=b.dataset[attr];st.n=FIRST;syncSegs();load(false);if(PAGE)try{history.replaceState(null,"",st.l==="soon"?"#soon":location.pathname)}catch(x){}})}
