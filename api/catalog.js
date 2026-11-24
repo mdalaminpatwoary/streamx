@@ -87,6 +87,14 @@ async function platformsCached(kind, id) {
   return v;
 }
 
+// Adds pl: the StreamX-sold services that carry each title (movie/series cards only).
+async function attachPl(list) {
+  const rows = (list || []).filter((x) => x && x.id && (x.k === "movie" || x.k === "tv") && !x.pl);
+  const pv = await Promise.all(rows.map((x) => platformsCached(x.k, x.id)));
+  rows.forEach((x, i) => { x.pl = pv[i].list.filter((q) => q.s); });
+  return list;
+}
+
 const item = (r, k, g) => ({
   id: r.id, k,
   t: (k === "movie" ? r.title : r.name) || "",
@@ -218,10 +226,6 @@ async function hubList(sec, k, page, genre, plat, mode, cc) {
   } else data = await (plat === 122 ? (async () => { reg = "IN"; return tmdb(`/discover/${k}`, { ...base, sort_by: "popularity.desc", with_watch_providers: plat, watch_region: "IN", with_watch_monetization_types: "flatrate" }); })() : rgn((rg) => tmdb(`/discover/${k}`, { ...base, sort_by: "popularity.desc", with_watch_providers: plat, watch_region: rg, with_watch_monetization_types: "flatrate" })));
   const kind = sec === "nowplaying" || sec === "boxoffice" ? "movie" : sec === "airing" ? "tv" : k;
   const out = (data.results || []).filter((r) => r.poster_path).map((r) => item(r, kind, g));
-  if (sec === "genre") { // which StreamX services carry each title (names only for services we sell)
-    const pv = await Promise.all(out.map((x) => platformsCached(kind, x.id)));
-    out.forEach((x, i) => { x.pl = pv[i].list.filter((q) => q.s); });
-  }
   return { page: data.page || page, pages: Math.min(data.total_pages || 1, 25), list: out, reg };
 }
 
@@ -380,7 +384,9 @@ module.exports = async (req, res) => {
       const g = await genreMap();
       const j = await tmdb("/search/multi", { query: text, page, include_adult: "false", language: "en-US" });
       res.setHeader("Cache-Control", "public, s-maxage=600, stale-while-revalidate=3600");
-      return res.status(200).json({ q: text, page: j.page || page, pages: Math.min(j.total_pages || 1, 10), list: (j.results || []).filter((r) => (r.media_type === "movie" || r.media_type === "tv") && r.poster_path).map((r) => item(r, r.media_type, g)) });
+      const list = (j.results || []).filter((r) => (r.media_type === "movie" || r.media_type === "tv") && r.poster_path).map((r) => item(r, r.media_type, g)) ;
+      await attachPl(list);
+      return res.status(200).json({ q: text, page: j.page || page, pages: Math.min(j.total_pages || 1, 10), list });
     }
     if (req.query.a === "news") {
       const c = ["movies", "tv", "people", "boxoffice"].includes(req.query.c) ? req.query.c : "all", page = Math.min(10, Math.max(1, parseInt(req.query.page, 10) || 1));
@@ -407,6 +413,7 @@ module.exports = async (req, res) => {
       res.setHeader("Cache-Control", regional ? "private, max-age=3600" : "public, s-maxage=3600, stale-while-revalidate=86400"); // region lists differ per visitor
       if (hit && Date.now() - hit.at < HOUR) return res.status(200).json(hit.body);
       const body = { s: sec, k, ...(await hubList(sec, k, page, genre, plat, mode, cc)) };
+      if (sec !== "trailers") await attachPl(body.list);
       if (hubCache.size > 400) hubCache.clear();
       hubCache.set(key, { at: Date.now(), body });
       return res.status(200).json(body);
