@@ -6,6 +6,7 @@
   var PLAT=[["netflix","Netflix"],["prime-video","Prime Video"],["disneyplus","Disney+"],["hbo-max","HBO Max"],["crunchyroll","Crunchyroll"],["jiohotstar","JioHotstar"],["paramountplus","Paramount+"],["hulu","Hulu"],["apple-tv","Apple TV+"],["peacock","Peacock"],["zee5","ZEE5"],["sonyliv","SonyLIV"],["viki","Rakuten Viki"],["mubi","MUBI"]];
   var ANIME=[["popular","Popular"],["top","Top rated"],["new","New releases"],["crunchyroll","On Crunchyroll"]];
   var KDRAMA=[["popular","Popular"],["top","Top rated"],["new","New releases"],["netflix","On Netflix"]];
+  var BOLLY=[["popular","Popular"],["top","Top rated"],["new","New releases"],["netflix","On Netflix"],["jiohotstar","On JioHotstar"]];
   var KIND=[["movie","Movies"],["tv","Series"]];
   var NEWSC=[["all","All"],["movies","Movies"],["tv","TV & series"],["people","Stars"],["boxoffice","Box office"]];
   var SECS=[
@@ -17,6 +18,7 @@
     {id:"top",nav:"Top rated",eye:"Charts",h:"All-time <span class=\"grad\">top rated.</span>",sub:"The best-rated movies and series ever, ranked by TMDB user score.",s:"toprated",kinds:true,rank:true},
     {id:"anime",nav:"Anime",eye:"Anime",h:"Anime <span class=\"grad\">worldwide.</span>",sub:"Japanese anime series and films: what is popular, best rated, newly released and streaming on Crunchyroll.",s:"anime",kinds:true,chips:ANIME,mode:true},
     {id:"kdrama",nav:"K-drama",eye:"Korean",h:"K-drama <span class=\"grad\">and Korean cinema.</span>",sub:"Korean series and films: what is popular, best rated, newly released and streaming on Netflix where you are.",s:"kdrama",k:"tv",kinds:true,chips:KDRAMA,mode:true},
+    {id:"bollywood",nav:"Bollywood",eye:"Hindi",h:"Bollywood <span class=\"grad\">and Hindi cinema.</span>",sub:"Hindi movies and series: what is popular, best rated, newly released and streaming on Netflix or JioHotstar.",s:"bollywood",k:"movie",kinds:true,chips:BOLLY,mode:true},
     {id:"genres",nav:"Genres",eye:"Categories",h:"Browse by <span class=\"grad\">genre.</span>",sub:"Choose a genre to explore every available title, most popular first.",s:"genre",kinds:true,genres:true},
     {id:"boxoffice",nav:"Box office",eye:"Earnings",h:"Box office <span class=\"grad\">hits.</span>",sub:"The highest-grossing movies of all time, ranked by worldwide revenue.",s:"boxoffice",k:"movie",rank:true},
     {id:"popular",nav:"Popular now",eye:"Right now",h:"Popular <span class=\"grad\">right now.</span>",sub:"What everyone is watching this week.",s:"popular",kinds:true},
@@ -67,8 +69,8 @@
     if(c.kinds)bar+=seg(KIND,c.k||"movie","k");
     var st={k:c.k||"movie",page:0,pages:1,chip:c.chips?c.chips[0][0]:"",n:0,loading:false};
     c._st=st;
-    sec.insertAdjacentHTML("beforeend",(bar||c.chips||c.genres?'<div class="ex-bar">'+bar+(c.chips||c.genres?'<div class="ex-chips" role="group" aria-label="Filter"></div>':"")+"</div>":"")+'<div class="ex-grid" aria-live="polite"></div><div class="ex-foot"><button type="button" class="ex-more" hidden>Load 20 more</button></div>');
-    var grid=sec.querySelector(".ex-grid"),more=sec.querySelector(".ex-more"),chips=sec.querySelector(".ex-chips");
+    sec.insertAdjacentHTML("beforeend",(bar||c.chips||c.genres?'<div class="ex-bar">'+bar+(c.chips||c.genres?'<div class="ex-chips" role="group" aria-label="Filter"></div>':"")+"</div>":"")+'<div class="ex-grid" aria-live="polite"></div>');
+    var grid=sec.querySelector(".ex-grid"),more={hidden:true,disabled:false},chips=sec.querySelector(".ex-chips");
     function drawChips(list){chips.innerHTML=list.map(function(o){return '<button type="button" class="ex-chip'+(o[0]==st.chip?" on":"")+'" data-v="'+o[0]+'">'+esc(o[1])+"</button>"}).join("")}
     function skeleton(){grid.innerHTML='<div class="ex-sk">'+"<i></i>".repeat(10)+"</div>";more.hidden=true}
     function load(reset){
@@ -77,6 +79,7 @@
       var gid=c.genres?st.chip:"";
       if(c.genres&&!gid)return;
       st.loading=true;more.disabled=true;
+      if(!reset&&!grid.querySelector(".ex-sk"))grid.insertAdjacentHTML("beforeend",'<div class="ex-sk ex-skm" aria-hidden="true">'+"<i></i>".repeat(4)+"</div>");
       (c.news?get({a:"news",c:st.chip,page:st.page+1}):get({a:"hub",s:c.s,k:st.k,page:st.page+1,g:gid,p:c.chips&&!c.mode?st.chip:"",m:c.mode?st.chip:""})).then(function(d){
         var sk=grid.querySelector(".ex-sk");if(sk)sk.remove();
         st.page=d.page;st.pages=d.pages;
@@ -95,7 +98,6 @@
       else load(true);
       thumbs(sec);
     };
-    more.addEventListener("click",function(){load(false)});
     if(c.rail){arrows(sec,grid);grid.addEventListener("scroll",function(){if(!more.hidden&&!st.loading&&grid.scrollLeft+grid.clientWidth>grid.scrollWidth-320)load(false)},{passive:true})}
     sec.addEventListener("click",function(e){
       var b=e.target.closest("button[data-v]");if(!b||!sec.contains(b))return;
@@ -120,7 +122,7 @@
   }
   /* search: results rail above the sections */
   (function(){
-    var f=document.getElementById("exForm"),inp=document.getElementById("exQ"),clr=document.getElementById("exClr"),res=document.getElementById("exRes"),g=document.getElementById("exResG"),t=document.getElementById("exResT"),more=document.getElementById("exResMore"),st={q:"",page:0,pages:1,loading:false,n:0},timer,seq=0;
+    var f=document.getElementById("exForm"),inp=document.getElementById("exQ"),clr=document.getElementById("exClr"),res=document.getElementById("exRes"),g=document.getElementById("exResG"),t=document.getElementById("exResT"),more={hidden:true},st={q:"",page:0,pages:1,loading:false,n:0},timer,seq=0;
     if(!f)return;
     arrows(res,g);
     var CARD={rank:false};
@@ -129,6 +131,7 @@
       if(qq.length<2){res.hidden=true;g.innerHTML="";more.hidden=true;st.q="";return}
       if(reset){st.q=qq;st.page=0;st.n=0;g.innerHTML='<div class="ex-sk">'+"<i></i>".repeat(8)+"</div>";g.scrollLeft=0}
       if(st.loading&&!reset)return;
+      if(!reset&&!g.querySelector(".ex-sk"))g.insertAdjacentHTML("beforeend",'<div class="ex-sk ex-skm" aria-hidden="true">'+"<i></i>".repeat(4)+"</div>");
       var my=++seq;st.loading=true;res.hidden=false;t.textContent="Results for \u201c"+qq+"\u201d";
       get({a:"search",q:st.q,page:st.page+1}).then(function(d){
         if(my!==seq)return;
@@ -141,7 +144,6 @@
     inp.addEventListener("input",function(){clr.hidden=!inp.value;clearTimeout(timer);timer=setTimeout(function(){run(true)},350)});
     f.addEventListener("submit",function(e){e.preventDefault();clearTimeout(timer);run(true)});
     clr.addEventListener("click",function(){inp.value="";clr.hidden=true;run(true);inp.focus()});
-    more.addEventListener("click",function(){run(false)});
     g.addEventListener("scroll",function(){if(!more.hidden&&!st.loading&&g.scrollLeft+g.clientWidth>g.scrollWidth-320)run(false)},{passive:true});
     res.addEventListener("click",function(e){var el=e.target.closest(".ex-card");if(el&&window.sxSheet)sxSheet.open(el.dataset.id,el.dataset.k,el,idx[el.dataset.k+":"+el.dataset.id])});
     res.addEventListener("keydown",function(e){if((e.key==="Enter"||e.key===" ")&&e.target.matches(".ex-card")){e.preventDefault();e.target.click()}});

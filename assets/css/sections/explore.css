@@ -110,3 +110,7 @@
 .ex-my i{min-width:20px;padding:2px 6px;border-radius:999px;background:#ed3124;color:#fff;font:800 11px Manrope,sans-serif;font-style:normal;text-align:center}
 #exRes{padding-top:26px}
 @media(max-width:520px){.ex-my{flex:1;justify-content:center}}
+/* Rails load the next page on scroll: shimmer cards appear at the end while it loads */
+.ex-skm{animation:exSkIn .35s ease both;align-items:flex-start}
+.ex-rail .ex-skm i{width:176px}
+@keyframes exSkIn{from{opacity:0;transform:translateX(18px)}to{opacity:1;transform:none}}

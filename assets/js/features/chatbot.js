@@ -584,11 +584,11 @@
   function genreRoute(ql){
     if(/\b(price|cost|plans?|buy|subscribe|subscription|order|login|refund|payment|discount)\b/.test(ql)||PLAT.some(x=>x[1].test(ql)))return null;
     if(!/\b(movies?|films?|series|shows?|watch|suggest\w*|recommend\w*|something|anything|good|best|top|new)\b/.test(ql))return null;
-    const kd=/\b(k[- ]?dramas?|korean (dramas?|series|shows?|movies?|films?)|k[- ]?movies?)\b/.test(ql);
-    const g=kd?[0,"Korean",0,0]:GEN.find(x=>x[1]&&x[0].test(ql));if(!g)return null;
-    const tvq=kd?!/\b(k[- ]?movies?|movies?|films?)\b/.test(ql):/\b(series|shows?|tv)\b/.test(ql)&&!/\b(movies?|films?)\b/.test(ql),k=kd?(tvq?"tv":"movie"):(tvq&&g[3]?"tv":"movie"),id=k==="tv"?g[3]:g[2];
-    const name=kd?(k==="tv"?"Korean dramas":"Korean movies"):g[1].toLowerCase()+(k==="tv"?" series":" movies"),note=!kd&&tvq&&!g[3]?`<p class="bt-cd">There is no separate ${esc(g[1].toLowerCase())} series category, so these are movies.</p>`:"";
-    return {p:getJ(kd?"/api/catalog?a=hub&s=kdrama&m=popular&k="+k:"/api/catalog?a=hub&s=genre&k="+k+"&g="+id).then(d=>{
+    const bw=/\b(bollywood|hindi (movies?|films?|series|shows?))\b/.test(ql),kd=bw||/\b(k[- ]?dramas?|korean (dramas?|series|shows?|movies?|films?)|k[- ]?movies?)\b/.test(ql);
+    const g=kd?[0,bw?"Hindi":"Korean",0,0]:GEN.find(x=>x[1]&&x[0].test(ql));if(!g)return null;
+    const tvq=kd?(bw?/\b(series|shows?)\b/.test(ql):!/\b(k[- ]?movies?|movies?|films?)\b/.test(ql)):/\b(series|shows?|tv)\b/.test(ql)&&!/\b(movies?|films?)\b/.test(ql),k=kd?(tvq?"tv":"movie"):(tvq&&g[3]?"tv":"movie"),id=k==="tv"?g[3]:g[2];
+    const name=kd?(bw?(k==="tv"?"Hindi series":"Bollywood movies"):(k==="tv"?"Korean dramas":"Korean movies")):g[1].toLowerCase()+(k==="tv"?" series":" movies"),note=!kd&&tvq&&!g[3]?`<p class="bt-cd">There is no separate ${esc(g[1].toLowerCase())} series category, so these are movies.</p>`:"";
+    return {p:getJ(kd?"/api/catalog?a=hub&s="+(bw?"bollywood":"kdrama")+"&m=popular&k="+k:"/api/catalog?a=hub&s=genre&k="+k+"&g="+id).then(d=>{
       const list=(d.list||[]).slice(0,6);
       if(!list.length)return{h:`<p>I could not load ${esc(name)} just now. Try the Explore hub.</p><div class="bt-row">${btn("Open Explore hub","/explore/")}</div>`,c:["Top rated","Talk to a human"]};
       const card=m=>`<div class="bt-card bt-title">${m.p?`<img class="bt-po" src="https://image.tmdb.org/t/p/w154${esc(m.p)}" alt="${esc(m.t)}" width="54" height="81" loading="lazy">`:""}<div class="bt-tb">${lbl(m)}${m.g&&m.g.length?`<small class="bt-cd">${esc(m.g.join(" · "))}</small>`:""}<div class="bt-row"><button type="button" class="bt-btn" data-act="lf" data-find="${esc(m.t)}">Where to watch</button></div><button type="button" class="bt-lk" data-act="ld" data-k="${k}" data-id="${m.id}" data-t="${esc(m.t)}">View details &rsaquo;</button></div></div>`;
