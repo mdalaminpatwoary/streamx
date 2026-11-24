@@ -280,7 +280,7 @@
     $("#orows").innerHTML = rows.map(function (o) {
       var dn = o.delivery === "delivered", rf = o.delivery === "refunded", t = new Date(Date.parse(o.paid_at || o.created_at) + 6 * 3600e3).toISOString().slice(0, 16).replace("T", " ");
       var items = (o.lines || []).map(function (l) { return esc(l.name) + " · " + esc(l.plan) + (l.q > 1 ? " ×" + l.q : ""); }).join("<br>");
-      return '<tr><td data-l="Paid">' + esc(t) + '</td><td data-l="Customer"><div><b>' + esc(o.name || "") + "</b><br>" + esc(o.email) + "<br>" + esc(o.phone || "") + '</div></td><td data-l="Bought"><div>' + items + '</div></td><td data-l="Order ID" class="ad-id">' + esc(o.mtid) + '</td><td data-l="Delivery"><div class="ad-btns">' + (rf ? '<span class="ad-pill warn">Refunded</span><button class="ac-btn ac-sm ac-ghost" data-dv="' + esc(o.mtid) + '" data-to="pending">Undo</button>' : '<button class="ac-btn ac-sm' + (dn ? " ac-ghost" : "") + '" data-dv="' + esc(o.mtid) + '" data-to="' + (dn ? "pending" : "delivered") + '">' + (dn ? "Delivered ✓ (undo)" : "Mark delivered") + '</button><button class="ac-btn ac-sm ac-ghost" data-dv="' + esc(o.mtid) + '" data-to="refunded">Refunded</button>') + "</div></td></tr>";
+      return '<tr><td data-l="Paid">' + esc(t) + '</td><td data-l="Customer"><div><b>' + esc(o.name || "") + "</b><br>" + esc(o.email) + "<br>" + esc(o.phone || "") + '</div></td><td data-l="Bought"><div>' + items + '</div></td><td data-l="Order ID" class="ad-id">' + esc(o.mtid) + '</td><td data-l="Delivery"><div class="ad-btns">' + (rf ? "" : '<button class="ac-btn ac-sm' + (dn ? " ac-ghost" : "") + '" data-giv="' + esc(o.mtid) + '">' + (dn ? "Edit access" : "Give access") + "</button>") + (rf ? '<span class="ad-pill warn">Refunded</span><button class="ac-btn ac-sm ac-ghost" data-dv="' + esc(o.mtid) + '" data-to="pending">Undo</button>' : '<button class="ac-btn ac-sm' + (dn ? " ac-ghost" : "") + '" data-dv="' + esc(o.mtid) + '" data-to="' + (dn ? "pending" : "delivered") + '">' + (dn ? "Delivered ✓ (undo)" : "Mark delivered") + '</button><button class="ac-btn ac-sm ac-ghost" data-dv="' + esc(o.mtid) + '" data-to="refunded">Refunded</button>') + "</div></td></tr>";
     }).join("");
     $("#ocnt").textContent = rows.length + " order" + (rows.length === 1 ? "" : "s") + ". Only paid orders appear here.";
   }
@@ -304,7 +304,43 @@
         toast(d.mailed ? "Marked as refunded. Email sent to the customer." : d.mailNote ? "Marked as refunded. " + d.mailNote : "Marked as refunded.", !d.mailed && !!d.mailNote);
       }).catch(function (er) { toast(er.message || "Could not update the order.", 1); }).then(function () { b.disabled = false; b.textContent = "Mark refunded"; });
   });
+
+  /* ---------- Give access from the Paid orders list ---------- */
+  var gdlg = $("#gdlg"), gcur = null, gsubs = [];
+  var closeG = function () { if (gdlg.close) gdlg.close(); else gdlg.removeAttribute("open"); };
+  function openGive(id) {
+    var o = ORD.filter(function (x) { return x.mtid === id; })[0]; if (!o) return; gcur = o; gsubs = [];
+    $("#gds").textContent = (o.name || "") + " · " + o.email; $("#gbody").innerHTML = '<p class="ac-note" style="padding:6px 2px">Loading…</p>';
+    $("#gsave").disabled = $("#gdeliver").disabled = true;
+    if (gdlg.showModal) gdlg.showModal(); else gdlg.setAttribute("open", "");
+    api("?view=ordersubs&order=" + encodeURIComponent(id)).then(function (d) {
+      gsubs = d.rows || [];
+      if (!gsubs.length) { $("#gbody").innerHTML = '<p class="ac-note" style="padding:6px 2px">No purchase record was found for this order, so there is nothing to attach login details to. You can still mark it delivered.</p>'; $("#gdeliver").disabled = false; return; }
+      $("#gbody").innerHTML = gsubs.map(function (r) { return '<div class="ad-part"><div class="ad-lab" style="margin:0 0 8px"><b>' + esc(r.service) + " · " + esc(r.plan) + "</b></div>" + accessHTML(r.access, r.service) + "</div>"; }).join("");
+      [].forEach.call($("#gbody").querySelectorAll(".ad-acc"), syncAccess);
+      $("#gsave").disabled = $("#gdeliver").disabled = false;
+    }).catch(function (er) { $("#gbody").innerHTML = '<p class="ac-note" style="padding:6px 2px">' + esc(er.message || "Could not load.") + "</p>"; });
+  }
+  $("#gx").addEventListener("click", closeG);
+  function giveSave(deliver, btn) {
+    if (!gcur) return; var roots = [].slice.call($("#gbody").querySelectorAll(".ad-acc")), er = "";
+    roots.forEach(function (r) { var x = accessError(r); if (x && !er) er = x; });
+    if (er) { toast(er, 1); return; }
+    var label = btn.textContent, id = gcur.mtid; $("#gsave").disabled = $("#gdeliver").disabled = true; btn.textContent = "Saving…";
+    var saves = roots.map(function (r, i) { return api("?id=" + gsubs[i].id, { method: "PATCH", body: JSON.stringify(readAccess(r)) }); });
+    Promise.all(saves).then(function () {
+      if (!deliver) { toast("Access saved."); closeG(); return; }
+      return api("?order=" + encodeURIComponent(id), { method: "PATCH", body: JSON.stringify({ delivery: "delivered" }) }).then(function (d) {
+        ORD.forEach(function (o) { if (o.mtid === id) { o.delivery = "delivered"; o.delivered_at = d.row && d.row.delivered_at || null; } });
+        closeG(); drawOrders(); stats();
+        toast(d.mailed ? "Access saved and marked delivered. Email sent to the customer." : d.mailNote ? "Access saved and marked delivered. " + d.mailNote : "Access saved and marked delivered.", !d.mailed && !!d.mailNote);
+      });
+    }).catch(function (e2) { toast(e2.message || "Could not save.", 1); }).then(function () { btn.textContent = label; $("#gsave").disabled = $("#gdeliver").disabled = false; });
+  }
+  $("#gsave").addEventListener("click", function () { giveSave(false, this); });
+  $("#gdeliver").addEventListener("click", function () { giveSave(true, this); });
   $("#orows").addEventListener("click", function (e) {
+    var g = e.target.closest("[data-giv]"); if (g) { openGive(g.dataset.giv); return; }
     var b = e.target.closest("[data-dv]"); if (!b || b.disabled) return;
     var id = b.dataset.dv, to = b.dataset.to;
     if (to === "pending" && !confirm("Move this order back to Not delivered?")) return;

@@ -183,6 +183,13 @@ module.exports = async (req, res) => {
     const ord = clean(req.query && req.query.order, 40).replace(/[^0-9A-Za-z]/g, "");
     if (req.method === "GET" && req.query && req.query.view === "orders")
       return res.status(200).json({ rows: await db.rest("GET", "orders?select=*&paid=eq.true&order=created_at.desc&limit=200") });
+    // The purchases created by one paid order, with their login details, so access can be given right from the Paid orders list.
+    if (req.method === "GET" && req.query && req.query.view === "ordersubs") {
+      const mt = clean(req.query.order, 80);
+      if (!mt) return res.status(400).json({ error: "Missing order id." });
+      const rows = await db.rest("GET", `subscriptions?order_ref=eq.${db.q(mt)}&select=*&order=id.asc`);
+      return res.status(200).json({ rows: (rows || []).map((r) => Object.assign({}, r, { acct_pass: undefined, acct_pin: undefined, gift_code: undefined, access: access.fromRow(r) })) });
+    }
     if (req.method === "PATCH" && ord) {
       const dv = ["delivered", "pending", "refunded"].includes(body.delivery) ? body.delivery : "";
       if (!dv) return res.status(400).json({ error: "Invalid status." });

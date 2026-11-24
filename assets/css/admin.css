@@ -143,3 +143,5 @@
 .ad-pill.feat{background:rgba(255,194,71,.14);border-color:rgba(255,194,71,.4);color:#ffc247}
 .ad-ra{display:flex;flex-direction:column;gap:6px;align-items:stretch}
 @media(max-width:560px){.ad-ra{flex-direction:row;flex-wrap:wrap}}
+#gbody .ad-part>.ad-lab{padding:14px 20px 0!important;margin:0!important;font-size:13px}
+#gbody .ad-part{margin-bottom:4px}
