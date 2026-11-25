@@ -45,7 +45,7 @@
 <link rel="stylesheet" href="assets/css/components/chatbot.css?v=43">
 <link rel="stylesheet" href="assets/css/components/panel-pause.css?v=1">
 <link rel="stylesheet" href="assets/css/components/cart.css?v=20261125c">
-<link rel="stylesheet" href="assets/css/components/checkout.css?v=20261125b">
+<link rel="stylesheet" href="assets/css/components/checkout.css?v=20261125d">
 <link rel="stylesheet" href="assets/css/sections/hero.css?v=20261119zz">
 <link rel="stylesheet" href="assets/css/sections/hero-modern.css?v=20261124m">
 <link rel="stylesheet" href="assets/css/sections/marquee.css?v=20261120d">
@@ -473,13 +473,12 @@
       <div class="pay-cp" id="payCpBox" hidden><label for="payCp" class="pay-l">Coupon code <em>(optional)</em></label><div class="pay-cprow"><input id="payCp" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="e.g. EID10" maxlength="24"><button type="button" id="payCpGo">Apply</button></div><p class="pay-cpm" id="payCpM" role="status"></p></div>
       <label><span class="pay-l">Your name</span><input id="payName" type="text" autocomplete="name" placeholder="e.g. Rafiq Ahmed" maxlength="60"></label>
       <div class="pay-row">
-        <label><span class="pay-l">Mobile number</span><input id="payPhone" type="tel" inputmode="tel" autocomplete="tel" placeholder="01XXXXXXXXX or +358…" maxlength="20"></label>
+        <label><span class="pay-l">Mobile number</span><div class="pay-ph"><span class="pay-cc"><img id="payCcF" src="https://flagcdn.com/w40/bd.png" alt="" width="22" height="16"><b id="payCcT">+880</b><i aria-hidden="true">▾</i><select id="payCc" aria-label="Country code"></select></span><input id="payPhone" type="tel" inputmode="tel" autocomplete="tel-national" placeholder="01XXXXXXXXX" maxlength="20"></div></label>
         <label><span class="pay-l">Email</span><input id="payEmail" type="email" autocomplete="email" placeholder="you@example.com" maxlength="100"></label>
       </div>
-      <p class="pay-agree">By paying, you agree to our <a href="/terms/" target="_blank" rel="noopener">Terms &amp; Conditions</a> and <a href="/refund-policy/" target="_blank" rel="noopener">Refund Policy</a>.</p>
-      <img class="pay-eps" src="assets/img/pay/eps-renew.webp" alt="Pay with EPS: Visa, Mastercard, American Express, bKash, Nagad, Rocket and more" loading="lazy" width="1012" height="162">
       <div class="pay-bar"><p class="pay-err" id="payErr" role="alert"></p><button class="btn grad-bg pay-go" id="payGo" type="submit">Pay securely</button></div>
-      <small class="pay-fine">You will be taken to the EPS payment page. We never see your card or wallet PIN.</small>
+      <img class="pay-eps" src="assets/img/pay/eps-renew.webp" alt="Pay with EPS: Visa, Mastercard, American Express, bKash, Nagad, Rocket and more" loading="lazy" width="1012" height="162">
+      <p class="pay-agree">By paying, you agree to our <a href="/terms/" target="_blank" rel="noopener">Terms &amp; Conditions</a> and <a href="/refund-policy/" target="_blank" rel="noopener">Refund Policy</a>.</p>
       <small class="pay-fine pay-wa">Prefer to order by chat? <a id="payWa" href="#" target="_blank" rel="noopener">Order on WhatsApp instead ↗</a></small>
     </form>
   </div>
@@ -545,7 +544,7 @@
 <script src="assets/js/layout/site-basics.js?v=20261121f"></script>
 <script src="assets/js/avatar-nav.js?v=1" defer></script><script src="assets/js/account-menu.js?v=20261124g" defer></script>
 <script src="assets/js/features/cart.js?v=20261125b"></script>
-<script src="assets/js/features/checkout.js?v=20261125b"></script>
+<script src="assets/js/features/checkout.js?v=20261125c"></script>
 <script src="assets/js/features/why.js?v=20261124e"></script>
 <script src="assets/js/features/faq.js?v=20261122a"></script>
 <script src="assets/js/layout/header.js?v=20261121e"></script>

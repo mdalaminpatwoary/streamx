@@ -3,6 +3,24 @@
    No keys or secrets exist in this file. */
 (function () {
   const m = $("#paymodal"), f = $("#payForm"), err = $("#payErr"), go = $("#payGo");
+  const DIAL = [["BD","Bangladesh","880"],["CA","Canada","1"],["CN","China","86"],["CY","Cyprus","357"],["FI","Finland","358"],["FR","France","33"],["DE","Germany","49"],["HU","Hungary","36"],["IN","India","91"],["IT","Italy","39"],["KW","Kuwait","965"],["MY","Malaysia","60"],["MV","Maldives","960"],["NP","Nepal","977"],["OM","Oman","968"],["PK","Pakistan","92"],["QA","Qatar","974"],["SA","Saudi Arabia","966"],["SG","Singapore","65"],["KR","South Korea","82"],["ES","Spain","34"],["SE","Sweden","46"],["CH","Switzerland","41"],["TH","Thailand","66"],["AE","United Arab Emirates","971"],["GB","United Kingdom","44"],["US","United States","1"]];
+  const ccSel = $("#payCc");
+  ccSel.innerHTML = DIAL.map((d) => `<option value="${d[0]}">${d[1]} (+${d[2]})</option>`).join("");
+  const dialOf = (c) => (DIAL.find((d) => d[0] === c) || DIAL[0])[2];
+  const setCc = (c) => { ccSel.value = c; $("#payCcF").src = "https://flagcdn.com/w40/" + c.toLowerCase() + ".png"; $("#payCcT").textContent = "+" + dialOf(c); $("#payPhone").placeholder = c === "BD" ? "01XXXXXXXXX" : "Phone number"; };
+  ccSel.addEventListener("change", () => setCc(ccSel.value));
+  // Full number the server expects: Bangladesh as 01XXXXXXXXX, others as +<code><digits>.
+  const fullPhone = () => {
+    const raw = $("#payPhone").value.trim(), d = raw.replace(/\D/g, ""), c = ccSel.value;
+    if (raw.startsWith("+")) { return "+" + d; }
+    if (c === "BD") { const n = d.replace(/^880/, "").replace(/^0+/, ""); return n ? "0" + n : ""; }
+    const n = d.replace(/^0+/, ""); return n ? "+" + dialOf(c) + n : "";
+  };
+  const splitPhone = (v) => {
+    v = String(v || "");
+    if (v.startsWith("+")) { const d = v.slice(1); const m = DIAL.filter((x) => d.startsWith(x[2])).sort((a, b) => b[2].length - a[2].length)[0]; if (m) { setCc(m[0]); return d.slice(m[2].length); } setCc("BD"); return v; }
+    setCc("BD"); return v;
+  };
   const LOCK = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
   const lab = (t) => { go.innerHTML = LOCK + "<span>" + t + "</span>"; };
   const cpToggle = (on) => { $("#payCpBox").hidden = !on; $("#payCpT").hidden = on; $("#payCpT").setAttribute("aria-expanded", on ? "true" : "false"); };
@@ -48,7 +66,7 @@ function sessEmail(){try{var t=localStorage.getItem("sx_session");if(!t)return "
   $("#payCp").addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); applyCp(); } });
   function open() {
     if (!cart.length) return;
-    try { const b = JSON.parse(localStorage.getItem(KEY) || "{}"); $("#payName").value = b.n || ""; $("#payPhone").value = b.p || ""; $("#payEmail").value = b.e || ""; } catch (e) {}
+    try { const b = JSON.parse(localStorage.getItem(KEY) || "{}"); $("#payName").value = b.n || ""; $("#payPhone").value = splitPhone(b.p); $("#payEmail").value = b.e || ""; } catch (e) {}
     lockEmail();
     cp = null; paintSum();
     const wl = $("#checkout"); if (wl) $("#payWa").href = wl.href;
@@ -65,9 +83,9 @@ function sessEmail(){try{var t=localStorage.getItem("sx_session");if(!t)return "
 
   f.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const note = "", name = $("#payName").value.trim(), phone = $("#payPhone").value.replace(/[\s\-()]/g, ""), se = sessEmail(), email = se || $("#payEmail").value.trim();
+    const note = "", name = $("#payName").value.trim(), phone = fullPhone(), se = sessEmail(), email = se || $("#payEmail").value.trim();
     if (name.length < 2) return (err.textContent = "Please enter your name.");
-    if (!PHONE.test(phone)) return (err.textContent = "Enter a valid mobile number: 01712345678, or with country code, e.g. +358442354993.");
+    if (!PHONE.test(phone)) return (err.textContent = "Enter a valid mobile number for the selected country.");
     if (!EMAIL.test(email)) return (err.textContent = "Enter a valid email address.");
     err.textContent = ""; go.disabled = true; go.classList.add("busy"); lab("Opening secure payment…");
     try { localStorage.setItem(KEY, JSON.stringify({ n: name, p: phone, e: se ? "" : email })); } catch (x) {}
