@@ -1,7 +1,8 @@
-/* All services: greets a signed-in customer once per visit. The nav pill flips open to the left ("Hi, Name"), holds a moment, then flips shut. */
+/* Front page + All services: greets a signed-in customer once per visit. After the nav melts into its pill, the pill flips open to the left ("Good morning / Name"), holds a moment, then flips shut. */
 (function () {
-  var nav = document.getElementById("spNav"), nr = document.querySelector(".sp-nr");
-  if (!nav || !nr || !document.querySelector(".hb-hero")) return;
+  var home = !document.getElementById("spNav") && document.getElementById("nav");
+  var nav = document.getElementById("spNav") || home, nr = home ? home.querySelector(".navbar>.nr") : document.querySelector(".sp-nr"), ON = home ? "pill" : "sp-scrolled", AWAY = home ? "away" : "sp-away";
+  if (!nav || !nr || (!home && !document.querySelector(".hb-hero"))) return;
   var tok, nm;
   try { tok = localStorage.getItem("sx_session"); if (!tok || sessionStorage.getItem("sx_hi")) return; nm = localStorage.getItem("sx_nm"); } catch (e) { return; }
 
@@ -14,13 +15,13 @@
     var hr = new Date().getHours(), g = hr >= 5 && hr < 12 ? "Good morning" : hr >= 12 && hr < 17 ? "Good afternoon" : hr >= 17 && hr < 21 ? "Good evening" : "Hello";
     el.className = "sp-hi"; el.setAttribute("role", "status");
     var s1 = document.createElement("i"), s2 = document.createElement("em"); s1.textContent = g; s2.textContent = first; b.appendChild(s1); b.appendChild(s2); el.appendChild(b);
-    nr.insertBefore(el, nr.firstChild);
+    if (home) nr.parentNode.insertBefore(el, nr); else nr.insertBefore(el, nr.firstChild);
     b.style.maxWidth = "none";
-    var cap = Math.max(70, innerWidth - 28 - 190 - 12), w = Math.min(Math.ceil(b.offsetWidth) + 4, cap);
+    var base = home ? (parseFloat(nav.style.getPropertyValue("--pw")) || 200) + 14 : 190, cap = Math.max(60, innerWidth - 28 - base - 12), w = Math.min(Math.ceil(b.offsetWidth) + 4, cap);
     b.style.maxWidth = w + "px";
     el.style.setProperty("--w", w + "px");
     requestAnimationFrame(function () { requestAnimationFrame(function () {
-      nav.style.setProperty("--hiw", w + "px"); el.classList.add("on");
+      nav.style.setProperty("--hiw", (w + (home ? 14 : 0)) + "px"); el.classList.add("on");
       setTimeout(function () {
         el.classList.add("out");
         setTimeout(function () {
@@ -33,7 +34,7 @@
 
   /* Wait until the nav has melted into the pill (first scroll), then greet a moment later. */
   var done = false, tm = 0, name = nm || "";
-  function scrolled() { return nav.classList.contains("sp-scrolled"); }
+  function scrolled() { return nav.classList.contains(ON) && !nav.classList.contains(AWAY); }
   function arm() {
     if (done) return;
     clearTimeout(tm);

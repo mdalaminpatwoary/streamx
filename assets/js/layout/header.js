@@ -6,7 +6,12 @@ function frame(){
   ticking=false;const y=scrollY,dy=y-lastY,max=Math.max(1,document.documentElement.scrollHeight-innerHeight);
   nav.classList.toggle("scrolled",y>30);
   const menu=$("#menu");
-  if(!(menu&&menu.classList.contains("open"))){if(y>140&&dy>4)nav.classList.add("pill");else if(dy<-4||y<60)nav.classList.remove("pill")}
+  if(!(menu&&menu.classList.contains("open"))){
+    if(innerWidth<=860){/* phone: slide the pill away while scrolling down, bring it back on scroll up */
+      if(y>140&&dy>4){nav.classList.add("pill","away")}
+      else if(dy<-4||y<60){nav.classList.remove("away");if(y<60)nav.classList.remove("pill")}
+    }else{nav.classList.remove("away");if(y>140&&dy>4)nav.classList.add("pill");else if(dy<-4||y<60)nav.classList.remove("pill")}
+  }
   nav.classList.remove("hide");lastY=y;
   const sp=Math.min(1,y/max);document.documentElement.style.setProperty("--sp",sp.toFixed(4));
   if(y>=max-4)setActive(links[links.length-1]);

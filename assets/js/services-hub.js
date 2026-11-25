@@ -36,3 +36,15 @@
   var pre = new URLSearchParams(location.search).get("q"); if (pre) q.value = pre.slice(0, 60);
   run();
 })();
+
+/* Phone: hide the nav while scrolling down, show it again on scroll up */
+(function () {
+  var nv = document.getElementById("spNav"); if (!nv) return;
+  var last = scrollY, tk = false;
+  function run() {
+    tk = false; var y = scrollY, dy = y - last; last = y;
+    if (innerWidth > 860) { nv.classList.remove("sp-away"); return; }
+    if (y > 140 && dy > 4) nv.classList.add("sp-away"); else if (dy < -4 || y < 60) nv.classList.remove("sp-away");
+  }
+  addEventListener("scroll", function () { if (!tk) { tk = true; requestAnimationFrame(run); } }, { passive: true });
+})();
