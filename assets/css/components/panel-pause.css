@@ -9,3 +9,10 @@
     display: none;
   }
 }
+
+/* Off-screen sections and background tabs: freeze loops (no visual change, nothing to repaint). */
+.is-off, .is-off *, .is-off *::before, .is-off *::after,
+.tab-hidden *, .tab-hidden *::before, .tab-hidden *::after { animation-play-state: paused !important; }
+
+/* The glass nav stays on its own compositor layer so the blur is not re-painted on scroll. */
+.nav { backface-visibility: hidden; }
