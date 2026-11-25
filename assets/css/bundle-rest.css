@@ -900,6 +900,7 @@ html.nt-isl-on .cw *{pointer-events:none!important}
 .bw-a{grid-column:span 7}.bw-b{grid-column:span 5}.bw-c,.bw-d,.bw-e{grid-column:span 4}
 .bw{--mx:50%;--my:50%;--rx:0deg;--ry:0deg;position:relative;display:flex;flex-direction:column;padding:30px 30px 26px;border-radius:26px;border:1px solid rgba(255,255,255,.09);background:linear-gradient(160deg,rgba(255,255,255,.055),rgba(255,255,255,.02));-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);overflow:hidden;opacity:0;transform:translateY(46px) rotateX(var(--rx)) rotateY(var(--ry));transition:opacity .8s cubic-bezier(.16,1,.3,1) calc(var(--k)*110ms),transform .9s cubic-bezier(.16,1,.3,1) calc(var(--k)*110ms),border-color .3s,box-shadow .4s}
 .bw.in{opacity:1;transform:rotateX(var(--rx)) rotateY(var(--ry))}
+.bw.in{animation:bwEnter 1s cubic-bezier(.16,1,.3,1) calc(var(--k)*110ms) backwards}
 .bw.in{transition:opacity .8s cubic-bezier(.16,1,.3,1) calc(var(--k)*110ms),transform .25s ease-out,border-color .3s,box-shadow .4s}
 .bw::before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(420px circle at var(--mx) var(--my),rgba(255,255,255,.1),transparent 60%);opacity:0;transition:opacity .35s}
 .bw::after{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;pointer-events:none;background:radial-gradient(260px circle at var(--mx) var(--my),rgba(237,49,36,.9),rgba(79,107,255,.5) 50%,transparent 75%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:0;transition:opacity .35s}
@@ -1490,6 +1491,36 @@ img.fm-lg{display:block;object-fit:cover;background:none;border-radius:11px}
 .bw-chat .m4 em{font-style:normal}
 @media(prefers-reduced-motion:reduce){#why .bw-chat .m3,.bw-chat .bc-bot2 .ty{display:none}#why .bw-chat .m4{opacity:1!important;transform:none!important;clip-path:none!important}}
 #why .bw-chat .ty{justify-self:start;width:max-content}
+
+/* ===== 3D treatment: cards fly in from depth, tilt toward the pointer with layered parallax, glass shapes float behind. The cards themselves are unchanged. ===== */
+.bw:nth-child(odd){--ent:-16deg}.bw:nth-child(even){--ent:16deg}
+@keyframes bwEnter{from{opacity:0;transform:translate3d(0,64px,-220px) rotateX(20deg) rotateY(var(--ent,0deg))}}
+/* the visual of each card sits on its own depth plane and drifts against the pointer */
+.bw>div,.bw>ul{translate:calc(var(--tx,0)*-14px) calc(var(--ty,0)*-10px);transition:translate .3s ease-out}
+/* shadow slides opposite to the tilt, so the card feels lifted off the page */
+.bw:hover{box-shadow:calc(var(--sx,0px)) calc(30px + var(--sy,0px)) 70px -30px rgba(0,0,0,.8),0 0 0 1px rgba(255,255,255,.03)}
+
+.why-3d{position:absolute;inset:0;z-index:0;pointer-events:none;perspective:900px}
+#why .hhead,.bw-grid{position:relative;z-index:1}
+.w3-cube{position:absolute;top:70px;right:-96px;width:84px;height:84px;transform-style:preserve-3d;animation:w3Spin 24s linear infinite,w3Bob 7s ease-in-out infinite}
+.w3-cube b{position:absolute;inset:0;border:1px solid rgba(255,255,255,.3);border-radius:10px;background:linear-gradient(135deg,rgba(237,49,36,.34),rgba(79,107,255,.2));box-shadow:inset 0 0 24px rgba(255,255,255,.08)}
+.w3-cube b:nth-child(1){transform:translateZ(42px)}
+.w3-cube b:nth-child(2){transform:rotateY(90deg) translateZ(42px)}
+.w3-cube b:nth-child(3){transform:rotateY(180deg) translateZ(42px)}
+.w3-cube b:nth-child(4){transform:rotateY(-90deg) translateZ(42px)}
+.w3-cube b:nth-child(5){transform:rotateX(90deg) translateZ(42px)}
+.w3-cube b:nth-child(6){transform:rotateX(-90deg) translateZ(42px)}
+.w3-ring{position:absolute;left:-112px;top:34%;width:128px;height:128px;transform-style:preserve-3d;animation:w3Ring 18s linear infinite,w3Bob 9s ease-in-out -3s infinite}
+.w3-ring i{position:absolute;inset:0;border-radius:50%;padding:9px;background:linear-gradient(135deg,#ed3124,#ff9a45 45%,#4f6bff);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0);mask-composite:exclude;opacity:.6}
+.w3-ring i:nth-child(2){transform:rotateY(90deg);opacity:.4}
+.w3-orb{position:absolute;right:-104px;bottom:5%;width:112px;height:112px;border-radius:50%;background:radial-gradient(circle at 32% 28%,rgba(255,255,255,.6),rgba(79,107,255,.55) 26%,rgba(18,22,52,.92) 72%);box-shadow:0 34px 60px -22px rgba(79,107,255,.55),inset -12px -16px 32px rgba(0,0,0,.5);opacity:.85;animation:w3Bob 10s ease-in-out -5s infinite}
+@keyframes w3Spin{from{transform:rotateX(-22deg) rotateY(0)}to{transform:rotateX(-22deg) rotateY(360deg)}}
+@keyframes w3Ring{from{transform:rotateX(62deg) rotateZ(0)}to{transform:rotateX(62deg) rotateZ(360deg)}}
+@keyframes w3Bob{50%{translate:0 -20px}}
+@media(max-width:1359px){.why-3d{display:none}}
+@media(max-width:640px){@keyframes bwEnter{from{opacity:0;transform:translate3d(0,40px,-120px) rotateX(12deg)}}}
+@media(prefers-reduced-motion:reduce){.bw.in{animation:none}.bw>div,.bw>ul{translate:none}.why-3d *{animation:none!important}}
+@media(hover:none){.bw>div,.bw>ul{translate:none}}
 
 /* sections/stats.css */
 .st {

@@ -24,9 +24,14 @@
     c.addEventListener("pointermove",e=>{
       const r=c.getBoundingClientRect(),x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;
       c.style.setProperty("--mx",(x*100).toFixed(1)+"%");c.style.setProperty("--my",(y*100).toFixed(1)+"%");
-      if(fine&&!calm&&!c.classList.contains("bw-m")){c.style.setProperty("--rx",((.5-y)*5).toFixed(2)+"deg");c.style.setProperty("--ry",((x-.5)*7).toFixed(2)+"deg")}
+      if(fine&&!calm&&!c.classList.contains("bw-m")){
+        const k=Math.max(.34,Math.min(1,420/r.width));   /* wide cards tilt less, small cards tilt more: same feel everywhere */
+        c.style.setProperty("--rx",((.5-y)*9*k).toFixed(2)+"deg");c.style.setProperty("--ry",((x-.5)*12*k).toFixed(2)+"deg");
+        c.style.setProperty("--tx",(x-.5).toFixed(3));c.style.setProperty("--ty",(y-.5).toFixed(3));   /* depth layers drift against the pointer */
+        c.style.setProperty("--sx",((.5-x)*26).toFixed(1)+"px");c.style.setProperty("--sy",((y-.5)*14).toFixed(1)+"px"); /* shadow slides the other way */
+      }
     });
-    c.addEventListener("pointerleave",()=>{c.style.setProperty("--rx","0deg");c.style.setProperty("--ry","0deg")});
+    c.addEventListener("pointerleave",()=>{["--rx","--ry"].forEach(k=>c.style.setProperty(k,"0deg"));["--tx","--ty"].forEach(k=>c.style.setProperty(k,"0"));["--sx","--sy"].forEach(k=>c.style.setProperty(k,"0px"))});
   });
   // Start each card's animation when it scrolls into view
   const io=new IntersectionObserver(es=>es.forEach(e=>{

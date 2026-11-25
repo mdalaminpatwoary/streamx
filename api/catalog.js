@@ -8,6 +8,9 @@ const API = "https://api.themoviedb.org/3";
 const HOUR = 3600 * 1000;
 
 const { mapProviders } = require("./_providers");
+/* Reviews show the customer's country (not the city). Older reviews saved only a Bangladeshi city: those count as Bangladesh. */
+const BD_CITY = /^(dhaka|dacca|chattogram|chittagong|sylhet|rajshahi|khulna|barishal|barisal|rangpur|mymensingh|cumilla|comilla|gazipur|narayanganj|cox'?s bazar|bogura|bogra|jessore|jashore|savar|tangail|narsingdi|feni|noakhali|dinajpur|pabna|kushtia|tongi|bangladesh)\b/i;
+const countryName = (c) => { if (!c) return ""; try { return new Intl.DisplayNames(["en"], { type: "region" }).of(c) || c; } catch (e) { return c; } };
 /* The visitor's country (2 letters) from the host's IP lookup; US when unknown. */
 /* Everyone gets the same US lists, so the edge can cache one answer for all visitors (no per-visitor country lookup). */
 const countryOf = () => "US";
@@ -332,7 +335,7 @@ module.exports = async (req, res) => {
       let rows; try { rows = (await db.rest("GET", `reviews?select=${base},kind,institution,country,expat,has_photo&order=created_at.desc&limit=100`)) || []; }
       catch (e) { rows = (await db.rest("GET", `reviews?select=${base}&order=created_at.desc&limit=100`)) || []; } // new columns not added yet
       res.setHeader("Cache-Control", "public, s-maxage=60, stale-while-revalidate=600");
-      return res.status(200).json({ list: rows.map((r) => ({ id: r.id, n: r.name, role: r.role, company: r.company, loc: r.loc, services: r.services || [], s: r.rating, t: r.body, photo: r.has_photo ? "/api/catalog?a=rvimg&w=photo&id=" + r.id : r.photo, kind: r.kind || "pro", inst: r.institution || "", cc: r.country || "", x: !!r.expat, pk: r.proof_kind === "image" && !r.has_img ? "" : r.proof_kind, pu: r.proof_kind === "link" ? r.proof_url : "", popular: !!r.popular })) });
+      return res.status(200).json({ list: rows.map((r) => { const cc = r.country || (BD_CITY.test(r.loc || "") ? "BD" : ""); return ({ id: r.id, n: r.name, role: r.role, company: r.company, loc: countryName(cc), services: r.services || [], s: r.rating, t: r.body, photo: r.has_photo ? "/api/catalog?a=rvimg&w=photo&id=" + r.id : r.photo, kind: r.kind || "pro", inst: r.institution || "", cc, x: !!r.expat, pk: r.proof_kind === "image" && !r.has_img ? "" : r.proof_kind, pu: r.proof_kind === "link" ? r.proof_url : "", popular: !!r.popular }); }) });
     }
     if (req.query.a === "rvimg") {
       const id = parseInt(req.query.id, 10);

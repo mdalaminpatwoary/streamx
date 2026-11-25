@@ -35,7 +35,7 @@ function setPop(n,instant){
       <span class="rs-badge"><span class="rs-stars">${"★".repeat(r.s||5)}</span><b>${(r.s||5).toFixed(1)}</b></span></div>
     <div class="rs-body"><span class="eyebrow">Featured review</span>${QUOTE}
       <blockquote>${r.t.split(" ").map((w,k)=>`<span class="rw" style="--k:${k}">${w}</span>`).join(" ")}</blockquote>
-      <div class="rs-by"><b>${r.n}</b><span>${[subLine(r),r.loc].filter(Boolean).join(" · ")}</span>${ccTag(r,"rs-cc")}</div>
+      <div class="rs-by"><b>${r.n}</b><span>${subLine(r)}</span>${ccTag(r,"rs-cc")}</div>
       <div class="rs-svcs" aria-label="Services bought">${popTile(r)}</div>
       <div class="rs-act"><button class="btn grad-bg" onclick="openReview(${i})">View full story →</button></div></div>
     <div class="rs-nav" role="tablist">${POP.map((j,x)=>`<button type="button" role="tab" aria-selected="${x===pk}" class="${x===pk?"on":""}" onclick="setPop(${x})" style="${grad(j)}"><span class="rs-mini"><i>${initials(REVIEWS[j].n)}</i>${ph(REVIEWS[j])}</span><span class="rs-nm"><b>${REVIEWS[j].n}</b><small>${REVIEWS[j].role||"Customer"}</small></span><span class="rs-bar"><i></i></span></button>`).join("")}</div></div>`;
@@ -65,7 +65,7 @@ $("#pop").addEventListener("pointermove",e=>{
 const esc=t=>String(t==null?"":t).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const PROOF='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/><path d="m9 15 2 2 4-4"/></svg>';
 function openReview(i){
-  const r=REVIEWS[i],info=[["Designation",r.role],[r.kind==="student"?"Institution":"Company",r.company],["Location",r.loc]].filter(x=>x[1]);
+  const r=REVIEWS[i],info=[["Designation",r.role],[r.kind==="student"?"Institution":"Company",r.company]].filter(x=>x[1]);
   $("#rmb").innerHTML=`<button class="rm-x" aria-label="Close">✕</button><div class="rm-cover" style="${grad(i)}"></div>
   <div class="rm-body" style="${grad(i)}"><div class="rm-av"><i>${initials(r.n)}</i>${ph(r)}</div>
   <div class="rm-head rm-i" style="--n:0"><h3>${r.n}</h3><p>${subLine(r)||"Customer"}</p><span class="rec">${THUMB}Recommends StreamX</span>${ccTag(r,"rm-cc")}</div>
