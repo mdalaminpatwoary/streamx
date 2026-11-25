@@ -336,7 +336,10 @@ nav a:hover {
 /* Burger and announcements bell leave like the links: a quick 3D flip + fade first, then the slot closes; on scroll up the slot opens, then they flip back in */
 #burger{overflow:hidden;transition:width .62s var(--spring) .02s,margin .62s var(--spring) .02s,opacity .25s .28s,transform .6s var(--spring) .28s,border-width .2s .16s,background .25s,border-color .25s}
 .nav.pill #burger{width:0;min-width:0;max-width:0;flex:0 0 0;padding:0;margin-left:-10px;border-width:0;opacity:0;transform:perspective(300px) rotateX(-100deg) scale(.6);pointer-events:none;font-size:0;line-height:0;color:transparent;visibility:hidden;transition:width .62s var(--spring) .16s,margin .62s var(--spring) .16s,opacity .2s .02s,transform .32s cubic-bezier(.5,0,.75,0) .02s,border-width .2s .16s,visibility 0s .9s}
-.nav.pill #burger{transition-delay:.16s,.16s,.06s,.06s,.16s,.9s}
+/* closing: fade button + icon out completely first, then fold the empty slot away */
+.nav.pill #burger{transition-delay:.26s,.26s,0s,0s,.26s,.9s}
+.nav.pill #burger svg{opacity:0;transition:opacity .18s ease-out}
+#burger svg{transition:opacity .25s .3s}
 
 /* Premium finish: the bar is its own GPU layer, and a soft ring settles around it when it lands as a pill */
 .navbar{will-change:width,padding;transform:translateZ(0);backface-visibility:hidden}
@@ -347,7 +350,7 @@ nav a:hover {
 /* Cart and account never move: same right edge, same padding and height in both states, no undershoot when the bar closes. On phones the burger sits left of them, so folding it away never shifts them */
 .nav.pill .navbar{transition:width .6s cubic-bezier(.22,1,.36,1),padding .6s cubic-bezier(.22,1,.36,1),background .4s,box-shadow .4s}
 @media (min-width:861px){.nav.pill .navbar{transition-delay:.14s,.14s,0s,0s}}
-@media (max-width:860px){#burger{display:grid!important;place-items:center;order:-1;width:40px;height:40px;padding:0;font-size:0;line-height:0}#burger svg{display:block}#burger.mn-on{border-color:rgba(237,49,36,.55);background:rgba(237,49,36,.16)}}
+@media (max-width:860px){#burger{display:grid!important;flex:none;place-items:center;order:-1;width:40px;height:40px;padding:0;font-size:0;line-height:0}#burger svg{display:block}#burger.mn-on{border-color:rgba(237,49,36,.55);background:rgba(237,49,36,.16)}}
 
 /* Announcement pop-up in the pill */
 .sp-nt{cursor:pointer;color:#fff;text-decoration:none}
