@@ -60,7 +60,7 @@ const head = ({ title, desc, url, img, extra = "", noindex = false }) => `<!DOCT
 <meta name="theme-color" content="#0a0d1a">
 <link rel="icon" href="/favicon.ico" sizes="any"><link rel="apple-touch-icon" href="/assets/img/favicon/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" onload="this.onload=null;this.rel=\'stylesheet\'"><noscript><link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet"></noscript>
-<link rel="stylesheet" href="/assets/css/service-page.css?v=40"><link rel="stylesheet" href="/assets/css/service-page-v2.css?v=42"><link rel="stylesheet" href="/assets/css/title-modal.css?v=20261124g"><link rel="stylesheet" href="/assets/css/components/chat-widget.css?v=20261121c">${extra}
+<link rel="stylesheet" href="/assets/css/service-page.css?v=40"><link rel="stylesheet" href="/assets/css/service-page-v2.css?v=43"><link rel="stylesheet" href="/assets/css/title-modal.css?v=20261124g"><link rel="stylesheet" href="/assets/css/components/chat-widget.css?v=20261121c">${extra}
 </head>`;
 
 /* glow colour that matches the logo, where the brand colour in the catalog is a different hue */
