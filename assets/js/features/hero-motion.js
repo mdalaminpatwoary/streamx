@@ -1,7 +1,7 @@
 /* Home hero: word reveal, rolling brand ticker, reactive dot-grid canvas and a draggable 3D service carousel. */
 // ===== Home hero motion =====
 (function(){
-  const hero=$("#home"),title=$(".hx-title");
+  const hero=$("#home"),title=$(".hx-title"),SEL=document.documentElement.classList; /* 'selecting' is set while text is selected: the hero then stands still so the selection does not blink */
   if(!hero||!title)return;
   const calm=matchMedia("(prefers-reduced-motion: reduce)").matches;
   const fine=matchMedia("(pointer:fine)").matches;
@@ -61,7 +61,7 @@
     let last=0;const o0=new Float32Array(N).fill(-1),d0=new Float32Array(N).fill(-1),z0=new Int8Array(N).fill(-1);
     function frame(t){
       requestAnimationFrame(frame);
-      if(!seen||document.hidden){last=0;return}
+      if(!seen||document.hidden||SEL.contains("selecting")){last=0;return}
       const dt=last?Math.min(3,(t-last)/16.667):1;last=t;
       if(!dragging){
         const auto=calm?0:(stage.matches(":hover")?-.05:-.18);
@@ -98,7 +98,7 @@
     const pulse=[];let nextP=0,skip=false;
     function draw(){
       requestAnimationFrame(draw);
-      if(!vis||document.hidden)return;
+      if(!vis||document.hidden||SEL.contains("selecting"))return;
       if(!fine&&(skip=!skip))return;   /* touch devices: draw every other frame, leaves the carousel more time */
       t+=.012*(fine?1:2);c.clearRect(0,0,W,H);
       if(t>nextP){pulse.push({x:Math.random()*W,y:Math.random()*H,r:0});nextP=t+1.1}

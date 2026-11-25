@@ -135,3 +135,5 @@
 
 /* Selecting text: freeze the heading shimmer so the selection does not blink */
 html.selecting .grad .w { animation-play-state: paused !important; will-change: auto !important; }
+/* ...and the whole hero holds still (background orbs, ticker, carousel, dot grid) while you select */
+html.selecting #home, html.selecting #home *, html.selecting #home *::before, html.selecting #home *::after { animation-play-state: paused !important; }
