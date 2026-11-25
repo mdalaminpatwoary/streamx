@@ -1552,7 +1552,7 @@ nav a:hover {
 /* Cart and account never move: same right edge, same padding and height in both states, no undershoot when the bar closes. On phones the burger sits left of them, so folding it away never shifts them */
 .nav.pill .navbar{transition:width .6s cubic-bezier(.22,1,.36,1),padding .6s cubic-bezier(.22,1,.36,1),background .4s,box-shadow .4s}
 @media (min-width:861px){.nav.pill .navbar{transition-delay:.14s,.14s,0s,0s}}
-@media (max-width:860px){#burger{display:grid!important;flex:none;place-items:center;order:-1;width:40px;height:40px;padding:0;font-size:0;line-height:0}#burger svg{display:block}#burger.mn-on{border-color:rgba(237,49,36,.55);background:rgba(237,49,36,.16)}}
+@media (max-width:860px){#burger{display:grid!important;flex:none;place-items:center;order:-1;width:40px;height:40px;padding:0;font-size:0;line-height:0}#burger svg{display:block;grid-area:1/1}#burger.mn-on{border-color:rgba(237,49,36,.55);background:rgba(237,49,36,.16)}}
 
 /* Announcement pop-up in the pill */
 .sp-nt{cursor:pointer;color:#fff;text-decoration:none}
@@ -1611,6 +1611,12 @@ nav a:hover {
   }
 }
 @media (prefers-reduced-motion: reduce) { html.mn-lock .cw { transition: opacity .15s; } }
+
+/* hamburger <-> close: the icon fades and turns away, the other one fades in */
+#burger .hb-l,#burger .hb-x{transition:opacity .2s ease,transform .32s cubic-bezier(.22,1,.36,1)}
+#burger .hb-x{opacity:0;transform:rotate(-90deg) scale(.5)}
+#burger.mn-on .hb-l{opacity:0;transform:rotate(90deg) scale(.5)}
+#burger.mn-on .hb-x{opacity:1;transform:none}
 
 /* components/buttons.css */
 .btn {

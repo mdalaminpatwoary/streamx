@@ -10,9 +10,8 @@ document.querySelectorAll("[data-wa]").forEach(a=>{a.href=wa(a.dataset.wa);a.tar
   var bg=document.createElement("div");bg.className="mn-bg";document.body.appendChild(bg);
   var tr=$("#acctBtn");
   /* Phones: a dedicated menu button (left of cart and account) opens the glass menu sheet; the profile button goes straight to My account */
-  var HB='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h10"/></svg>',XX='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>';
-  function set(o){m.classList.toggle("open",o);bg.classList.toggle("on",o);if(b){b.innerHTML=o?XX:HB;b.classList.toggle("mn-on",o);b.setAttribute("aria-expanded",o?"true":"false")}document.documentElement.classList.toggle("mn-lock",o)}
-  if(b){b.innerHTML=HB;b.onclick=function(){set(!m.classList.contains("open"))}}
+  function set(o){m.classList.toggle("open",o);bg.classList.toggle("on",o);if(b){b.classList.toggle("mn-on",o);b.setAttribute("aria-expanded",o?"true":"false")}document.documentElement.classList.toggle("mn-lock",o)}
+  if(b){b.onclick=function(){set(!m.classList.contains("open"))}}
   bg.onclick=function(){set(false)};
   m.onclick=function(e){if(e.target.closest("a"))set(false)};
   document.addEventListener("keydown",function(e){if(e.key==="Escape")set(false)});
