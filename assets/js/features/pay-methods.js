@@ -5,6 +5,7 @@
   const WA = (typeof WA_NUMBER !== "undefined" && WA_NUMBER) || "8801312850241";
   const RECHARGE_FEE = 0.05;
   const LOGO = { bkash: "bkash.png", nagad: "nagad.png", rocket: "rocket.png", upay: "upay.png", binance: "binance.svg?v=1", gp: "gp.png?v=2", city: "bank-city.png", brac: "bank-brac.png", ific: "bank-ific.png", prime: "bank-prime.png" };
+  const USDT_RATE = 120, usdt = (v) => (Math.ceil(v / USDT_RATE * 100) / 100).toFixed(2);
   const N1 = "01309009329", N2 = "01312850241", N3 = "01956476739";
   const BANKS = [
     { k: "prime", name: "Prime Bank", c: "#c8102e", ini: "PB", rows: [["Account name", "Md. Al-Amin Patwoary"], ["Account number", "2186213026702"], ["Type", "Prime Savings Account"], ["Branch", "Jatrabari"], ["Routing number", "170273220"]] },
@@ -55,6 +56,7 @@ ${opt("gp", "GP", "#00a1e0", "Mobile Recharge", "Grameenphone · +5% extra", "Gr
       root.querySelectorAll("[data-amt]").forEach((p) => {
         p.hidden = !v; if (!v) return;
         const rc = p.closest(".mp-o").dataset.via === "Grameenphone recharge", pay = rc ? Math.ceil(v * (1 + RECHARGE_FEE)) : v;
+        if (p.closest(".mp-o").dataset.via === "Binance") { const u = usdt(v); p.innerHTML = `<div class="mp-amt-r"><span>Amount to send</span><b>${u} USDT</b></div>${cp(u, "amount")}`; return; }
         p.innerHTML = `<div class="mp-amt-r"><span>${rc ? "Recharge amount" : "Amount to pay"}</span><b>${tk(pay)}</b></div>${cp(String(pay), "amount")}` + (rc ? `<small>${tk(v)} + 5% recharge charge (${tk(pay - v)})</small>` : "");
       });
     }
@@ -90,7 +92,7 @@ ${opt("gp", "GP", "#00a1e0", "Mobile Recharge", "Grameenphone · +5% extra", "Gr
       if (tx.length < 6) return (er.textContent = "Enter the Transaction ID from your payment.");
       er.textContent = ""; if (cfg.onName) cfg.onName(name);
       const lines = (cfg.getLines && cfg.getLines()) || [];
-      const msg = "Hi StreamX! I paid manually.\n\n" + (lines.length ? lines.join("\n") + "\n" : "") + (amt ? (via === "Grameenphone recharge" ? "Order total: " + tk(amt) + "\nRecharged: " + tk(Math.ceil(amt * (1 + RECHARGE_FEE))) + " (incl. 5% recharge charge)\n" : "Amount paid: " + tk(amt) + "\n") : "") + "Paid with: " + via + "\nTransaction ID: " + tx + "\nName: " + name;
+      const msg = "Hi StreamX! I paid manually.\n\n" + (lines.length ? lines.join("\n") + "\n" : "") + (amt ? (via === "Binance" ? "Order total: " + tk(amt) + "\nPaid: " + usdt(amt) + " USDT\n" : via === "Grameenphone recharge" ? "Order total: " + tk(amt) + "\nRecharged: " + tk(Math.ceil(amt * (1 + RECHARGE_FEE))) + " (incl. 5% recharge charge)\n" : "Amount paid: " + tk(amt) + "\n") : "") + "Paid with: " + via + "\nTransaction ID: " + tx + "\nName: " + name;
       window.open("https://wa.me/" + WA + "?text=" + encodeURIComponent(msg), "_blank", "noopener");
     });
     return { refresh, setName: (n) => { if (n && !f("name").value) f("name").value = n; }, reset: () => { q("[data-err]").textContent = ""; } };
