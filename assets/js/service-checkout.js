@@ -43,7 +43,7 @@ function sessEmail(){try{var t=localStorage.getItem("sx_session");if(!t)return "
   function asset(tag, url) { var el = document.createElement(tag); if (tag === "link") { el.rel = "stylesheet"; el.href = url; } else { el.src = url; } document.head.appendChild(el); return el; }
   function ensurePM(cb) {
     if (window.PayMethods) return cb();
-    if (!document.querySelector('link[href*="pay-methods.css"]')) asset("link", "/assets/css/components/pay-methods.css?v=5");
+    if (!document.querySelector('link[href*="pay-methods.css"]')) asset("link", "/assets/css/components/pay-methods.css?v=6");
     var s = document.querySelector('script[src*="pay-methods.js"]') || asset("script", "/assets/js/features/pay-methods.js?v=20261126g");
     s.addEventListener("load", cb);
   }

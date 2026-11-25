@@ -3011,6 +3011,8 @@ details[open]>summary>.mp-chev{transform:rotate(-135deg)}
 .mp-o[open]>summary .mp-lg img,.mp-o:hover>summary .mp-lg img,.mp-b[open]>summary .mp-lg img{filter:drop-shadow(0 4px 12px color-mix(in srgb,var(--c) 35%,transparent)) drop-shadow(0 4px 10px rgba(0,0,0,.45));transform:scale(1.03)}
 .mp-o[open]>.mp-ob,.mp-b[open]>.mp-ob{border-top-color:rgba(255,255,255,.07)}
 @media(prefers-reduced-motion:reduce){.mp-o,.mp-b{transition:none}.mp-o:hover,.mp-b:hover{transform:none}}
+/* isolate from site-wide details/FAQ styling (padding/margin leaked into the cart popup) */
+.pm details.mp-o,.pm details.mp-b{padding:0;margin:0}
 
 /* sections/reviews.css */
 .rev small {
