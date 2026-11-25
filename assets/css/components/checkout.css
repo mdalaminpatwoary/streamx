@@ -84,3 +84,4 @@
 
 /* Mobile number and email each get a full row so nothing is cut off */
 .pay-m #payForm .pay-row { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+.pay-wa button#payWa{padding:0;border:0;background:none;color:#fff;font:inherit;font-weight:700;text-decoration:underline;cursor:pointer}

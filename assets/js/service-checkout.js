@@ -15,10 +15,11 @@
     '<p class="co-er" role="alert"></p><button class="co-go" type="submit"></button>' +
     '<img class="co-eps" src="/assets/img/pay/eps-renew.webp" alt="Pay with EPS: Visa, Mastercard, American Express, bKash, Nagad, Rocket and more" loading="lazy" width="1012" height="162">' +
     '<small class="co-fine">You will be taken to the EPS payment page. We never see your card or wallet PIN.</small>' +
-    '<small class="co-fine co-wa">Prefer to order by chat? <a target="_blank" rel="noopener">Order on WhatsApp instead ↗</a></small></form>';
+    '<small class="co-fine co-wa">Prefer to order by chat? <button type="button" class="co-man">Pay Manually</button></small></form>' +
+    '<div class="co-box co-mbox" hidden><button class="co-x" type="button" data-x aria-label="Close">✕</button><button class="co-back" type="button">← Back to online payment</button><span class="co-eb">Pay manually</span><h3>Send the payment, then confirm</h3><div class="co-sum" id="co-ms"></div><div id="co-mm"></div></div>';
   document.body.appendChild(m);
-  var f = $("form", m), er = $(".co-er", m), go = $(".co-go", m), cur = null;
-  function close() { m.hidden = true; document.documentElement.style.overflow = ""; }
+  var f = $("form", m), mb = $(".co-mbox", m), PM = null, er = $(".co-er", m), go = $(".co-go", m), cur = null;
+  function close() { m.hidden = true; f.hidden = false; mb.hidden = true; document.documentElement.style.overflow = ""; }
 function sessEmail(){try{var t=localStorage.getItem("sx_session");if(!t)return "";var o=JSON.parse(atob(t.split(".")[0].replace(/-/g,"+").replace(/_/g,"/")));return o&&o.t==="sess"&&o.exp>Date.now()&&o.e?String(o.e):""}catch(e){return ""}}
   function lockEmail() {
     var el = $("#co-e"), se = sessEmail(), h = $("#co-lock");
@@ -32,14 +33,39 @@ function sessEmail(){try{var t=localStorage.getItem("sx_session");if(!t)return "
     var s = {}; try { s = JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (e) {}
     $("#co-n").value = s.n || ""; $("#co-p").value = s.p || ""; $("#co-e").value = s.e || "";
     lockEmail(); er.textContent = ""; go.disabled = false; go.textContent = "Pay " + totalTxt + " securely";
-    $(".co-wa a", m).href = "https://wa.me/" + WA + "?text=" + encodeURIComponent("Hi StreamX! I want to order:\n" + items.map(function (x, j) { return (j + 1) + ". " + x.label + " x" + (x.q || 1) + " - " + x.priceTxt; }).join("\n") + "\nTotal: " + totalTxt);
-    m.hidden = false; document.documentElement.style.overflow = "hidden"; setTimeout(function () { ($("#co-n").value ? $("#co-p") : $("#co-n")).focus(); }, 50); return true;
+    f.hidden = false; mb.hidden = true; m.hidden = false; document.documentElement.style.overflow = "hidden"; setTimeout(function () { ($("#co-n").value ? $("#co-p") : $("#co-n")).focus(); }, 50); return true;
   }
   function open(a) {
     var d; try { d = JSON.parse(a.dataset.buy); } catch (e) { return false; }
     var price = ($("b", a) || {}).textContent || "", label = d.n + (d.vr ? " · " + d.vr : "") + " · " + d.v;
     return show([{ name: d.n, vr: d.vr, v: d.v, q: 1, label: label, priceTxt: price }], price, label);
   }
+  function asset(tag, url) { var el = document.createElement(tag); if (tag === "link") { el.rel = "stylesheet"; el.href = url; } else { el.src = url; } document.head.appendChild(el); return el; }
+  function ensurePM(cb) {
+    if (window.PayMethods) return cb();
+    if (!document.querySelector('link[href*="pay-methods.css"]')) asset("link", "/assets/css/components/pay-methods.css?v=5");
+    var s = document.querySelector('script[src*="pay-methods.js"]') || asset("script", "/assets/js/features/pay-methods.js?v=20261126g");
+    s.addEventListener("load", cb);
+  }
+  function showManual() {
+    if (!cur) return;
+    ensurePM(function () {
+      var total = Number(String(cur.price).replace(/[^\d.]/g, "")) || null;
+      if (!PM) PM = window.PayMethods.mount($("#co-mm"), {
+        getTotal: function () { return total; },
+        getLines: function () { return cur.items.map(function (x, i) { return (i + 1) + ". " + x.name + (x.vr ? " · " + x.vr : "") + " · " + x.v + " ×" + x.q; }); },
+        onName: function (n) { try { var b = JSON.parse(localStorage.getItem(KEY) || "{}"); b.n = n; localStorage.setItem(KEY, JSON.stringify(b)); } catch (x) {} }
+      });
+      $("#co-ms").innerHTML = $("#co-s").innerHTML; PM.refresh(); PM.reset();
+      try { PM.setName(JSON.parse(localStorage.getItem(KEY) || "{}").n); } catch (e) {}
+      f.hidden = true; mb.hidden = false; mb.scrollTop = 0;
+    });
+  }
+  m.addEventListener("click", function (e) {
+    var t = e.target.closest && e.target.closest("button"); if (!t) return;
+    if (t.classList.contains("co-man")) showManual();
+    else if (t.classList.contains("co-back")) { mb.hidden = true; f.hidden = false; f.scrollTop = 0; }
+  });
   window.spCheckout = show;
   document.addEventListener("click", function (e) {
     var a = e.target.closest && e.target.closest("[data-buy]");

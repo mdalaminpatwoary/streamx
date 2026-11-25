@@ -415,3 +415,8 @@ body.sp-adult:not(.ok) .sp-age{display:grid}
 .sp-ov i{width:52px;height:52px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.55);-webkit-backdrop-filter:blur(10px) saturate(1.4);backdrop-filter:blur(10px) saturate(1.4);box-shadow:0 12px 30px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.35)}
 .sp-poster:hover .sp-ov i{background:rgba(255,255,255,.26)}
 .sp-poster>.sp-ov b{position:absolute;left:0;right:0;bottom:12px;text-align:center;font-size:10px;font-weight:600;letter-spacing:1.6px;text-transform:uppercase;color:rgba(255,255,255,.88)}
+.co-wa button.co-man{padding:0;border:0;background:none;color:#fff;font:inherit;font-weight:700;text-decoration:underline;cursor:pointer}
+.co-box[hidden],.co-box form[hidden]{display:none}
+.co-back{display:inline-flex;align-items:center;gap:6px;margin:0 36px 14px 0;padding:0;border:0;background:none;color:#b4bddb;font:700 13.5px Manrope,system-ui,sans-serif;cursor:pointer;transition:color .2s,transform .25s}
+.co-back:hover{color:#fff;transform:translateX(-2px)}
+.co-mbox .co-sum{margin-bottom:16px}

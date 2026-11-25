@@ -69,7 +69,7 @@ function sessEmail(){try{var t=localStorage.getItem("sx_session");if(!t)return "
     try { const b = JSON.parse(localStorage.getItem(KEY) || "{}"); $("#payName").value = b.n || ""; $("#payPhone").value = splitPhone(b.p); $("#payEmail").value = b.e || ""; } catch (e) {}
     lockEmail();
     cp = null; paintSum();
-    const wl = $("#checkout"); if (wl) $("#payWa").href = wl.href;
+    
     $("#payCpM").textContent = ""; $("#payCpM").className = "pay-cpm"; $("#payCp").value = (function () { try { return (new URLSearchParams(location.search).get("coupon") || sessionStorage.getItem("sx_cp") || "").toUpperCase().slice(0, 24); } catch (e) { return ""; } })();
     cpToggle(!!$("#payCp").value);
     err.textContent = ""; go.disabled = false;
@@ -122,6 +122,7 @@ function sessEmail(){try{var t=localStorage.getItem("sx_session");if(!t)return "
     m.querySelector(".mdlb").scrollTop=0;
   }
   tabs.forEach(b=>b.onclick=()=>showTab(b.dataset.pt));
+  $("#payWa").onclick=()=>showTab("manual");
   const _open=open;
   $("#payBtn").onclick=()=>{_open();showTab("online")};
 })();
