@@ -20,6 +20,7 @@
     var anchor = isOpen ? null : form, show = false;
     if (anchor) { var r = anchor.getBoundingClientRect(); show = r.bottom < 40; }
     fab.classList.toggle("on", show); fab.tabIndex = show ? 0 : -1;
+    document.documentElement.classList.toggle("hs-nochat", show || isOpen);   // the chat bubble fades out while the search pill (or the search) is up
   }
   addEventListener("scroll", function () { if (!ticking) { ticking = true; requestAnimationFrame(upd); } }, { passive: true });
   addEventListener("resize", upd);
@@ -58,7 +59,7 @@
     document.documentElement.classList.add("hs-lock");
     var r = form.getBoundingClientRect(), cs = getComputedStyle(form), src = r;
     if (fab.classList.contains("on") || r.bottom < 0) { src = fab.getBoundingClientRect(); fromFab = true; }
-    fab.classList.remove("on");
+    fab.classList.remove("on"); document.documentElement.classList.add("hs-nochat");
     ph = document.createElement("div"); ph.style.cssText = "height:" + r.height + "px;margin:" + cs.marginTop + " 0 " + cs.marginBottom + ";max-width:" + cs.maxWidth; form.parentNode.insertBefore(ph, form);
     document.body.appendChild(form); q.focus({ preventScroll: true });   // out of the hero's stacking context, so it sits above the glass
     form.classList.add("hs-fx");
