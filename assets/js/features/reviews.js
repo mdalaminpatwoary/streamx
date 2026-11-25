@@ -96,10 +96,22 @@ function startReviews(){
   let em=document.getElementById("rvEmpty");
   if(!any){if(!em){em=document.createElement("p");em.id="rvEmpty";em.className="rv-empty";em.textContent="Customer reviews will appear here soon.";document.querySelector(".rwall").after(em)}}else if(em)em.remove();
   if(any){renderRows();setPop(0,true)}
+  rateBadge();
   document.dispatchEvent(new Event("sx-reviews"));
 }
+// Real rating badge in the hero: only from reviews loaded from the database, never the built-in samples.
+let LIVE=false;
+function rateBadge(){
+  const ul=document.querySelector(".hx-trust");if(!ul)return;
+  let li=document.getElementById("hxRate");
+  const rs=REVIEWS.filter(r=>+r.s>0);
+  if(!LIVE||rs.length<3){if(li)li.remove();return}
+  const avg=(rs.reduce((a,r)=>a+ +r.s,0)/rs.length).toFixed(1);
+  if(!li){li=document.createElement("li");li.id="hxRate";ul.prepend(li)}
+  li.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg><span><b>'+avg+'</b> from '+rs.length+' customer reviews</span>';
+}
 (function(){
-  let done=false;const go=l=>{if(done)return;done=true;if(l)REVIEWS.splice(0,REVIEWS.length,...l.map(r=>({...r,n:esc(r.n),role:esc(r.role),company:esc(r.kind==="student"?r.inst:r.company),loc:esc(r.loc),t:esc(r.t),photo:esc(r.photo),p:(r.services||[])[0]||""})));startReviews()};
+  let done=false;const go=l=>{if(done)return;done=true;if(l){LIVE=true;}if(l)REVIEWS.splice(0,REVIEWS.length,...l.map(r=>({...r,n:esc(r.n),role:esc(r.role),company:esc(r.kind==="student"?r.inst:r.company),loc:esc(r.loc),t:esc(r.t),photo:esc(r.photo),p:(r.services||[])[0]||""})));startReviews()};
   const t=setTimeout(()=>go(null),4000);
   fetch("/api/catalog?a=reviews").then(r=>r.ok?r.json():null).then(d=>{clearTimeout(t);go(d&&Array.isArray(d.list)?d.list:null)}).catch(()=>{clearTimeout(t);go(null)});
 })();

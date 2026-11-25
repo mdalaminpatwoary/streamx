@@ -321,3 +321,6 @@
 
 /* Phones/touch: the carousel is look-only (no tap, no swipe). Mouse users keep the hover slow-down and tilt. */
 @media (hover:none),(pointer:coarse){.hx-stage{pointer-events:none}}
+
+#hxRate b{color:#fff}
+#hxRate svg{fill:#ffb800;stroke:#ffb800}

@@ -26,3 +26,9 @@
   transform: translateY(-4px) scale(1.06);
   filter: drop-shadow(0 10px 24px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 14px var(--c));
 }
+
+/* Merged payment strip under "Four steps" */
+.howpay{max-width:860px;margin:44px auto 0;display:grid;gap:16px;justify-items:center;text-align:center}
+.howpay .hp-t{font-weight:700;color:#e6ebf8;font-size:15px}
+.howpay .eps-strip img{max-width:100%;height:auto}
+.howpay .pnote{text-align:left;max-width:640px}

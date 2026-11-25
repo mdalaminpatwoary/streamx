@@ -159,3 +159,7 @@
 .fq-btns .btn{margin:0;white-space:nowrap}
 .btn.ms{background:linear-gradient(135deg,#0099ff,#a033ff 60%,#ff5280);color:#fff;border:0}
 .btn.ms:hover{filter:brightness(1.08);transform:translateY(-2px)}
+
+.fq[hidden]{display:none}
+.fq-more{grid-column:1/-1;justify-self:start;margin:14px 0 0;padding:11px 20px;border-radius:999px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.04);color:#fff;font:700 14px inherit;cursor:pointer}
+.fq-more:hover{background:rgba(255,255,255,.09)}
