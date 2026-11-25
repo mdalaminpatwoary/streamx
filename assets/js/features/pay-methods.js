@@ -12,7 +12,6 @@
     { k: "ific", name: "IFIC Bank", c: "#00923f", ini: "IF", rows: [["Account name", "Md Al Amin Patwoary"], ["Account number", "0230143018811"], ["Type", "Savings"], ["Branch", "Konapara"], ["Routing number", "120273746"]] },
     { k: "prime", name: "Prime Bank", c: "#c8102e", ini: "PB", rows: [["Account name", "Md. Al-Amin Patwoary"], ["Account number", "2186213026702"], ["Type", "Prime Savings Account"], ["Branch", "Jatrabari"], ["Routing number", "170273220"]] },
   ];
-  const VIA = ["bKash Personal", "bKash Merchant", "Nagad", "Rocket", "Upay", "The City Bank", "BRAC Bank", "IFIC Bank", "Prime Bank", "Grameenphone recharge (+5%)"];
   const esc = (t) => String(t == null ? "" : t).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const tk = (n) => "৳" + Number(n).toLocaleString("en-US");
   const COPY = '<svg class="i-cp" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><svg class="i-ok" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>';
@@ -26,20 +25,17 @@
   function html() {
     return `<ol class="mp-steps"><li>Choose how you want to pay.</li><li>Send the exact total, then enter your Transaction ID.</li><li>Confirm on WhatsApp. We verify the payment and deliver.</li></ol>
 <div class="mp-list">
-${opt("bkash", "bK", "#e2136e", "bKash", "Personal or Merchant", "bKash Personal", `<div class="mp-sub"><p>Personal · Send Money</p>${row("Number", N1)}</div><div class="mp-sub"><p>Merchant · Payment</p>${row("Number", N2)}</div>`)}
+${opt("bkash", "bK", "#e2136e", "bKash", "Personal or Merchant", "bKash", `<div class="mp-sub"><p>Personal · Send Money</p>${row("Number", N1)}</div><div class="mp-sub"><p>Merchant · Payment</p>${row("Number", N2)}</div>`)}
 ${opt("nagad", "NG", "#f6602b", "Nagad", "Send Money", "Nagad", row("Number", N3))}
 ${opt("rocket", "RK", "#8c3494", "Rocket", "Send Money", "Rocket", row("Number", N3))}
 ${opt("upay", "UP", "#f5b800", "Upay", "Send Money", "Upay", row("Number", N3))}
-${opt("", "", "#4F6BFF", "Bank Transfer", BANKS.length + " banks", "The City Bank", `<div class="mp-bl">${bankBody}</div>`, `<span class="mp-lgs">${BANKS.map((b) => lg(b.k, b.ini, b.c, b.name)).join("")}</span>`)}
+${opt("", "", "#4F6BFF", "Bank Transfer", BANKS.length + " banks", "Bank transfer", `<div class="mp-bl">${bankBody}</div>`, `<span class="mp-lgs">${BANKS.map((b) => lg(b.k, b.ini, b.c, b.name)).join("")}</span>`)}
 ${opt("gp", "GP", "#00a1e0", "Mobile Recharge", "Grameenphone · +5% extra", "Grameenphone recharge (+5%)", row("Number", N1) + '<p class="mp-rc" data-rc></p>', "", true)}
 </div>
 <form class="mp-f" novalidate>
   <label><span class="pay-l">Your name</span><input class="pm-in" data-f="name" type="text" autocomplete="name" placeholder="e.g. Rafiq Ahmed" maxlength="60"></label>
   <div class="mp-fa" data-amtwrap hidden><label><span class="pay-l">Amount you paid (৳)</span><input class="pm-in" data-f="amt" type="number" inputmode="decimal" min="1" placeholder="e.g. 450"></label></div>
-  <div class="pay-row">
-    <label><span class="pay-l">Paid with</span><select class="pm-in pm-sel" data-f="via">${VIA.map((v) => `<option>${v}</option>`).join("")}</select></label>
-    <label><span class="pay-l">Transaction ID</span><input class="pm-in" data-f="tx" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="e.g. 9A7B6C5D4E" maxlength="40"></label>
-  </div>
+  <label><span class="pay-l">Transaction ID</span><input class="pm-in" data-f="tx" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="e.g. 9A7B6C5D4E" maxlength="40"></label>
   <p class="pay-err" data-err role="alert"></p>
   <button class="btn wa mp-go" type="submit">Confirm on WhatsApp ↗</button>
   <p class="pay-agree">Delivery starts after we verify the payment. If the amount or ID doesn't match, we will message you. See our <a href="/refund-policy/" target="_blank" rel="noopener">Refund Policy</a>.</p>
@@ -58,13 +54,15 @@ ${opt("gp", "GP", "#00a1e0", "Mobile Recharge", "Grameenphone · +5% extra", "Gr
       root.querySelectorAll("[data-amt]").forEach((p) => { p.hidden = !v; if (v) p.innerHTML = `Send exactly <b>${tk(v)}</b>.`; });
       const rc = q("[data-rc]"); if (rc) rc.innerHTML = `Mobile recharge carries a 5% extra charge. ${v ? `For ${tk(v)}, recharge <b>${tk(Math.ceil(v * (1 + RECHARGE_FEE)))}</b>.` : "Add 5% to your total."}`;
     }
-    const setVia = (v) => { const s = f("via"); if ([...s.options].some((o) => o.value === v)) s.value = v; };
+    let via = ""; // the option the customer opened above
+    const setVia = (v) => { via = v || ""; };
     // One option open at a time; opening one fills "Paid with"
     root.addEventListener("toggle", (e) => {
-      const d = e.target; if (!d.open) return;
+      const d = e.target;
+      if (!d.open) { if (!root.querySelector(".mp-o[open]")) setVia(""); else if (d.classList.contains("mp-b")) setVia(d.closest(".mp-o").dataset.via); return; }
       if (d.classList.contains("mp-o")) {
         root.querySelectorAll(".mp-o[open]").forEach((o) => { if (o !== d) o.open = false; });
-        setVia(d.dataset.via); const b1 = d.querySelector(".mp-b[open]"); if (b1) setVia(b1.dataset.via);
+        const b1 = d.querySelector(".mp-b[open]"); setVia(b1 ? b1.dataset.via : d.dataset.via);
         setTimeout(() => d.scrollIntoView({ behavior: "smooth", block: "nearest" }), 60);
       } else if (d.classList.contains("mp-b")) {
         d.parentNode.querySelectorAll(".mp-b[open]").forEach((o) => { if (o !== d) o.open = false; });
@@ -81,10 +79,11 @@ ${opt("gp", "GP", "#00a1e0", "Mobile Recharge", "Grameenphone · +5% extra", "Gr
     });
     root.querySelector(".mp-f").addEventListener("submit", (e) => {
       e.preventDefault();
-      const name = f("name").value.trim(), tx = f("tx").value.trim().replace(/\s+/g, ""), via = f("via").value, er = q("[data-err]");
+      const name = f("name").value.trim(), tx = f("tx").value.trim().replace(/\s+/g, ""), er = q("[data-err]");
       const t = cfg.getTotal && cfg.getTotal(), amt = t || Number(f("amt") && f("amt").value) || 0;
       if (name.length < 2) return (er.textContent = "Please enter your name.");
       if (cfg.askAmount && !(amt > 0)) return (er.textContent = "Enter the amount you paid.");
+      if (!via) return (er.textContent = "Tap the option you paid with above.");
       if (tx.length < 6) return (er.textContent = "Enter the Transaction ID from your payment.");
       er.textContent = ""; if (cfg.onName) cfg.onName(name);
       const lines = (cfg.getLines && cfg.getLines()) || [];

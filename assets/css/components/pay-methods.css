@@ -90,3 +90,20 @@ details[open]>summary>.mp-chev{transform:rotate(-135deg)}
 .mp-o>summary .mp-lg img,.mp-b>summary .mp-lg img{max-width:150px}
 .mp-b>summary .mp-lg img{max-height:32px}
 .mp-o>summary .mp-lg img,.mp-b>summary .mp-lg img{max-width:min(200px,100%)}
+
+/* Compact option rows */
+.mp-list{gap:8px}
+.mp-o>summary{min-height:0;padding:9px 14px;gap:12px}
+.mp-o>summary .mp-lg{height:36px;width:auto;flex:1}
+.mp-o>summary .mp-lg img{max-height:30px;max-width:min(150px,100%)}
+.mp-o>summary .mp-lg i{width:34px;height:34px;font-size:12px}
+.mp-o>summary .mp-lgs .mp-lg{height:30px}
+.mp-o>summary .mp-lgs .mp-lg img{max-height:22px}
+.mp-b>summary{padding:8px 12px}
+.mp-b>summary .mp-lg{height:32px}
+.mp-b>summary .mp-lg img{max-height:26px;max-width:min(150px,100%)}
+.mp-ob{padding:0 14px 10px}
+.mp-r{padding:7px 0}
+.mp-o>summary:has(.mp-ot:not(.sr)) .mp-lg{flex:none;width:44px}
+.mp-o>summary .mp-ot:not(.sr) b{font-size:15px}
+.mp-o>summary .mp-ot:not(.sr) small{font-size:12px}
