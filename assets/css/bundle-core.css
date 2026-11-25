@@ -3528,6 +3528,8 @@ nav a:hover {
 /* Mobile number and email each get a full row so nothing is cut off */
 .pay-m #payForm .pay-row { grid-template-columns: minmax(0, 1fr); gap: 10px; }
 .pay-wa button#payWa{padding:0;border:0;background:none;color:#fff;font:inherit;font-weight:700;text-decoration:underline;cursor:pointer}
+.pay-back{display:inline-flex;align-items:center;gap:6px;margin:0 36px 14px 0;padding:0;border:0;background:none;color:#b4bddb;font:700 13.5px Manrope,system-ui,sans-serif;cursor:pointer;transition:color .2s,transform .25s}
+.pay-back:hover{color:#fff;transform:translateX(-2px)}
 
 /* sections/hero.css */
 .badges {

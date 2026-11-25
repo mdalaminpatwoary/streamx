@@ -32,7 +32,7 @@
 <link rel="icon" type="image/png" sizes="16x16" href="assets/img/favicon/favicon-16x16.png">
 <link rel="apple-touch-icon" sizes="180x180" href="assets/img/favicon/apple-touch-icon.png">
 <meta name="theme-color" content="#0A0D1A">
-<link rel="stylesheet" href="assets/css/bundle-core.css?v=fa94c5f8">
+<link rel="stylesheet" href="assets/css/bundle-core.css?v=2da1e20f">
 <link rel="stylesheet" href="assets/css/bundle-rest.css?v=1d0fdf55" media="print" onload="this.media='all'">
 <noscript><link rel="stylesheet" href="assets/css/bundle-rest.css?v=1d0fdf55"></noscript>
 <link rel="stylesheet" href="assets/css/base/premium-motion.css?v=20261125c">
@@ -411,10 +411,6 @@
 <div id="paymodal" class="mdl pay-m" role="dialog" aria-modal="true" aria-labelledby="payT">
   <div class="mdlb">
     <button class="mdlx" type="button" aria-label="Close">✕</button>
-    <div class="pay-tabs" role="tablist" aria-label="Payment method">
-      <button type="button" class="on" role="tab" aria-selected="true" data-pt="online">Pay online</button>
-      <button type="button" role="tab" aria-selected="false" data-pt="manual">Pay manually</button>
-    </div>
     <form id="payForm" novalidate>
       <span class="eyebrow">Secure checkout</span>
       <h3 id="payT">Pay online</h3>
@@ -431,7 +427,7 @@
       <p class="pay-agree">By paying, you agree to our <a href="/terms/" target="_blank" rel="noopener">Terms &amp; Conditions</a> and <a href="/refund-policy/" target="_blank" rel="noopener">Refund Policy</a>.</p>
       <small class="pay-fine pay-wa">Prefer to order by chat? <button type="button" id="payWa">Pay Manually</button></small>
     </form>
-    <div id="payManual" hidden><span class="eyebrow">Pay manually</span><h3>Send the payment, then confirm</h3><div class="pay-sum" id="paySumM"></div><div id="payManMount"></div></div>
+    <div id="payManual" hidden><button type="button" class="pay-back" id="payBack">← Back to online payment</button><span class="eyebrow">Pay manually</span><h3>Send the payment, then confirm</h3><div class="pay-sum" id="paySumM"></div><div id="payManMount"></div></div>
   </div>
 </div>
 <div id="mdl" class="mdl" role="dialog" aria-modal="true"><div class="mdlb"><button class="mdlx" aria-label="Close">✕</button><h3 id="mdlt"></h3><div id="mdlc"></div></div></div>
@@ -496,7 +492,7 @@
 <script src="assets/js/avatar-nav.js?v=1" defer></script><script src="assets/js/account-menu.js?v=20261126b" defer></script>
 <script src="assets/js/features/cart.js?v=20261125b"></script>
 <script src="assets/js/features/pay-methods.js?v=20261126g"></script>
-<script src="assets/js/features/checkout.js?v=20261126a"></script>
+<script src="assets/js/features/checkout.js?v=20261126b"></script>
 <script src="assets/js/features/why.js?v=20261125b"></script>
 <script src="assets/js/features/faq.js?v=20261125b"></script>
 <script src="assets/js/layout/header.js?v=20261126g"></script><script src="assets/js/services-greet.js?v=14" defer></script>

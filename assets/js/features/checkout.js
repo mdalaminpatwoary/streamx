@@ -123,6 +123,7 @@ function sessEmail(){try{var t=localStorage.getItem("sx_session");if(!t)return "
   }
   tabs.forEach(b=>b.onclick=()=>showTab(b.dataset.pt));
   $("#payWa").onclick=()=>showTab("manual");
+  $("#payBack").onclick=()=>showTab("online");
   const _open=open;
   $("#payBtn").onclick=()=>{_open();showTab("online")};
 })();
