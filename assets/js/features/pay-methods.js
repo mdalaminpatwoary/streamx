@@ -4,7 +4,7 @@
 (function () {
   const WA = (typeof WA_NUMBER !== "undefined" && WA_NUMBER) || "8801312850241";
   const RECHARGE_FEE = 0.05;
-  const LOGO = { bkash: "bkash.png", nagad: "nagad.png", rocket: "rocket.png", upay: "upay.png", gp: "gp.png?v=2", city: "bank-city.png", brac: "bank-brac.png", ific: "bank-ific.png", prime: "bank-prime.png" };
+  const LOGO = { bkash: "bkash.png", nagad: "nagad.png", rocket: "rocket.png", upay: "upay.png", binance: "binance.svg?v=1", gp: "gp.png?v=2", city: "bank-city.png", brac: "bank-brac.png", ific: "bank-ific.png", prime: "bank-prime.png" };
   const N1 = "01309009329", N2 = "01312850241", N3 = "01956476739";
   const BANKS = [
     { k: "prime", name: "Prime Bank", c: "#c8102e", ini: "PB", rows: [["Account name", "Md. Al-Amin Patwoary"], ["Account number", "2186213026702"], ["Type", "Prime Savings Account"], ["Branch", "Jatrabari"], ["Routing number", "170273220"]] },
@@ -30,6 +30,7 @@ ${opt("nagad", "NG", "#f6602b", "Nagad", "Send Money", "Nagad", row("Number", N3
 ${opt("rocket", "RK", "#8c3494", "Rocket", "Send Money", "Rocket", row("Number", N3))}
 ${opt("upay", "UP", "#f5b800", "Upay", "Send Money", "Upay", row("Number", N3))}
 ${opt("", "", "#4F6BFF", "Bank Transfer", BANKS.length + " banks", "Bank transfer", `<div class="mp-bl">${bankBody}</div>`, `<span class="mp-lgs">${BANKS.map((b) => lg(b.k, b.ini, b.c, b.name)).join("")}</span>`)}
+${opt("binance", "BN", "#f0b90b", "Binance", "Binance Pay", "Binance", row("Binance ID", "766046236") + row("Name", "mdalaminpatwoary"), null, true)}
 ${opt("gp", "GP", "#00a1e0", "Mobile Recharge", "Grameenphone · +5% extra", "Grameenphone recharge", row("Number", N1), "", false)}
 </div>
 <form class="mp-f" novalidate>
