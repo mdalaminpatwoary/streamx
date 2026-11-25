@@ -2,8 +2,8 @@
    Messages wait in a queue (window.sxPopQ): the greeting for a signed-in customer first, then a "new announcement" notice. Each one shows once. */
 (function () {
   var home = !document.getElementById("spNav") && document.getElementById("nav");
-  var nav = document.getElementById("spNav") || home, nr = home ? home.querySelector(".navbar>.nr") : document.querySelector(".sp-nr"), ON = home ? "pill" : "sp-scrolled", AWAY = home ? "away" : "sp-away";
-  if (!nav || !nr || (!home && !document.querySelector(".hb-hero"))) return;
+  var nav = document.getElementById("spNav") || home, nr = home ? home.querySelector(".navbar>.nr") : document.querySelector(".sp-nr"), ON = home ? "pill" : "sp-compact", AWAY = home ? "away" : "sp-away";
+  if (!nav || !nr) return;
   var Q = window.sxPopQ = window.sxPopQ || [], busy = false, tm = 0;
   var ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg>';
 
