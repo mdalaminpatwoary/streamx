@@ -317,7 +317,7 @@ nav a:hover {
 @media (prefers-reduced-motion:reduce){.navbar,.navbar nav{transition-duration:.01s!important}}
 
 /* Greeting inside the pill (same behaviour as the All services page) */
-.navbar>.sp-hi{flex:none;display:flex;align-items:center;height:42px;width:0;margin:0 0 0 -14px;overflow:hidden;white-space:nowrap;opacity:0;perspective:260px;transition:width .6s cubic-bezier(.22,1,.36,1),margin .6s cubic-bezier(.22,1,.36,1),opacity .35s}
+.navbar>.sp-hi{flex:0 1 auto;min-width:0;display:flex;align-items:center;height:42px;width:0;margin:0 0 0 -14px;overflow:hidden;white-space:nowrap;opacity:0;perspective:260px;transition:width .6s cubic-bezier(.22,1,.36,1),margin .6s cubic-bezier(.22,1,.36,1),opacity .35s}
 .navbar>.sp-hi.on{width:var(--w);margin-left:0;opacity:1}
 .sp-hi b{flex:none;display:flex;flex-direction:column;justify-content:center;gap:1px;max-width:100%;padding:0 8px;line-height:1.15;text-align:left;transform-origin:50% 60%;transform:rotateX(-95deg) translateY(8px);opacity:0;transition:transform .6s .08s var(--spring),opacity .3s .08s;will-change:transform}
 .sp-hi b i,.sp-hi b em{display:block;overflow:hidden;text-overflow:ellipsis;font-style:normal}
@@ -363,3 +363,10 @@ nav a:hover {
 .sp-nt.k-price b span i{color:#7fd6a0}.sp-nt.k-offer b span i{color:#ffc66b}.sp-nt.k-maintenance b span i{color:#8fb0ff}.sp-nt.k-info b span i{color:#a9b4dc}
 @media (prefers-reduced-motion:reduce){.sp-nt b u::after{animation:none}}
 @media (min-width:861px){.navbar>.sp-hi{transition-delay:.14s,.14s,0s}}
+
+/* Desktop: the link row fills the free space and centres its links (instead of auto margins), so closing/opening it only ever animates numbers and the cart/account can't be pushed out of place */
+@media (min-width:861px){
+  .navbar nav{flex:1 1 0;min-width:0;justify-content:center;margin:0}
+  .nav.pill .navbar nav{flex:0 0 0;margin:0 0 0 -14px;transition:max-width .62s var(--spring) .16s,margin .4s cubic-bezier(.22,1,.36,1),visibility 0s .9s}
+}
+@media (min-width:861px){.navbar>.nr{margin-left:auto}}

@@ -15,7 +15,7 @@ addEventListener("scroll",()=>{if(!ticking){ticking=true;requestAnimationFrame(f
 const spy=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)setActive(links.find(a=>a.getAttribute("href")==="#"+e.target.id))}),{rootMargin:"-35% 0px -60% 0px"});
 links.forEach(a=>{const h=a.getAttribute("href");const s=h[0]==="#"&&document.querySelector(h);s&&spy.observe(s)});
 addEventListener("resize",()=>setActive(curLink));
-if(window.ResizeObserver){const m=$("#menu");if(m)new ResizeObserver(()=>setActive(curLink)).observe(m)}
+if(window.ResizeObserver){const m=$("#menu");if(m){const ro=new ResizeObserver(()=>setActive(curLink));ro.observe(m);links.forEach(l=>ro.observe(l))}}
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>setActive(curLink));
 /* Width of the shrunk pill = logo + buttons (measured, so it follows the cart/bell/burger that are showing) */
 const bar=nav.querySelector(".navbar"),lg=bar.querySelector(".logo"),nr=bar.querySelector(".nr");

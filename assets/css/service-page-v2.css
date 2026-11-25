@@ -368,7 +368,7 @@ body:has(.hb-hero) .sp-nav .sp-navin{margin-left:auto;margin-right:max(14px,calc
 /* Greeting: the pill flips open to the left with the customer's name */
 body:has(.hb-hero) .sp-nav.sp-scrolled .sp-navin{width:calc(120px + var(--hiw,0px))}
 body:has(.hb-hero) .sp-nav.sp-scrolled:has(#spCart:not([hidden])) .sp-navin{width:calc(168px + var(--hiw,0px))}
-.sp-hi{flex:none;display:flex;align-items:center;height:40px;width:0;margin-right:-8px;overflow:hidden;white-space:nowrap;opacity:0;perspective:260px;font-size:13.5px;font-weight:700;color:#fff;letter-spacing:.1px;transition:width .62s var(--spring),margin .62s var(--spring),opacity .35s}
+.sp-hi{flex:0 1 auto;min-width:0;display:flex;align-items:center;height:40px;width:0;margin-right:-8px;overflow:hidden;white-space:nowrap;opacity:0;perspective:260px;font-size:13.5px;font-weight:700;color:#fff;letter-spacing:.1px;transition:width .62s var(--spring),margin .62s var(--spring),opacity .35s}
 .sp-hi b{flex:none;display:flex;flex-direction:column;justify-content:center;gap:1px;max-width:100%;padding:0 8px;line-height:1.15;text-align:left;transform-origin:50% 60%;transform:rotateX(-95deg) translateY(8px);opacity:0;transition:transform .6s .08s var(--spring),opacity .3s .08s;will-change:transform}
 .sp-hi b i,.sp-hi b em{display:block;overflow:hidden;text-overflow:ellipsis;font-style:normal}
 .sp-hi b i{font-size:10.5px;font-weight:600;color:#9aa4c7;letter-spacing:.2px}

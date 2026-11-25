@@ -8,7 +8,7 @@
   var ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg>';
 
   function active() { return nav.classList.contains(ON) && !nav.classList.contains(AWAY); }
-  var armed = false;
+  var armed = false, curClose = null;
   function pump(delay) {
     if (armed || busy || !Q.length || !active()) return;
     armed = true;
@@ -35,8 +35,9 @@
     var base = home ? (parseFloat(nav.style.getPropertyValue("--pw")) || 200) + 14 : 190, cap = Math.max(60, innerWidth - 28 - base - 12), w = Math.min(Math.ceil(b.offsetWidth) + 4, cap);
     b.style.maxWidth = w + "px"; el.style.setProperty("--w", w + "px");
     var closed = false;
+    curClose = close;
     function close() {
-      if (closed) return; closed = true;
+      if (closed) return; closed = true; if (curClose === close) curClose = null;
       el.classList.add("out");
       setTimeout(function () {
         el.classList.remove("on"); nav.style.setProperty("--hiw", "0px");
@@ -67,6 +68,6 @@
       .then(function (d) { var n = d && d.profile && d.profile.name; if (n) { try { localStorage.setItem("sx_nm", n); } catch (e) {} greet(n); } })
       .catch(function () {});
   }
-  new MutationObserver(function () { pump(); }).observe(nav, { attributes: true, attributeFilter: ["class"] });
+  new MutationObserver(function () { if (curClose && !active()) curClose(); pump(); }).observe(nav, { attributes: true, attributeFilter: ["class"] });
   setInterval(function () { if (Q.length && !busy) pump(); }, 700);
 })();
