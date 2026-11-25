@@ -378,9 +378,3 @@ body:has(.hb-hero) .sp-nav.sp-scrolled:has(#spCart:not([hidden])) .sp-navin{widt
 .sp-hi.on b{transform:none;opacity:1}
 .sp-hi.out b{transform:rotateX(95deg) translateY(-8px);opacity:0;transition-delay:0s;transition-duration:.38s}
 @media(prefers-reduced-motion:reduce){.sp-hi,.sp-hi b{transition-duration:.01s!important;transition-delay:0s!important}}
-
-/* Phone: the nav slides away while scrolling down and springs back on scroll up */
-@media (max-width:860px){
-  .sp-nav{transition:transform .75s var(--spring),opacity .3s}
-  .sp-nav.sp-away{transform:translateY(-140%);opacity:0;pointer-events:none;transition:transform .4s cubic-bezier(.4,0,1,1),opacity .3s}
-}

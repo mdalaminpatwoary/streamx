@@ -6,12 +6,7 @@ function frame(){
   ticking=false;const y=scrollY,dy=y-lastY,max=Math.max(1,document.documentElement.scrollHeight-innerHeight);
   nav.classList.toggle("scrolled",y>30);
   const menu=$("#menu");
-  if(!(menu&&menu.classList.contains("open"))){
-    if(innerWidth<=860){/* phone: slide the pill away while scrolling down, bring it back on scroll up */
-      if(y>140&&dy>4){nav.classList.add("pill","away")}
-      else if(dy<-4||y<60){nav.classList.remove("away");if(y<60)nav.classList.remove("pill")}
-    }else{nav.classList.remove("away");if(y>140&&dy>4)nav.classList.add("pill");else if(dy<-4||y<60)nav.classList.remove("pill")}
-  }
+  if(!(menu&&menu.classList.contains("open"))){if(y>140&&dy>4)nav.classList.add("pill");else if(dy<-4||y<60)nav.classList.remove("pill")}
   nav.classList.remove("hide");lastY=y;
   const sp=Math.min(1,y/max);document.documentElement.style.setProperty("--sp",sp.toFixed(4));
   if(y>=max-4)setActive(links[links.length-1]);
@@ -24,7 +19,7 @@ if(window.ResizeObserver){const m=$("#menu");if(m)new ResizeObserver(()=>setActi
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>setActive(curLink));
 /* Width of the shrunk pill = logo + buttons (measured, so it follows the cart/bell/burger that are showing) */
 const bar=nav.querySelector(".navbar"),lg=bar.querySelector(".logo"),nr=bar.querySelector(".nr");
-function measure(){const c=getComputedStyle(bar),gap=parseFloat(c.columnGap)||14;nav.style.setProperty("--pw",Math.ceil(14+lg.offsetWidth+gap+nr.offsetWidth+8+(parseFloat(c.borderLeftWidth)||0)*2)+"px")}
+function measure(){const c=getComputedStyle(bar),gap=parseFloat(c.columnGap)||14,ks=[...nr.children].filter(e=>e.id!=="burger"&&getComputedStyle(e).display!=="none"),nw=ks.reduce((t,e)=>t+e.offsetWidth,0)+10*Math.max(0,ks.length-1);nav.style.setProperty("--pw",Math.ceil(14+lg.offsetWidth+gap+nw+8+(parseFloat(c.borderLeftWidth)||0)*2)+"px")}
 measure();addEventListener("resize",measure);addEventListener("load",measure);
 if(window.ResizeObserver){new ResizeObserver(measure).observe(nr);new ResizeObserver(measure).observe(lg)}
 setActive(links[0]);frame();
