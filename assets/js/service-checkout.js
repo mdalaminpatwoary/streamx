@@ -44,7 +44,7 @@ function sessEmail(){try{var t=localStorage.getItem("sx_session");if(!t)return "
   function ensurePM(cb) {
     if (window.PayMethods) return cb();
     if (!document.querySelector('link[href*="pay-methods.css"]')) asset("link", "/assets/css/components/pay-methods.css?v=6");
-    var s = document.querySelector('script[src*="pay-methods.js"]') || asset("script", "/assets/js/features/pay-methods.js?v=20261126g");
+    var s = document.querySelector('script[src*="pay-methods.js"]') || asset("script", "/assets/js/features/pay-methods.js?v=20261126i");
     s.addEventListener("load", cb);
   }
   function showManual() {

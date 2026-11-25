@@ -24,20 +24,20 @@
   const opt = (k, ini, c, name, tag, via, body, logos, showT) => `<details class="mp-o" style="--c:${c}" data-via="${via}"><summary>${logos || lg(k, ini, c, name)}<span class="mp-ot${showT ? "" : " sr"}"><b>${name}</b><small>${tag}</small></span><i class="mp-chev" aria-hidden="true"></i></summary><div class="mp-ob">${body}${amtNote}</div></details>`;
   const bankBody = BANKS.map((b) => `<details class="mp-b" style="--c:${b.c}" data-via="${b.name}"><summary>${lg(b.k, b.ini, b.c, b.name)}<b class="sr">${b.name}</b><i class="mp-chev" aria-hidden="true"></i></summary><div class="mp-bd">${b.rows.map((r) => row(r[0], r[1])).join("")}</div></details>`).join("");
   function html() {
-    return `<ol class="mp-steps"><li>Choose how you want to pay.</li><li>Send the exact total, then enter your Transaction ID.</li><li>Confirm on WhatsApp. We verify the payment and deliver.</li></ol>
+    return `<ol class="mp-steps"><li>Choose how you want to pay.</li><li>Send the exact total, then enter your payment reference.</li><li>Confirm on WhatsApp. We verify the payment and deliver.</li></ol>
 <div class="mp-list">
 ${opt("bkash", "bK", "#e2136e", "bKash", "Personal or Merchant", "bKash", `<div class="mp-sub"><p>Personal · Send Money</p>${row("Number", N1)}</div><div class="mp-sub"><p>Merchant · Payment</p>${row("Number", N2)}</div>`)}
 ${opt("nagad", "NG", "#f6602b", "Nagad", "Send Money", "Nagad", row("Number", N3))}
 ${opt("rocket", "RK", "#8c3494", "Rocket", "Send Money", "Rocket", row("Number", N3))}
 ${opt("upay", "UP", "#f5b800", "Upay", "Send Money", "Upay", row("Number", N3))}
-${opt("", "", "#4F6BFF", "Bank Transfer", BANKS.length + " banks", "Bank transfer", `<div class="mp-bl">${bankBody}</div>`, `<span class="mp-lgs">${BANKS.map((b) => lg(b.k, b.ini, b.c, b.name)).join("")}</span>`)}
 ${opt("binance", "BN", "#f0b90b", "Binance", "Binance Pay", "Binance", row("Binance ID", "766046236") + row("Name", "mdalaminpatwoary"), null, true)}
 ${opt("gp", "GP", "#00a1e0", "Mobile Recharge", "Grameenphone · +5% extra", "Grameenphone recharge", row("Number", N1), "", false)}
+${opt("", "", "#4F6BFF", "Bank Transfer", BANKS.length + " banks", "Bank transfer", `<div class="mp-bl">${bankBody}</div>`, `<span class="mp-lgs">${BANKS.map((b) => lg(b.k, b.ini, b.c, b.name)).join("")}</span>`)}
 </div>
 <form class="mp-f" novalidate>
   <label><span class="pay-l">Your name</span><input class="pm-in" data-f="name" type="text" autocomplete="name" placeholder="e.g. Rafiq Ahmed" maxlength="60"></label>
   <div class="mp-fa" data-amtwrap hidden><label><span class="pay-l">Amount you paid (৳)</span><input class="pm-in" data-f="amt" type="number" inputmode="decimal" min="1" placeholder="e.g. 450"></label></div>
-  <label><span class="pay-l">Transaction ID</span><input class="pm-in" data-f="tx" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="e.g. 9A7B6C5D4E" maxlength="40"></label>
+  <label><span class="pay-l" data-txl>Transaction ID or Mobile number</span><input class="pm-in" data-f="tx" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="e.g. 9A7B6C5D4E or 01XXXXXXXXX" maxlength="40"></label>
   <p class="pay-err" data-err role="alert"></p>
   <button class="btn wa mp-go" type="submit">Confirm on WhatsApp ↗</button>
   <p class="pay-agree">Delivery starts after we verify the payment. If the amount or ID doesn't match, we will message you. See our <a href="/refund-policy/" target="_blank" rel="noopener">Refund Policy</a>.</p>
@@ -60,7 +60,10 @@ ${opt("gp", "GP", "#00a1e0", "Mobile Recharge", "Grameenphone · +5% extra", "Gr
         p.innerHTML = `<div class="mp-amt-r"><span>${rc ? "Recharge amount" : "Amount to pay"}</span><b>${tk(pay)}</b></div>${cp(String(pay), "amount")}` + (rc ? `<small>${tk(v)} + 5% recharge charge (${tk(pay - v)})</small>` : "");
       });
     }
-    const setVia = (v) => { via = v || ""; };
+    const refKind = (v) => v === "Binance" ? { l: "Order ID or Binance user name", ph: "e.g. 123456789 or username" }
+      : (v === "Bank transfer" || BANKS.some((b) => b.name === v)) ? { l: "Reference number or Bank Account Number", ph: "e.g. reference no. or your account no." }
+      : { l: "Transaction ID or Mobile number", ph: "e.g. 9A7B6C5D4E or 01XXXXXXXXX" };
+    const setVia = (v) => { via = v || ""; const k = refKind(via); q("[data-txl]").textContent = k.l; f("tx").placeholder = k.ph; };
     // One option open at a time; opening one fills "Paid with"
     root.addEventListener("toggle", (e) => {
       const d = e.target;
@@ -89,10 +92,10 @@ ${opt("gp", "GP", "#00a1e0", "Mobile Recharge", "Grameenphone · +5% extra", "Gr
       if (name.length < 2) return (er.textContent = "Please enter your name.");
       if (cfg.askAmount && !(amt > 0)) return (er.textContent = "Enter the amount you paid.");
       if (!via) return (er.textContent = "Tap the option you paid with above.");
-      if (tx.length < 6) return (er.textContent = "Enter the Transaction ID from your payment.");
+      if (tx.length < 4) return (er.textContent = "Enter your " + refKind(via).l.replace(/^./, (c) => c.toLowerCase()).replace("Binance", "Binance") + ".");
       er.textContent = ""; if (cfg.onName) cfg.onName(name);
       const lines = (cfg.getLines && cfg.getLines()) || [];
-      const msg = "Hi StreamX! I paid manually.\n\n" + (lines.length ? lines.join("\n") + "\n" : "") + (amt ? (via === "Binance" ? "Order total: " + tk(amt) + "\nPaid: " + usdt(amt) + " USDT\n" : via === "Grameenphone recharge" ? "Order total: " + tk(amt) + "\nRecharged: " + tk(Math.ceil(amt * (1 + RECHARGE_FEE))) + " (incl. 5% recharge charge)\n" : "Amount paid: " + tk(amt) + "\n") : "") + "Paid with: " + via + "\nTransaction ID: " + tx + "\nName: " + name;
+      const msg = "Hi StreamX! I paid manually.\n\n" + (lines.length ? lines.join("\n") + "\n" : "") + (amt ? (via === "Binance" ? "Order total: " + tk(amt) + "\nPaid: " + usdt(amt) + " USDT\n" : via === "Grameenphone recharge" ? "Order total: " + tk(amt) + "\nRecharged: " + tk(Math.ceil(amt * (1 + RECHARGE_FEE))) + " (incl. 5% recharge charge)\n" : "Amount paid: " + tk(amt) + "\n") : "") + "Paid with: " + via + "\n" + refKind(via).l + ": " + tx + "\nName: " + name;
       window.open("https://wa.me/" + WA + "?text=" + encodeURIComponent(msg), "_blank", "noopener");
     });
     return { refresh, setName: (n) => { if (n && !f("name").value) f("name").value = n; }, reset: () => { q("[data-err]").textContent = ""; } };
