@@ -103,33 +103,25 @@ function sessEmail(){try{var t=localStorage.getItem("sx_session");if(!t)return "
     }
   });
 
-  /* Pay manually: show our accounts, then confirm the Transaction ID on WhatsApp. */
+  /* Pay manually: shared panel (assets/js/features/pay-methods.js) */
   const pf=$("#payForm"),pman=$("#payManual"),tabs=m.querySelectorAll(".pay-tabs button");
-  const sumHtml=()=>$("#paySum").innerHTML;
+  let PM=null;
   function showTab(t){
     const man=t==="manual";
     pf.hidden=man;pman.hidden=!man;
     tabs.forEach(b=>{const on=b.dataset.pt===t;b.classList.toggle("on",on);b.setAttribute("aria-selected",on)});
-    if(man){$("#paySumM").innerHTML=sumHtml();try{const b=JSON.parse(localStorage.getItem(KEY)||"{}");if(!$("#pmName").value)$("#pmName").value=b.n||""}catch(e){}$("#pmErr").textContent=""}
+    if(man){
+      if(!PM)PM=PayMethods.mount($("#payManMount"),{
+        getTotal:()=>total(),
+        getLines:()=>cart.map((c,i)=>(i+1)+". "+c.name+(c.vr?" · "+c.vr:"")+" · "+c.v+" ×"+c.q+" = "+taka(c.p*c.q)).concat(cp?["Coupon: "+cp.code+" (−"+taka(cp.discount)+")"]:[]),
+        onName:n=>{try{const b=JSON.parse(localStorage.getItem(KEY)||"{}");b.n=n;localStorage.setItem(KEY,JSON.stringify(b))}catch(x){}}
+      });
+      $("#paySumM").innerHTML=$("#paySum").innerHTML;PM.refresh();PM.reset();
+      try{PM.setName(JSON.parse(localStorage.getItem(KEY)||"{}").n)}catch(e){}
+    }
     m.querySelector(".mdlb").scrollTop=0;
   }
   tabs.forEach(b=>b.onclick=()=>showTab(b.dataset.pt));
   const _open=open;
   $("#payBtn").onclick=()=>{_open();showTab("online")};
-  pman.addEventListener("click",e=>{
-    const b=e.target.closest(".mp-cp");if(!b)return;
-    const v=b.dataset.cp,done=()=>{b.textContent="Copied";b.classList.add("ok");setTimeout(()=>{b.textContent="Copy";b.classList.remove("ok")},1400)};
-    if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(v).then(done,()=>{});else{const t=document.createElement("textarea");t.value=v;document.body.appendChild(t);t.select();try{document.execCommand("copy");done()}catch(x){}t.remove()}
-  });
-  $("#payManF").addEventListener("submit",e=>{
-    e.preventDefault();
-    const name=$("#pmName").value.trim(),tx=$("#pmTx").value.trim().replace(/\s+/g,""),via=$("#pmVia").value,er=$("#pmErr");
-    if(name.length<2)return(er.textContent="Please enter your name.");
-    if(tx.length<6)return(er.textContent="Enter the Transaction ID from your payment.");
-    er.textContent="";
-    try{const b=JSON.parse(localStorage.getItem(KEY)||"{}");b.n=name;localStorage.setItem(KEY,JSON.stringify(b))}catch(x){}
-    const lines=cart.map((c,i)=>(i+1)+". "+c.name+(c.vr?" · "+c.vr:"")+" · "+c.v+" ×"+c.q+" = "+taka(c.p*c.q));
-    const msg="Hi StreamX! I paid manually.\n\n"+lines.join("\n")+(cp?"\nCoupon: "+cp.code+" (−"+taka(cp.discount)+")":"")+"\nTotal paid: "+taka(total())+"\nPaid with: "+via+"\nTransaction ID: "+tx+"\nName: "+name;
-    window.open("https://wa.me/"+WA_NUMBER+"?text="+encodeURIComponent(msg),"_blank","noopener");
-  });
 })();

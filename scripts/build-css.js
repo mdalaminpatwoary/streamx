@@ -5,7 +5,7 @@ const fs = require("fs"), path = require("path"), crypto = require("crypto");
 const root = path.join(__dirname, "..");
 const css = (f) => path.join("assets/css", f);
 const CORE = ["base/tokens", "base/base", "base/motion", "layout/section", "layout/header", "components/buttons", "components/logo-tile", "components/modal", "components/toast", "components/chat-widget", "components/panel-pause", "components/cart", "components/checkout", "sections/hero", "sections/hero-modern", "sections/marquee", "sections/products"];
-const REST = ["sections/notices", "sections/bundles", "sections/pricing", "sections/why", "sections/stats", "sections/world", "sections/how-it-works", "sections/trial", "sections/payments", "sections/reviews", "sections/reviews-spotlight", "sections/faq", "sections/cta", "layout/footer"];
+const REST = ["sections/notices", "sections/bundles", "sections/pricing", "sections/why", "sections/stats", "sections/world", "sections/how-it-works", "sections/trial", "sections/payments", "components/pay-methods", "sections/reviews", "sections/reviews-spotlight", "sections/faq", "sections/cta", "layout/footer"];
 const build = (name, list) => {
   const out = list.map((f) => "/* " + f + ".css */\n" + fs.readFileSync(path.join(root, css(f + ".css")), "utf8").trim() + "\n").join("\n");
   fs.writeFileSync(path.join(root, css(name + ".css")), out);

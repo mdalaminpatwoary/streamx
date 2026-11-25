@@ -32,9 +32,9 @@
 <link rel="icon" type="image/png" sizes="16x16" href="assets/img/favicon/favicon-16x16.png">
 <link rel="apple-touch-icon" sizes="180x180" href="assets/img/favicon/apple-touch-icon.png">
 <meta name="theme-color" content="#0A0D1A">
-<link rel="stylesheet" href="assets/css/bundle-core.css?v=f70d5e2a">
-<link rel="stylesheet" href="assets/css/bundle-rest.css?v=802d20dd" media="print" onload="this.media='all'">
-<noscript><link rel="stylesheet" href="assets/css/bundle-rest.css?v=802d20dd"></noscript>
+<link rel="stylesheet" href="assets/css/bundle-core.css?v=4928ca8e">
+<link rel="stylesheet" href="assets/css/bundle-rest.css?v=ec0a0809" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="assets/css/bundle-rest.css?v=ec0a0809"></noscript>
 <link rel="stylesheet" href="assets/css/base/premium-motion.css?v=20261125c">
 </head>
 <body>
@@ -432,25 +432,7 @@
       <p class="pay-agree">By paying, you agree to our <a href="/terms/" target="_blank" rel="noopener">Terms &amp; Conditions</a> and <a href="/refund-policy/" target="_blank" rel="noopener">Refund Policy</a>.</p>
       <small class="pay-fine pay-wa">Prefer to order by chat? <a id="payWa" href="#" target="_blank" rel="noopener">Order on WhatsApp instead ↗</a></small>
     </form>
-    <div id="payManual" hidden>
-      <span class="eyebrow">Pay manually</span>
-      <h3>Send the payment, then confirm</h3>
-      <div class="pay-sum" id="paySumM"></div>
-      <ol class="mp-steps"><li>Send the exact total to any account below.</li><li>Enter your Transaction ID (or bank reference).</li><li>Confirm on WhatsApp. We verify and deliver.</li></ol>
-      <p class="mp-t">Mobile banking</p>
-      <div class="mp-g"><div class="mp-c" style="--c:#e2136e"><div class="mp-h"><b>bKash Personal</b><small>Send Money</small></div><div class="mp-r"><span>Number</span><b>01309009329</b><button type="button" class="mp-cp" data-cp="01309009329" aria-label="Copy Number">Copy</button></div></div><div class="mp-c" style="--c:#e2136e"><div class="mp-h"><b>bKash Merchant</b><small>Payment</small></div><div class="mp-r"><span>Number</span><b>01312850241</b><button type="button" class="mp-cp" data-cp="01312850241" aria-label="Copy Number">Copy</button></div></div><div class="mp-c" style="--c:#f6602b"><div class="mp-h"><b>Nagad · Rocket · Upay</b><small>Send Money</small></div><div class="mp-r"><span>Number</span><b>01956476739</b><button type="button" class="mp-cp" data-cp="01956476739" aria-label="Copy Number">Copy</button></div></div></div>
-      <p class="mp-t">Bank transfer</p>
-      <div class="mp-g"><div class="mp-c bank"><div class="mp-h"><b>The City Bank</b><small>Bank transfer</small></div><div class="mp-r"><span>Account name</span><b>MD. AL-AMIN PATWOARY</b><button type="button" class="mp-cp" data-cp="MD. AL-AMIN PATWOARY" aria-label="Copy Account name">Copy</button></div><div class="mp-r"><span>Account number</span><b>2104034777001</b><button type="button" class="mp-cp" data-cp="2104034777001" aria-label="Copy Account number">Copy</button></div><div class="mp-r"><span>Type</span><b>General Savings A/C</b><button type="button" class="mp-cp" data-cp="General Savings A/C" aria-label="Copy Type">Copy</button></div><div class="mp-r"><span>Branch</span><b>Jatrabari Branch</b><button type="button" class="mp-cp" data-cp="Jatrabari Branch" aria-label="Copy Branch">Copy</button></div><div class="mp-r"><span>Routing number</span><b>225273238</b><button type="button" class="mp-cp" data-cp="225273238" aria-label="Copy Routing number">Copy</button></div></div><div class="mp-c bank"><div class="mp-h"><b>BRAC Bank</b><small>Bank transfer</small></div><div class="mp-r"><span>Account name</span><b>Md. Al-Amin Patwoary</b><button type="button" class="mp-cp" data-cp="Md. Al-Amin Patwoary" aria-label="Copy Account name">Copy</button></div><div class="mp-r"><span>Account number</span><b>1060251990001</b><button type="button" class="mp-cp" data-cp="1060251990001" aria-label="Copy Account number">Copy</button></div><div class="mp-r"><span>Type</span><b>Savings</b><button type="button" class="mp-cp" data-cp="Savings" aria-label="Copy Type">Copy</button></div><div class="mp-r"><span>Branch</span><b>Dhaka South &gt; Demra SME</b><button type="button" class="mp-cp" data-cp="Dhaka South > Demra SME" aria-label="Copy Branch">Copy</button></div></div><div class="mp-c bank"><div class="mp-h"><b>IFIC Bank</b><small>Bank transfer</small></div><div class="mp-r"><span>Account name</span><b>Md Al Amin Patwoary</b><button type="button" class="mp-cp" data-cp="Md Al Amin Patwoary" aria-label="Copy Account name">Copy</button></div><div class="mp-r"><span>Account number</span><b>0230143018811</b><button type="button" class="mp-cp" data-cp="0230143018811" aria-label="Copy Account number">Copy</button></div><div class="mp-r"><span>Type</span><b>Savings</b><button type="button" class="mp-cp" data-cp="Savings" aria-label="Copy Type">Copy</button></div><div class="mp-r"><span>Branch</span><b>Konapara</b><button type="button" class="mp-cp" data-cp="Konapara" aria-label="Copy Branch">Copy</button></div></div></div>
-      <form id="payManF" novalidate>
-        <label><span class="pay-l">Your name</span><input id="pmName" type="text" autocomplete="name" placeholder="e.g. Rafiq Ahmed" maxlength="60"></label>
-        <div class="pay-row">
-          <label><span class="pay-l">Paid with</span><select id="pmVia" class="pm-sel"><option>bKash Personal</option><option>bKash Merchant</option><option>Nagad</option><option>Rocket</option><option>Upay</option><option>The City Bank</option><option>BRAC Bank</option><option>IFIC Bank</option></select></label>
-          <label><span class="pay-l">Transaction ID</span><input id="pmTx" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="e.g. 9A7B6C5D4E" maxlength="40"></label>
-        </div>
-        <div class="pay-bar"><p class="pay-err" id="pmErr" role="alert"></p><button class="btn wa pay-go" id="pmGo" type="submit">Confirm on WhatsApp ↗</button></div>
-        <p class="pay-agree">Your order is delivered after we verify the payment. Wrong amount or ID? We will message you. See our <a href="/refund-policy/" target="_blank" rel="noopener">Refund Policy</a>.</p>
-      </form>
-    </div>
+    <div id="payManual" hidden><span class="eyebrow">Pay manually</span><h3>Send the payment, then confirm</h3><div class="pay-sum" id="paySumM"></div><div id="payManMount"></div></div>
   </div>
 </div>
 <div id="mdl" class="mdl" role="dialog" aria-modal="true"><div class="mdlb"><button class="mdlx" aria-label="Close">✕</button><h3 id="mdlt"></h3><div id="mdlc"></div></div></div>
@@ -514,7 +496,8 @@
 <script src="assets/js/layout/site-basics.js?v=20261121f"></script>
 <script src="assets/js/avatar-nav.js?v=1" defer></script><script src="assets/js/account-menu.js?v=20261124g" defer></script>
 <script src="assets/js/features/cart.js?v=20261125b"></script>
-<script src="assets/js/features/checkout.js?v=20261125d"></script>
+<script src="assets/js/features/pay-methods.js?v=20261125j"></script>
+<script src="assets/js/features/checkout.js?v=20261125e"></script>
 <script src="assets/js/features/why.js?v=20261125b"></script>
 <script src="assets/js/features/faq.js?v=20261125b"></script>
 <script src="assets/js/layout/header.js?v=20261121e"></script>

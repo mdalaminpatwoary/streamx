@@ -3447,27 +3447,6 @@ nav a:hover {
 .pay-tabs button:hover{color:#fff}
 .pay-tabs button.on{color:#fff;background:linear-gradient(135deg,#ff5a45,#ed3124);box-shadow:0 8px 22px -10px rgba(237,49,36,.9)}
 #payManual[hidden],#payForm[hidden]{display:none}
-.mp-steps{margin:0 0 16px;padding:0;list-style:none;counter-reset:s;display:grid;gap:8px;font-size:13.5px;color:#c3cae3}
-.mp-steps li{counter-increment:s;display:flex;gap:10px;align-items:flex-start;line-height:1.45}
-.mp-steps li::before{content:counter(s);flex:none;display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:rgba(237,49,36,.18);color:#ff8a7c;font:800 12px Manrope,sans-serif}
-.mp-t{margin:18px 0 10px;font:800 12px Manrope,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#ff8a7c}
-.mp-g{display:grid;gap:10px}
-.mp-c{padding:14px 16px;border:1px solid var(--line);border-radius:16px;background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));border-left:3px solid var(--c,#4F6BFF)}
-.mp-c.bank{--c:#4F6BFF}
-.mp-h{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:6px}
-.mp-h b{font-size:15px;color:#fff}
-.mp-h small{font-size:12px;color:#98a1bc}
-.mp-r{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid rgba(255,255,255,.07);font-size:13.5px}
-.mp-r:first-of-type{border-top:0}
-.mp-r span{flex:none;width:112px;color:#98a1bc}
-.mp-r b{flex:1;min-width:0;color:#fff;font-weight:700;word-break:break-word;font-variant-numeric:tabular-nums}
-.mp-cp{flex:none;padding:6px 12px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.07);color:#fff;font:800 12px Manrope,sans-serif;cursor:pointer;transition:background .2s,border-color .2s}
-.mp-cp:hover{background:rgba(255,91,77,.2);border-color:#ff5b4d}
-.mp-cp.ok{background:rgba(52,211,153,.18);border-color:#34d399;color:#6ee7b7}
-#payManF{margin-top:18px}
-.pm-sel{width:100%;padding:13px 14px;font:inherit;font-size:15px;color:#fff;background:#0e1226;border:1px solid var(--line);border-radius:12px;outline:0}
-.pm-sel:focus{border-color:var(--ac);box-shadow:0 0 0 3px rgba(237,49,36,.18)}
-@media (max-width:560px){.mp-r span{width:92px}.pay-tabs{margin-right:34px}}
 
 /* sections/hero.css */
 .badges {

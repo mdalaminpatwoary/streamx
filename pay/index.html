@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pay StreamX | Manual payment</title>
+<meta name="description" content="Pay StreamX by bKash, Nagad, Rocket, Upay, mobile recharge or bank transfer, then confirm your Transaction ID on WhatsApp.">
+<meta name="robots" content="noindex,follow">
+<link rel="canonical" href="https://streamx.bd/pay/">
+<link rel="icon" href="/favicon.ico">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" onload="this.onload=null;this.rel='stylesheet'"><noscript><link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet"></noscript>
+<link rel="stylesheet" href="/assets/css/account.css?v=36">
+<link rel="stylesheet" href="/assets/css/components/pay-methods.css?v=1">
+<style>
+.pp{width:min(640px,100% - 32px);margin:0 auto;padding:10px 0 70px}
+.pp h1{margin:6px 0 8px;font-size:clamp(28px,6vw,38px);line-height:1.12;letter-spacing:-.02em}
+.pp .lead{margin:0 0 20px;color:var(--mut);font-size:15.5px}
+.pp-amt{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:0 0 20px;padding:16px 18px;border-radius:16px;border:1px solid rgba(237,49,36,.4);background:linear-gradient(135deg,rgba(237,49,36,.16),rgba(79,107,255,.1))}
+.pp-amt span{display:block;font-size:13px;color:#c3cae3}
+.pp-amt b{font-size:26px;color:#fff;letter-spacing:-.01em}
+.pp-amt small{display:block;margin-top:2px;font-size:13px;color:#c3cae3}
+.pp-box{padding:22px 20px;border:1px solid var(--line);border-radius:22px;background:rgba(14,18,38,.7)}
+.pp-foot{margin-top:18px;text-align:center;font-size:13px;color:var(--mut)}
+.pp-foot a{color:#fff;text-decoration:underline}
+.eyebrow{display:inline-flex;align-items:center;gap:10px;font:800 12px Manrope,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#ff4f3f}
+.eyebrow::before{content:"";width:22px;height:2px;background:#ed3124}
+</style>
+</head>
+<body>
+<div class="ac-top"><a href="/"><img src="/assets/img/brand/logo.png" alt="StreamX" width="40" height="40"></a><a class="back" href="/">Visit StreamX →</a></div>
+<main class="pp">
+  <span class="eyebrow">Manual payment</span>
+  <h1>Pay StreamX</h1>
+  <p class="lead">Pick any option below, send the payment, then confirm your Transaction ID on WhatsApp. We verify it and deliver your subscription.</p>
+  <div class="pp-amt" id="ppAmt" hidden><div><span id="ppFor">Amount to pay</span><b id="ppTotal"></b></div><small>Send this exact amount</small></div>
+  <div class="pp-box" id="ppMount"></div>
+  <p class="pp-foot">Prefer to chat first? <a data-wa="Hi StreamX! I want to pay manually." href="#">Message us on WhatsApp</a>. StreamX is an independent reseller. Not affiliated with any brand shown.</p>
+</main>
+<script src="/assets/js/data/config.js"></script>
+<script src="/assets/js/features/pay-methods.js?v=20261125j"></script>
+<script>
+(function(){
+  var p=new URLSearchParams(location.search),amt=Math.round(Number(p.get("amt")))||0,what=(p.get("for")||"").slice(0,80);
+  if(amt<1||amt>1000000)amt=0;
+  var tk=function(n){return "৳"+n.toLocaleString("en-US")};
+  if(amt){document.getElementById("ppAmt").hidden=false;document.getElementById("ppTotal").textContent=tk(amt);if(what)document.getElementById("ppFor").textContent="Payment for "+what}
+  PayMethods.mount(document.getElementById("ppMount"),{
+    getTotal:function(){return amt||null},
+    askAmount:!amt,
+    getLines:function(){return what?["For: "+what]:[]},
+    onName:function(){}
+  });
+  var w=document.querySelector("[data-wa]");if(w&&typeof WA_NUMBER!=="undefined")w.href="https://wa.me/"+WA_NUMBER+"?text="+encodeURIComponent(w.getAttribute("data-wa"));
+})();
+</script>
+</body>
+</html>
