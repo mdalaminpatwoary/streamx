@@ -45,6 +45,7 @@ function sessEmail(){try{var t=localStorage.getItem("sx_session");if(!t)return "
   function paintSum() {
     $("#paySum").innerHTML = cart.map((c) => `<div><span>${c.name}${c.vr ? " · " + c.vr : ""} · ${c.v} <em>×${c.q}</em></span><b>${taka(c.p * c.q)}</b></div>`).join("") + (cp ? `<div class="pay-disc"><span>Coupon ${esc(cp.code)} <em>${esc(cp.label)}</em></span><b>−${taka(cp.discount)}</b></div>` : "") + (tip ? `<div><span>Tip</span><b>${taka(tip)}</b></div>` : "") + `<div class="pay-tot"><span>Total</span><b>${taka(total())}</b></div>`;
     lab("Pay " + taka(total()) + " securely");
+    const pm_ = $("#payManual"); if (pm_ && !pm_.hidden) { $("#paySumM").innerHTML = $("#paySum").innerHTML; if (window._sxPM) window._sxPM.refresh(); }
     const g = $("#payCp"), b = $("#payCpGo"); g.readOnly = !!cp; b.textContent = cp ? "Remove" : "Apply"; b.classList.toggle("on", !!cp);
   }
   async function applyCp() {
@@ -105,10 +106,14 @@ function sessEmail(){try{var t=localStorage.getItem("sx_session");if(!t)return "
 
   /* Pay manually: shared panel (assets/js/features/pay-methods.js) */
   const pf=$("#payForm"),pman=$("#payManual"),tabs=m.querySelectorAll(".pay-tabs button");
-  let PM=null;
+  let PM=null; 
   function showTab(t){
     const man=t==="manual";
     pf.hidden=man;pman.hidden=!man;
+    /* coupon lives in the online form; show it above the manual options too */
+    const cpT=$("#payCpT"),cpB=$("#payCpBox");
+    if(man){const mt=$("#payManMount");pman.insertBefore(cpT,mt);pman.insertBefore(cpB,mt)}
+    else{$("#paySum").after(cpT);cpT.after(cpB)}
     tabs.forEach(b=>{const on=b.dataset.pt===t;b.classList.toggle("on",on);b.setAttribute("aria-selected",on)});
     if(man){
       if(!PM)PM=PayMethods.mount($("#payManMount"),{
@@ -116,7 +121,7 @@ function sessEmail(){try{var t=localStorage.getItem("sx_session");if(!t)return "
         getLines:()=>cart.map((c,i)=>(i+1)+". "+c.name+(c.vr?" · "+c.vr:"")+" · "+c.v+" ×"+c.q+" = "+taka(c.p*c.q)).concat(cp?["Coupon: "+cp.code+" (−"+taka(cp.discount)+")"]:[]),
         onName:n=>{try{const b=JSON.parse(localStorage.getItem(KEY)||"{}");b.n=n;localStorage.setItem(KEY,JSON.stringify(b))}catch(x){}}
       });
-      $("#paySumM").innerHTML=$("#paySum").innerHTML;PM.refresh();PM.reset();
+      window._sxPM=PM;$("#paySumM").innerHTML=$("#paySum").innerHTML;PM.refresh();PM.reset();
       try{PM.setName(JSON.parse(localStorage.getItem(KEY)||"{}").n)}catch(e){}
     }
     m.querySelector(".mdlb").scrollTop=0;

@@ -87,4 +87,5 @@
 .pay-wa button#payWa{padding:0;border:0;background:none;color:#fff;font:inherit;font-weight:700;text-decoration:underline;cursor:pointer}
 .pay-back{display:flex;width:fit-content;align-items:center;gap:6px;margin:0 36px 14px 0;padding:0;border:0;background:none;color:#b4bddb;font:700 13.5px Manrope,system-ui,sans-serif;cursor:pointer;transition:color .2s,transform .25s}
 .pay-back:hover{color:#fff;transform:translateX(-2px)}
-.pay-eps{width:min(380px,92%);height:auto;margin:20px auto 12px;padding:0;background:transparent;border-radius:0;opacity:.96}
+.pay-eps{width:min(380px,92%);height:auto;margin:6px auto 10px;padding:0;background:transparent;border-radius:0;opacity:.96}
+#payManual .pay-cpm:empty{min-height:0;margin:0}#payManual .pay-cp{margin-bottom:6px}#payManual .pay-cpt{margin-bottom:14px}
