@@ -297,30 +297,30 @@ nav a:hover {
 }
 
 /* Front page: scrolling down melts the bar into a small pill at the top right (logo + buttons); scrolling up brings the links back */
-.navbar{width:min(1140px,calc(100% - 28px));max-width:none;margin-left:auto;margin-right:max(14px,calc((100% - 1140px)/2));transition:width .85s var(--spring),background .4s,box-shadow .4s,padding .85s var(--spring)}
+.navbar{width:min(1140px,calc(100% - 28px));max-width:none;margin-left:auto;margin-right:max(14px,calc((100% - 1140px)/2));transition:width .62s var(--spring),background .4s,box-shadow .4s,padding .62s var(--spring)}
 .nav.scrolled .navbar{max-width:none}
 .nav.pill .navbar{width:calc(var(--pw,200px) + var(--hiw,0px));padding-left:14px;padding-right:8px}
 @media (min-width:861px){
   /* Choreography. Scroll down: the links flip away in 3D, then the bar closes and the logo rides left to right and nudges the buttons. Scroll up: the bar opens, the logo returns, then the links flip back in. */
-  .navbar nav{max-width:900px;overflow:hidden;perspective:520px;transition:max-width .85s var(--spring) .05s,margin .85s var(--spring),visibility 0s}
-  .navbar nav a{transform-origin:50% 50%;transition:transform .75s var(--spring),opacity .3s,color .3s;transition-delay:calc(.4s + var(--k,0)*.035s),calc(.4s + var(--k,0)*.035s),0s}
+  .navbar nav{max-width:900px;overflow:hidden;perspective:520px;transition:max-width .62s var(--spring) .02s,margin .62s var(--spring),visibility 0s}
+  .navbar nav a{transform-origin:50% 50%;transition:transform .6s var(--spring),opacity .25s,filter .25s,color .3s;transition-delay:calc(.24s + var(--k,0)*.025s),calc(.24s + var(--k,0)*.025s),calc(.24s + var(--k,0)*.025s),0s}
   .navbar nav a:nth-of-type(1){--k:0}.navbar nav a:nth-of-type(2){--k:1}.navbar nav a:nth-of-type(3){--k:2}.navbar nav a:nth-of-type(4){--k:3}.navbar nav a:nth-of-type(5){--k:4}.navbar nav a:nth-of-type(6){--k:5}.navbar nav a:nth-of-type(7){--k:6}.navbar nav a:nth-of-type(8){--k:7}.navbar nav a:nth-of-type(9){--k:8}
-  .nav.pill .navbar nav{max-width:0;margin:0 0 0 -14px;visibility:hidden;pointer-events:none;transition:max-width .85s var(--spring) .3s,margin .85s var(--spring) .3s,visibility 0s 1.3s}
-  .nav.pill .navbar nav a{transform:rotateX(-100deg) translateY(-6px);opacity:0;transition:transform .45s cubic-bezier(.5,0,.75,0),opacity .28s,color .3s;transition-delay:calc(var(--k,0)*.03s)}
+  .nav.pill .navbar nav{max-width:0;margin:0 0 0 -14px;visibility:hidden;pointer-events:none;transition:max-width .62s var(--spring) .16s,margin .62s var(--spring) .16s,visibility 0s .9s}
+  .nav.pill .navbar nav a{transform:rotateX(-100deg) translateY(-6px);opacity:0;filter:blur(4px);transition:transform .32s cubic-bezier(.5,0,.75,0),opacity .2s,filter .25s,color .3s;transition-delay:calc(var(--k,0)*.02s)}
   .nav.pill #ind{opacity:0}
-  .nav.pill .navbar{transition:width .85s var(--spring) .28s,padding .85s var(--spring) .28s,background .4s,box-shadow .4s}
+  .nav.pill .navbar{transition:width .62s var(--spring) .14s,padding .62s var(--spring) .14s,background .4s,box-shadow .4s}
 }
-@keyframes nrPush{0%{transform:translateX(0)}38%{transform:translateX(7px)}100%{transform:none}}
-.nav.pill .nr{animation:nrPush .8s cubic-bezier(.2,.8,.2,1) .72s both}
+@keyframes nrPush{0%{transform:translateX(0)}38%{transform:translateX(2px)}100%{transform:none}}
+.nav.pill .nr{animation:nrPush .55s cubic-bezier(.2,.8,.2,1) .5s both}
 @media (max-width:860px){
   .nav.pill .navbar nav{left:auto;width:min(340px,calc(100vw - 28px))}
 }
 @media (prefers-reduced-motion:reduce){.navbar,.navbar nav{transition-duration:.01s!important}}
 
 /* Greeting inside the pill (same behaviour as the All services page) */
-.navbar>.sp-hi{flex:none;display:flex;align-items:center;height:42px;width:0;margin:0 0 0 -14px;overflow:hidden;white-space:nowrap;opacity:0;perspective:260px;transition:width .85s var(--spring),margin .85s var(--spring),opacity .35s}
+.navbar>.sp-hi{flex:none;display:flex;align-items:center;height:42px;width:0;margin:0 0 0 -14px;overflow:hidden;white-space:nowrap;opacity:0;perspective:260px;transition:width .62s var(--spring),margin .62s var(--spring),opacity .35s}
 .navbar>.sp-hi.on{width:var(--w);margin-left:0;opacity:1}
-.sp-hi b{flex:none;display:flex;flex-direction:column;justify-content:center;gap:1px;max-width:100%;padding:0 8px;line-height:1.15;text-align:left;transform-origin:50% 60%;transform:rotateX(-95deg) translateY(8px);opacity:0;transition:transform .8s .12s var(--spring),opacity .4s .12s;will-change:transform}
+.sp-hi b{flex:none;display:flex;flex-direction:column;justify-content:center;gap:1px;max-width:100%;padding:0 8px;line-height:1.15;text-align:left;transform-origin:50% 60%;transform:rotateX(-95deg) translateY(8px);opacity:0;transition:transform .6s .08s var(--spring),opacity .3s .08s;will-change:transform}
 .sp-hi b i,.sp-hi b em{display:block;overflow:hidden;text-overflow:ellipsis;font-style:normal}
 .sp-hi b i{font-size:10.5px;font-weight:600;color:#9aa4c7;letter-spacing:.2px}
 .sp-hi b em{font-size:14px;font-weight:800;color:#fff}
@@ -335,6 +335,12 @@ nav a:hover {
 /* The announcements bell folds away with the burger while the bar is a pill */
 
 /* Burger and announcements bell leave like the links: a quick 3D flip + fade first, then the slot closes; on scroll up the slot opens, then they flip back in */
-#ntBell,#burger{overflow:hidden;transition:width .85s var(--spring) .05s,margin .85s var(--spring) .05s,opacity .3s .45s,transform .75s var(--spring) .45s,border-width .3s .3s,background .25s,border-color .25s}
-.nav.pill #ntBell,.nav.pill #burger{width:0;min-width:0;max-width:0;flex:0 0 0;padding:0;margin-left:-10px;border-width:0;opacity:0;transform:perspective(300px) rotateX(-100deg) scale(.6);pointer-events:none;font-size:0;line-height:0;color:transparent;visibility:hidden;transition:width .85s var(--spring) .3s,margin .85s var(--spring) .3s,opacity .25s .04s,transform .45s cubic-bezier(.5,0,.75,0) .04s,border-width .3s .3s,visibility 0s 1.3s}
-.nav.pill #burger{transition-delay:.3s,.3s,.1s,.1s,.3s,1.3s}
+#ntBell,#burger{overflow:hidden;transition:width .62s var(--spring) .02s,margin .62s var(--spring) .02s,opacity .25s .28s,transform .6s var(--spring) .28s,border-width .2s .16s,background .25s,border-color .25s}
+.nav.pill #ntBell,.nav.pill #burger{width:0;min-width:0;max-width:0;flex:0 0 0;padding:0;margin-left:-10px;border-width:0;opacity:0;transform:perspective(300px) rotateX(-100deg) scale(.6);pointer-events:none;font-size:0;line-height:0;color:transparent;visibility:hidden;transition:width .62s var(--spring) .16s,margin .62s var(--spring) .16s,opacity .2s .02s,transform .32s cubic-bezier(.5,0,.75,0) .02s,border-width .2s .16s,visibility 0s .9s}
+.nav.pill #burger{transition-delay:.16s,.16s,.06s,.06s,.16s,.9s}
+
+/* Premium finish: the bar is its own GPU layer, and a soft ring settles around it when it lands as a pill */
+.navbar{will-change:width,padding;transform:translateZ(0);backface-visibility:hidden}
+@keyframes pillSettle{0%{box-shadow:0 14px 40px -18px rgba(0,0,0,.75),inset 0 1px 0 rgba(255,255,255,.06),0 0 0 0 rgba(79,107,255,.0)}45%{box-shadow:0 18px 44px -16px rgba(0,0,0,.8),inset 0 1px 0 rgba(255,255,255,.08),0 0 0 5px rgba(79,107,255,.14)}100%{box-shadow:0 14px 40px -18px rgba(0,0,0,.75),inset 0 1px 0 rgba(255,255,255,.06),0 0 0 0 rgba(79,107,255,0)}}
+.nav.pill .navbar{animation:pillSettle .7s cubic-bezier(.2,.8,.2,1) .36s both}
+@media (prefers-reduced-motion:reduce){.nav.pill .navbar,.nav.pill .nr{animation:none}}
