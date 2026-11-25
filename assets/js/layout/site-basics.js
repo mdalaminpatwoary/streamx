@@ -9,10 +9,10 @@ document.querySelectorAll("[data-wa]").forEach(a=>{a.href=wa(a.dataset.wa);a.tar
   m.querySelectorAll(":scope>a").forEach(function(a,i){var k=(a.getAttribute("href")||"").replace("#","");a.style.setProperty("--i",i);a.insertAdjacentHTML("afterbegin",'<i class="mi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(ICO[k]||ICO.home)+'</svg></i>')});
   var bg=document.createElement("div");bg.className="mn-bg";document.body.appendChild(bg);
   var tr=$("#acctBtn");
-  /* On phones the profile button is the menu button: it opens the glass menu sheet (which has My account and Order on WhatsApp at the bottom) */
-  function set(o){m.classList.toggle("open",o);bg.classList.toggle("on",o);if(b){b.textContent=o?"\u2715":"\u2630";b.setAttribute("aria-expanded",o?"true":"false")}if(tr){tr.classList.toggle("mn-on",o);if(innerWidth<=860)tr.setAttribute("aria-expanded",o?"true":"false")}document.documentElement.classList.toggle("mn-lock",o)}
-  if(b)b.onclick=function(){set(!m.classList.contains("open"))};
-  if(tr){tr.addEventListener("click",function(e){if(innerWidth>860||e.metaKey||e.ctrlKey||e.shiftKey||e.button===1)return;e.preventDefault();set(!m.classList.contains("open"))});if(innerWidth<=860){tr.setAttribute("aria-label","Menu and account");tr.title="Menu"}}
+  /* Phones: a dedicated menu button (left of cart and account) opens the glass menu sheet; the profile button goes straight to My account */
+  var HB='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h10"/></svg>',XX='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>';
+  function set(o){m.classList.toggle("open",o);bg.classList.toggle("on",o);if(b){b.innerHTML=o?XX:HB;b.classList.toggle("mn-on",o);b.setAttribute("aria-expanded",o?"true":"false")}document.documentElement.classList.toggle("mn-lock",o)}
+  if(b){b.innerHTML=HB;b.onclick=function(){set(!m.classList.contains("open"))}}
   bg.onclick=function(){set(false)};
   m.onclick=function(e){if(e.target.closest("a"))set(false)};
   document.addEventListener("keydown",function(e){if(e.key==="Escape")set(false)});
