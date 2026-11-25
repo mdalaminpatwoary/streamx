@@ -336,3 +336,6 @@ html.hs-lock{overflow:hidden}
 .hb-search.hs-fx .hs-close{display:grid}
 .hb-search.hs-fx .hb-x,.hb-search.hs-fx kbd{display:none!important}
 .hb-search.hs-fx input{padding-right:58px}
+
+/* Category chips scroll away with the page (no floating bar) */
+.hb-bar{position:static;background:none;padding:10px 0}
