@@ -26,9 +26,8 @@
   width: max-content;
   animation: mq 70s linear infinite;
 }
-.mq:hover .mt {
-  animation-play-state: paused;
-}
+.mq{pointer-events:none}
+@media (hover:hover){.mq{pointer-events:auto}.mq:hover .mt{animation-play-state:paused}}
 .mi {
   display: flex;
   align-items: center;
@@ -45,15 +44,11 @@
   height: 24px;
   fill: currentColor;
 }
-.mi:hover {
-  color: var(--c);
-}
 
 /* Keep the logo strip moving even when the OS asks for reduced motion (slow, gentle, pauses on hover/touch) */
 @media (prefers-reduced-motion: reduce) {
   .mt { animation: mq 120s linear infinite !important; }
-  .mq:hover .mt, .mq:active .mt { animation-play-state: paused !important; }
+  .mq:hover .mt { animation-play-state: paused !important; }
 }
-.mq:active .mt { animation-play-state: paused; }
 a.mi{text-decoration:none;color:inherit}
 .mi-i{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:6px;color:#fff;font-size:12px}
