@@ -156,7 +156,7 @@
   }
   function list() {
     api("?q=" + encodeURIComponent($("#q").value.trim())).then(function (d) {
-      $("#gate").hidden = true; $("#panel").hidden = false; $("#lock").hidden = false; orders(); notices(); reviews(); coupons(); custs();
+      $("#gate").hidden = true; $("#panel").hidden = false; orders(); notices(); reviews(); coupons(); custs();
       var by = $("#sortby").value, cmp = {
         soon: function (a, b) { return String(a.end_date).localeCompare(String(b.end_date)) || a.id - b.id; },
         late: function (a, b) { return String(b.end_date).localeCompare(String(a.end_date)) || b.id - a.id; },
@@ -399,7 +399,6 @@
       .catch(function (er) { b.disabled = false; b.textContent = label; toast(er.message || "Could not update the order.", 1); });
   });
   $("#gf").addEventListener("submit", function (e) { e.preventDefault(); key = $("#ak").value; try { sessionStorage.setItem("sx_admin", key); } catch (x) {} $("#gm").textContent = ""; list(); });
-  $("#lock").addEventListener("click", function () { key = ""; try { sessionStorage.removeItem("sx_admin"); } catch (x) {} $("#panel").hidden = true; $("#gate").hidden = false; $("#lock").hidden = true; $("#ak").value = ""; });
   $("#sheetsync").addEventListener("click", function (e) { var b = e.currentTarget; b.disabled = true; api("?sheetsync=1", { method: "POST", body: "{}" }).then(function (d) { b.disabled = false; toast(d.ok ? "Sent " + d.count + " purchase" + (d.count === 1 ? "" : "s") + " to the sheet" : (d.error || "Could not reach the sheet"), !d.ok); }).catch(function (er) { b.disabled = false; toast(er.message, true); }); });
   $("#sortby").addEventListener("change", list);
   var t; $("#q").addEventListener("input", function () { clearTimeout(t); t = setTimeout(list, 300); });
