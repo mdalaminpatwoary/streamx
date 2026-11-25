@@ -132,3 +132,6 @@
     linear-gradient(160deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.015) 55%);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
 }
+
+/* Selecting text: freeze the heading shimmer so the selection does not blink */
+html.selecting .grad .w { animation-play-state: paused !important; will-change: auto !important; }

@@ -58,3 +58,12 @@
   },{passive:true});
   document.addEventListener("pointerout",e=>{const b=e.target.closest&&e.target.closest(".sx-mag");if(b&&!b.contains(e.relatedTarget))b.style.translate=""});
 })();
+
+/* While text is selected, hold the gradient shimmer still: repainting it every frame under the selection highlight makes the heading blink. */
+(function(){
+  const root=document.documentElement;let on=false;
+  document.addEventListener("selectionchange",()=>{
+    const s=getSelection(),v=!!s&&!s.isCollapsed&&String(s).trim().length>0;
+    if(v!==on){on=v;root.classList.toggle("selecting",v)}
+  });
+})();
