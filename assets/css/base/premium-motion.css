@@ -137,3 +137,9 @@
 html.selecting .grad .w { animation-play-state: paused !important; will-change: auto !important; }
 /* ...and the whole hero holds still (background orbs, ticker, carousel, dot grid) while you select */
 html.selecting #home, html.selecting #home *, html.selecting #home *::before, html.selecting #home *::after { animation-play-state: paused !important; }
+
+/* Intro finished: the words become plain static text (only the gradient words keep their slow shimmer) */
+.hx-title.hx-done .w { opacity: 1; filter: none; transform: none; animation: none; will-change: auto; }
+.hx-title.hx-done .grad .w { animation: hx-shimmer 8s ease-in-out infinite; will-change: background-position; }
+/* While selecting, gradient-filled text is shown in a solid colour (gradient text under a selection highlight flickers in Safari) */
+html.selecting .hx-title .grad .w, html.selecting .sx-h .grad .w { background: none !important; -webkit-text-fill-color: #ff5a47; color: #ff5a47 !important; animation: none !important; }

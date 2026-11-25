@@ -6,6 +6,8 @@
   const calm=matchMedia("(prefers-reduced-motion: reduce)").matches;
   const fine=matchMedia("(pointer:fine)").matches;
   if(!calm)splitWords(title);
+  /* When the word-by-word intro has finished, drop its per-word animation layers: the heading is then plain static text (same look, nothing left to flicker under a selection). */
+  if(!calm){let left=title.querySelectorAll(".w").length;title.addEventListener("animationend",e=>{if(e.animationName==="hx-word"&&--left<=0)title.classList.add("hx-done")})}
 
   // Services shown in the carousel / ticker (key in LOGOS, label, regex to find the shop product for its price)
   // The original premium 12, plus six more popular services. Every tile opens its own service page.
