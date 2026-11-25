@@ -46,9 +46,10 @@ function askAge(cb){if(ageOK){cb();return}agCb=cb;$("#agate").classList.add("sho
 $("#agYes").onclick=()=>{ageOK=true;try{sessionStorage.setItem("sx_18","1")}catch(e){}$("#agate").classList.remove("show");const f=agCb;agCb=null;f&&f()};
 $("#agNo").onclick=()=>{agCb=null;$("#agate").classList.remove("show")};
 document.addEventListener("keydown",e=>{if(e.key==="Escape")$("#agate").classList.remove("show")});
-function setCat(c){cat=c;limit=PAGE;document.querySelectorAll("#chips button").forEach(b=>b.classList.toggle("on",b.dataset.c===c));renderProducts()}
-$("#chips").innerHTML=["All",...CATS].map(c=>`<button class="${c===cat?"on":""}" data-c="${c}">${c}</button>`).join("");
-$("#chips").onclick=e=>{const c=e.target.dataset.c;if(!c)return;if(c==="18+"&&!ageOK)askAge(()=>setCat("18+"));else setCat(c)};
+const catSel=$("#catBy"),catN=c=>PRODUCTS.filter(p=>p.cat!=="Bundle"&&(c==="All"||p.cat===c)).length;
+catSel.innerHTML=["All",...CATS].map(c=>`<option value="${c}">${c==="All"?"All":c} (${catN(c)})</option>`).join("");catSel.value=cat;
+function setCat(c){cat=c;limit=PAGE;catSel.value=c;catSel._sync&&catSel._sync();renderProducts()}
+catSel.onchange=()=>{const c=catSel.value;if(c==="18+"&&!ageOK){catSel.value=cat;catSel._sync&&catSel._sync();askAge(()=>setCat("18+"))}else setCat(c)};
 $("#sortBy").onchange=e=>{sortKey=e.target.value;limit=PAGE;renderProducts()};
 $("#search").oninput=e=>{q=e.target.value.toLowerCase().trim();limit=PAGE;renderProducts()};
 renderProducts();
@@ -57,3 +58,33 @@ mq.onchange=()=>{limit=PAGE;renderProducts()};
 
 /* Previous / next arrows (same as the Explore page) */
 $("#prArr").addEventListener("click",e=>{const b=e.target.closest("button[data-dir]");if(!b)return;const g=$("#productGrid");g.scrollBy({left:(+b.dataset.dir)*Math.max(240,g.clientWidth*.8),behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"})});
+
+/* Desktop (mouse): a dark dropdown that matches the site. Phones and tablets keep the native picker, which is the better touch experience. */
+function enhanceSelect(sel){
+  if(!matchMedia("(hover:hover) and (pointer:fine)").matches)return;
+  const box=sel.parentNode,btn=document.createElement("button"),list=document.createElement("ul");
+  btn.type="button";btn.className="dd-b";btn.setAttribute("aria-haspopup","listbox");btn.setAttribute("aria-expanded","false");btn.setAttribute("aria-label",sel.getAttribute("aria-label")||"");
+  list.className="dd-l";list.setAttribute("role","listbox");list.hidden=true;
+  sel.classList.add("dd-native");sel.tabIndex=-1;sel.setAttribute("aria-hidden","true");box.append(btn,list);
+  let hi=-1;
+  const opts=()=>[...sel.options];
+  const sync=()=>{const o=sel.selectedOptions[0];btn.textContent=o?o.text:"";[...list.children].forEach((li,i)=>{const on=i===sel.selectedIndex;li.classList.toggle("on",on);li.setAttribute("aria-selected",on)})};
+  list.innerHTML=opts().map((o,i)=>`<li role="option" data-i="${i}">${o.text}</li>`).join("");
+  const mark=i=>{hi=i;[...list.children].forEach((li,k)=>li.classList.toggle("hi",k===i));const li=list.children[i];if(li)li.scrollIntoView({block:"nearest"})};
+  const open=()=>{list.hidden=false;btn.setAttribute("aria-expanded","true");mark(sel.selectedIndex)};
+  const close=()=>{list.hidden=true;btn.setAttribute("aria-expanded","false")};
+  const pick=i=>{close();if(i<0||i===sel.selectedIndex){btn.focus();return}sel.selectedIndex=i;sync();sel.dispatchEvent(new Event("change",{bubbles:true}));sync();btn.focus()};
+  btn.onclick=()=>list.hidden?open():close();
+  list.onclick=e=>{const li=e.target.closest("li");if(li)pick(+li.dataset.i)};
+  btn.onkeydown=e=>{
+    if(list.hidden){if(["ArrowDown","ArrowUp","Enter"," "].includes(e.key)){e.preventDefault();open()}return}
+    if(e.key==="Escape"){e.preventDefault();close()}
+    else if(e.key==="ArrowDown"){e.preventDefault();mark(Math.min(opts().length-1,hi+1))}
+    else if(e.key==="ArrowUp"){e.preventDefault();mark(Math.max(0,hi-1))}
+    else if(e.key==="Enter"||e.key===" "){e.preventDefault();pick(hi)}
+    else if(e.key==="Tab")close();
+  };
+  document.addEventListener("pointerdown",e=>{if(!list.hidden&&!box.contains(e.target))close()});
+  sel._sync=sync;sync();
+}
+enhanceSelect(catSel);enhanceSelect($("#sortBy"));

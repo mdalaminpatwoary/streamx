@@ -33,26 +33,6 @@
   font-weight: 700;
   color: #ed3124;
 }
-.tabs {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  justify-content: center;
-  margin-bottom: 24px;
-}
-.tabs button {
-  background: var(--card);
-  border: 1px solid var(--line);
-  color: var(--tx);
-  padding: 9px 18px;
-  border-radius: 30px;
-  font: 500 14px Manrope;
-  cursor: pointer;
-}
-.tabs button.on {
-  background: var(--g);
-  border-color: transparent;
-}
 .plans {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -141,9 +121,6 @@
 }
 .plan h3 {
   font-size: 14px;
-}
-.tabs button:hover {
-  border-color: #4f6bff;
 }
 .pc {
   padding: 30px 24px 24px;
@@ -554,7 +531,6 @@
 .pcard ul {
   font-size: 15px;
 }
-.tabs button,
 #search {
   font-size: 15px;
 }
@@ -1164,15 +1140,6 @@
   #products .trow .sbox, #products .trow .sort { width: 100%; max-width: none; }
   #products .trow .sort { display: flex; align-items: center; justify-content: space-between; }
   #products .trow .sort select { margin-left: auto; }
-  #chips.tabs {
-    flex-wrap: nowrap; justify-content: flex-start; gap: 8px; overflow-x: auto;
-    margin: 14px -20px 14px; padding: 2px 20px 6px; width: auto; max-width: none;
-    scrollbar-width: none; -webkit-overflow-scrolling: touch;
-  }
-  #chips.tabs::-webkit-scrollbar { display: none; }
-  #chips.tabs button {
-    flex: none; padding: 9px 16px; font: 600 13.5px Manrope, system-ui, sans-serif; white-space: nowrap;
-  }
   #productGrid { grid-template-columns: 1fr; gap: 12px; }
   #productGrid .pc {
     display: grid; grid-template-columns: 56px 1fr auto; column-gap: 14px; align-items: center;
@@ -1295,3 +1262,32 @@
 .pr-arr button:disabled { opacity: .35; cursor: default; }
 .pr-arr button:focus-visible { outline: 2px solid #ff8a7e; outline-offset: 2px; }
 @media (min-width: 861px) { #products .hhead p { padding-top: 44px; } }
+
+/* Category + sort pickers: one matching pair next to the search box */
+#products .tools { margin-bottom: 26px; }
+.sort option { font-weight: 600; }
+@media (max-width: 600px) { #products .tools { margin-bottom: 18px; } .sort.cat select { min-width: 0; } }
+
+/* Custom dropdown (desktop mouse only) */
+.sort { position: relative; }
+.sort .dd-native { position: absolute; opacity: 0; pointer-events: none; width: 1px; height: 1px; }
+.dd-b { all: unset; box-sizing: border-box; cursor: pointer; padding: 13px 40px 13px 4px; min-width: 130px; color: #fff; font: 600 14px Manrope, system-ui, sans-serif; white-space: nowrap;
+  background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23B4BCD6' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><path d='m6 9 6 6 6-6'/></svg>") no-repeat right 14px center; }
+.dd-b:focus-visible { outline: 2px solid #ff8a7e; outline-offset: 2px; border-radius: 8px; }
+.dd-b[aria-expanded="true"] { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23ff8a7e' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><path d='m6 15 6-6 6 6'/></svg>"); }
+.dd-l { position: absolute; left: 0; top: calc(100% + 8px); z-index: 40; min-width: 100%; max-height: 340px; overflow: auto; margin: 0; padding: 6px; list-style: none; border-radius: 14px; background: #10142a; border: 1px solid rgba(255, 255, 255, .14); box-shadow: 0 22px 50px rgba(0, 0, 0, .55); }
+.dd-l[hidden] { display: none; }
+.sort:last-child .dd-l { left: auto; right: 0; }
+.dd-l li { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 9px 12px; border-radius: 9px; color: #cfd6ee; font: 600 14px Manrope, system-ui, sans-serif; white-space: nowrap; cursor: pointer; }
+.dd-l li.hi, .dd-l li:hover { background: rgba(255, 255, 255, .08); color: #fff; }
+.dd-l li.on { color: #fff; background: rgba(237, 49, 36, .16); }
+.dd-l li.on::after { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #ff5b4d; flex: none; }
+
+/* Phones: Category and Sort side by side, label above the value */
+@media (max-width: 600px) {
+  #products .trow { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  #products .trow .sbox { grid-column: 1 / -1; }
+  #products .trow .sort { flex-direction: column; align-items: flex-start; justify-content: flex-start; gap: 1px; padding: 9px 12px 0 14px; }
+  #products .trow .sort span { font-size: 11px; letter-spacing: .5px; text-transform: uppercase; }
+  #products .trow .sort select { width: calc(100% + 12px); margin: 0 -12px 0 0; padding: 2px 30px 10px 0; background-position: right 14px center; }
+}
