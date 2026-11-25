@@ -278,7 +278,7 @@
   }
   function renderCore(d) {
     $("#login").hidden = true; $("#app").hidden = false; $("#who").textContent = d.email; var fw = $("#fwho"); if (fw) fw.textContent = d.email;
-    var pf = d.profile || {}, nm = pf.name || "", av = $("#av"); av.innerHTML = ""; try { if (pf.picture) localStorage.setItem("sx_av", JSON.stringify({ p: pf.picture })); else localStorage.removeItem("sx_av"); } catch (e) {}
+    var pf = d.profile || {}, nm = pf.name || "", av = $("#av"); av.innerHTML = ""; try { if (pf.name) localStorage.setItem("sx_nm", pf.name); if (pf.picture) localStorage.setItem("sx_av", JSON.stringify({ p: pf.picture })); else localStorage.removeItem("sx_av"); } catch (e) {}
     if (pf.picture) { var im = new Image(); im.alt = ""; im.referrerPolicy = "no-referrer"; im.onerror = function () { av.textContent = (nm || d.email)[0].toUpperCase(); }; im.src = pf.picture; av.appendChild(im); } else av.textContent = (nm || d.email)[0].toUpperCase();
     $("#gr").textContent = greet(); $("#hi").textContent = nm || d.email.split("@")[0];
     var pe = $("#pedit"), pe2 = $("#pedit2"); if (pe) pe.hidden = pf.editable === false; if (pe2) pe2.hidden = pf.editable === false; var pvEl = $("#pv"); pvEl.hidden = !pf.provider; pvEl.textContent = ""; if (pf.provider) pvEl.textContent = "Signed in with " + (NM[pf.provider] || pf.provider);

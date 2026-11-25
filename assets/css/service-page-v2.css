@@ -364,3 +364,15 @@ body:has(.hb-hero) .sp-nav.sp-scrolled .sp-brand img{height:34px}
 body:has(.hb-hero) .sp-nav.sp-scrolled .sp-navin{background:rgba(14,18,38,.82);-webkit-backdrop-filter:blur(26px) saturate(1.6);backdrop-filter:blur(26px) saturate(1.6);box-shadow:0 14px 36px -14px rgba(0,0,0,.75),0 0 0 1px rgba(255,255,255,.09)}
 /* pill sits at the top right (same right edge as the full bar, so the shrink animates toward the corner) */
 body:has(.hb-hero) .sp-nav .sp-navin{margin-left:auto;margin-right:max(14px,calc((100% - 1140px)/2))}
+/* Greeting: the pill flips open to the left with the customer's name */
+body:has(.hb-hero) .sp-nav.sp-scrolled .sp-navin{width:calc(134px + var(--hiw,0px))}
+body:has(.hb-hero) .sp-nav.sp-scrolled:has(#spCart:not([hidden])) .sp-navin{width:calc(182px + var(--hiw,0px))}
+.sp-hi{flex:none;display:flex;align-items:center;height:40px;width:0;margin-right:-8px;overflow:hidden;white-space:nowrap;opacity:0;perspective:260px;font-size:13.5px;font-weight:700;color:#fff;letter-spacing:.1px;transition:width .6s cubic-bezier(.32,.72,0,1),margin .6s cubic-bezier(.32,.72,0,1),opacity .35s}
+.sp-hi b{flex:none;display:flex;flex-direction:column;justify-content:center;gap:1px;max-width:100%;padding:0 8px;line-height:1.15;text-align:left;transform-origin:50% 60%;transform:rotateX(-95deg) translateY(8px);opacity:0;transition:transform .65s .12s cubic-bezier(.32,.72,0,1),opacity .4s .12s;will-change:transform}
+.sp-hi b i,.sp-hi b em{display:block;overflow:hidden;text-overflow:ellipsis;font-style:normal}
+.sp-hi b i{font-size:10.5px;font-weight:600;color:#9aa4c7;letter-spacing:.2px}
+.sp-hi b em{font-size:14px;font-weight:800;color:#fff}
+.sp-hi.on{width:var(--w);margin-right:0;opacity:1}
+.sp-hi.on b{transform:none;opacity:1}
+.sp-hi.out b{transform:rotateX(95deg) translateY(-8px);opacity:0;transition-delay:0s;transition-duration:.38s}
+@media(prefers-reduced-motion:reduce){.sp-hi,.sp-hi b{transition-duration:.01s!important;transition-delay:0s!important}}

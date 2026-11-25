@@ -55,7 +55,7 @@
   }
   function show() {
     if (!pop) { pop = document.createElement("div"); pop.className = "sxm"; pop.setAttribute("role", "menu"); pop.setAttribute("aria-label", "Account"); document.body.appendChild(pop);
-      pop.addEventListener("click", function (e) { var o = e.target.closest("[data-out]"); if (o) { try { localStorage.removeItem(ST); localStorage.removeItem("sx_av"); localStorage.removeItem(ME); sessionStorage.removeItem("sx_acc_pre"); } catch (x) {} location.reload(); } }); }
+      pop.addEventListener("click", function (e) { var o = e.target.closest("[data-out]"); if (o) { try { localStorage.removeItem(ST); localStorage.removeItem("sx_av"); localStorage.removeItem("sx_nm"); localStorage.removeItem(ME); sessionStorage.removeItem("sx_acc_pre"); } catch (x) {} location.reload(); } }); }
     build(); place(); open = true; btn.setAttribute("aria-expanded", "true"); requestAnimationFrame(function () { pop.classList.add("on"); }); refresh();
   }
   function hide() { if (!open) return; open = false; btn.setAttribute("aria-expanded", "false"); pop.classList.remove("on"); }
