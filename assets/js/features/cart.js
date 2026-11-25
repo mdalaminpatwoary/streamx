@@ -20,7 +20,7 @@ function changeQty(j,d){cart[j].bump=true;cart[j].q+=d;if(cart[j].q<1)cart.splic
 function removeItem(j){const el=$("#cartItems").children[j];if(!el||el.classList.contains("out"))return;el.classList.add("out");setTimeout(()=>{cart.splice(j,1);renderCart()},380)}
 function renderCart(){
   const n=cart.reduce((s,c)=>s+c.q,0),total=cart.reduce((s,c)=>s+c.q*c.p,0);
-  $("#cartCount").textContent=n;$("#cartCount").style.display=n?"grid":"none";
+  var cc=$("#cartCount");if(cc.textContent!=String(n)){cc.textContent=n;cc.classList.remove("bump");void cc.offsetWidth;cc.classList.add("bump")}$("#cartCount").style.display=n?"grid":"none";
   $("#cartItems").innerHTML=cart.length?cart.map((c,j)=>`<div class="ci${c.fresh?" new":""}" style="--k:${j}">${ptile({name:c.name,color:"#1E2545",icon:c.name[0]})}<div class="cn"><b>${c.name}</b><small>${c.vr?c.vr+" · ":""}${c.v} · ${taka(c.p)}</small></div>
     <div class="qty"><button onclick="changeQty(${j},-1)">−</button><span${c.bump?' class="qbump"':""}>${c.q}</span><button onclick="changeQty(${j},1)">+</button></div><button class="rm" onclick="removeItem(${j})" aria-label="Remove ${c.name}">✕</button></div>`).join(""):`<div class="empty"><span class="eb">${BAG}</span><p>Your cart is empty.<br>Add a plan to get started.</p></div>`;
   const grand=total+tip;tween($("#cartTotal"),shown,grand,600,"৳");shown=grand;
