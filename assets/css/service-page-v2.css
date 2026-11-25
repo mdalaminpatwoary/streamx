@@ -320,3 +320,12 @@ html.hs-lock{overflow:hidden}
 .hs-none a{margin-top:6px;padding:10px 20px;border-radius:999px;background:var(--g);color:#fff;font-weight:700;text-decoration:none}
 @keyframes hsIn{to{opacity:1;transform:none}}
 @media(prefers-reduced-motion:reduce){.hs-ov,.hb-search.hs-fx,.hs-panel{transition:none}.hs-panel.on .hs-r{animation:none;opacity:1;transform:none}}
+
+/* Floating search pill (bottom centre) */
+.hs-fab{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:8000;display:flex;align-items:center;gap:12px;width:min(420px,calc(100vw - 32px));height:52px;padding:0 20px;border:1px solid rgba(255,255,255,.18);border-radius:999px;background:rgba(28,32,58,.55);-webkit-backdrop-filter:blur(22px) saturate(1.5);backdrop-filter:blur(22px) saturate(1.5);box-shadow:0 18px 44px -16px rgba(0,0,0,.8),inset 0 1px 0 rgba(255,255,255,.12);color:#c9d0e8;font:600 15px Manrope,sans-serif;cursor:pointer;opacity:0;pointer-events:none;transform:translate(-50%,28px) scale(.94);transition:transform .6s cubic-bezier(.16,1,.3,1),opacity .35s ease,border-color .25s,background .25s}
+.hs-fab.on{opacity:1;pointer-events:auto;transform:translate(-50%,0) scale(1)}
+.hs-fab:hover{border-color:rgba(255,255,255,.34);background:rgba(36,41,72,.62)}
+.hs-fab:focus-visible{outline:2px solid #fff;outline-offset:3px}
+.hs-fab svg{flex:none;width:19px;height:19px;fill:none;stroke:#aab3d4;stroke-width:2;stroke-linecap:round}
+.hs-fab span{flex:1;text-align:left;white-space:nowrap}
+@media(prefers-reduced-motion:reduce){.hs-fab{transition:opacity .2s}}
