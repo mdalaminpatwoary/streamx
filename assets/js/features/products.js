@@ -23,9 +23,7 @@ function renderProducts(){
   g.innerHTML=view.slice(0,limit).map(([p,i],n)=>card(p,i,n%8*60)).join("")||'<p class="empty">No product found.</p>';
   syncMore();endCard();setTimeout(railSync,50);
 }
-function syncMore(){
-  $("#count").innerHTML=`Showing ${Math.min(limit,view.length)} of ${view.length} products<div class="prog"><i style="width:${Math.min(100,limit/Math.max(view.length,1)*100)}%"></i></div>`;
-}
+function syncMore(){}
 // Horizontal row: near the end a loading card shows, then the next products are added (no button).
 let loading=false;
 function moreCards(){
@@ -40,12 +38,8 @@ function moreCards(){
 }
 const rail=document.createElement("div");rail.className="pr-rail";
 {const g=$("#productGrid");g.parentNode.insertBefore(rail,g);rail.appendChild(g)}
-const mkNav=(c,d)=>{const b=document.createElement("button");b.type="button";b.className="tp-nav "+c;b.setAttribute("aria-label",c==="prev"?"Scroll left":"Scroll right");b.innerHTML=d;rail.appendChild(b);return b};
-const prevB=mkNav("prev",'<svg viewBox="0 0 24 24"><path d="m15 5-7 7 7 7"/></svg>'),nextB=mkNav("next",'<svg viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></svg>');
-function railSync(){const g=$("#productGrid");prevB.hidden=g.scrollLeft<8;nextB.hidden=g.scrollLeft+g.clientWidth>=g.scrollWidth-8;if(!loading&&limit<view.length&&g.scrollLeft+g.clientWidth>=g.scrollWidth-500)moreCards()}
+function railSync(){const g=$("#productGrid"),bs=document.querySelectorAll("#prArr button");if(bs.length){bs[0].disabled=g.scrollLeft<4;bs[1].disabled=g.scrollLeft+g.clientWidth>=g.scrollWidth-4&&limit>=view.length}if(!loading&&limit<view.length&&g.scrollLeft+g.clientWidth>=g.scrollWidth-500)moreCards()}
 $("#productGrid").addEventListener("scroll",railSync,{passive:true});addEventListener("resize",railSync);
-prevB.onclick=()=>$("#productGrid").scrollBy({left:-Math.max(260,$("#productGrid").clientWidth*.85),behavior:"smooth"});
-nextB.onclick=()=>{const g=$("#productGrid");g.scrollBy({left:Math.max(260,g.clientWidth*.85),behavior:"smooth"});setTimeout(railSync,450)};
 // 18+ category: adults-only confirmation (remembered for this visit)
 let ageOK=false,agCb=null;try{ageOK=sessionStorage.getItem("sx_18")==="1"}catch(e){}
 function askAge(cb){if(ageOK){cb();return}agCb=cb;$("#agate").classList.add("show")}
@@ -60,3 +54,6 @@ $("#search").oninput=e=>{q=e.target.value.toLowerCase().trim();limit=PAGE;render
 renderProducts();
 $("#bundleGrid").innerHTML=PRODUCTS.map((p,i)=>p.cat==="Bundle"?bcard(p,i):"").join("");
 mq.onchange=()=>{limit=PAGE;renderProducts()};
+
+/* Previous / next arrows (same as the Explore page) */
+$("#prArr").addEventListener("click",e=>{const b=e.target.closest("button[data-dir]");if(!b)return;const g=$("#productGrid");g.scrollBy({left:(+b.dataset.dir)*Math.max(240,g.clientWidth*.8),behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"})});

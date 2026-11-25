@@ -1259,7 +1259,6 @@
 .pr-rail #productGrid::-webkit-scrollbar{display:none}
 .pr-rail #productGrid>.pc{flex:0 0 clamp(236px,24vw,284px);scroll-snap-align:start;min-width:0}
 .pr-rail #productGrid>.empty{flex:1}
-.pr-rail .tp-nav{top:40%}
 .pr-ldc,.pr-endc{flex:0 0 clamp(200px,20vw,240px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;border-radius:18px;border:1px dashed rgba(255,255,255,.18);color:#b4bddb;font:700 13px Manrope,sans-serif;text-align:center;scroll-snap-align:start;padding:20px}
 .pr-ldc{background:linear-gradient(90deg,rgba(255,255,255,.03),rgba(255,255,255,.09),rgba(255,255,255,.03));background-size:200% 100%;animation:tpSk 1.3s linear infinite}
 .pr-endc{text-decoration:none;color:#fff;transition:border-color .25s,background .25s}
@@ -1287,3 +1286,12 @@
   .pr-rail #productGrid .pc .pr small{font-size:11.5px}
 }
 @media(prefers-reduced-motion:reduce){.pr-ldc{animation:none}}
+
+/* Previous / next arrows at the top right of the heading (same buttons as the Explore page). */
+#products .hhead { position: relative; }
+.pr-arr { position: absolute; top: 0; right: 0; display: flex; gap: 8px; }
+.pr-arr button { width: 38px; height: 38px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, .18); background: rgba(255, 255, 255, .06); color: #fff; font-size: 17px; line-height: 1; cursor: pointer; transition: background-color .2s, border-color .2s, opacity .2s; }
+.pr-arr button:hover:not(:disabled) { background: rgba(255, 255, 255, .14); border-color: rgba(255, 255, 255, .4); }
+.pr-arr button:disabled { opacity: .35; cursor: default; }
+.pr-arr button:focus-visible { outline: 2px solid #ff8a7e; outline-offset: 2px; }
+@media (min-width: 861px) { #products .hhead p { padding-top: 44px; } }
