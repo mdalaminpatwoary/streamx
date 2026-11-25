@@ -100,6 +100,50 @@
   }
   $("#svc").addEventListener("change", plans); plans();
 
+  /* ---------- Returning customer lookup (Add form) ---------- */
+  var addF = $("#af"), emIn = addF.email, sugBox = $("#sug"), retBox = $("#ret"), sugT = 0, sugSeq = 0, SUG = [], RET = null;
+  var todayBD = function () { return new Date(Date.now() + 6 * 3600000).toISOString().slice(0, 10); };
+  function hideSug() { sugBox.hidden = true; }
+  function setIfEmpty(el, v) { if (v && !el.value.trim()) el.value = v; }
+  function fillCustomer(c) { emIn.value = c.email; setIfEmpty(addF.name, c.name); setIfEmpty(addF.phone, c.phone); hideSug(); lookup(); }
+  function paintRet() {
+    if (!RET) { retBox.hidden = true; return; }
+    if (!RET.c) { retBox.className = "ad-ret new"; retBox.innerHTML = "<span>New customer</span>"; retBox.hidden = false; return; }
+    var c = RET.c, svc = addF.service.value, t = todayBD(), dup = RET.subs.filter(function (r) { return r.service === svc && r.end_date >= t; })[0], h = "<span><b>Returning customer</b> " + esc(c.name || "") + (c.phone ? " · " + esc(c.phone) : "") + " · " + c.subs + " order" + (c.subs === 1 ? "" : "s") + (c.active ? " · " + c.active + " active" : "") + "</span>";
+    if ((c.name && !addF.name.value.trim()) || (c.phone && !addF.phone.value.trim())) h += '<button type="button" class="ac-btn ac-ghost ac-sm" data-fillc>Fill details</button>';
+    if (dup) h += '<span class="ad-retw">Already has an active ' + esc(svc) + " plan until " + esc(dup.end_date) + "</span>";
+    retBox.className = "ad-ret"; retBox.innerHTML = h; retBox.hidden = false;
+  }
+  function lookup() {
+    var v = emIn.value.trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)) { RET = null; paintRet(); return; }
+    var my = ++sugSeq;
+    Promise.all([api("?view=customers&q=" + encodeURIComponent(v)), api("?q=" + encodeURIComponent(v))]).then(function (r) {
+      if (my !== sugSeq) return;
+      var c = (r[0].rows || []).filter(function (x) { return String(x.email).toLowerCase() === v; })[0] || null;
+      RET = { c: c, subs: (r[1].rows || []).filter(function (x) { return String(x.email).toLowerCase() === v; }) }; paintRet();
+    }).catch(function () { RET = null; paintRet(); });
+  }
+  emIn.addEventListener("input", function () {
+    clearTimeout(sugT); RET = null; paintRet(); var v = emIn.value.trim();
+    if (v.length < 3) { hideSug(); return; }
+    sugT = setTimeout(function () {
+      var my = ++sugSeq;
+      api("?view=customers&q=" + encodeURIComponent(v)).then(function (d) {
+        if (my !== sugSeq) return; SUG = (d.rows || []).slice(0, 6);
+        if (!SUG.length || (SUG.length === 1 && String(SUG[0].email).toLowerCase() === v.toLowerCase())) { hideSug(); lookup(); return; }
+        sugBox.innerHTML = SUG.map(function (c, i) { return '<button type="button" role="option" data-si="' + i + '"><b>' + esc(c.email) + "</b><small>" + esc(c.name || "No name") + (c.phone ? " · " + esc(c.phone) : "") + " · " + c.subs + " order" + (c.subs === 1 ? "" : "s") + (c.active ? " · " + c.active + " active" : "") + "</small></button>"; }).join("");
+        sugBox.hidden = false;
+      }).catch(hideSug);
+    }, 250);
+  });
+  sugBox.addEventListener("mousedown", function (e) { var b = e.target.closest("[data-si]"); if (b) { e.preventDefault(); fillCustomer(SUG[+b.dataset.si]); } });
+  emIn.addEventListener("blur", function () { setTimeout(function () { hideSug(); if (RET === null) lookup(); }, 150); });
+  emIn.addEventListener("keydown", function (e) { if (e.key === "Escape") hideSug(); });
+  retBox.addEventListener("click", function (e) { if (e.target.closest("[data-fillc]") && RET && RET.c) { setIfEmpty(addF.name, RET.c.name); setIfEmpty(addF.phone, RET.c.phone); paintRet(); } });
+  $("#svc").addEventListener("change", paintRet);
+  addF.addEventListener("reset", function () { RET = null; hideSug(); paintRet(); });
+
   /* ---------- Subscriptions ---------- */
   function accSummary(s) {
     var a = s.access || {}, g = a.gift || {}, v = a.vpn || {}, h = "";

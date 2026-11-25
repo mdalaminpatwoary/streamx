@@ -145,3 +145,18 @@
 @media(max-width:560px){.ad-ra{flex-direction:row;flex-wrap:wrap}}
 #gbody .ad-part>.ad-lab{padding:14px 20px 0!important;margin:0!important;font-size:13px}
 #gbody .ad-part{margin-bottom:4px}
+
+/* Add form: returning-customer lookup */
+.ad-rel{position:relative}
+.ad-sug{position:absolute;left:0;right:0;top:100%;margin-top:6px;z-index:30;display:flex;flex-direction:column;background:#12172e;border:1px solid rgba(255,255,255,.14);border-radius:12px;box-shadow:0 18px 40px rgba(0,0,0,.45);overflow:hidden}
+.ad-sug[hidden]{display:none}
+.ad-sug button{all:unset;box-sizing:border-box;display:flex;flex-direction:column;gap:2px;padding:10px 14px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.06)}
+.ad-sug button:last-child{border-bottom:0}
+.ad-sug button:hover,.ad-sug button:focus-visible{background:rgba(79,107,255,.18)}
+.ad-sug b{font-size:14px;color:#fff;word-break:break-all}
+.ad-sug small{font-size:12px;color:#9aa6d0}
+.ad-ret{margin-top:12px;display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;padding:10px 14px;border-radius:12px;font-size:13px;color:#cfe9da;background:rgba(46,212,122,.1);border:1px solid rgba(46,212,122,.3)}
+.ad-ret[hidden]{display:none}
+.ad-ret b{color:#5ee9a0}
+.ad-ret.new{color:#9aa6d0;background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.1)}
+.ad-retw{flex-basis:100%;color:#ffcf6b;font-weight:700}
