@@ -21,7 +21,14 @@ module.exports = async (req, res) => {
     if (!b.check && !EMAIL.test(email)) return res.status(400).json({ error: "Please enter a valid email address." });
     if (!b.check && !PHONE.test(phone)) return res.status(400).json({ error: "Please enter a valid mobile number (01XXXXXXXXX, or with country code like +358442354993)." });
 
-    const lines = priceCart(b.items);
+    // Pay page (shared link): a plain amount instead of a cart. Creates no subscription by itself, so the order is delivered by hand after you match it on WhatsApp.
+    let lines;
+    if (b.custom && typeof b.custom === "object") {
+      const amt = Math.floor(Number(b.custom.amount));
+      if (!(amt >= 10 && amt <= 50000)) return res.status(400).json({ error: "Enter an amount between ৳10 and ৳50,000." });
+      lines = [{ name: clean(b.custom.label, 60) || "StreamX payment", plan: "Custom payment", price: amt, q: 1, months: null }];
+      b.coupon = ""; b.tip = 0;
+    } else lines = priceCart(b.items);
     // Coupon: re-checked here every time. {check:true} only previews the discount (no order is created).
     let cp = null;
     if (b.coupon) {
