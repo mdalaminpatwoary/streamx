@@ -224,7 +224,7 @@
 .hx-roll .rl-from b{color:#fff}
 
 /* ---------- 3D service carousel ---------- */
-.hx-stage{position:relative;height:560px;display:grid;place-items:center;perspective:1400px;touch-action:pan-y;user-select:none;cursor:grab}
+.hx-stage{position:relative;height:560px;display:grid;place-items:center;perspective:1400px;touch-action:pan-y;user-select:none;cursor:default}
 .hx-stage.drag{cursor:grabbing}
 .hx-stage::before{content:"";position:absolute;width:520px;height:520px;border-radius:50%;background:conic-gradient(from 0deg,rgba(237,49,36,.0),rgba(237,49,36,.35),rgba(79,107,255,.3),rgba(237,49,36,0));filter:blur(70px);opacity:.55;animation:hxSpin 18s linear infinite}
 @keyframes hxSpin{to{transform:rotate(360deg)}}
@@ -263,10 +263,10 @@
 
 /* Slightly smaller headline so it sits in three lines, like the other section headings */
 .hx-title{font-size:clamp(34px,4.7vw,58px)}
-.hx-slot{cursor:pointer}
+.hx-slot{cursor:default}
 .hx-ini{position:relative;z-index:1;font:800 30px/1 Manrope,system-ui,sans-serif;font-style:normal;color:#fff}
-.hx-info{cursor:pointer}
-.hx-stage:not(.drag) .hx-t:hover{filter:brightness(1.15)!important}
+.hx-info{cursor:default}
+
 .rl-list b i.hx-ini{font-size:15px;width:auto}
 
 /* ---------- Trust tag: flag, two-line label, verified shield ---------- */
@@ -317,3 +317,6 @@
 .hx-chk{animation:hxChk 3s ease-in-out infinite}
 @keyframes hxChk{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
 @media(prefers-reduced-motion:reduce){.hx-flag,.hx-flag .hx-sun,.hx-chk{animation:none}}
+
+/* Phones/touch: the carousel is look-only (no tap, no swipe). Mouse users keep the hover slow-down and tilt. */
+@media (hover:none),(pointer:coarse){.hx-stage{pointer-events:none}}

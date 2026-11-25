@@ -75,14 +75,9 @@
       paintFront();
     }
     requestAnimationFrame(frame);
-    let sx=0;
-    stage.addEventListener("pointerdown",e=>{dragging=true;sx=lx=e.clientX;stage.classList.add("drag");stage.setPointerCapture(e.pointerId)});
     stage.addEventListener("pointermove",e=>{
       const r=stage.getBoundingClientRect();tgtTy=((e.clientY-r.top)/r.height-.5)*-14;
-      if(dragging){const dx=e.clientX-lx;lx=e.clientX;ry+=dx*.32;vel=dx*.32}
     });
-    const up=()=>{dragging=false;stage.classList.remove("drag")};
-    stage.addEventListener("pointerup",e=>{up();if(Math.abs(e.clientX-sx)<6){const el=document.elementFromPoint(e.clientX,e.clientY)||e.target;const t=el.closest&&el.closest(".hx-slot");const go=t?t.dataset.href:(el.closest&&el.closest("#hxInfo")?SV[front]&&SV[front].href:null);if(go)location.href=go}});stage.addEventListener("pointercancel",up);
     stage.addEventListener("pointerleave",()=>{tgtTy=0});
   }
 
