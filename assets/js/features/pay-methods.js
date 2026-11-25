@@ -30,7 +30,7 @@ ${opt("nagad", "NG", "#f6602b", "Nagad", "Send Money", "Nagad", row("Number", N3
 ${opt("rocket", "RK", "#8c3494", "Rocket", "Send Money", "Rocket", row("Number", N3))}
 ${opt("upay", "UP", "#f5b800", "Upay", "Send Money", "Upay", row("Number", N3))}
 ${opt("", "", "#4F6BFF", "Bank Transfer", BANKS.length + " banks", "Bank transfer", `<div class="mp-bl">${bankBody}</div>`, `<span class="mp-lgs">${BANKS.map((b) => lg(b.k, b.ini, b.c, b.name)).join("")}</span>`)}
-${opt("gp", "GP", "#00a1e0", "Mobile Recharge", "Grameenphone · +5% extra", "Grameenphone recharge", row("Number", N1), "", true)}
+${opt("gp", "GP", "#00a1e0", "Mobile Recharge", "Grameenphone · +5% extra", "Grameenphone recharge", row("Number", N1), "", false)}
 </div>
 <form class="mp-f" novalidate>
   <label><span class="pay-l">Your name</span><input class="pm-in" data-f="name" type="text" autocomplete="name" placeholder="e.g. Rafiq Ahmed" maxlength="60"></label>
