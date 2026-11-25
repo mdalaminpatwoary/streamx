@@ -7,10 +7,10 @@
   const LOGO = { bkash: "bkash.png", nagad: "nagad.png", rocket: "rocket.png", upay: "upay.png", gp: "gp.png", city: "bank-city.png", brac: "bank-brac.png", ific: "bank-ific.png", prime: "bank-prime.png" };
   const N1 = "01309009329", N2 = "01312850241", N3 = "01956476739";
   const BANKS = [
-    { k: "city", name: "The City Bank", c: "#e30613", ini: "CB", rows: [["Account name", "MD. AL-AMIN PATWOARY"], ["Account number", "2104034777001"], ["Type", "General Savings A/C"], ["Branch", "Jatrabari Branch"], ["Routing number", "225273238"]] },
+    { k: "prime", name: "Prime Bank", c: "#c8102e", ini: "PB", rows: [["Account name", "Md. Al-Amin Patwoary"], ["Account number", "2186213026702"], ["Type", "Prime Savings Account"], ["Branch", "Jatrabari"], ["Routing number", "170273220"]] },
     { k: "brac", name: "BRAC Bank", c: "#0072bc", ini: "BR", rows: [["Account name", "Md. Al-Amin Patwoary"], ["Account number", "1060251990001"], ["Type", "Savings"], ["Branch", "Dhaka South > Demra SME"], ["Routing number", "060271495"]] },
     { k: "ific", name: "IFIC Bank", c: "#00923f", ini: "IF", rows: [["Account name", "Md Al Amin Patwoary"], ["Account number", "0230143018811"], ["Type", "Savings"], ["Branch", "Konapara"], ["Routing number", "120273746"]] },
-    { k: "prime", name: "Prime Bank", c: "#c8102e", ini: "PB", rows: [["Account name", "Md. Al-Amin Patwoary"], ["Account number", "2186213026702"], ["Type", "Prime Savings Account"], ["Branch", "Jatrabari"], ["Routing number", "170273220"]] },
+    { k: "city", name: "The City Bank", c: "#e30613", ini: "CB", rows: [["Account name", "MD. AL-AMIN PATWOARY"], ["Account number", "2104034777001"], ["Type", "General Savings A/C"], ["Branch", "Jatrabari Branch"], ["Routing number", "225273238"]] },
   ];
   const esc = (t) => String(t == null ? "" : t).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const tk = (n) => "৳" + Number(n).toLocaleString("en-US");
