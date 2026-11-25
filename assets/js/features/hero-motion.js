@@ -56,21 +56,25 @@
       info.classList.remove("sw");void info.offsetWidth;info.classList.add("sw");
       nameEl.textContent=s.n;fromEl.innerHTML=s.from?`<span data-i>from</span> <strong>${price(s)}</strong>`:"";
     }
-    function frame(){
+    /* Time-based motion: same speed at 60 Hz, 90 Hz or 120 Hz, and no slow-down or jerk when a frame is late.
+       The orbit is turned with one direct transform (no custom-property cascade) and each tile is dimmed with an overlay instead of a filter. */
+    let last=0;const o0=new Float32Array(N).fill(-1),d0=new Float32Array(N).fill(-1),z0=new Int8Array(N).fill(-1);
+    function frame(t){
       requestAnimationFrame(frame);
-      if(!seen||document.hidden)return;
+      if(!seen||document.hidden){last=0;return}
+      const dt=last?Math.min(3,(t-last)/16.667):1;last=t;
       if(!dragging){
         const auto=calm?0:(stage.matches(":hover")?-.05:-.18);
-        vel+=(auto-vel)*.04;
+        vel+=(auto-vel)*(1-Math.pow(1-.04,dt));
       }
-      ry+=vel;ty+=(tgtTy-ty)*.06;
-      orbit.style.setProperty("--ry",ry.toFixed(2)+"deg");orbit.style.setProperty("--ty",ty.toFixed(2)+"deg");
+      ry+=vel*dt;ty+=(tgtTy-ty)*(1-Math.pow(1-.06,dt));
+      orbit.style.transform="rotateX("+(-8+ty).toFixed(2)+"deg) rotateY("+ry.toFixed(2)+"deg)";
       slots.forEach((e,i)=>{
         const a=((i*STEP+ry)%360+540)%360-180;        // -180..180, 0 = front
-        const f=1-Math.min(1,Math.abs(a)/180);
-        e.firstChild.style.opacity=(.35+.65*f).toFixed(2);
-        e.firstChild.style.filter=`brightness(${(.55+.45*f).toFixed(2)})`;
-        e.style.zIndex=Math.round(f*10);
+        const f=1-Math.min(1,Math.abs(a)/180),o=+(.35+.65*f).toFixed(2),d=+(.45*(1-f)).toFixed(2),z=Math.round(f*10),tile=e.firstChild;
+        if(o!==o0[i]){o0[i]=o;tile.style.opacity=o}
+        if(d!==d0[i]){d0[i]=d;tile.style.setProperty("--dim",d)}
+        if(z!==z0[i]){z0[i]=z;e.style.zIndex=z}
       });
       paintFront();
     }
@@ -91,13 +95,14 @@
     new IntersectionObserver(e=>vis=e[0].isIntersecting).observe(hero);
     if(fine)hero.addEventListener("pointermove",e=>{const r=cv.getBoundingClientRect();mx=e.clientX-r.left;my=e.clientY-r.top});
     hero.addEventListener("pointerleave",()=>{mx=my=-9999});
-    const pulse=[];let nextP=0;
+    const pulse=[];let nextP=0,skip=false;
     function draw(){
       requestAnimationFrame(draw);
       if(!vis||document.hidden)return;
-      t+=.012;c.clearRect(0,0,W,H);
+      if(!fine&&(skip=!skip))return;   /* touch devices: draw every other frame, leaves the carousel more time */
+      t+=.012*(fine?1:2);c.clearRect(0,0,W,H);
       if(t>nextP){pulse.push({x:Math.random()*W,y:Math.random()*H,r:0});nextP=t+1.1}
-      for(let i=pulse.length-1;i>=0;i--){pulse[i].r+=3.2;if(pulse[i].r>420)pulse.splice(i,1)}
+      for(let i=pulse.length-1;i>=0;i--){pulse[i].r+=3.2*(fine?1:2);if(pulse[i].r>420)pulse.splice(i,1)}
       for(let x=GAP/2;x<W;x+=GAP)for(let y=GAP/2;y<H;y+=GAP){
         let k=.18+.1*Math.sin(t*2+x*.012+y*.01),s=1.1,dx=x-mx,dy=y-my,ox=0,oy=0;
         const d=Math.hypot(dx,dy);
