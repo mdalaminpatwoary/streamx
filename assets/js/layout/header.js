@@ -5,6 +5,8 @@ function setActive(a){if(!a)return;curLink=a;links.forEach(l=>l.classList.toggle
 function frame(){
   ticking=false;const y=scrollY,dy=y-lastY,max=Math.max(1,document.documentElement.scrollHeight-innerHeight);
   nav.classList.toggle("scrolled",y>30);
+  const menu=$("#menu");
+  if(!(menu&&menu.classList.contains("open"))){if(y>140&&dy>4)nav.classList.add("pill");else if(dy<-4||y<60)nav.classList.remove("pill")}
   nav.classList.remove("hide");lastY=y;
   const sp=Math.min(1,y/max);document.documentElement.style.setProperty("--sp",sp.toFixed(4));
   if(y>=max-4)setActive(links[links.length-1]);
@@ -15,6 +17,11 @@ links.forEach(a=>{const h=a.getAttribute("href");const s=h[0]==="#"&&document.qu
 addEventListener("resize",()=>setActive(curLink));
 if(window.ResizeObserver){const m=$("#menu");if(m)new ResizeObserver(()=>setActive(curLink)).observe(m)}
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>setActive(curLink));
+/* Width of the shrunk pill = logo + buttons (measured, so it follows the cart/bell/burger that are showing) */
+const bar=nav.querySelector(".navbar"),lg=bar.querySelector(".logo"),nr=bar.querySelector(".nr");
+function measure(){const c=getComputedStyle(bar),gap=parseFloat(c.columnGap)||14;nav.style.setProperty("--pw",Math.ceil(14+lg.offsetWidth+gap+nr.offsetWidth+8+(parseFloat(c.borderLeftWidth)||0)*2)+"px")}
+measure();addEventListener("resize",measure);addEventListener("load",measure);
+if(window.ResizeObserver){new ResizeObserver(measure).observe(nr);new ResizeObserver(measure).observe(lg)}
 setActive(links[0]);frame();
 
 /* Opening the site with #section (e.g. from a service page): keep the section in view while images, fonts and the Trending block finish loading, until the visitor scrolls. */
