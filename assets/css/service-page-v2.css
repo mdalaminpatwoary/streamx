@@ -233,3 +233,37 @@
 .sp-pc.has .sp-pclg{display:none}
 @media(max-width:700px){.sp-pclg{width:50px;height:50px}}
 .sp-pclg img{position:static;opacity:1;width:100%;height:100%;object-fit:cover;display:block}
+
+/* ===== All services: compact phone layout (<=620px) ===== */
+@media(max-width:620px){
+  .hb-hero.sp-hero{padding:18px 0 10px;-webkit-mask:none;mask:none}
+  .hb-hero h1{font-size:26px;line-height:1.15;margin:8px 0 8px}
+  .hb-hero .sp-lead{font-size:14px;line-height:1.5;margin:0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .hb-search{margin:14px 0 12px}
+  .hb-search input{height:46px;font-size:15px;padding-left:46px}
+  .hb-search svg{left:16px;width:18px;height:18px}
+  .hb-stats{flex-wrap:nowrap;justify-content:space-between;gap:6px;margin:0 0 6px;font-size:11.5px;white-space:nowrap}
+  .hb-stats li{display:flex;flex-direction:column;align-items:center;gap:1px;line-height:1.2;text-align:center;flex:1}
+  .hb-stats b{margin:0;font-size:15px}
+  .hb-hero .sp-cta{display:none}
+  .hb-bar{padding:8px 0}
+  .hb-chips{gap:6px}
+  .hb-chips button{padding:7px 13px;font-size:13px}
+  .hb-sec{padding:20px 0 2px}
+  .hb-sh{margin-bottom:10px}
+  .hb-sh h2{font-size:18px}
+  .hb-sn{font-size:12.5px}
+  .hb-grid{grid-template-columns:1fr;gap:8px}
+  .hb-card{display:grid;grid-template-columns:44px minmax(0,1fr) auto;grid-template-rows:auto auto;column-gap:12px;row-gap:1px;align-items:center;padding:10px 12px;border-radius:16px}
+  .hb-card::before{display:none}
+  .hb-top,.hb-foot{display:contents}
+  .hb-cat,.hb-card p,.hb-plans,.hb-price small{display:none}
+  .hb-card .sp-logo{grid-column:1;grid-row:1/3;width:44px;height:44px;border-radius:13px}.hb-card .sp-logo b{font-size:19px}
+  .hb-card .sp-logo svg{max-width:24px;max-height:24px}
+  .hb-card h3{grid-column:2;grid-row:1;margin:0;font-size:15.5px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;align-self:end}
+  .hb-price{grid-column:2;grid-row:2;display:flex;align-items:baseline;gap:5px;align-self:start;color:var(--mut);font-size:12.5px}
+  .hb-price::before{content:"From";font-size:12px}
+  .hb-price b{font-size:14.5px;color:#fff}
+  .hb-go{grid-column:3;grid-row:1/3;width:30px;height:30px;font-size:14px;margin:0}
+}
+}

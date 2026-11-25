@@ -4,7 +4,7 @@
 (function () {
   const WA = (typeof WA_NUMBER !== "undefined" && WA_NUMBER) || "8801312850241";
   const RECHARGE_FEE = 0.05;
-  const LOGO = { bkash: "bkash.png", nagad: "nagad.png", rocket: "rocket.png", upay: "upay.png", gp: "gp.png", city: "bank-city.png", brac: "bank-brac.png", ific: "bank-ific.png", prime: "bank-prime.png" };
+  const LOGO = { bkash: "bkash.png", nagad: "nagad.png", rocket: "rocket.png", upay: "upay.png", gp: "gp.png?v=2", city: "bank-city.png", brac: "bank-brac.png", ific: "bank-ific.png", prime: "bank-prime.png" };
   const N1 = "01309009329", N2 = "01312850241", N3 = "01956476739";
   const BANKS = [
     { k: "prime", name: "Prime Bank", c: "#c8102e", ini: "PB", rows: [["Account name", "Md. Al-Amin Patwoary"], ["Account number", "2186213026702"], ["Type", "Prime Savings Account"], ["Branch", "Jatrabari"], ["Routing number", "170273220"]] },
