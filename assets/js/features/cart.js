@@ -27,11 +27,11 @@ function renderCart(){
   const msg="Hi StreamX! I want to order:\n"+cart.map((c,j)=>`${j+1}. ${c.name}${c.vr?" – "+c.vr:""} (${c.v}) x${c.q} - ${taka(c.p*c.q)}`).join("\n")+`\nTotal: ${taka(grand)}`;
   const co=$("#checkout");co.href=cart.length?wa(msg):"#";co.classList.toggle("off",!cart.length);
   const pb=$("#payBtn");if(pb)pb.classList.toggle("off",!cart.length);
-  cart.forEach(c=>{c.fresh=false;c.bump=false});$("#cartItemsN").textContent=n;$("#cartSub").textContent=n?`· ${n} item${n>1?"s":""}`:"";saveCart();
+  cart.forEach(c=>{c.fresh=false;c.bump=false});$("#cartItemsN").textContent=n;$("#clearCart").hidden=!n;$("#cartSub").textContent=n?`· ${n} item${n>1?"s":""}`:"";saveCart();
 }
 $("#cartBtn").onclick=()=>openCart(true);
 $("#closeCart").onclick=$("#overlay").onclick=()=>openCart(false);
-$("#clearCart").onclick=()=>{cart=[];renderCart()};
+$("#clearCart").onclick=()=>{const prev=cart.slice();if(!prev.length)return;cart=[];renderCart();const t=$("#toast");t.innerHTML='Cart cleared <button type="button" class="tun">Undo</button>';t.classList.add("show","act");clearTimeout(t._t);const hide=()=>{t.classList.remove("show","act")};t._t=setTimeout(hide,5000);t.querySelector(".tun").onclick=()=>{cart=prev;renderCart();hide()}};
 document.onkeydown=e=>{if(e.key==="Escape"){openCart(false);$("#mdl").classList.remove("show")}};
 renderCart();
 // Stay in sync when the cart changes on another tab or a service page (also when coming back with the Back button).

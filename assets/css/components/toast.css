@@ -21,3 +21,6 @@
 #toast {
   font-size: 14px;
 }
+#toast.act { bottom: 42%; pointer-events: auto; display: flex; align-items: center; gap: 12px; }
+#toast .tun { border: 0; background: rgba(255,255,255,.12); color: #fff; font: 800 12px Manrope, sans-serif; padding: 6px 12px; border-radius: 20px; cursor: pointer; }
+#toast .tun:hover { background: rgba(255,91,77,.5); }
