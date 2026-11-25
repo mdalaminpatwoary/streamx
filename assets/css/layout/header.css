@@ -330,10 +330,11 @@ nav a:hover {
 
 /* Phone: the burger folds away while the bar is a pill (the links are hidden then anyway); it returns on scroll up */
 @media (max-width:860px){
-  #burger{overflow:hidden;transition:width .85s var(--spring),margin .85s var(--spring),opacity .25s,transform .6s var(--spring),border-width .3s,background .25s,border-color .25s}
-  .nav.pill #burger{width:0;min-width:0;max-width:0;flex:0 0 0;padding:0;margin-left:-10px;border-width:0;opacity:0;transform:scale(.4);pointer-events:none;font-size:0;line-height:0;color:transparent;visibility:hidden;transition:width .85s var(--spring),margin .85s var(--spring),opacity .25s,transform .6s var(--spring),border-width .3s,visibility 0s .5s}
 }
 
 /* The announcements bell folds away with the burger while the bar is a pill */
-#ntBell{overflow:hidden;transition:width .85s var(--spring),margin .85s var(--spring),opacity .25s,transform .6s var(--spring),border-width .3s,background .25s,border-color .25s}
-.nav.pill #ntBell{width:0;min-width:0;max-width:0;flex:0 0 0;padding:0;margin-left:-10px;border-width:0;opacity:0;transform:scale(.4);pointer-events:none;visibility:hidden;transition:width .85s var(--spring),margin .85s var(--spring),opacity .25s,transform .6s var(--spring),border-width .3s,visibility 0s .5s}
+
+/* Burger and announcements bell leave like the links: a quick 3D flip + fade first, then the slot closes; on scroll up the slot opens, then they flip back in */
+#ntBell,#burger{overflow:hidden;transition:width .85s var(--spring) .05s,margin .85s var(--spring) .05s,opacity .3s .45s,transform .75s var(--spring) .45s,border-width .3s .3s,background .25s,border-color .25s}
+.nav.pill #ntBell,.nav.pill #burger{width:0;min-width:0;max-width:0;flex:0 0 0;padding:0;margin-left:-10px;border-width:0;opacity:0;transform:perspective(300px) rotateX(-100deg) scale(.6);pointer-events:none;font-size:0;line-height:0;color:transparent;visibility:hidden;transition:width .85s var(--spring) .3s,margin .85s var(--spring) .3s,opacity .25s .04s,transform .45s cubic-bezier(.5,0,.75,0) .04s,border-width .3s .3s,visibility 0s 1.3s}
+.nav.pill #burger{transition-delay:.3s,.3s,.1s,.1s,.3s,1.3s}
