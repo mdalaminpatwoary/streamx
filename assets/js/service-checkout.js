@@ -13,7 +13,7 @@
     '<label><span class="co-l">Note for us <em>(optional)</em></span><textarea id="co-c" rows="2" maxlength="300" placeholder="Anything we should know about your order?"></textarea></label>' +
     '<p class="co-agree">By paying, you agree to our <a href="/terms/" target="_blank" rel="noopener">Terms &amp; Conditions</a> and <a href="/refund-policy/" target="_blank" rel="noopener">Refund Policy</a>.</p>' +
     '<p class="co-er" role="alert"></p><button class="co-go" type="submit"></button>' +
-    '<img class="co-eps" src="/assets/img/pay/eps-renew.webp" alt="Pay with EPS: Visa, Mastercard, American Express, bKash, Nagad, Rocket and more" loading="lazy" width="1012" height="162">' +
+    '<img class="co-eps" src="/assets/img/pay/eps-dark.webp" alt="Pay with EPS: Visa, Mastercard, American Express, bKash, Nagad, Rocket and more" loading="lazy" width="1012" height="162">' +
     '<small class="co-fine">You will be taken to the EPS payment page. We never see your card or wallet PIN.</small>' +
     '<small class="co-fine co-wa">Prefer to order by chat? <button type="button" class="co-man">Pay Manually</button></small></form>' +
     '<div class="co-box co-mbox" hidden><button class="co-x" type="button" data-x aria-label="Close">✕</button><button class="co-back" type="button">← Back to online payment</button><span class="co-eb">Pay manually</span><h3>Send the payment, then confirm</h3><div class="co-sum" id="co-ms"></div><div id="co-mm"></div></div>';
