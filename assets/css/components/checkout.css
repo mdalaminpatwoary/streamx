@@ -41,3 +41,25 @@
 .pay-sum .pay-disc, .pay-sum .pay-disc b { color: #6ee7b7; }
 
 .pay-agree{margin:4px 0 8px;font-size:12.5px;line-height:1.55;color:#98a1bc;text-align:center}.pay-agree a{color:#ff8a7c;text-decoration:underline;text-underline-offset:2px}.pay-agree a:hover{color:#fff}
+
+/* Checkout polish: collapsed coupon, tighter form, sticky pay bar */
+.pay-cpt { display: inline-flex; align-items: center; gap: 7px; margin: 0 0 12px; padding: 0; border: 0; background: none; color: #ff8a7c; font: 700 13.5px Manrope, sans-serif; cursor: pointer; }
+.pay-cpt svg { flex: none; }
+.pay-cpt:hover { color: #ffb0a6; }
+.pay-cpt[hidden], .pay-cp[hidden] { display: none; }
+.pay-cp { margin-bottom: 12px; }
+.pay-cprow input { letter-spacing: .06em; }
+.pay-cprow input::placeholder { text-transform: none; letter-spacing: 0; font-weight: 400; }
+.pay-m form > label { margin-top: 10px; }
+.pay-m .pay-row { margin-top: 10px; gap: 10px; }
+.pay-sum { margin-bottom: 14px; }
+.pay-agree { margin: 10px 0 0; font-size: 12px; }
+.pay-eps { margin: 12px 0 0; }
+.pay-bar { position: sticky; bottom: 0; z-index: 3; margin: 12px -28px 0; padding: 10px 28px calc(14px + env(safe-area-inset-bottom, 0px)); background: linear-gradient(180deg, rgba(14,18,38,0), #0e1226 28%); }
+.pay-err { min-height: 0; margin: 0 0 8px; }
+.pay-err:empty { display: none; }
+.pay-go { display: flex; align-items: center; justify-content: center; gap: 8px; }
+.pay-go svg { flex: none; }
+@media (max-width: 560px) { .pay-bar { margin: 12px -20px 0; padding-inline: 20px; } }
+.pay-m .pay-row label { margin: 0; }
+.pay-m .pay-row { margin-bottom: 0; }

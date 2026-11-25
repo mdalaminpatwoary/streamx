@@ -3,6 +3,10 @@
    No keys or secrets exist in this file. */
 (function () {
   const m = $("#paymodal"), f = $("#payForm"), err = $("#payErr"), go = $("#payGo");
+  const LOCK = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
+  const lab = (t) => { go.innerHTML = LOCK + "<span>" + t + "</span>"; };
+  const cpToggle = (on) => { $("#payCpBox").hidden = !on; $("#payCpT").hidden = on; $("#payCpT").setAttribute("aria-expanded", on ? "true" : "false"); };
+  $("#payCpT").onclick = () => { cpToggle(true); setTimeout(() => $("#payCp").focus(), 50); };
   const KEY = "sx_buyer";
   const PHONE = /^(?:(?:\+?88)?01[3-9]\d{8}|\+[1-9]\d{7,14})$/, EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
   try { const q = new URLSearchParams(location.search).get("coupon"); if (q) sessionStorage.setItem("sx_cp", q.toUpperCase().replace(/[^A-Z0-9_-]/g, "").slice(0, 24)); } catch (e) {}
@@ -22,7 +26,7 @@ function sessEmail(){try{var t=localStorage.getItem("sx_session");if(!t)return "
   }
   function paintSum() {
     $("#paySum").innerHTML = cart.map((c) => `<div><span>${c.name}${c.vr ? " · " + c.vr : ""} · ${c.v} <em>×${c.q}</em></span><b>${taka(c.p * c.q)}</b></div>`).join("") + (cp ? `<div class="pay-disc"><span>Coupon ${esc(cp.code)} <em>${esc(cp.label)}</em></span><b>−${taka(cp.discount)}</b></div>` : "") + (tip ? `<div><span>Tip</span><b>${taka(tip)}</b></div>` : "") + `<div class="pay-tot"><span>Total</span><b>${taka(total())}</b></div>`;
-    $("#payGo").textContent = "Pay " + taka(total()) + " securely";
+    lab("Pay " + taka(total()) + " securely");
     const g = $("#payCp"), b = $("#payCpGo"); g.readOnly = !!cp; b.textContent = cp ? "Remove" : "Apply"; b.classList.toggle("on", !!cp);
   }
   async function applyCp() {
@@ -49,6 +53,7 @@ function sessEmail(){try{var t=localStorage.getItem("sx_session");if(!t)return "
     cp = null; paintSum();
     const wl = $("#checkout"); if (wl) $("#payWa").href = wl.href;
     $("#payCpM").textContent = ""; $("#payCpM").className = "pay-cpm"; $("#payCp").value = (function () { try { return (new URLSearchParams(location.search).get("coupon") || sessionStorage.getItem("sx_cp") || "").toUpperCase().slice(0, 24); } catch (e) { return ""; } })();
+    cpToggle(!!$("#payCp").value);
     err.textContent = ""; go.disabled = false;
     m.classList.add("show"); openCart(false); setTimeout(() => $("#payName").focus(), 300);
   }
@@ -64,7 +69,7 @@ function sessEmail(){try{var t=localStorage.getItem("sx_session");if(!t)return "
     if (name.length < 2) return (err.textContent = "Please enter your name.");
     if (!PHONE.test(phone)) return (err.textContent = "Enter a valid mobile number: 01712345678, or with country code, e.g. +358442354993.");
     if (!EMAIL.test(email)) return (err.textContent = "Enter a valid email address.");
-    err.textContent = ""; go.disabled = true; go.classList.add("busy"); go.textContent = "Opening secure payment…";
+    err.textContent = ""; go.disabled = true; go.classList.add("busy"); lab("Opening secure payment…");
     try { localStorage.setItem(KEY, JSON.stringify({ n: name, p: phone, e: se ? "" : email })); } catch (x) {}
     try {
       const r = await fetch("/api/checkout", {
@@ -77,7 +82,7 @@ function sessEmail(){try{var t=localStorage.getItem("sx_session");if(!t)return "
     } catch (x) {
       err.textContent = x.message || "Online payment is unavailable right now. Please order on WhatsApp.";
       if (/coupon/i.test(x.message || "")) { cp = null; paintSum(); }
-      go.disabled = false; go.classList.remove("busy"); go.textContent = "Pay " + taka(total()) + " securely";
+      go.disabled = false; go.classList.remove("busy"); lab("Pay " + taka(total()) + " securely");
     }
   });
 })();
