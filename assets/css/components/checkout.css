@@ -81,3 +81,6 @@
 .pay-tabs button:hover{color:#fff}
 .pay-tabs button.on{color:#fff;background:linear-gradient(135deg,#ff5a45,#ed3124);box-shadow:0 8px 22px -10px rgba(237,49,36,.9)}
 #payManual[hidden],#payForm[hidden]{display:none}
+
+/* Mobile number and email each get a full row so nothing is cut off */
+.pay-m #payForm .pay-row { grid-template-columns: minmax(0, 1fr); gap: 10px; }
