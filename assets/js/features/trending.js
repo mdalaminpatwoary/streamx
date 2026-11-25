@@ -202,10 +202,6 @@
   setInterval(refresh,10*60*1000);
   document.addEventListener("visibilitychange",()=>{if(!document.hidden)refresh()});
 
-  /* Ask the server which country the visitor is in (it reads it from the IP address); wait at most 1.5 s, then use the United States. */
-  const geoReady=Promise.race([
-    fetch("/api/trending?geo=1").then(r=>r.ok?r.json():null).then(j=>{const c=String(j&&j.c||"").toUpperCase();if(ok(c,REGIONS.map(x=>x[0])))geo=c}).catch(()=>{}),
-    new Promise(r=>setTimeout(r,1500))
-  ]).then(()=>{if(!st.manual){st.r=homeRegion(st.p);paintRegion()}});
-  paintRegion();paintControls();geoReady.then(load);
+  /* No country lookup: everyone starts on the United States (one shared, cached answer = faster); visitors can still pick another region. */
+  paintRegion();paintControls();load();
 })();

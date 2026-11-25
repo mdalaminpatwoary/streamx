@@ -9,7 +9,8 @@ const HOUR = 3600 * 1000;
 
 const { mapProviders } = require("./_providers");
 /* The visitor's country (2 letters) from the host's IP lookup; US when unknown. */
-const countryOf = (req) => { const c = String((req.headers && (req.headers["x-vercel-ip-country"] || req.headers["cf-ipcountry"])) || "").toUpperCase(); return /^[A-Z]{2}$/.test(c) && c !== "XX" && c !== "T1" ? c : "US"; };
+/* Everyone gets the same US lists, so the edge can cache one answer for all visitors (no per-visitor country lookup). */
+const countryOf = () => "US";
 /* Runs fn(region) for the visitor's country; when that gives fewer than 5 titles with posters (no data there), runs it for the US instead. */
 async function withUS(cc, fn) {
   let d = null;
@@ -434,7 +435,7 @@ module.exports = async (req, res) => {
       if (sec === "genre" && !genre) return res.status(400).json({ error: "Pick a genre" });
       if (sec === "platform" && !plat) return res.status(400).json({ error: "Unknown platform" });
       const mode = ["popular", "top", "new", "crunchyroll", "netflix", "jiohotstar", "winners", "nominees", "bestpicture", "goldenglobes", "bafta", "cannes", "filmfare", "national", "bangladesh", ...Object.keys(DISC)].includes(req.query.m) ? req.query.m : "popular", regional = ["nowplaying", "upcoming", "popular", "trailers", "platform"].includes(sec) || (sec === "anime" && mode === "crunchyroll") || ((sec === "kdrama" || sec === "bollywood") && mode === "netflix"), key = [sec, k, page, genre, plat, mode, regional ? cc : ""].join("|"), hit = hubCache.get(key);
-      res.setHeader("Cache-Control", regional ? "private, max-age=3600" : "public, s-maxage=3600, stale-while-revalidate=86400"); // region lists differ per visitor
+      res.setHeader("Cache-Control", "public, s-maxage=3600, stale-while-revalidate=86400"); // region lists differ per visitor
       if (hit && Date.now() - hit.at < HOUR) return res.status(200).json(hit.body);
       const body = { s: sec, k, ...(await hubList(sec, k, page, genre, plat, mode, cc)) };
       if (sec !== "trailers") await attachPl(body.list);
@@ -444,7 +445,7 @@ module.exports = async (req, res) => {
     }
     const l = req.query.l === "soon" ? "soon" : "top", key = l + k + (l === "soon" ? cc : "");
     const hit = cache.get(key);
-    res.setHeader("Cache-Control", l === "soon" ? "private, max-age=3600" : "public, s-maxage=3600, stale-while-revalidate=86400");
+    res.setHeader("Cache-Control", "public, s-maxage=3600, stale-while-revalidate=86400");
     if (hit && Date.now() - hit.at < 3 * HOUR) return res.status(200).json(hit.body);
     // Stale-while-revalidate: an older copy (up to 7 days) is served at once while a fresh one is built; if the rebuild fails the old copy still answers.
     const fresh = () => build(l, k, cc).then((list) => { const body = { l, k, list, at: new Date().toISOString() }; cache.set(key, { at: Date.now(), body }); return body; });
