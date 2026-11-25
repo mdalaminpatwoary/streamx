@@ -22,6 +22,7 @@
   function render() {
     var n = cart.reduce(function (s, c) { return s + c.q; }, 0), total = cart.reduce(function (s, c) { return s + c.q * c.p; }, 0);
     var b = $("#spCartN"); if (b) { b.textContent = n; b.hidden = !n; }
+    var cb = $("#spCart"); if (cb && document.querySelector(".hb-hero")) cb.hidden = !n;   // All services page: nothing to add here, so the cart button only shows when the cart has items
     $("#sc-sub").textContent = n ? "· " + n + " item" + (n > 1 ? "s" : "") : "";
     $("#sc-items").innerHTML = cart.length ? cart.map(function (c, j) {
       return '<div class="sc-i"><div class="sc-n"><b>' + esc(c.name) + '</b><small>' + (c.vr ? esc(c.vr) + " · " : "") + esc(c.v) + " · " + taka(c.p) + '</small></div><div class="sc-q"><button type="button" data-q="' + j + '" data-d="-1" aria-label="Decrease">−</button><span>' + c.q + '</span><button type="button" data-q="' + j + '" data-d="1" aria-label="Increase">+</button></div><button type="button" class="sc-rm" data-rm="' + j + '" aria-label="Remove ' + esc(c.name) + '">✕</button></div>';

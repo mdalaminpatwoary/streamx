@@ -348,3 +348,5 @@ body:has(.hb-hero) .sp-nav.sp-scrolled .sp-navin{background:rgba(14,18,38,.55);b
 .hb-hero .sp-crumb{margin-bottom:22px}
 .hb-hero h1{margin-top:16px}
 @media(max-width:620px){.hb-hero .sp-crumb{margin-bottom:12px;font-size:13px}.hb-hero h1{margin-top:10px}.hb-hero.sp-hero{padding-top:88px}}
+
+.sp-cartb[hidden]{display:none!important}
