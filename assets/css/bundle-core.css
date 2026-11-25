@@ -1583,6 +1583,20 @@ nav a:hover {
   .nr { gap: 8px; }
 }
 
+/* frosted-glass bar, same colour and border as the service pages */
+.navbar {
+  background: rgba(14, 18, 38, 0.62);
+  -webkit-backdrop-filter: blur(18px) saturate(1.5);
+  backdrop-filter: blur(18px) saturate(1.5);
+  box-shadow: 0 14px 40px -24px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+.navbar::before { background: rgba(255, 255, 255, 0.08); }
+.nav.scrolled .navbar {
+  background: rgba(8, 11, 24, 0.86);
+  box-shadow: 0 18px 50px -12px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(79, 107, 255, 0.2);
+}
+.nav.scrolled .navbar::before { background: transparent; }
+
 /* components/buttons.css */
 .btn {
   display: inline-block;
