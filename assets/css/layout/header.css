@@ -301,9 +301,17 @@ nav a:hover {
 .nav.scrolled .navbar{max-width:none}
 .nav.pill .navbar{width:calc(var(--pw,200px) + var(--hiw,0px));padding-left:14px;padding-right:8px}
 @media (min-width:861px){
-  .navbar nav{transition:opacity .35s,margin .85s var(--spring),visibility 0s}
-  .nav.pill .navbar nav{flex:0 0 0;width:0;min-width:0;margin:0 0 0 -14px;overflow:hidden;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .22s,filter .3s,margin .85s var(--spring),visibility 0s .3s;filter:blur(6px)}
+  /* Choreography. Scroll down: the links flip away in 3D, then the bar closes and the logo rides left to right and nudges the buttons. Scroll up: the bar opens, the logo returns, then the links flip back in. */
+  .navbar nav{max-width:900px;overflow:hidden;perspective:520px;transition:max-width .85s var(--spring) .05s,margin .85s var(--spring),visibility 0s}
+  .navbar nav a{transform-origin:50% 50%;transition:transform .75s var(--spring),opacity .3s,color .3s;transition-delay:calc(.4s + var(--k,0)*.035s),calc(.4s + var(--k,0)*.035s),0s}
+  .navbar nav a:nth-of-type(1){--k:0}.navbar nav a:nth-of-type(2){--k:1}.navbar nav a:nth-of-type(3){--k:2}.navbar nav a:nth-of-type(4){--k:3}.navbar nav a:nth-of-type(5){--k:4}.navbar nav a:nth-of-type(6){--k:5}.navbar nav a:nth-of-type(7){--k:6}.navbar nav a:nth-of-type(8){--k:7}.navbar nav a:nth-of-type(9){--k:8}
+  .nav.pill .navbar nav{max-width:0;margin:0 0 0 -14px;visibility:hidden;pointer-events:none;transition:max-width .85s var(--spring) .3s,margin .85s var(--spring) .3s,visibility 0s 1.3s}
+  .nav.pill .navbar nav a{transform:rotateX(-100deg) translateY(-6px);opacity:0;transition:transform .45s cubic-bezier(.5,0,.75,0),opacity .28s,color .3s;transition-delay:calc(var(--k,0)*.03s)}
+  .nav.pill #ind{opacity:0}
+  .nav.pill .navbar{transition:width .85s var(--spring) .28s,padding .85s var(--spring) .28s,background .4s,box-shadow .4s}
 }
+@keyframes nrPush{0%{transform:translateX(0)}38%{transform:translateX(7px)}100%{transform:none}}
+.nav.pill .nr{animation:nrPush .8s cubic-bezier(.2,.8,.2,1) .72s both}
 @media (max-width:860px){
   .nav.pill .navbar nav{left:auto;width:min(340px,calc(100vw - 28px))}
 }
