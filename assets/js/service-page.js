@@ -113,7 +113,10 @@
       return fetch("/api/trending?p=" + p + "&r=BD").then(function (r) { if (!r.ok) throw 0; return r.json(); }).then(function (d) { cache[p] = d; if (p === st.p) paint(d); if (first) { ts.hidden = false; var tl = $('.sp-nav nav a[href="#trending"]'); if (tl) tl.hidden = false; } }).catch(function () { if (!first) rail.innerHTML = '<p class="sp-empty">Trending is unavailable right now.</p>'; });
     };
     $$(".sp-seg", ts).forEach(function (seg) { seg.addEventListener("click", function (e) { var b = e.target.closest("button"); if (!b) return; $$("button", seg).forEach(function (x) { x.classList.toggle("on", x === b); }); st[seg.dataset.seg] = b.dataset.v; if (cache[st.p]) paint(cache[st.p]); else load(false); }); });
-    load(true);
+    if ("IntersectionObserver" in window) {
+      var sn = document.createElement("div"); sn.setAttribute("aria-hidden", "true"); sn.style.height = "1px"; ts.parentNode.insertBefore(sn, ts);
+      new IntersectionObserver(function (es, io) { if (es[0].isIntersecting) { io.disconnect(); load(true); } }, { rootMargin: "0px 0px 1000px 0px" }).observe(sn);
+    } else load(true);
   }
 
   /* 6. Review form -> WhatsApp */
