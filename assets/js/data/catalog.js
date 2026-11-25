@@ -83,6 +83,8 @@ const CATALOG=[
  V("With Ads","","An ad-supported plan at an everyday price.",["Single-device access","Instant delivery"],["Ad-supported plan",VPNN],{1:160,6:675,12:1100})]],
 ["Hoichoi","Streaming","#e11d48","Bangla originals, series and films with simple OTP-based login.",[
  V("OTP Login","","Bangla originals with simple, secure OTP-based login.",["Single-device access","Secure OTP-based login"],[],{1:80,6:360,12:580})]],
+["Apple TV+","Streaming","#1d1d1f","Apple Originals like Ted Lasso and Severance in 4K HDR with Dolby Vision and Atmos, ad-free, on a shared login for a single device.",[
+ V("Share · Single Device","Single device","Apple TV+ on a shared login that works on one device at a time, at a fixed BDT price.",["Single-device login","Ad-free streaming","4K HDR with Dolby Vision, and Dolby Atmos on most titles","Apple Originals, series and films","Works on iPhone, iPad, Mac, Apple TV, smart TVs and the web","Offline downloads on iPhone, iPad and Mac"],["Shared login, use on one device only","Do not change the account details"],{1:250,6:1000,12:1500})]],
 ["Chorki","Streaming","#0ea5e9","Bangla series, films and originals on a PIN-protected profile.",[
  V("Profile & PIN","","Bangla originals on a PIN-protected profile.",["Single-device access","Profile and PIN protected"],[],{1:80,6:360,12:580})]],
 ["IPTV","Streaming","#2563eb","Live TV streaming on iOS, Android and TV, with single-device login.",[
