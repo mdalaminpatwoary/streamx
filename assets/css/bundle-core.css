@@ -1656,6 +1656,11 @@ nav a:hover {
   .navbar{transition:width .6s cubic-bezier(.22,1,.36,1),padding .6s cubic-bezier(.22,1,.36,1),background .4s,box-shadow .4s}
 }
 
+/* Phone: no backdrop blur on the bar (smoother scrolling, no see-through text); a near-solid dark glass look keeps the style */
+@media (max-width:860px){
+  .navbar,.nav.scrolled .navbar,.nav.pill .navbar{-webkit-backdrop-filter:none;backdrop-filter:none;background:linear-gradient(180deg,rgba(20,25,54,.97),rgba(9,12,27,.98))}
+}
+
 /* components/buttons.css */
 .btn {
   display: inline-block;
