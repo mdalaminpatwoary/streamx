@@ -61,6 +61,7 @@
   function hide() { if (!open) return; open = false; btn.setAttribute("aria-expanded", "false"); pop.classList.remove("on"); }
   btn.setAttribute("aria-haspopup", "menu"); btn.setAttribute("aria-expanded", "false");
   btn.addEventListener("click", function (e) {
+    if (innerWidth <= 860) return; // phones: the profile button opens the main menu sheet instead
     if (!tok() || e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1) return; // signed out: plain link to sign in
     e.preventDefault(); open ? hide() : show();
   });

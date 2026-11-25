@@ -347,7 +347,7 @@ nav a:hover {
 /* Cart and account never move: same right edge, same padding and height in both states, no undershoot when the bar closes. On phones the burger sits left of them, so folding it away never shifts them */
 .nav.pill .navbar{transition:width .6s cubic-bezier(.22,1,.36,1),padding .6s cubic-bezier(.22,1,.36,1),background .4s,box-shadow .4s}
 @media (min-width:861px){.nav.pill .navbar{transition-delay:.14s,.14s,0s,0s}}
-@media (max-width:860px){.nr #burger{order:-1}}
+@media (max-width:860px){#burger{display:none!important}.nr .cartbtn.mn-on{border-color:rgba(237,49,36,.55);background:rgba(237,49,36,.16)}}
 
 /* Announcement pop-up in the pill */
 .sp-nt{cursor:pointer;color:#fff;text-decoration:none}
