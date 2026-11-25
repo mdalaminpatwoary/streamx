@@ -29,7 +29,8 @@ async function addSub(s) {
   const url = "subscriptions" + (row.order_ref ? "?on_conflict=order_ref,line_idx" : ""), pref = row.order_ref ? "return=representation,resolution=ignore-duplicates" : "return=representation";
   // Hand-added purchases get a Manual ID: 1, 2, 3, ... (needs the manual_id column; without it the purchase is still saved, just without the ID)
   let mid = null;
-  if (row.source === "admin") {
+  if (s.manual_id) mid = String(s.manual_id);   // the 2nd+ row of one pack/order shares the first row's ID
+  else if (row.source === "admin") {
     try { const last = await rest("GET", "subscriptions?manual_id=not.is.null&select=manual_id&order=id.desc&limit=1"); const n = last && last[0] ? parseInt(String(last[0].manual_id).replace(/\D/g, ""), 10) || 0 : 0; mid = String(n + 1); } catch (e) { mid = null; }
   }
   let out;

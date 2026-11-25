@@ -239,7 +239,7 @@ module.exports = async (req, res) => {
         const ref = "ADM" + Date.now().toString(36).toUpperCase(), rows = [];
         let warn = "";
         for (let i = 0; i < cards.length; i++) {
-          const row = await addSub(Object.assign({}, base, { plan: cards[i].amount, order_ref: ref, line_idx: i }));
+          const row = await addSub(Object.assign({}, base, { plan: cards[i].amount, order_ref: ref, line_idx: i, manual_id: i && rows[0] ? rows[0].manual_id : null }));
           rows.push(row);
           if (row && row.id) { try { const lg = access.toRow({ gift_code: cards[i].code, gift_region: body.gift_region || "US", gift_amount: cards[i].amount }); await db.rest("PATCH", `subscriptions?id=eq.${row.id}`, lg); } catch (e) { console.error("gift details not saved", e && e.message); warn = "Added, but the gift card details could not be saved. Run the latest SQL in Supabase."; } }
         }
@@ -253,7 +253,7 @@ module.exports = async (req, res) => {
         const ref = "ADM" + Date.now().toString(36).toUpperCase(), names = ["Netflix", "Prime Video"], rows = [];
         let warn = "";
         for (let i = 0; i < 2; i++) {
-          const row = await addSub(Object.assign({}, base, { plan: clean(body.plan, 60) + " · " + names[i], order_ref: ref, line_idx: i, start: i ? rows[0].start_date : base.start, nostack: i > 0 }));
+          const row = await addSub(Object.assign({}, base, { plan: clean(body.plan, 60) + " · " + names[i], order_ref: ref, line_idx: i, start: i ? rows[0].start_date : base.start, nostack: i > 0, manual_id: i && rows[0] ? rows[0].manual_id : null }));
           rows.push(row);
           const lg = access.toRow(body.parts[i] || {});
           if (lg && row && row.id) { try { await db.rest("PATCH", `subscriptions?id=eq.${row.id}`, lg); } catch (e) { console.error("login details not saved", e && e.message); warn = "Added, but some login details could not be saved. Run the latest SQL in Supabase."; } }
