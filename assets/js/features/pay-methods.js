@@ -19,7 +19,7 @@
   const lg = (k, ini, c, alt) => `<span class="mp-lg" style="--c:${c}"><img src="/assets/img/pay/${LOGO[k]}" alt="${esc(alt)}" loading="lazy" onerror="this.remove()"><i>${ini}</i></span>`;
   const row = (l, v) => `<div class="mp-r"><span>${esc(l)}</span><b>${esc(v)}</b>${cp(v, l)}</div>`;
 
-  const amtNote = '<p class="mp-rc ok" data-amt hidden></p>';
+  const amtNote = '<div class="mp-amt" data-amt hidden></div>';
   const opt = (k, ini, c, name, tag, via, body, logos, showT) => `<details class="mp-o" style="--c:${c}" data-via="${via}"><summary>${logos || lg(k, ini, c, name)}<span class="mp-ot${showT ? "" : " sr"}"><b>${name}</b><small>${tag}</small></span><i class="mp-chev" aria-hidden="true"></i></summary><div class="mp-ob">${body}${amtNote}</div></details>`;
   const bankBody = BANKS.map((b) => `<details class="mp-b" style="--c:${b.c}" data-via="${b.name}"><summary>${lg(b.k, b.ini, b.c, b.name)}<b class="sr">${b.name}</b><i class="mp-chev" aria-hidden="true"></i></summary><div class="mp-bd">${b.rows.map((r) => row(r[0], r[1])).join("")}</div></details>`).join("");
   function html() {
@@ -30,7 +30,7 @@ ${opt("nagad", "NG", "#f6602b", "Nagad", "Send Money", "Nagad", row("Number", N3
 ${opt("rocket", "RK", "#8c3494", "Rocket", "Send Money", "Rocket", row("Number", N3))}
 ${opt("upay", "UP", "#f5b800", "Upay", "Send Money", "Upay", row("Number", N3))}
 ${opt("", "", "#4F6BFF", "Bank Transfer", BANKS.length + " banks", "Bank transfer", `<div class="mp-bl">${bankBody}</div>`, `<span class="mp-lgs">${BANKS.map((b) => lg(b.k, b.ini, b.c, b.name)).join("")}</span>`)}
-${opt("gp", "GP", "#00a1e0", "Mobile Recharge", "Grameenphone · +5% extra", "Grameenphone recharge (+5%)", row("Number", N1) + '<p class="mp-rc" data-rc></p>', "", true)}
+${opt("gp", "GP", "#00a1e0", "Mobile Recharge", "Grameenphone · +5% extra", "Grameenphone recharge", row("Number", N1), "", true)}
 </div>
 <form class="mp-f" novalidate>
   <label><span class="pay-l">Your name</span><input class="pm-in" data-f="name" type="text" autocomplete="name" placeholder="e.g. Rafiq Ahmed" maxlength="60"></label>
@@ -51,10 +51,12 @@ ${opt("gp", "GP", "#00a1e0", "Mobile Recharge", "Grameenphone · +5% extra", "Gr
     function refresh() {
       q("[data-amtwrap]").hidden = !cfg.askAmount;
       const t = cfg.getTotal && cfg.getTotal(), amt = f("amt"), v = t || (amt && Number(amt.value)) || 0;
-      root.querySelectorAll("[data-amt]").forEach((p) => { p.hidden = !v; if (v) p.innerHTML = `Send exactly <b>${tk(v)}</b>.`; });
-      const rc = q("[data-rc]"); if (rc) rc.innerHTML = `Mobile recharge carries a 5% extra charge. ${v ? `For ${tk(v)}, recharge <b>${tk(Math.ceil(v * (1 + RECHARGE_FEE)))}</b>.` : "Add 5% to your total."}`;
+      root.querySelectorAll("[data-amt]").forEach((p) => {
+        p.hidden = !v; if (!v) return;
+        const rc = p.closest(".mp-o").dataset.via === "Grameenphone recharge", pay = rc ? Math.ceil(v * (1 + RECHARGE_FEE)) : v;
+        p.innerHTML = `<div class="mp-amt-r"><span>${rc ? "Recharge amount" : "Amount to pay"}</span><b>${tk(pay)}</b></div>${cp(String(pay), "amount")}` + (rc ? `<small>${tk(v)} + 5% recharge charge (${tk(pay - v)})</small>` : "");
+      });
     }
-    let via = ""; // the option the customer opened above
     const setVia = (v) => { via = v || ""; };
     // One option open at a time; opening one fills "Paid with"
     root.addEventListener("toggle", (e) => {
@@ -87,7 +89,7 @@ ${opt("gp", "GP", "#00a1e0", "Mobile Recharge", "Grameenphone · +5% extra", "Gr
       if (tx.length < 6) return (er.textContent = "Enter the Transaction ID from your payment.");
       er.textContent = ""; if (cfg.onName) cfg.onName(name);
       const lines = (cfg.getLines && cfg.getLines()) || [];
-      const msg = "Hi StreamX! I paid manually.\n\n" + (lines.length ? lines.join("\n") + "\n" : "") + (amt ? "Amount paid: " + tk(amt) + "\n" : "") + "Paid with: " + via + "\nTransaction ID: " + tx + "\nName: " + name;
+      const msg = "Hi StreamX! I paid manually.\n\n" + (lines.length ? lines.join("\n") + "\n" : "") + (amt ? (via === "Grameenphone recharge" ? "Order total: " + tk(amt) + "\nRecharged: " + tk(Math.ceil(amt * (1 + RECHARGE_FEE))) + " (incl. 5% recharge charge)\n" : "Amount paid: " + tk(amt) + "\n") : "") + "Paid with: " + via + "\nTransaction ID: " + tx + "\nName: " + name;
       window.open("https://wa.me/" + WA + "?text=" + encodeURIComponent(msg), "_blank", "noopener");
     });
     return { refresh, setName: (n) => { if (n && !f("name").value) f("name").value = n; }, reset: () => { q("[data-err]").textContent = ""; } };
