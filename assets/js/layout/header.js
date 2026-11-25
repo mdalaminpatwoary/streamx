@@ -19,7 +19,7 @@ if(window.ResizeObserver){const m=$("#menu");if(m)new ResizeObserver(()=>setActi
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>setActive(curLink));
 /* Width of the shrunk pill = logo + buttons (measured, so it follows the cart/bell/burger that are showing) */
 const bar=nav.querySelector(".navbar"),lg=bar.querySelector(".logo"),nr=bar.querySelector(".nr");
-function measure(){const c=getComputedStyle(bar),gap=parseFloat(c.columnGap)||14,ks=[...nr.children].filter(e=>e.id!=="burger"&&e.id!=="ntBell"&&getComputedStyle(e).display!=="none"),nw=ks.reduce((t,e)=>t+e.offsetWidth,0)+10*Math.max(0,ks.length-1);nav.style.setProperty("--pw",Math.ceil(14+lg.offsetWidth+gap+nw+8+(parseFloat(c.borderLeftWidth)||0)*2)+"px")}
+function measure(){const c=getComputedStyle(bar),gap=parseFloat(c.columnGap)||14,ks=[...nr.children].filter(e=>e.id!=="burger"&&e.id!=="ntBell"&&getComputedStyle(e).display!=="none"),nw=ks.reduce((t,e)=>t+e.offsetWidth,0)+10*Math.max(0,ks.length-1);nav.style.setProperty("--pw",Math.ceil(14+lg.offsetWidth+gap+nw+(parseFloat(c.paddingRight)||10)+(parseFloat(c.borderLeftWidth)||0)*2)+"px")}
 measure();addEventListener("resize",measure);addEventListener("load",measure);
 if(window.ResizeObserver){new ResizeObserver(measure).observe(nr);new ResizeObserver(measure).observe(lg)}
 setActive(links[0]);frame();

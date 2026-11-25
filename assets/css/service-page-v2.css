@@ -359,16 +359,15 @@ html.hs-nochat #cw{opacity:0;transform:translateY(18px) scale(.92);pointer-event
 @media(prefers-reduced-motion:reduce){#cw,html.hs-nochat #cw{transition:opacity .2s}}
 /* All services: on scroll the nav melts into a small centred pill (logo + account, cart when it has items) */
 body:has(.hb-hero) .sp-nav .sp-navin{justify-content:space-between;margin-inline:auto;transition:width .62s var(--spring),background .4s,box-shadow .4s,padding .62s var(--spring)}
-body:has(.hb-hero) .sp-nav.sp-scrolled .sp-navin{width:134px;padding:6px 6px 6px 10px}
-body:has(.hb-hero) .sp-nav.sp-scrolled:has(#spCart:not([hidden])) .sp-navin{width:182px}
-body:has(.hb-hero) .sp-nav.sp-scrolled .sp-brand img{height:34px}
+body:has(.hb-hero) .sp-nav.sp-scrolled .sp-navin{width:120px;padding:8px 10px 8px 10px}
+body:has(.hb-hero) .sp-nav.sp-scrolled:has(#spCart:not([hidden])) .sp-navin{width:168px}
 @media(prefers-reduced-motion:reduce){body:has(.hb-hero) .sp-nav .sp-navin{transition:none}}
 body:has(.hb-hero) .sp-nav.sp-scrolled .sp-navin{background:rgba(14,18,38,.82);-webkit-backdrop-filter:blur(26px) saturate(1.6);backdrop-filter:blur(26px) saturate(1.6);box-shadow:0 14px 36px -14px rgba(0,0,0,.75),0 0 0 1px rgba(255,255,255,.09)}
 /* pill sits at the top right (same right edge as the full bar, so the shrink animates toward the corner) */
 body:has(.hb-hero) .sp-nav .sp-navin{margin-left:auto;margin-right:max(14px,calc((100% - 1140px)/2))}
 /* Greeting: the pill flips open to the left with the customer's name */
-body:has(.hb-hero) .sp-nav.sp-scrolled .sp-navin{width:calc(134px + var(--hiw,0px))}
-body:has(.hb-hero) .sp-nav.sp-scrolled:has(#spCart:not([hidden])) .sp-navin{width:calc(182px + var(--hiw,0px))}
+body:has(.hb-hero) .sp-nav.sp-scrolled .sp-navin{width:calc(120px + var(--hiw,0px))}
+body:has(.hb-hero) .sp-nav.sp-scrolled:has(#spCart:not([hidden])) .sp-navin{width:calc(168px + var(--hiw,0px))}
 .sp-hi{flex:none;display:flex;align-items:center;height:40px;width:0;margin-right:-8px;overflow:hidden;white-space:nowrap;opacity:0;perspective:260px;font-size:13.5px;font-weight:700;color:#fff;letter-spacing:.1px;transition:width .62s var(--spring),margin .62s var(--spring),opacity .35s}
 .sp-hi b{flex:none;display:flex;flex-direction:column;justify-content:center;gap:1px;max-width:100%;padding:0 8px;line-height:1.15;text-align:left;transform-origin:50% 60%;transform:rotateX(-95deg) translateY(8px);opacity:0;transition:transform .6s .08s var(--spring),opacity .3s .08s;will-change:transform}
 .sp-hi b i,.sp-hi b em{display:block;overflow:hidden;text-overflow:ellipsis;font-style:normal}
