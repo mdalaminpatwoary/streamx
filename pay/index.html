@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Pay StreamX | Secure payment</title>
-<meta name="description" content="Pay StreamX online by card, bKash, Nagad, Rocket or Upay, or send a manual payment and confirm your Transaction ID on WhatsApp.">
+<meta name="description" content="Pay StreamX by bKash, Nagad, Rocket, Upay, bank transfer or mobile recharge, then confirm your Transaction ID on WhatsApp.">
 <meta name="robots" content="noindex,follow">
 <link rel="canonical" href="https://streamx.bd/pay/">
 <link rel="icon" href="/favicon.ico">
@@ -20,14 +20,7 @@
 .pp-amt b{font-size:26px;color:#fff;letter-spacing:-.01em}
 .pp-amt small{display:block;margin-top:2px;font-size:13px;color:#c3cae3}
 .pp-box{padding:22px 20px;border:1px solid var(--line);border-radius:22px;background:rgba(14,18,38,.7)}
-.pp-tabs{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;margin:0 0 14px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.04)}
-.pp-tabs button{padding:11px 10px;border:0;border-radius:10px;background:transparent;color:#b4bddb;font:800 14px Manrope,sans-serif;cursor:pointer;transition:background .25s,color .25s}
-.pp-tabs button.on{color:#fff;background:linear-gradient(135deg,#ff5a45,#ed3124);box-shadow:0 8px 22px -10px rgba(237,49,36,.9)}
 .pp-box[hidden]{display:none}
-.pp-note{margin:0 0 16px;font-size:13.5px;line-height:1.5;color:#c3cae3}
-.pp-eps{display:block;width:100%;height:auto;box-sizing:border-box;margin:14px 0 4px;padding:10px 14px;border-radius:14px;background:#fff}
-.mp-go.on{background:linear-gradient(135deg,#ff5a45,#ed3124)}
-.mp-go:disabled{opacity:.6;cursor:progress}
 .pp-foot{margin-top:18px;text-align:center;font-size:13px;color:var(--mut)}
 .pp-foot a{color:#fff;text-decoration:underline}
 .eyebrow{display:inline-flex;align-items:center;gap:10px;font:800 12px Manrope,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#ff4f3f}
@@ -39,23 +32,9 @@
 <main class="pp">
   <span class="eyebrow">Secure payment</span>
   <h1>Pay StreamX</h1>
-  <p class="lead">Pay online in seconds, or send the payment yourself and confirm your Transaction ID on WhatsApp. We deliver your subscription after payment.</p>
+  <p class="lead">Pick how you want to pay, send the payment, then confirm your Transaction ID on WhatsApp. We deliver your subscription after payment.</p>
   <div class="pp-amt" id="ppAmt" hidden><div><span id="ppFor">Amount to pay</span><b id="ppTotal"></b></div><small>Amount to pay</small></div>
-  <div class="pp-tabs" role="tablist" aria-label="Payment method"><button type="button" class="on" role="tab" aria-selected="true" data-t="online">Pay online</button><button type="button" role="tab" aria-selected="false" data-t="manual">Pay manually</button></div>
-  <div class="pp-box" id="ppOnline">
-    <form class="pm" id="ppForm" novalidate>
-      <p class="pp-note">Pay by card, bKash, Nagad, Rocket or Upay on the secure EPS page. Your payment is confirmed automatically.</p>
-      <div data-amtrow><label><span class="pay-l">Amount (৳)</span><input class="pm-in" id="olAmt" type="number" inputmode="numeric" min="10" max="50000" placeholder="e.g. 450"></label></div>
-      <label><span class="pay-l">Your name</span><input class="pm-in" id="olName" type="text" autocomplete="name" placeholder="e.g. Rafiq Ahmed" maxlength="60"></label>
-      <label><span class="pay-l">Mobile number</span><input class="pm-in" id="olPhone" type="tel" autocomplete="tel" inputmode="tel" placeholder="01XXXXXXXXX (or +country code)" maxlength="20"></label>
-      <label><span class="pay-l">Email</span><input class="pm-in" id="olEmail" type="email" autocomplete="email" placeholder="you@example.com" maxlength="100"></label>
-      <p class="pay-err" id="olErr" role="alert"></p>
-      <button class="mp-go on" id="olGo" type="submit">Pay securely</button>
-      <img class="pp-eps" src="/assets/img/pay/eps-renew.webp" alt="Pay with EPS: Visa, Mastercard, American Express, bKash, Nagad, Rocket and more" loading="lazy" width="1012" height="162">
-      <p class="pay-agree">By paying, you agree to our <a href="/terms/" target="_blank" rel="noopener">Terms &amp; Conditions</a> and <a href="/refund-policy/" target="_blank" rel="noopener">Refund Policy</a>. After payment, message us on WhatsApp so we can deliver your order.</p>
-    </form>
-  </div>
-  <div class="pp-box" id="ppMount" hidden></div>
+  <div class="pp-box" id="ppMount"></div>
   <p class="pp-foot">Prefer to chat first? <a data-wa="Hi StreamX! I want to pay manually." href="#">Message us on WhatsApp</a>. StreamX is an independent reseller. Not affiliated with any brand shown.</p>
 </main>
 <script src="/assets/js/data/config.js"></script>
@@ -66,27 +45,6 @@
   if(amt<1||amt>1000000)amt=0;
   var tk=function(n){return "৳"+n.toLocaleString("en-US")};
   if(amt){document.getElementById("ppAmt").hidden=false;document.getElementById("ppTotal").textContent=tk(amt);if(what)document.getElementById("ppFor").textContent="Payment for "+what}
-  /* Online payment: the server creates the EPS payment page for this amount */
-  var $=function(i){return document.getElementById(i)},er=$("olErr"),go=$("olGo");
-  if(amt){$("olAmt").value=amt;document.querySelector("[data-amtrow]").hidden=true}
-  var PHONE=/^(?:(?:\+?88)?01[3-9]\d{8}|\+[1-9]\d{7,14})$/,EMAIL=/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-  var lab=function(){var v=Math.round(Number($("olAmt").value))||0;go.textContent=v?"Pay "+tk(v)+" securely":"Pay securely"};
-  $("olAmt").addEventListener("input",lab);lab();
-  $("ppForm").addEventListener("submit",function(e){
-    e.preventDefault();
-    var a=Math.round(Number($("olAmt").value)),name=$("olName").value.trim(),phone=$("olPhone").value.trim().replace(/[\s\-()]/g,""),email=$("olEmail").value.trim();
-    if(!(a>=10&&a<=50000))return(er.textContent="Enter an amount between ৳10 and ৳50,000.");
-    if(name.length<2)return(er.textContent="Please enter your name.");
-    if(!PHONE.test(phone))return(er.textContent="Enter a valid mobile number (01XXXXXXXXX, or with country code).");
-    if(!EMAIL.test(email))return(er.textContent="Enter a valid email address.");
-    er.textContent="";go.disabled=true;go.textContent="Opening secure payment…";
-    fetch("/api/checkout",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name:name,phone:phone,email:email,custom:{amount:a,label:what}})})
-      .then(function(r){return r.json().then(function(j){return{ok:r.ok,j:j}})})
-      .then(function(x){if(!x.ok||!x.j.redirectUrl)throw new Error(x.j.error||"Online payment is unavailable right now. Please pay manually.");location.href=x.j.redirectUrl})
-      .catch(function(x){er.textContent=x.message||"Online payment is unavailable right now. Please pay manually.";go.disabled=false;lab()});
-  });
-  var tabs=document.querySelectorAll(".pp-tabs button");
-  tabs.forEach(function(b){b.onclick=function(){var m=b.dataset.t==="manual";$("ppOnline").hidden=m;$("ppMount").hidden=!m;tabs.forEach(function(x){var on=x===b;x.classList.toggle("on",on);x.setAttribute("aria-selected",on)})}});
   PayMethods.mount(document.getElementById("ppMount"),{
     getTotal:function(){return amt||null},
     askAmount:!amt,
