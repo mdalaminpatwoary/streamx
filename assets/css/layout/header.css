@@ -397,3 +397,15 @@ nav a:hover {
   box-shadow: 0 18px 50px -12px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(79, 107, 255, 0.2);
 }
 .nav.scrolled .navbar::before { background: transparent; }
+
+/* Phones: the chat button steps out of the way while the menu sheet is open, then pops back in */
+@media (max-width: 860px) {
+  html.mn-lock .cw {
+    opacity: 0;
+    transform: translateY(22px) scale(.6);
+    pointer-events: none !important;
+    visibility: hidden;
+    transition: opacity .26s ease, transform .42s cubic-bezier(.4, 0, .6, 1), visibility 0s linear .42s;
+  }
+}
+@media (prefers-reduced-motion: reduce) { html.mn-lock .cw { transition: opacity .15s; } }
