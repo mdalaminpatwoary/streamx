@@ -12,6 +12,7 @@
 }
 .mq {
   overflow: hidden;
+  contain: paint;
   -webkit-mask: linear-gradient(
     90deg,
     transparent,
@@ -24,7 +25,15 @@
 .mt {
   display: flex;
   width: max-content;
-  animation: mq 70s linear infinite;
+  /* Own GPU layer + sub-pixel 3D transform: the strip glides on the compositor, so page scripts cannot make it stutter. */
+  will-change: transform;
+  backface-visibility: hidden;
+  transform: translate3d(0, 0, 0);
+  animation: mq3d 70s linear infinite;
+}
+@keyframes mq3d {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-50%, 0, 0); }
 }
 .mq{pointer-events:none}
 @media (hover:hover){.mq{pointer-events:auto}.mq:hover .mt{animation-play-state:paused}}
@@ -37,7 +46,6 @@
   font-weight: 600;
   font-size: 15px;
   color: #6e78a8;
-  transition: color 0.3s;
 }
 .mi svg {
   width: 24px;
@@ -47,7 +55,7 @@
 
 /* Keep the logo strip moving even when the OS asks for reduced motion (slow, gentle, pauses on hover/touch) */
 @media (prefers-reduced-motion: reduce) {
-  .mt { animation: mq 120s linear infinite !important; }
+  .mt { animation: mq3d 120s linear infinite !important; }
   .mq:hover .mt { animation-play-state: paused !important; }
 }
 a.mi{text-decoration:none;color:inherit}
