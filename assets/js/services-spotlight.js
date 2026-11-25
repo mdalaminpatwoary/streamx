@@ -81,6 +81,9 @@
       document.documentElement.classList.remove("hs-lock"); fromFab = false; upd();
     }, DUR);
   }
+  var cx = document.createElement("button"); cx.type = "button"; cx.className = "hs-close"; cx.setAttribute("aria-label", "Close search"); cx.textContent = "\u00d7"; form.appendChild(cx);
+  cx.addEventListener("mousedown", function (e) { e.preventDefault(); });
+  cx.addEventListener("click", function () { q.value = ""; q.dispatchEvent(new Event("input", { bubbles: true })); close(); });
   q.addEventListener("focus", open);
   q.addEventListener("click", open);
   q.addEventListener("input", function () { if (isOpen) fill(); });
