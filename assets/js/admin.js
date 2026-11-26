@@ -216,20 +216,25 @@
   (function () {
     $("#rcc").innerHTML = '<option value="">Not specified</option>' + CTRY.map(function (c) { return '<option value="' + c[0] + '"' + (c[0] === "BD" ? " selected" : "") + ">" + esc(c[1]) + "</option>"; }).join("");
   })();
-  function cropSquare(file, size) {
+  /* Review photo: a sharp 4:5 portrait (the size of the review card), cropped from the middle and slightly toward the top so faces stay in frame. */
+  function cropSquare(file, w) {
     return new Promise(function (ok, no) {
       var u = URL.createObjectURL(file), im = new Image();
       im.onload = function () {
-        var s = Math.min(im.width, im.height), c = document.createElement("canvas"); c.width = c.height = size;
-        c.getContext("2d").drawImage(im, (im.width - s) / 2, (im.height - s) / 2, s, s, 0, 0, size, size); URL.revokeObjectURL(u);
-        var q = 0.85, d = c.toDataURL("image/jpeg", q); while (d.length > 100000 && q > 0.45) { q -= 0.1; d = c.toDataURL("image/jpeg", q); } ok(d);
+        var h = Math.round(w * 1.25), sw = im.width, sh = sw * 1.25;
+        if (sh > im.height) { sh = im.height; sw = sh * 0.8; }
+        var c = document.createElement("canvas"); c.width = w; c.height = h;
+        var x = c.getContext("2d"); x.imageSmoothingQuality = "high";
+        x.drawImage(im, (im.width - sw) / 2, (im.height - sh) * 0.25, sw, sh, 0, 0, w, h); URL.revokeObjectURL(u);
+        var q = 0.92, d = c.toDataURL("image/jpeg", q); while (d.length > 140000 && q > 0.5) { q -= 0.06; d = c.toDataURL("image/jpeg", q); }
+        d.length > 148000 ? no(new Error("That photo is too detailed. Try another one.")) : ok(d);
       };
       im.onerror = function () { no(new Error("That file could not be read as an image.")); }; im.src = u;
     });
   }
   function setPhoto(d) { RPHOTO = d || ""; var p = $("#rpv"); p.style.backgroundImage = d ? "url(" + d + ")" : ""; p.textContent = d ? "" : "?"; $("#rpx").hidden = !d; }
   document.addEventListener("change", function (e) {
-    if (e.target.id === "rpf" && e.target.files[0]) cropSquare(e.target.files[0], 240).then(setPhoto).catch(function (er) { e.target.value = ""; toast(er.message, true); });
+    if (e.target.id === "rpf" && e.target.files[0]) cropSquare(e.target.files[0], 560).then(setPhoto).catch(function (er) { e.target.value = ""; toast(er.message, true); });
     if (e.target.name === "kind" && e.target.form && e.target.form.id === "rf") { var st = e.target.value === "student"; $("#rrl").textContent = st ? "Class / degree" : "Designation"; e.target.form.role.placeholder = st ? "e.g. BSc in CSE, Class 10" : "e.g. Software Engineer"; $("#rcow").hidden = st; $("#rinw").hidden = !st; }
     if (e.target.id === "rcc") $("#rxw").hidden = !e.target.value || e.target.value === "BD";
   });
