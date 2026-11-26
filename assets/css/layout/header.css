@@ -452,3 +452,8 @@ nav a:hover {
 @media (max-width:860px){
   .nav.pill #burger{width:40px;min-width:40px;max-width:none;flex:none;margin-left:0;border-width:1px;opacity:1;transform:none;pointer-events:auto;visibility:visible;color:#fff;transition:background .25s,border-color .25s,transform .22s cubic-bezier(.3,1.4,.5,1)}
 }
+
+/* Phone: the collapsed pill is never narrower than logo + menu + cart + profile, even if the measured width is stale */
+@media (max-width:860px){
+  .nav.pill .navbar{width:max(218px,calc(var(--pw,200px) + var(--hiw,0px)))}
+}
