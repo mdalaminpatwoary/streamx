@@ -42,7 +42,7 @@
   }
 
   // ---------- 3D carousel ----------
-  const orbit=$("#hxOrbit"),stage=$("#hxStage"),nameEl=$("#hxName"),fromEl=$("#hxFrom"),info=$("#hxInfo");
+  const orbit=$("#hxOrbit"),stage=$("#hxStage");
   if(orbit&&N){
     const mobile=()=>innerWidth<=520;
     const TW=()=>mobile()?100:134;const R=()=>Math.max(mobile()?235:300,Math.round(N*(TW()+(mobile()?10:12))/6.283));const fit=()=>{stage.style.perspective=Math.round(R()/(1-1/(mobile()?1.2:1.27)))+"px"};
@@ -55,8 +55,6 @@
     function paintFront(){
       const f=((Math.round(-ry/STEP)%N)+N)%N;
       if(f===front)return;front=f;const s=SV[f];
-      info.classList.remove("sw");void info.offsetWidth;info.classList.add("sw");
-      nameEl.textContent=s.n;fromEl.innerHTML=s.from?`<span data-i>from</span> <strong>${price(s)}</strong>`:"";
     }
     /* Time-based motion: same speed at 60 Hz, 90 Hz or 120 Hz, and no slow-down or jerk when a frame is late.
        The orbit is turned with one direct transform (no custom-property cascade) and each tile is dimmed with an overlay instead of a filter. */

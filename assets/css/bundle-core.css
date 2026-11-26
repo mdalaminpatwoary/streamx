@@ -4605,6 +4605,7 @@ nav a:hover {
   .hx-stage::before{width:440px;height:440px;filter:none;animation:none;opacity:.85;background:radial-gradient(circle,rgba(237,49,36,.24),rgba(79,107,255,.14) 45%,transparent 70%)}
   .hx-t{will-change:auto}
 }
+@media(max-width:520px){.hx-stage{height:350px}}
 
 /* sections/marquee.css */
 .marq {
