@@ -28,6 +28,12 @@
     ".sxm hr{height:1px;margin:6px 8px;border:0;background:rgba(255,255,255,.09)}" +
     ".sxm button.sxm-o:hover{background:rgba(237,49,36,.16)}.sxm button.sxm-o:hover svg{color:#ff8a7e}" +
     "@media(prefers-reduced-motion:reduce){.sxm,.sxm a,.sxm button.sxm-o{transition:none!important;transform:none!important}}";
+  css.textContent += ".sxm-w small{white-space:normal!important;line-height:1.4}.sxm a.sxm-cta{justify-content:space-between;margin:2px 0 8px;padding:13px 14px;background:linear-gradient(135deg,#ff5a3d,#ed3124);color:#fff;box-shadow:0 12px 26px -14px rgba(237,49,36,.9)}.sxm a.sxm-cta:hover,.sxm a.sxm-cta:focus-visible{background:linear-gradient(135deg,#ff6a4f,#f33a2c);color:#fff}.sxm a.sxm-cta svg{color:#fff;margin-left:8px}.sxm a.sxm-cta:hover svg{color:#fff;transform:translateX(3px)}" +
+    ".sxm-s{padding:10px 12px 4px;color:#8f9ac0;font:800 10.5px Manrope,sans-serif;letter-spacing:.12em;text-transform:uppercase}.sxm-e{padding:8px 12px 10px;color:#9aa4c7;font-size:13px}" +
+    ".sxm a.sxm-n{align-items:flex-start;gap:11px;padding:10px 12px;font-weight:600;font-size:13.5px;line-height:1.35}.sxm a.sxm-n em{flex:none;width:8px;height:8px;margin-top:6px;border-radius:50%;background:var(--kc,#6f8cff);box-shadow:0 0 0 3px color-mix(in srgb,var(--kc,#6f8cff) 22%,transparent)}.sxm a.sxm-n span{display:block;min-width:0}.sxm a.sxm-n small{display:block;margin-bottom:2px;color:var(--kc,#9aa4c7);font:800 10px Manrope,sans-serif;letter-spacing:.08em;text-transform:uppercase}" +
+    ".sxm a.k-price{--kc:#ffb23d}.sxm a.k-offer{--kc:#35d07f}.sxm a.k-maintenance{--kc:#8fa3c9}.sxm a.k-important{--kc:#ff5a47}.sxm a.k-info{--kc:#6f8cff}" +
+    ".sxm-sk{display:grid;gap:8px;padding:6px 12px 10px}.sxm-sk i{display:block;height:34px;border-radius:10px;background:linear-gradient(100deg,rgba(255,255,255,.05) 30%,rgba(255,255,255,.12) 50%,rgba(255,255,255,.05) 70%) 0 0/220% 100%;animation:sxmSk 1.3s linear infinite}@keyframes sxmSk{to{background-position:-220% 0}}@media(prefers-reduced-motion:reduce){.sxm-sk i{animation:none}}";
+  css.textContent += "@media(max-width:860px),(pointer:coarse){.sxm{background:radial-gradient(360px circle at 100% 0%,rgba(79,107,255,.22),transparent 60%),linear-gradient(180deg,rgba(20,25,54,.985),rgba(9,12,26,.99))!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}.sxm-h{background:radial-gradient(120% 140% at 0% 0%,rgba(237,49,36,.22),transparent 60%),#161b3a!important}}";
   document.head.appendChild(css);
 
   var cached = function () { try { return JSON.parse(localStorage.getItem(ME) || "null"); } catch (e) { return null; } };
@@ -44,6 +50,27 @@
     h += '<hr><button type="button" class="sxm-o" role="menuitem" style="--i:' + ITEMS.length + '" data-out>' + ic('<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5M21 12H9"/>') + "<span>Sign out</span></button>";
     pop.innerHTML = h;
   }
+
+  /* Signed-out visitors: a welcome card with a Sign in button and the latest announcements (the full details are one tap away). */
+  var KIND = { info: "Update", price: "Price change", offer: "Offer", maintenance: "Maintenance", important: "Important" }, news = null, newsP = null;
+  function loadNews() {
+    if (newsP) return newsP;
+    newsP = fetch("/api/catalog?a=notices").then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
+      news = ((d && d.list) || []).sort(function (a, b) { return (b.pin - a.pin) || (Date.parse(b.at) - Date.parse(a.at)); }).slice(0, 3);
+      if (open && !tok()) buildOut();
+    }).catch(function () { news = []; });
+    return newsP;
+  }
+  function buildOut() {
+    var h = '<div class="sxm-h sxm-w"><span class="sxm-av">' + ic('<circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4.5-6 8-6s7 2 8 6"/>') + '</span><span class="sxm-t"><b>Welcome to StreamX</b><small>Sign in to see your subscriptions, orders and renewals</small></span></div>';
+    h += '<a class="sxm-cta" role="menuitem" style="--i:0" href="/account/"><span>Sign in or create account</span>' + ic('<path d="M5 12h14"/><path d="m13 6 6 6-6 6"/>') + "</a>";
+    h += '<div class="sxm-s">Latest announcements</div>';
+    if (news === null) h += '<div class="sxm-sk"><i></i><i></i></div>';
+    else if (!news.length) h += '<div class="sxm-e">No announcements right now.</div>';
+    else news.forEach(function (n, i) { var k = KIND[n.k] ? n.k : "info"; h += '<a class="sxm-n k-' + k + '" role="menuitem" style="--i:' + (i + 1) + '" href="/notices/#' + k + '"><em></em><span><small>' + (n.pin ? "\u{1F4CC} " : "") + KIND[k] + "</small>" + esc(n.t) + "</span></a>"; });
+    h += '<hr><a role="menuitem" style="--i:5" href="/notices/">' + ic('<path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/>') + "<span>All announcements</span></a>";
+    pop.innerHTML = h;
+  }
   function place() { var r = btn.getBoundingClientRect(), w = Math.min(276, innerWidth - 24); pop.style.top = r.bottom + 10 + "px"; pop.style.left = Math.max(12, Math.min(innerWidth - w - 12, r.right - w)) + "px"; }
   function refresh() { // fill name/email for the header of the menu (once, then cached)
     if (busy || !tok()) return; busy = true;
@@ -56,17 +83,19 @@
   function show() {
     if (!pop) { pop = document.createElement("div"); pop.className = "sxm"; pop.setAttribute("role", "menu"); pop.setAttribute("aria-label", "Account"); document.body.appendChild(pop);
       pop.addEventListener("click", function (e) { var o = e.target.closest("[data-out]"); if (o) { try { localStorage.removeItem(ST); localStorage.removeItem("sx_av"); localStorage.removeItem("sx_nm"); localStorage.removeItem(ME); sessionStorage.removeItem("sx_acc_pre"); } catch (x) {} location.reload(); } }); }
-    build(); place(); open = true; btn.setAttribute("aria-expanded", "true"); requestAnimationFrame(function () { pop.classList.add("on"); }); refresh();
+    (tok() ? build : (loadNews(), buildOut))(); place(); open = true; btn.setAttribute("aria-expanded", "true"); requestAnimationFrame(function () { pop.classList.add("on"); }); refresh();
   }
   function hide() { if (!open) return; open = false; btn.setAttribute("aria-expanded", "false"); pop.classList.remove("on"); }
   btn.setAttribute("aria-haspopup", "menu"); btn.setAttribute("aria-expanded", "false");
   btn.addEventListener("click", function (e) {
-    if (innerWidth <= 860) return; // phones: the profile button opens the main menu sheet instead
-    if (!tok() || e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1) return; // signed out: plain link to sign in
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1) return;
+    if (!tok()) { e.preventDefault(); open ? hide() : show(); return; } // signed out: welcome card with Sign in + announcements (all screen sizes)
+    if (innerWidth <= 860) return; // phones, signed in: straight to My account
     e.preventDefault(); open ? hide() : show();
   });
   document.addEventListener("click", function (e) { if (open && !e.target.closest(".sxm") && !btn.contains(e.target)) hide(); });
   document.addEventListener("keydown", function (e) { if (e.key === "Escape" && open) { hide(); btn.focus(); } });
   addEventListener("resize", function () { if (open) place(); }); addEventListener("scroll", function () { if (open) place(); }, { passive: true });
-  btn.addEventListener("pointerenter", function () { if (tok() && !cached()) refresh(); }, { passive: true });
+  btn.addEventListener("pointerenter", function () { if (tok() && !cached()) refresh(); else if (!tok()) loadNews(); }, { passive: true });
+  btn.addEventListener("touchstart", function () { if (!tok()) loadNews(); }, { passive: true });
 })();
