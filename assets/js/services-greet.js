@@ -25,7 +25,7 @@
   }
 
   function show(it) {
-    busy = true; if (it.onShow) it.onShow();
+    busy = true; window.sxHold = true; if (it.onShow) it.onShow();
     var el = document.createElement(it.href ? "a" : "span"), b = document.createElement("b"), s1 = document.createElement("i"), s2 = document.createElement("em");
     el.className = "sp-hi" + (it.k === "notice" ? " sp-nt k-" + (it.kind || "info") : ""); el.setAttribute("role", "status");
     s1.textContent = it.small; s2.textContent = it.big;
@@ -37,7 +37,7 @@
     if (home) nr.parentNode.insertBefore(el, nr); else nr.insertBefore(el, nr.firstChild);
     b.style.maxWidth = "none";
     var nat = s2.scrollWidth;
-    var base = home ? (parseFloat(nav.style.getPropertyValue("--pw")) || 200) + 14 : 190, cap = Math.max(60, innerWidth - 28 - base - 12), w = Math.min(Math.ceil(b.offsetWidth) + 4, cap);
+    var base = home ? (parseFloat(nav.style.getPropertyValue("--pw")) || 200) + 14 : 190, cap = Math.min(250, Math.max(60, innerWidth - 28 - base - 12)), w = Math.min(Math.ceil(b.offsetWidth) + 4, cap);
     b.style.maxWidth = w + "px"; el.style.setProperty("--w", w + "px");
     if (it.k !== "notice" && nat > w - 16 + 1 && !(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches)) {
       var tx0 = s2.textContent, inn = document.createElement("span"), a = document.createElement("span"), a2 = document.createElement("span");
@@ -53,7 +53,7 @@
       el.classList.add("out");
       setTimeout(function () {
         el.classList.remove("on"); nav.style.setProperty("--hiw", "0px");
-        setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); busy = false; pump(500); }, 700);
+        setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); busy = false; window.sxHold = false; if (window.scrollY < 60) nav.classList.remove(ON); pump(500); }, 700);
       }, 340);
     }
     requestAnimationFrame(function () { requestAnimationFrame(function () {
