@@ -6,7 +6,7 @@
   if (!nav || !nr) return;
   /* Long names: the name scrolls right to left in a loop (carousel) instead of being cut off */
   var st = document.createElement("style");
-  st.textContent = ".sp-hi b em.mq{text-overflow:clip;-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 9%,#000 91%,transparent 100%);mask-image:linear-gradient(90deg,transparent 0,#000 9%,#000 91%,transparent 100%)}.mq-t{display:inline-flex;white-space:nowrap;animation:mqGo var(--mqd,8s) linear 1.1s 2 both;will-change:transform}.mq-t>span{padding-right:32px}@keyframes mqGo{to{transform:translateX(-50%)}}@media (prefers-reduced-motion:reduce){.mq-t{animation:none}.sp-hi b em.mq{text-overflow:ellipsis;-webkit-mask-image:none;mask-image:none}}";
+  st.textContent = ".sp-hi b em.mq{text-overflow:clip;-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 9%,#000 91%,transparent 100%);mask-image:linear-gradient(90deg,transparent 0,#000 9%,#000 91%,transparent 100%)}.mq-t{display:inline-flex;white-space:nowrap;animation:mqGo var(--mqd,8s) linear 1.1s 1 both;will-change:transform}.mq-t>span{padding-right:32px}@keyframes mqGo{to{transform:translateX(-50%)}}@media (prefers-reduced-motion:reduce){.mq-t{animation:none}.sp-hi b em.mq{text-overflow:ellipsis;-webkit-mask-image:none;mask-image:none}}";
   document.head.appendChild(st);
   var Q = window.sxPopQ = window.sxPopQ || [], busy = false, tm = 0;
   var ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg>';
@@ -44,7 +44,7 @@
       a.textContent = tx0; a2.textContent = tx0; a2.setAttribute("aria-hidden", "true"); inn.className = "mq-t"; inn.appendChild(a); inn.appendChild(a2);
       var dur = Math.min(6, Math.max(3, (nat + 32) / 40)); inn.style.setProperty("--mqd", dur.toFixed(2) + "s");
       s2.textContent = ""; s2.className = "mq"; s2.setAttribute("aria-label", tx0); s2.appendChild(inn);
-      it.hold = 1100 + dur * 2000 + 900; /* two full turns, a short rest on the name, then the 3D flip closes it */
+      it.hold = 1100 + dur * 1000 + 1100; /* one full turn, a short rest on the name, then the 3D flip closes it */
     }
     var closed = false;
     curClose = close;
