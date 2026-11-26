@@ -28,12 +28,12 @@
     ".sxm hr{height:1px;margin:6px 8px;border:0;background:rgba(255,255,255,.09)}" +
     ".sxm button.sxm-o:hover{background:rgba(237,49,36,.16)}.sxm button.sxm-o:hover svg{color:#ff8a7e}" +
     "@media(prefers-reduced-motion:reduce){.sxm,.sxm a,.sxm button.sxm-o{transition:none!important;transform:none!important}}";
-  css.textContent += ".sxm-w small{white-space:normal!important;line-height:1.4}.sxm a.sxm-cta{justify-content:space-between;margin:2px 0 8px;padding:13px 14px;background:linear-gradient(135deg,#ff5a3d,#ed3124);color:#fff;box-shadow:0 12px 26px -14px rgba(237,49,36,.9)}.sxm a.sxm-cta:hover,.sxm a.sxm-cta:focus-visible{background:linear-gradient(135deg,#ff6a4f,#f33a2c);color:#fff}.sxm a.sxm-cta svg{color:#fff;margin-left:8px}.sxm a.sxm-cta:hover svg{color:#fff;transform:translateX(3px)}" +
+  css.textContent += ".sxm a.sxm-in{background:linear-gradient(135deg,rgba(237,49,36,.2),rgba(237,49,36,.07));box-shadow:inset 0 0 0 1px rgba(237,49,36,.28);color:#fff}.sxm a.sxm-in svg{color:#ff7a6a}.sxm a.sxm-in:hover,.sxm a.sxm-in:focus-visible{background:linear-gradient(135deg,rgba(237,49,36,.3),rgba(237,49,36,.12))}.sxm a.sxm-in:hover svg{color:#ffa094}" +
     ".sxm-s{padding:10px 12px 4px;color:#8f9ac0;font:800 10.5px Manrope,sans-serif;letter-spacing:.12em;text-transform:uppercase}.sxm-e{padding:8px 12px 10px;color:#9aa4c7;font-size:13px}" +
     ".sxm a.sxm-n{align-items:flex-start;gap:11px;padding:10px 12px;font-weight:600;font-size:13.5px;line-height:1.35}.sxm a.sxm-n em{flex:none;width:8px;height:8px;margin-top:6px;border-radius:50%;background:var(--kc,#6f8cff);box-shadow:0 0 0 3px color-mix(in srgb,var(--kc,#6f8cff) 22%,transparent)}.sxm a.sxm-n span{display:block;min-width:0}.sxm a.sxm-n small{display:block;margin-bottom:2px;color:var(--kc,#9aa4c7);font:800 10px Manrope,sans-serif;letter-spacing:.08em;text-transform:uppercase}" +
     ".sxm a.k-price{--kc:#ffb23d}.sxm a.k-offer{--kc:#35d07f}.sxm a.k-maintenance{--kc:#8fa3c9}.sxm a.k-important{--kc:#ff5a47}.sxm a.k-info{--kc:#6f8cff}" +
     ".sxm-sk{display:grid;gap:8px;padding:6px 12px 10px}.sxm-sk i{display:block;height:34px;border-radius:10px;background:linear-gradient(100deg,rgba(255,255,255,.05) 30%,rgba(255,255,255,.12) 50%,rgba(255,255,255,.05) 70%) 0 0/220% 100%;animation:sxmSk 1.3s linear infinite}@keyframes sxmSk{to{background-position:-220% 0}}@media(prefers-reduced-motion:reduce){.sxm-sk i{animation:none}}";
-  css.textContent += "@media(max-width:860px),(pointer:coarse){.sxm{background:radial-gradient(360px circle at 100% 0%,rgba(79,107,255,.22),transparent 60%),linear-gradient(180deg,rgba(20,25,54,.985),rgba(9,12,26,.99))!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}.sxm-h{background:radial-gradient(120% 140% at 0% 0%,rgba(237,49,36,.22),transparent 60%),#161b3a!important}}";
+  css.textContent += "@media(max-width:860px),(pointer:coarse){.sxm{background:radial-gradient(360px circle at 100% 0%,rgba(79,107,255,.22),transparent 60%),linear-gradient(180deg,#14193a,#090c1a)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}.sxm-h{background:radial-gradient(120% 140% at 0% 0%,rgba(237,49,36,.22),transparent 60%),#161b3a!important}}";
   document.head.appendChild(css);
 
   var cached = function () { try { return JSON.parse(localStorage.getItem(ME) || "null"); } catch (e) { return null; } };
@@ -62,9 +62,9 @@
     return newsP;
   }
   function buildOut() {
-    var h = '<div class="sxm-h sxm-w"><span class="sxm-av">' + ic('<circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4.5-6 8-6s7 2 8 6"/>') + '</span><span class="sxm-t"><b>Welcome to StreamX</b><small>Sign in to see your subscriptions, orders and renewals</small></span></div>';
-    h += '<a class="sxm-cta" role="menuitem" style="--i:0" href="/account/"><span>Sign in or create account</span>' + ic('<path d="M5 12h14"/><path d="m13 6 6 6-6 6"/>') + "</a>";
-    h += '<div class="sxm-s">Latest announcements</div>';
+    var h = '<div class="sxm-h"><span class="sxm-av">' + ic('<circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4.5-6 8-6s7 2 8 6"/>') + '</span><span class="sxm-t"><b>Welcome to StreamX</b><small>You\'re not signed in</small></span></div>';
+    h += '<a class="sxm-in" role="menuitem" style="--i:0" href="/account/">' + ic('<path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="m10 17 5-5-5-5M15 12H3"/>') + "<span>Sign in or create account</span></a>";
+    h += '<hr><div class="sxm-s">Latest announcements</div>';
     if (news === null) h += '<div class="sxm-sk"><i></i><i></i></div>';
     else if (!news.length) h += '<div class="sxm-e">No announcements right now.</div>';
     else news.forEach(function (n, i) { var k = KIND[n.k] ? n.k : "info"; h += '<a class="sxm-n k-' + k + '" role="menuitem" style="--i:' + (i + 1) + '" href="/notices/#' + k + '"><em></em><span><small>' + (n.pin ? "\u{1F4CC} " : "") + KIND[k] + "</small>" + esc(n.t) + "</span></a>"; });
