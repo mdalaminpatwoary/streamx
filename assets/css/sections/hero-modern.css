@@ -354,3 +354,31 @@
 .hx-orbit.flat .hx-t{position:relative;inset:auto;flex:none;width:96px;height:116px;border-radius:22px;opacity:1;will-change:auto;backface-visibility:visible;box-shadow:0 14px 28px -14px rgba(0,0,0,.7),0 0 0 1px rgba(255,255,255,.12) inset}
 @media(min-width:521px){.hx-orbit.flat .hx-t{width:120px;height:144px;border-radius:26px}}
 .hx-stage.flat-on{height:auto!important;margin-top:6px!important;margin-bottom:6px;display:block}
+
+/* ---- Polish: even vertical rhythm, readable measure, soft entrance and press feedback ---- */
+.hx-lead{max-width:34em;text-wrap:pretty}
+.hx-title{text-wrap:balance}
+@media(max-width:960px){
+  .hero{gap:22px;padding-bottom:36px}
+  .hero-text>.hx-roll{margin-bottom:2px}
+  .hero-text>.hx-lead{line-height:1.7;margin:0}
+  .hero-text>.cta{gap:12px;margin-top:4px}
+  .hero-text>.hx-pay{margin-top:6px}
+  .hero-text>.hx-trust{margin-top:2px;padding-bottom:2px}
+  .hx-stage.flat-on{margin-top:10px!important;margin-bottom:10px}
+}
+@media(max-width:520px){
+  .hero{gap:20px;padding-bottom:32px}
+  .hx-orbit.flat{gap:14px}
+}
+/* Carousel rows glide in once, staggered (opacity + transform only) */
+@keyframes hxRowIn{from{opacity:0;transform:translate3d(0,16px,0)}to{opacity:1;transform:none}}
+.hx-orbit.flat .hx-row{animation:hxRowIn .7s cubic-bezier(.22,.8,.3,1) .15s both}
+.hx-orbit.flat .hx-row.r{animation-delay:.3s}
+/* Buttons and chips respond to touch / hover without layout shift */
+.hero .btn{transition:transform .22s cubic-bezier(.22,.8,.3,1),box-shadow .22s ease,background-color .22s ease,border-color .22s ease;-webkit-tap-highlight-color:transparent}
+.hero .btn:active{transform:scale(.97)}
+@media(hover:hover){.hero .btn:hover{transform:translateY(-2px)}}
+.hx-trust li{transition:transform .25s cubic-bezier(.22,.8,.3,1)}
+@media(hover:hover){.hx-trust li:hover{transform:translateY(-2px)}}
+@media(prefers-reduced-motion:reduce){.hx-orbit.flat .hx-row{animation:none}.hero .btn,.hx-trust li{transition:none}}
