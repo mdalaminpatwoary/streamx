@@ -3,7 +3,7 @@
 (function(){
   const hero=$("#home"),title=$(".hx-title"),SEL=document.documentElement.classList; /* 'selecting' is set while text is selected: the hero then stands still so the selection does not blink */
   if(!hero||!title)return;
-  const calm=matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const calm=matchMedia("(prefers-reduced-motion: reduce)").matches||SEL.contains("lite");
   const fine=matchMedia("(pointer:fine)").matches;
   if(!calm)splitWords(title);
   /* When the word-by-word intro has finished, drop its per-word animation layers: the heading is then plain static text (same look, nothing left to flicker under a selection). */
