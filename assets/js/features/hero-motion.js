@@ -43,7 +43,16 @@
 
   // ---------- 3D carousel ----------
   const orbit=$("#hxOrbit"),stage=$("#hxStage");
-  if(orbit&&N){
+  /* Phones and tablets: a flat, two-row sliding marquee (one CSS transform animation per row, nothing 3D, no per-frame JS).
+     Chrome on Android flickers with a preserve-3d carousel, so touch devices get this version; mouse devices keep the 3D orbit. */
+  if(orbit&&N&&matchMedia("(max-width:860px),(pointer:coarse)").matches){
+    const tile=s=>`<div class="hx-t" style="--bg:${s.L.bg};--fg:${s.L.fg}">${lg(s)}</div>`;
+    const half=Math.ceil(N/2),A=SV.slice(0,half),B=SV.slice(half).concat(SV.slice(0,Math.max(0,6-(N-half))));
+    const row=(arr,cls)=>{const one=arr.concat(arr).map(tile).join("");return `<div class="hx-row ${cls}"><div class="hx-track">${one}${one}</div></div>`};
+    orbit.classList.add("flat");stage.classList.add("flat-on");orbit.innerHTML=row(A,"l")+row(B,"r");
+    if(calm)orbit.classList.add("still");
+    new IntersectionObserver(e=>orbit.classList.toggle("off",!e[0].isIntersecting)).observe(stage);
+  }else if(orbit&&N){
     const mobile=()=>innerWidth<=520;
     const TW=()=>mobile()?100:134;const R=()=>Math.max(mobile()?235:300,Math.round(N*(TW()+(mobile()?10:12))/6.283));const fit=()=>{stage.style.perspective=Math.round(R()/(1-1/(mobile()?1.2:1.27)))+"px"};
     orbit.innerHTML=SV.map((s,i)=>`<div class="hx-slot" data-href="${s.href}" style="--ang:${i*STEP};--r:${R()}px"><div class="hx-t" style="--bg:${s.L.bg};--fg:${s.L.fg}">${lg(s)}</div></div>`).join("");

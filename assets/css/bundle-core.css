@@ -4607,6 +4607,19 @@ nav a:hover {
 }
 @media(max-width:520px){.hx-stage{height:350px}}
 
+/* Phone/tablet carousel: flat two-row marquee (compositor-only transform, no 3D) */
+.hx-orbit.flat{width:100%;height:auto;transform:none;transform-style:flat;will-change:auto;display:flex;flex-direction:column;gap:16px;justify-content:center;overflow:hidden;padding:6px 0}
+.hx-orbit.flat::before{display:none}
+.hx-row{overflow:hidden}
+.hx-track{display:flex;gap:14px;width:max-content;animation:hxMq 52s linear infinite;will-change:transform;backface-visibility:hidden}
+.hx-row.r .hx-track{animation-name:hxMqR;animation-duration:60s}
+.hx-orbit.off .hx-track,.hx-orbit.still .hx-track{animation-play-state:paused}
+@keyframes hxMq{to{transform:translate3d(-50%,0,0)}}
+@keyframes hxMqR{from{transform:translate3d(-50%,0,0)}to{transform:translate3d(0,0,0)}}
+.hx-orbit.flat .hx-t{position:relative;inset:auto;flex:none;width:96px;height:116px;border-radius:22px;opacity:1;will-change:auto;backface-visibility:visible;box-shadow:0 14px 28px -14px rgba(0,0,0,.7),0 0 0 1px rgba(255,255,255,.12) inset}
+@media(min-width:521px){.hx-orbit.flat .hx-t{width:120px;height:144px;border-radius:26px}}
+.hx-stage.flat-on{height:auto!important;margin-top:6px!important;margin-bottom:6px;display:block}
+
 /* sections/marquee.css */
 .marq {
   padding: 30px 0 6px;
