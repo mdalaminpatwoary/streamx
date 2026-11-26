@@ -45,7 +45,7 @@ function showPlans(i,scroll,v=0){
       const pct=base&&pl.m>1?Math.round((1-pl.p/(base.p*pl.m))*100):0,best=many&&!pl.u&&k===vr.plans.length-1;
       return `<div class="pcard${best?" best":""}" style="animation-delay:${k*90}ms"><button class="pshare" onclick="sharePlan(${i},${v},${k})" aria-label="Share ${label} ${pl.v}" title="Share this plan">${SHARE}</button>${best?'<span class="tag">Best value</span>':""}
       <span class="dur">${pl.v}</span>${pl.ask?`<div class="amt ask"><b>Ask for price</b></div>`:`<div class="amt"><span class="cur">৳</span><b data-to="${pl.p}">0</b></div>`}
-      <small class="pm">${pl.ask?"Quoted on WhatsApp":pl.once?"one-time · lifetime validity":pl.u?"US region · redeem code":pl.m>1?taka(Math.round(pl.p/pl.m))+" / month":"per month"}</small>
+      <small class="pm">${pl.ask?"Quoted on WhatsApp":pl.once?"one-time · lifetime validity":pl.u?"US region · redeem code":pl.m<1?"one week":pl.m>1?taka(Math.round(pl.p/pl.m))+" / month":"per month"}</small>
       <span class="save${pct>0||pl.u?"":" mute"}">${pl.ask?"We reply within minutes":pl.once?"No 15% VAT":pl.u?`${taka(GIFT.rate(pl.gc))} per $1`:pct>0?`Save ${pct}%`:(pl.m===1?"Monthly plan":"Fixed-term plan")}</span>
       ${pl.ask?`<div class="actions"><a class="btn grad-bg" target="_blank" rel="noopener" href="https://wa.me/${WA_NUMBER}?text=${encodeURIComponent("Hi StreamX! I want a price for Facebook: "+vr.n)}">Get price on WhatsApp</a></div></div>`:`<div class="actions"><button class="btn ghost" onclick="addToCart(${i},${v},${k})">${BAG} Add to Cart</button>
       <button type="button" class="btn grad-bg" onclick="buyNow(${i},${v},${k})">Buy Now</button></div>`}</div>`}).join("");

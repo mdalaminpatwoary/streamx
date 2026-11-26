@@ -1,10 +1,10 @@
 /* Product catalog: categories, durations, plan types, prices and combo packs. */
 // ===== PRODUCT CATALOG (edit names, text and prices here) =====
 // Popular products come first (the first 8 show on the page, 4 on phone).
-const CATS=["Streaming","Music & Audio","AI Tools","Productivity","Learning","Gift Cards","Virtual Cards","Facebook","VPN","18+"];
-const DUR={1:"1 Month",3:"3 Months",6:"6 Months",12:"1 Year",18:"18 Months",36:"3 Years"},UNIT={1:"month",3:"3 months",6:"6 months",12:"year",18:"18 months",36:"3 years"};
+const CATS=["Streaming","Music & Audio","AI Tools","Productivity","Learning","Gift Cards","Virtual Cards","Facebook","VPN","Dating","18+"];
+const DUR={.25:"1 Week",1:"1 Month",3:"3 Months",6:"6 Months",12:"1 Year",18:"18 Months",36:"3 Years"},UNIT={.25:"week",1:"month",3:"3 months",6:"6 months",12:"year",18:"18 months",36:"3 years"};
 // V(plan type, badge, one-line summary, [features], [notes], {months: price in BDT})
-const V=(n,tag,line,f,notes,pr)=>({n,tag,line,f,notes,plans:Object.entries(pr).map(([m,p])=>({m:+m,v:DUR[m],p}))});
+const V=(n,tag,line,f,notes,pr)=>({n,tag,line,f,notes,plans:Object.entries(pr).map(([m,p])=>({m:+m,v:DUR[m],p})).sort((a,b)=>a.m-b.m)});
 const VPNN="VPN required for access",SHN="Shared profile, no customization",SLOW="Delivery takes some time",STOCK="Delivery depends on stock availability",ADULT="Adults only (18+)";
 // Apple Gift Card (US region): price = dollars x ৳130, in steps of $5 from $5 to $500.
 const GIFT={min:5,max:500,step:5,rate:()=>130,ok:a=>Number.isInteger(a)&&a>=5&&a<=500&&a%5===0};
@@ -105,6 +105,8 @@ const CATALOG=[
 ["Grammarly","Productivity","#15c39a","Write clearly and confidently with Grammarly Premium: advanced grammar, tone and style suggestions and a plagiarism detector.",[
  V("Share Account","Most affordable","Grammarly Premium on a shared account, at the lowest price.",["Shared account",...["Spelling, grammar and punctuation checks","Tone detector and conciseness suggestions","Suggestions to restructure long sentences","Tone, delivery, engagement and fluency suggestions","Plagiarism detector (web and academic databases)","Works in browsers, desktop apps, Google Docs, Microsoft Word and mobile keyboards"]],[],{1:100,6:400,12:600}),
  V("Personal · Your Email","Your own email","Grammarly Premium for a full year, activated on your own email.",["Activated on your own email","1 year of Premium",...["Spelling, grammar and punctuation checks","Tone detector and conciseness suggestions","Suggestions to restructure long sentences","Tone, delivery, engagement and fluency suggestions","Plagiarism detector (web and academic databases)","Works in browsers, desktop apps, Google Docs, Microsoft Word and mobile keyboards"]],["Features follow Grammarly's current Premium plan and may change"],{12:1700})]],
+["Tinder Platinum","Dating","#fe3c72","Tinder's top tier, activated on your own email: see who likes you, send Priority Likes and message before you match.",[
+ V("Personal · Your Email","Your own email","Tinder Platinum activated on your own email, from one week to a full year.",["Tinder Platinum, activated on your own email","Likes You: see everyone who has already liked you","Priority Likes so your Like can be seen sooner","Message before matching, up to 140 characters","See Sent Likes from the last 7 days","Top Picks, Passport and unlimited Likes","5 Super Likes a week and 1 free Boost a month","Works on Android and iPhone"],["Features follow Tinder's current Platinum plan and may change","Your Tinder account email is needed to activate it"],{.25:550,1:800,3:1200,6:2000,12:3000})]],
 ["Quetext","Productivity","#0ea5e9","A plagiarism checker and writing tool, activated on your own email.",[
  V("Essential Plan","","Essential plan activated on your own email.",["Activated on your own email"],[SLOW],{1:750}),
  V("Professional Plan","","Professional plan activated on your own email.",["Activated on your own email"],[SLOW],{1:1550})]],
