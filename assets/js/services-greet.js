@@ -4,6 +4,10 @@
   var home = !document.getElementById("spNav") && document.getElementById("nav");
   var nav = document.getElementById("spNav") || home, nr = home ? home.querySelector(".navbar>.nr") : document.querySelector(".sp-nr"), ON = home ? "pill" : "sp-compact", AWAY = home ? "away" : "sp-away";
   if (!nav || !nr) return;
+  /* Long names: the name scrolls right to left in a loop (carousel) instead of being cut off */
+  var st = document.createElement("style");
+  st.textContent = ".sp-hi b em.mq{text-overflow:clip;-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 9%,#000 91%,transparent 100%);mask-image:linear-gradient(90deg,transparent 0,#000 9%,#000 91%,transparent 100%)}.mq-t{display:inline-flex;white-space:nowrap;animation:mqGo var(--mqd,8s) linear 1.1s infinite;will-change:transform}.mq-t>span{padding-right:32px}@keyframes mqGo{to{transform:translateX(-50%)}}@media (prefers-reduced-motion:reduce){.mq-t{animation:none}.sp-hi b em.mq{text-overflow:ellipsis;-webkit-mask-image:none;mask-image:none}}";
+  document.head.appendChild(st);
   var Q = window.sxPopQ = window.sxPopQ || [], busy = false, tm = 0;
   var ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg>';
 
@@ -17,7 +21,7 @@
       if (busy || !Q.length || !active()) return;
       Q.sort(function (a, b) { return (a.pri || 0) - (b.pri || 0); });
       show(Q.shift());
-    }, delay == null ? 1100 : delay);
+    }, delay == null ? 2800 : delay);
   }
 
   function show(it) {
@@ -32,8 +36,16 @@
     el.appendChild(b);
     if (home) nr.parentNode.insertBefore(el, nr); else nr.insertBefore(el, nr.firstChild);
     b.style.maxWidth = "none";
+    var nat = s2.scrollWidth;
     var base = home ? (parseFloat(nav.style.getPropertyValue("--pw")) || 200) + 14 : 190, cap = Math.max(60, innerWidth - 28 - base - 12), w = Math.min(Math.ceil(b.offsetWidth) + 4, cap);
     b.style.maxWidth = w + "px"; el.style.setProperty("--w", w + "px");
+    if (it.k !== "notice" && nat > w - 16 + 1 && !(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches)) {
+      var tx0 = s2.textContent, inn = document.createElement("span"), a = document.createElement("span"), a2 = document.createElement("span");
+      a.textContent = tx0; a2.textContent = tx0; a2.setAttribute("aria-hidden", "true"); inn.className = "mq-t"; inn.appendChild(a); inn.appendChild(a2);
+      var dur = (nat + 32) / 36; inn.style.setProperty("--mqd", dur.toFixed(2) + "s");
+      s2.textContent = ""; s2.className = "mq"; s2.setAttribute("aria-label", tx0); s2.appendChild(inn);
+      it.hold = Math.min(16000, Math.max(it.hold || 6500, 1600 + dur * 2000));
+    }
     var closed = false;
     curClose = close;
     function close() {
@@ -56,7 +68,7 @@
   function greet(full) {
     var first = String(full || "").trim().replace(/\s+/g, " ");
     if (!first) return;
-    if (first.length > 40) first = first.slice(0, 39) + "…";
+    if (first.length > 80) first = first.slice(0, 79) + "…";
     var hr = new Date().getHours(), g = hr >= 5 && hr < 12 ? "Good morning" : hr >= 12 && hr < 17 ? "Good afternoon" : hr >= 17 && hr < 21 ? "Good evening" : "Hello";
     Q.push({ k: "greet", pri: 0, small: g, big: first, hold: 6500, onShow: function () { try { sessionStorage.setItem("sx_hi", "1"); } catch (e) {} } });
     pump();
