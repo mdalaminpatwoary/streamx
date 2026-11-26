@@ -1,4 +1,4 @@
-/* Home hero: word reveal, rolling brand ticker, reactive dot-grid canvas and a draggable 3D service carousel. */
+/* Home hero: word reveal, rolling brand ticker, a draggable 3D service carousel. */
 // ===== Home hero motion =====
 (function(){
   const hero=$("#home"),title=$(".hx-title"),SEL=document.documentElement.classList; /* 'selecting' is set while text is selected: the hero then stands still so the selection does not blink */
@@ -85,36 +85,6 @@
       const r=stage.getBoundingClientRect();tgtTy=((e.clientY-r.top)/r.height-.5)*-14;
     });
     stage.addEventListener("pointerleave",()=>{tgtTy=0});
-  }
-
-  // ---------- Reactive dot grid ----------
-  const cv=$("#hxCanvas");
-  if(cv&&!calm){
-    const c=cv.getContext("2d");let W=0,H=0,dpr=1,mx=-9999,my=-9999,t=0,vis=true;
-    const GAP=34;
-    const size=()=>{dpr=Math.min(devicePixelRatio||1,2);W=cv.clientWidth;H=cv.clientHeight;cv.width=W*dpr;cv.height=H*dpr;c.setTransform(dpr,0,0,dpr,0,0)};
-    size();addEventListener("resize",size);
-    new IntersectionObserver(e=>vis=e[0].isIntersecting).observe(hero);
-    if(fine)hero.addEventListener("pointermove",e=>{const r=cv.getBoundingClientRect();mx=e.clientX-r.left;my=e.clientY-r.top});
-    hero.addEventListener("pointerleave",()=>{mx=my=-9999});
-    const pulse=[];let nextP=0,skip=false;
-    function draw(){
-      requestAnimationFrame(draw);
-      if(!vis||document.hidden||SEL.contains("selecting"))return;
-      if(!fine&&(skip=!skip))return;   /* touch devices: draw every other frame, leaves the carousel more time */
-      t+=.012*(fine?1:2);c.clearRect(0,0,W,H);
-      if(t>nextP){pulse.push({x:Math.random()*W,y:Math.random()*H,r:0});nextP=t+1.1}
-      for(let i=pulse.length-1;i>=0;i--){pulse[i].r+=3.2*(fine?1:2);if(pulse[i].r>420)pulse.splice(i,1)}
-      for(let x=GAP/2;x<W;x+=GAP)for(let y=GAP/2;y<H;y+=GAP){
-        let k=.18+.1*Math.sin(t*2+x*.012+y*.01),s=1.1,dx=x-mx,dy=y-my,ox=0,oy=0;
-        const d=Math.hypot(dx,dy);
-        if(d<170){const f=1-d/170;k+=f*.8;s+=f*2.2;ox=dx/(d||1)*f*9;oy=dy/(d||1)*f*9}
-        for(const p of pulse){const dd=Math.abs(Math.hypot(x-p.x,y-p.y)-p.r);if(dd<30){const f=1-dd/30;k+=f*.45*(1-p.r/420);s+=f*1.2}}
-        c.fillStyle=`rgba(${d<170?"255,110,95":"170,185,235"},${Math.min(k,1).toFixed(2)})`;
-        c.beginPath();c.arc(x+ox,y+oy,s,0,6.283);c.fill();
-      }
-    }
-    requestAnimationFrame(draw);
   }
 
   // ---------- Parallax fade of copy on scroll ----------
