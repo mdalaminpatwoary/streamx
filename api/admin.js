@@ -2,6 +2,7 @@
    GET    /api/admin?q=<text>       list / search subscriptions
    POST   /api/admin                add one  {email,name,phone,service,plan,months,start?,notes?}
    PATCH  /api/admin?id=<n>         change any purchase detail {name,email,phone,service,plan,months,start_date,end_date,price,pay_method,txn_id,channel,notes,source} and/or login details {acct_email, acct_pass, acct_otp, acct_profile, acct_pin}
+   PATCH  also takes {refund_amount, refund_method, refund_note} to record a partial refund (empty amount clears it)
    DELETE /api/admin?id=<n>         remove one (also needs header x-admin-confirm = the admin password)
    POST   /api/admin?sheetsync=1    send all hand-added purchases to the Google Sheet
    GET    /api/admin?view=orders    list paid orders (newest first) with delivery status
@@ -287,6 +288,22 @@ module.exports = async (req, res) => {
       if (has("txn_id")) upd.txn_id = clean(body.txn_id, 60) || null;
       if (has("channel")) upd.channel = clean(body.channel, 30) || null;
       if (has("notes")) upd.notes = clean(body.notes, 200) || null;
+      // Partial refund after delivery: the amount handed back to the customer (never more than they paid).
+      if (has("refund_amount")) {
+        const t = String(body.refund_amount).trim();
+        if (!t) { upd.refund_amount = null; upd.refund_method = null; upd.refund_note = null; upd.refunded_at = null; }
+        else {
+          const n = Number(t.replace(/[^0-9.]/g, ""));
+          if (!(n > 0 && n < 10000000)) return res.status(400).json({ error: "Refund amount is not valid." });
+          let paid = upd.price;
+          if (paid === undefined) { try { const cp = ((await db.rest("GET", `subscriptions?id=eq.${id}&select=price`)) || [])[0]; paid = cp ? cp.price : null; } catch (e) { paid = null; } }
+          if (paid != null && n > Number(paid)) return res.status(400).json({ error: "The refund cannot be more than the amount paid (৳" + paid + ")." });
+          upd.refund_amount = Math.round(n * 100) / 100;
+          if (has("refund_method")) upd.refund_method = clean(body.refund_method, 30) || null;
+          if (has("refund_note")) upd.refund_note = clean(body.refund_note, 200) || null;
+          upd.refunded_at = new Date().toISOString();
+        }
+      }
       if (has("source")) { if (!["admin", "online"].includes(body.source)) return res.status(400).json({ error: "Source must be admin or online." }); upd.source = body.source; }
       if (upd.start_date && upd.end_date && upd.end_date < upd.start_date) return res.status(400).json({ error: "The expiry date is before the start date." });
       const lg = access.toRow(body);
@@ -299,7 +316,9 @@ module.exports = async (req, res) => {
       if (!Object.keys(upd).length) return res.status(400).json({ error: "Nothing to change." });
       let out;
       try { out = await db.rest("PATCH", `subscriptions?id=eq.${id}`, Object.assign({}, upd, stamp || {}), "return=representation"); }
-      catch (e) { if (!stamp) throw e; out = await db.rest("PATCH", `subscriptions?id=eq.${id}`, upd, "return=representation"); } // notice columns not added yet
+      catch (e) {
+        if (upd.refund_amount !== undefined && /refund/i.test(String(e && e.message))) return res.status(400).json({ error: "Refund columns are missing. Run the new lines at the bottom of supabase/schema.sql in Supabase (SQL Editor) once, then try again." });
+        if (!stamp) throw e; out = await db.rest("PATCH", `subscriptions?id=eq.${id}`, upd, "return=representation"); } // notice columns not added yet
       await sheet.syncSub(id);
       return res.status(200).json({ row: out[0] });
     }

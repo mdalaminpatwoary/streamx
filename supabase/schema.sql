@@ -225,3 +225,9 @@ alter table public.subscriptions add column if not exists manual_id text;
 create unique index if not exists subscriptions_manual_id_key on public.subscriptions (manual_id) where manual_id is not null;
 with n as (select id, row_number() over (order by id) rn from public.subscriptions where source = 'admin' and manual_id is null)
 update public.subscriptions s set manual_id = ((select coalesce(max(manual_id::int), 0) from public.subscriptions where manual_id is not null) + n.rn)::text from n where s.id = n.id;
+
+-- Partial refunds after delivery (admin records the amount returned to the customer)
+alter table public.subscriptions add column if not exists refund_amount numeric(12,2);
+alter table public.subscriptions add column if not exists refund_method text;
+alter table public.subscriptions add column if not exists refund_note   text;
+alter table public.subscriptions add column if not exists refunded_at   timestamptz;
