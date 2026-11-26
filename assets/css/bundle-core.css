@@ -4609,7 +4609,10 @@ nav a:hover {
 
 /* Phone/tablet carousel: flat two-row marquee (compositor-only transform, no 3D) */
 .hx-orbit.flat{width:100%;height:auto;transform:none;transform-style:flat;will-change:auto;display:flex;flex-direction:column;gap:16px;justify-content:center;overflow:hidden;padding:6px 0}
-.hx-orbit.flat::before{display:none}
+.hx-orbit.flat{width:100vw;max-width:100vw;margin:0;justify-self:center}
+.hx-orbit.flat::before,.hx-orbit.flat::after{content:"";position:absolute;z-index:3;top:0;bottom:0;width:15%;max-width:90px;margin:0;border:0;border-radius:0;transform:none;pointer-events:none;left:0;right:auto;height:auto}
+.hx-orbit.flat::before{background:linear-gradient(90deg,rgba(10,13,26,.92) 6%,rgba(10,13,26,0))}
+.hx-orbit.flat::after{left:auto;right:0;background:linear-gradient(270deg,rgba(10,13,26,.92) 6%,rgba(10,13,26,0))}
 .hx-row{overflow:hidden}
 .hx-track{display:flex;gap:14px;width:max-content;animation:hxMq 52s linear infinite;will-change:transform;backface-visibility:hidden}
 .hx-row.r .hx-track{animation-name:hxMqR;animation-duration:60s}
