@@ -316,6 +316,14 @@
   });
   function toast(m, bad) { var t = $("#toast"); t.textContent = m; t.className = "ad-toast on" + (bad ? " err" : ""); clearTimeout(toast.t); toast.t = setTimeout(function () { t.className = "ad-toast"; }, 3200); }
   document.querySelectorAll(".ad-tab").forEach(function (b) { b.addEventListener("click", function () { document.querySelectorAll(".ad-tab").forEach(function (x) { x.setAttribute("aria-selected", x === b ? "true" : "false"); }); document.querySelectorAll(".ad-pane").forEach(function (p) { p.hidden = p.dataset.p !== b.dataset.t; }); }); });
+  $("#reco").addEventListener("click", function () {
+    var b = this; b.disabled = true; b.textContent = "Checking EPS…";
+    api("?reconcile=1", { method: "POST" }).then(function (d) {
+      var f = d.found || [];
+      toast(f.length ? f.length + " missed payment(s) found and activated: " + f.map(function (x) { return (x.name || x.email) + " ৳" + (x.amount || ""); }).join(", ") : "Checked " + d.checked + " unpaid order(s): none are paid on EPS.");
+      orders(); list();
+    }).catch(function (e) { toast(e.message || "Could not check EPS.", 1); }).then(function () { b.disabled = false; b.textContent = "Check EPS for missed payments"; });
+  });
   function orders() {
     api("?view=orders").then(function (d) { ORD = d.rows; drawOrders(); stats(); }).catch(function (e) { $("#ocnt").textContent = e.message; });
   }

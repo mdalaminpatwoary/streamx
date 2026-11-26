@@ -38,7 +38,7 @@
     </div>
 
     <section class="ad-pane ad-card" data-p="orders">
-      <div class="ac-bar"><b>Paid orders</b><select class="ac-in" id="of" style="max-width:210px"><option value="pending">Not delivered yet</option><option value="delivered">Delivered</option><option value="refunded">Refunded</option><option value="all">All</option></select></div>
+      <div class="ac-bar"><b>Paid orders</b><button class="ac-btn ac-sm" id="reco" type="button" title="Asks EPS about unpaid orders of the last 7 days">Check EPS for missed payments</button><select class="ac-in" id="of" style="max-width:210px"><option value="pending">Not delivered yet</option><option value="delivered">Delivered</option><option value="refunded">Refunded</option><option value="all">All</option></select></div>
       <div class="ad-scroll"><table class="ad-tbl"><thead><tr><th>Paid (Dhaka)</th><th>Customer</th><th>Bought</th><th>Order ID</th><th>Delivery</th></tr></thead><tbody id="orows"></tbody></table></div>
       <p class="ac-note" id="ocnt"></p>
     </section>
@@ -192,6 +192,6 @@
 <div class="ad-toast" id="toast" role="status"></div>
 <script src="/assets/js/data/catalog.js"></script>
 <script src="/assets/js/data/countries.js?v=2"></script>
-<script src="/assets/js/admin.js?v=38"></script>
+<script src="/assets/js/admin.js?v=39"></script>
 </body>
 </html>

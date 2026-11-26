@@ -4,6 +4,7 @@
    PATCH  /api/admin?id=<n>         change any purchase detail {name,email,phone,service,plan,months,start_date,end_date,price,pay_method,txn_id,channel,notes,source} and/or login details {acct_email, acct_pass, acct_otp, acct_profile, acct_pin}
    PATCH  also takes {refund_amount, refund_method, refund_note} to record a partial refund (empty amount clears it)
    DELETE /api/admin?id=<n>         remove one (also needs header x-admin-confirm = the admin password)
+   POST   /api/admin?reconcile=1    check unpaid orders (last 7 days) with EPS and activate the ones EPS says are paid
    POST   /api/admin?sheetsync=1    send all hand-added purchases to the Google Sheet
    GET    /api/admin?view=orders    list paid orders (newest first) with delivery status
    PATCH  /api/admin?review=<id>  feature or unfeature a review {popular:true|false} (shown in the home page spotlight)
@@ -50,6 +51,27 @@ module.exports = async (req, res) => {
     if (req.headers["x-admin-key"]) throttle.clear(ip).catch(() => {});
     const body = typeof req.body === "string" ? JSON.parse(req.body || "{}") : req.body || {};
     const id = parseInt((req.query && req.query.id) || "", 10);
+
+    // Missed payments: EPS says "paid" but the customer's browser never came back to the result page, so the order was never marked paid.
+    // This asks EPS about every unpaid order of the last 7 days and activates the ones that were really paid.
+    if (req.query && req.query.reconcile && req.method === "POST") {
+      const eps = require("./_eps"), subs = require("./_subs"), verify = require("./verify");
+      const since = new Date(Date.now() - 7 * 86400000).toISOString();
+      const rows = (await db.rest("GET", `orders?paid=eq.false&created_at=gte.${db.q(since)}&select=mtid,email,name,created_at&order=created_at.desc&limit=24`)) || [];
+      const c = eps.config(), token = await eps.getToken(c), found = [];
+      await Promise.all(rows.map(async (o) => {
+        try {
+          const r = await eps.epsFetch(`${c.base}/EPSEngine/CheckMerchantTransactionStatus?merchantTransactionId=${encodeURIComponent(o.mtid)}`, { method: "GET", headers: { Authorization: "Bearer " + token, "x-hash": eps.xhash(c.hashKey, o.mtid) } });
+          const j = r.json || {};
+          if (String(j.Status).toLowerCase() === "success") {
+            try { await verify.mailOrder(j, o.mtid, c.env, req); } catch (e) { /* the copy email is optional */ }
+            const n = await subs.activateOrder(o.mtid);
+            found.push({ mtid: o.mtid, email: o.email, name: o.name, amount: j.TotalAmount, subs: n });
+          }
+        } catch (e) { console.error("reconcile skipped", o.mtid, e && e.message); }
+      }));
+      return res.status(200).json({ ok: true, checked: rows.length, found });
+    }
 
     // Send every hand-added purchase to the Google Sheet (button on the Active Users tab)
     if (req.query && req.query.sheetsync && req.method === "POST") {

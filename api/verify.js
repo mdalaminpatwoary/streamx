@@ -50,3 +50,4 @@ module.exports = async (req, res) => {
     return res.status(424).json({ error: "Could not check the payment right now." });
   }
 };
+module.exports.mailOrder = mailOrder;
