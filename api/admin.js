@@ -17,6 +17,7 @@ const db = require("./_db");
 const { addSub, validDate, normEmail } = require("./_subs");
 const access = require("./_access");
 const sheet = require("./_sheet");
+const throttle = require("./_throttle");
 const { cleanPhone } = require("./_phone");
 
 const h = (s) => crypto.createHash("sha256").update(String(s)).digest();
@@ -39,7 +40,14 @@ module.exports = async (req, res) => {
   try {
     const k = process.env.ADMIN_KEY;
     if (!k || !db.enabled()) return res.status(503).json({ error: "Admin is not configured." });
-    if (!crypto.timingSafeEqual(h(req.headers["x-admin-key"] || ""), h(k))) return res.status(401).json({ error: "Wrong admin key." });
+    const ip = throttle.ipOf(req), wait = await throttle.locked(ip);
+    if (wait) { res.setHeader("Retry-After", String(wait)); return res.status(429).json({ error: "Too many wrong keys. Try again in " + Math.ceil(wait / 60) + " minute(s)." }); }
+    if (!crypto.timingSafeEqual(h(req.headers["x-admin-key"] || ""), h(k))) {
+      // An empty key is just the page asking "am I signed in?", so only real wrong guesses count.
+      if (req.headers["x-admin-key"]) { await throttle.fail(ip); await new Promise((r) => setTimeout(r, 600)); }
+      return res.status(401).json({ error: "Wrong admin key." });
+    }
+    if (req.headers["x-admin-key"]) throttle.clear(ip).catch(() => {});
     const body = typeof req.body === "string" ? JSON.parse(req.body || "{}") : req.body || {};
     const id = parseInt((req.query && req.query.id) || "", 10);
 

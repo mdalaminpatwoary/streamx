@@ -231,3 +231,12 @@ alter table public.subscriptions add column if not exists refund_amount numeric(
 alter table public.subscriptions add column if not exists refund_method text;
 alter table public.subscriptions add column if not exists refund_note   text;
 alter table public.subscriptions add column if not exists refunded_at   timestamptz;
+
+-- Admin login limiter: remembers wrong admin-key attempts per address (8 in 15 minutes locks that address out)
+create table if not exists public.admin_attempts (
+  ip       text primary key,
+  n        int  not null default 1,
+  first_at timestamptz not null default now()
+);
+alter table public.admin_attempts enable row level security;
+grant select, insert, update, delete on public.admin_attempts to service_role;
