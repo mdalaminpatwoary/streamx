@@ -324,3 +324,14 @@
 
 #hxRate b{color:#fff}
 #hxRate svg{fill:#ffb800;stroke:#ffb800}
+
+/* Phones and tablets (touch): Chrome on Android flickers when animated gradient text, backdrop blurs and filters share a screen with a 3D carousel.
+   Same look, fewer moving GPU layers: the gradient words stay still, blurs become solid tints, no per-frame filters. */
+@media (max-width:860px),(pointer:coarse){
+  .hx-title.hx-done .grad .w{animation:none!important;will-change:auto!important;background-position:30% 0}
+  .hx-title .w{filter:none;will-change:auto}
+  .hero *,.hero *::before,.hero *::after{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+  .hx-info{background:rgba(12,16,34,.94)}
+  .hx-roll .rl-list b{filter:none}
+  .hx-orbit{will-change:transform}
+}
