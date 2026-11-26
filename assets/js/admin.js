@@ -10,7 +10,8 @@
   var days = function (a, b) { return Math.round((Date.parse(b + "T00:00:00Z") - Date.parse(a + "T00:00:00Z")) / 86400000); };
   var isGift = function (n) { return /gift card$/i.test(n || ""); };
   var isCombo = function (n) { return n === "Entertainment Combo"; }, COMBO_PARTS = ["Netflix", "Prime Video"];
-  var isStream = function (n) { return PROD.some(function (p) { return p.name === n && p.cat === "Streaming"; }); };
+  /* Devices are optional, so every service gets the Devices section (it used to need an exact catalog name match, so manual or renamed services never showed it). */
+  var isStream = function () { return true; };
 
   /* ---------- Account access editor (used in the Add form and in the edit dialog) ---------- */
   var MODES = [
