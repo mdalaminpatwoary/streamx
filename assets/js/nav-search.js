@@ -11,11 +11,12 @@
   var st=document.createElement("style");st.textContent=
    ".sx-sb{cursor:pointer;display:grid;place-items:center;padding:0}"+
    "@media(max-width:640px){html.sx-tb-on .sx-sb{display:none!important}}"+
-   ".sxs-ov{position:fixed;inset:0;z-index:2147483000;display:none;align-items:flex-start;justify-content:center;padding:max(72px,env(safe-area-inset-top,0px)) 14px 14px;background:rgba(5,7,16,.66)}"+
+   ".sxs-ov{position:fixed;inset:0;z-index:2147483000;display:none;align-items:flex-start;justify-content:center;padding:max(72px,env(safe-area-inset-top,0px)) 14px 14px;background:rgba(5,7,16,.45);-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px)}"+
    ".sxs-ov.on{display:flex}"+
-   ".sxs{width:min(560px,100%);max-height:min(560px,calc(100dvh - 100px));display:flex;flex-direction:column;border-radius:22px;background:linear-gradient(180deg,rgba(22,27,58,.98),rgba(10,13,28,.99));border:1px solid rgba(255,255,255,.12);box-shadow:0 30px 80px -20px rgba(0,0,0,.85);overflow:hidden;animation:sxsIn .28s cubic-bezier(.2,.9,.3,1.1)}"+
+   ".sxs{width:min(560px,100%);max-height:min(560px,calc(100dvh - 100px));display:flex;flex-direction:column;position:relative;isolation:isolate;border-radius:22px;background:rgba(10,13,28,.6);-webkit-backdrop-filter:blur(26px) saturate(1.5);backdrop-filter:blur(26px) saturate(1.5);border:1px solid rgba(255,255,255,.1);box-shadow:0 30px 80px rgba(0,0,0,.5);overflow:hidden;animation:sxsIn .28s cubic-bezier(.2,.9,.3,1.1)}"+
+   ".sxs::before{content:\"\";position:absolute;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(420px circle at 100% 0%,rgba(79,107,255,.28),transparent 60%),radial-gradient(380px circle at 0% 100%,rgba(237,49,36,.2),transparent 60%)}"+
    "@keyframes sxsIn{from{opacity:0;transform:translateY(-10px) scale(.98)}to{opacity:1;transform:none}}"+
-   ".sxs-h{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.08);color:#aab4da}"+
+   ".sxs-h{display:flex;align-items:center;gap:10px;margin:14px 14px 6px;padding:12px 14px;border:1px solid rgba(255,255,255,.1);border-radius:18px;background:rgba(255,255,255,.05);color:#aab4da}"+
    ".sxs-h input{flex:1;min-width:0;background:none;border:0;outline:0;color:#fff;font-weight:600;font-size:16px;line-height:1.2;font-family:inherit}"+
    ".sxs-h input::placeholder{color:#7f89ab}.sxs-h input::-webkit-search-cancel-button{-webkit-appearance:none;display:none}"+
    ".sxs-x{flex:none;border:0;background:rgba(255,255,255,.07);color:#cfd6ee;border-radius:99px;padding:6px 11px;font-weight:600;font-size:12px;font-family:inherit;cursor:pointer}"+
@@ -40,7 +41,7 @@
     if(!t)out=all.slice(0,8);
     else{out=all.map(function(p){var n=norm(p.name),c=norm(p.cat||""),s=n.indexOf(t)===0?0:n.indexOf(" "+t)>-1?1:n.indexOf(t)>-1?2:c.indexOf(t)>-1?3:-1;return{p:p,s:s}}).filter(function(x){return x.s>=0}).sort(function(a,b){return a.s-b.s}).map(function(x){return x.p}).slice(0,8)}
     rows=out;cur=0;
-    L.innerHTML=out.length?out.map(function(p,i){var s=sl(p.name);return'<a class="sxs-i'+(i?'':' on')+'" href="/services/'+s+'/"><span class="sxs-t" style="background:'+esc(p.color||"#333")+'">'+esc(p.icon||p.name[0])+'<img src="/assets/img/logos/'+s+'.png" alt="" loading="lazy" onerror="this.remove()"></span><span><div class="sxs-n">'+esc(p.name)+'</div><div class="sxs-c">'+esc(p.cat||"")+'</div></span></a>'}).join(""):'<div class="sxs-e">No service found for “'+esc(q.value)+'”</div>';
+    L.innerHTML=out.length?out.map(function(p,i){var s=sl(p.name);return'<a class="sxs-i'+(i?'':' on')+'" href="/services/'+s+'/"><span class="sxs-t" style="background:'+esc(p.color||"#333")+'">'+esc(p.icon||p.name[0])+'<img src="/assets/img/logos/'+s+'.svg" alt="" loading="lazy" onerror="if(!this.dataset.t){this.dataset.t=1;this.src=this.src.replace(/\\.svg$/,\'.png\')}else this.remove()"></span><span><div class="sxs-n">'+esc(p.name)+'</div><div class="sxs-c">'+esc(p.cat||"")+'</div></span></a>'}).join(""):'<div class="sxs-e">No service found for “'+esc(q.value)+'”</div>';
   }
   function mark(){var a=L.querySelectorAll(".sxs-i");a.forEach(function(e,i){e.classList.toggle("on",i===cur)});if(a[cur])a[cur].scrollIntoView({block:"nearest"})}
   function open(){ov.classList.add("on");q.value="";render();setTimeout(function(){q.focus()},30)}
