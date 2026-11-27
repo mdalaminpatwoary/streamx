@@ -28,7 +28,9 @@
    ".sx-tb-pill{position:absolute;top:6px;bottom:6px;left:6px;width:calc((100% - 12px)/5);border-radius:24px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);box-shadow:0 8px 20px -10px rgba(237,49,36,.5),inset 0 1px 0 rgba(255,255,255,.1);transition:transform .45s cubic-bezier(.3,1.3,.5,1),opacity .25s;opacity:0}"+
    ".sx-tb-i{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:0;background:none;color:#a3acd0;font-weight:600;font-size:10.5px;line-height:1;font-family:inherit;text-decoration:none;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:color .25s}"+
    ".sx-tb-i.on{color:#fff}.sx-tb-i.on svg{color:#ff6a5c;filter:drop-shadow(0 0 8px rgba(237,49,36,.5))}"+
-   ".sx-tb-i:active svg{transform:scale(.88)}.sx-tb-i svg{transition:transform .2s}"+
+   ".sx-tb-i:active svg,.sx-tb-i:active .sx-tb-av{transform:scale(.88)}.sx-tb-i svg,.sx-tb-av{transition:transform .2s,box-shadow .25s}"+
+   ".sx-tb-av{display:block;width:24px;height:24px;border-radius:50%;object-fit:cover;background:#1b2142;box-shadow:0 0 0 1.5px rgba(255,255,255,.3)}"+
+   ".sx-tb-i.on .sx-tb-av{box-shadow:0 0 0 2px #ff6a5c,0 0 12px rgba(237,49,36,.55)}"+
    ".sx-tb-i em{position:absolute;top:3px;left:calc(50% + 4px);min-width:16px;height:16px;padding:0 4px;border-radius:9px;background:#ed3124;color:#fff;font:700 10px/16px inherit;font-family:inherit;text-align:center;font-style:normal}"+
    "html.sx-tb-on #cw{display:none!important}"+
    "html.sx-tb-on #acctBtn,html.sx-tb-on .sp-nr .sp-acct[href='/account/']{display:none!important}"+
@@ -71,6 +73,18 @@
     document.addEventListener("click",function(e){if(!mp.contains(e.target))shut()});
     addEventListener("scroll",shut,{passive:true});
   }
+  /* signed-in customers see their profile photo in place of the account icon (photo cached by My account in localStorage "sx_av") */
+  function avatar(){
+    var a=nav.querySelector('a[href="/account/"]'),old=a&&a.querySelector(".sx-tb-av"),p="";
+    try{if(localStorage.getItem("sx_session")){var v=JSON.parse(localStorage.getItem("sx_av")||"null");p=v&&v.p||""}}catch(e){}
+    if(!a)return;
+    if(!p){if(old){old.remove();var sv=a.querySelector("svg");if(sv)sv.style.display=""}return}
+    if(old&&old.dataset.src===p)return;
+    var im=new Image();im.className="sx-tb-av";im.alt="";im.width=24;im.height=24;im.referrerPolicy="no-referrer";im.dataset.src=p;
+    im.onload=function(){var o=a.querySelector(".sx-tb-av");if(o)o.remove();var sv=a.querySelector("svg");if(sv)sv.style.display="none";a.insertBefore(im,a.firstChild)};
+    im.src=p;
+  }
+  avatar();addEventListener("load",avatar);addEventListener("storage",avatar);addEventListener("pageshow",avatar);
   var H=nav.querySelector("#sxTbHelp");
   function wa(){var w=(typeof WA_NUMBER!=="undefined"&&WA_NUMBER)||"";if(w)H.href="https://wa.me/"+String(w).replace(/\D/g,"")+"?text="+encodeURIComponent("Hi StreamX, I need help")}
   wa();document.addEventListener("DOMContentLoaded",wa);window.addEventListener("load",wa);
