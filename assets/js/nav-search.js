@@ -10,6 +10,7 @@
   host.insertBefore(b,before||host.firstChild);
   var st=document.createElement("style");st.textContent=
    ".sx-sb{cursor:pointer;display:grid;place-items:center;padding:0}"+
+   "@media(max-width:640px){html.sx-tb-on .sx-sb{display:none!important}}"+
    ".sxs-ov{position:fixed;inset:0;z-index:2147483000;display:none;align-items:flex-start;justify-content:center;padding:max(72px,env(safe-area-inset-top,0px)) 14px 14px;background:rgba(5,7,16,.66)}"+
    ".sxs-ov.on{display:flex}"+
    ".sxs{width:min(560px,100%);max-height:min(560px,calc(100dvh - 100px));display:flex;flex-direction:column;border-radius:22px;background:linear-gradient(180deg,rgba(22,27,58,.98),rgba(10,13,28,.99));border:1px solid rgba(255,255,255,.12);box-shadow:0 30px 80px -20px rgba(0,0,0,.85);overflow:hidden;animation:sxsIn .28s cubic-bezier(.2,.9,.3,1.1)}"+
