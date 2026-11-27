@@ -1,15 +1,15 @@
 /* Lite mode: set on <html class="lite"> for weak phones (Data Saver, very low RAM) or when the page measures dropped frames.
    Same layout and content; fewer moving, glowing and fading layers. */
 html.lite *,html.lite *::before,html.lite *::after{scroll-behavior:auto!important}
-html.lite .hx-title .w,html.lite .hx-title .grad .w{animation:none!important;opacity:1!important;transform:none!important;filter:none!important;will-change:auto!important}
-html.lite .hero-text>*,html.lite .hx-stage{animation:none!important;opacity:1!important;transform:none;filter:none!important}
-html.lite .hx-row{animation:none!important;will-change:auto!important}
+/* Animations stay on for every phone; lite mode only drops blur filters and extra glow layers */
+html.lite .hx-title .w,html.lite .hx-title .grad .w{filter:none!important;will-change:auto!important}
+html.lite .hero-text>*,html.lite .hx-stage{filter:none!important}
+html.lite .hx-row{will-change:auto!important}
 /* the flat strip is one cheap transform, so it keeps moving on weak phones, just slower */
 html.lite .hx-track{animation-duration:90s!important}
 html.lite .hx-row.r .hx-track{animation-duration:100s!important}
 html.lite .hx-stage::before{display:none}
 html.lite .hx-orbit.flat .hx-t{box-shadow:0 0 0 1px rgba(255,255,255,.12) inset}
-html.lite .hx-flag,html.lite .hx-flag .hx-sun,html.lite .hx-chk,html.lite .hx-tag *,html.lite .hx-pulse{animation:none!important}
 html.lite .hero .btn,html.lite .hx-trust li,html.lite .hx-pay li{transition:none!important}
 html.lite .hero .btn:hover,html.lite .hx-trust li:hover{transform:none}
 html.lite .hx-title.hx-done .grad .w{background-position:30% 0}

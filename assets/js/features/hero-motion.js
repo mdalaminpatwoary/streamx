@@ -3,7 +3,7 @@
 (function(){
   const hero=$("#home"),title=$(".hx-title"),SEL=document.documentElement.classList; /* 'selecting' is set while text is selected: the hero then stands still so the selection does not blink */
   if(!hero||!title)return;
-  const calm=matchMedia("(prefers-reduced-motion: reduce)").matches||SEL.contains("lite");
+  const calm=matchMedia("(prefers-reduced-motion: reduce)").matches,eco=calm||SEL.contains("lite"); /* calm = the person asked for no motion; eco = weak phone (lite mode keeps the animations, just lighter) */
   const fine=matchMedia("(pointer:fine)").matches;
   if(!calm)splitWords(title);
   /* When the word-by-word intro has finished, drop its per-word animation layers: the heading is then plain static text (same look, nothing left to flicker under a selection). */
@@ -59,7 +59,7 @@
     orbit.style.setProperty("--d",R()*2+"px");orbit.style.setProperty("--w",TW()+"px");orbit.style.setProperty("--h",Math.round(TW()*1.2)+"px");fit();
     const slots=[...orbit.children];
     addEventListener("resize",()=>{slots.forEach(e=>e.style.setProperty("--r",R()+"px"));orbit.style.setProperty("--d",R()*2+"px");orbit.style.setProperty("--w",TW()+"px");orbit.style.setProperty("--h",Math.round(TW()*1.2)+"px");fit()});
-    let ry=0,vel=calm?0:-.18,dragging=false,lx=0,front=-1,seen=true,tgtTy=0,ty=0;
+    let ry=0,vel=eco?0:-.18,dragging=false,lx=0,front=-1,seen=true,tgtTy=0,ty=0;
     new IntersectionObserver(e=>seen=e[0].isIntersecting).observe(stage);
     function paintFront(){
       const f=((Math.round(-ry/STEP)%N)+N)%N;
@@ -73,7 +73,7 @@
       if(!seen||document.hidden||SEL.contains("selecting")){last=0;return}
       const dt=last?Math.min(3,(t-last)/16.667):1;last=t;
       if(!dragging){
-        const auto=calm?0:(stage.matches(":hover")?-.05:-.18);
+        const auto=eco?0:(stage.matches(":hover")?-.05:-.18);
         vel+=(auto-vel)*(1-Math.pow(1-.04,dt));
       }
       ry+=vel*dt;ty+=(tgtTy-ty)*(1-Math.pow(1-.06,dt));
@@ -95,5 +95,5 @@
   }
 
   // ---------- Parallax fade of copy on scroll ----------
-  if(!calm)addEventListener("scroll",()=>{const f=Math.min(1,Math.max(0,scrollY/(hero.offsetHeight*.7)));hero.style.setProperty("--hs",f.toFixed(3))},{passive:true});
+  if(!eco)addEventListener("scroll",()=>{const f=Math.min(1,Math.max(0,scrollY/(hero.offsetHeight*.7)));hero.style.setProperty("--hs",f.toFixed(3))},{passive:true});
 })();
