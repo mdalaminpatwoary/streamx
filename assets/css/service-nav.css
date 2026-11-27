@@ -30,3 +30,5 @@
   .sp-foot .sf-bar>span{display:block;text-align:center;max-width:32ch;margin:0 auto}
   .sp-foot .sf-bar .sp-fdb{margin-top:4px;justify-self:center}
 }
+.sp-hero-in #cw{opacity:0!important;visibility:hidden!important;pointer-events:none!important;transition:opacity .3s}
+#cw{transition:opacity .3s,visibility 0s}

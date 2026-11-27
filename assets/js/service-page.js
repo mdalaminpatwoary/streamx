@@ -1,6 +1,10 @@
 /* Service pages: reveal, scroll progress, particle network, text decode, 3D tilt, count-up, live trending, review form. */
 (function () {
   "use strict";
+  (function () { /* keep the chat nudge off the hero */
+    var h = document.querySelector(".sp-hero"); if (!h || !("IntersectionObserver" in window)) return;
+    new IntersectionObserver(function (es) { document.body.classList.toggle("sp-hero-in", es[0].isIntersecting); }, { threshold: .2 }).observe(h);
+  })();
   var RM = matchMedia("(prefers-reduced-motion: reduce)").matches;
   var FINE = matchMedia("(hover:hover) and (pointer:fine)").matches;
   var $ = function (s, r) { return (r || document).querySelector(s); };
