@@ -26,9 +26,10 @@ module.exports = function story({ p, qp, esc, taka, logo, ic }) {
     `<div class="hd"><i>3</i>Confirm</div><div class="cf"><div class="rg"><span>${ic("shield")}</span></div>
      <ul><li style="--k:0"><svg viewBox="0 0 24 24"><path d="m6 12.5 4 4 8-9"/></svg>Payment received</li><li style="--k:1"><svg viewBox="0 0 24 24"><path d="m6 12.5 4 4 8-9"/></svg>Order verified</li><li style="--k:2"><svg viewBox="0 0 24 24"><path d="m6 12.5 4 4 8-9"/></svg>Plan reserved</li></ul></div>`,
     /* 4 prepare */
-    `<div class="hd"><i>4</i>Prepare</div><div class="pf"><div class="av">${tile}</div><div class="tx"><b>${name}</b><span>${esc(first[0])}</span>
-     <div class="ln l1"><i></i></div><div class="ln l2"><i></i></div></div></div>
-     <div class="pn"><span>PIN</span><i style="--k:0"></i><i style="--k:1"></i><i style="--k:2"></i><i style="--k:3"></i><em>Secure OTP login</em></div>`,
+    `<div class="hd"><i>4</i>Prepare</div><div class="pf2"><div class="av2"><i class="al a1"></i><i class="al a2"></i><i class="al a3"></i><i class="al a4"></i><span class="fc"></span><u class="pe"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9a2.1 2.1 0 0 0-3-3L5 17z"/></svg></u></div>
+     <div class="tx2"><small>Profile name</small><div class="nm"><span class="ty">Your name</span><i class="cr"></i></div><span class="pl">${esc(first[0])} · ${name}</span></div></div>
+     <div class="cl"><small>Avatar</small><i class="c c1"></i><i class="c c2"></i><i class="c c3"></i><i class="c c4"></i></div>
+     <div class="pn"><span>PIN</span><i style="--k:0"></i><i style="--k:1"></i><i style="--k:2"></i><i style="--k:3"></i><em>Ready</em></div>`,
     /* 5 deliver */
     `<div class="hd"><i>5</i>Deliver</div><div class="em"><div class="emm"><img src="/assets/img/brand/logo-128.png" alt="" width="64" height="64"><span><b>StreamX</b><small>no-reply@streamx.bd</small></span><time>Just now</time></div>
      <div class="emc"><i class="emg"></i><div class="emi"><span class="eme">Order delivered</span><b class="emh">Your ${name} is ready</b>
