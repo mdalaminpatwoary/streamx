@@ -21,7 +21,7 @@
     var f = document.createElement("i"); f.className = "w-floor"; track.appendChild(f);
     for (var i = 0; i < N - 1; i++) { var g = document.createElement("i"); g.className = "w-seg"; track.appendChild(g); segs.push(g); }
     slots.forEach(function (sl) { var r = document.createElement("i"); r.className = "w-ring"; track.appendChild(r); rings.push(r); });
-    for (var k = 0; k < 46; k++) { var d = document.createElement("i"); d.className = "w-dot"; d.style.setProperty("--x", ((Math.random() - .5) * 190).toFixed(1)); d.style.setProperty("--y", (Math.random() * 78 - 22).toFixed(1)); d.style.setProperty("--z", (-Math.random() * D * (N + .5) + 40).toFixed(1)); d.style.setProperty("--s", (.5 + Math.random() * 1.1).toFixed(2)); track.appendChild(d); }
+    for (var k = 0; k < 24; k++) { var d = document.createElement("i"); d.className = "w-dot"; d.style.setProperty("--x", ((Math.random() - .5) * 190).toFixed(1)); d.style.setProperty("--y", (Math.random() * 78 - 22).toFixed(1)); d.style.setProperty("--z", (-Math.random() * D * (N + .5) + 40).toFixed(1)); d.style.setProperty("--s", (.5 + Math.random() * 1.1).toFixed(2)); track.appendChild(d); }
   })();
   function place() {
     var u = U; slots.forEach(function (sl, i) { sl.style.transform = "translate3d(" + (XS[i] * u).toFixed(1) + "px,0," + (-i * D * u).toFixed(1) + "px)"; rings[i].style.transform = "translate3d(" + (XS[i] * u).toFixed(1) + "px," + (FY * u).toFixed(1) + "px," + (-i * D * u).toFixed(1) + "px) rotateX(90deg)"; });
@@ -44,7 +44,7 @@
     var ex = Math.max(0, cur - (N - 1)), cb = dwell(Math.min(cur, N - 1)), cam = cb + ex * 1.3, cx = lerpX(cb), sway = (lerpX(cb + .02) - lerpX(cb - .02)) * 6;
     track.style.transform = "rotateX(-7deg) rotateY(" + (sway * -.6).toFixed(2) + "deg) translate3d(" + (-cx * U).toFixed(1) + "px," + (-(4 + ex * 6) * U).toFixed(1) + "px," + (cam * D * U).toFixed(1) + "px)";
     slots.forEach(function (s, i) {
-      var d = cb - i, a = -d, f = Math.max(0, 1 - Math.abs(d)), t = Math.min(1, Math.max(0, cur - i + .5));
+      var d = cb - i; if (Math.abs(d) > 2.3) { if (s._far) return; s._far = 1; } else s._far = 0; var a = -d, f = Math.max(0, 1 - Math.abs(d)), t = Math.min(1, Math.max(0, cur - i + .5));
       var o = a >= 0 ? Math.max(0, 1 - a * .52) : Math.max(0, 1 - d / .45);
       s.style.setProperty("--d", Math.max(-1, Math.min(1, d)).toFixed(3)); s.style.setProperty("--f", f.toFixed(3)); s.style.setProperty("--t", t.toFixed(3)); s.style.setProperty("--o", o.toFixed(3)); s.style.setProperty("--bl", (Math.max(0, a) * 1.1).toFixed(2) + "px");
       s.style.setProperty("--ry", ((XS[i] > 0 ? -1 : 1) * 14 * Math.min(1, Math.abs(d) + .35)).toFixed(2) + "deg");
