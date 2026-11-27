@@ -417,14 +417,14 @@
     var b = e.currentTarget, label = b.textContent, total = 0;
     b.disabled = true;
     var done = function (msg, bad) { b.disabled = false; b.textContent = label; toast(msg, bad); };
-    (function step(off) {
-      api("?sheetsync=1&offset=" + off, { method: "POST", body: "{}" }).then(function (d) {
-        if (!d.ok) return done(d.error || "Could not reach the sheet", true);
+    (function step(off, tries) {
+      api("?sheetsync=1&size=5&offset=" + off, { method: "POST", body: "{}" }).then(function (d) {
+        if (!d.ok) { if ((tries || 0) < 2) return step(off, (tries || 0) + 1); return done(d.error || "Could not reach the sheet", true); }   // the old Active Users sheet is slow, so a page that times out is tried again (the upsert is safe to repeat)
         total += d.count;
         if (d.next != null) { b.textContent = "Sending… " + total; return step(d.next); }
         done("Sent " + total + " purchase" + (total === 1 ? "" : "s") + " to the sheet");
       }).catch(function (er) { done(er.message, true); });
-    })(0);
+    })(0, 0);
   });
   $("#sortby").addEventListener("change", list);
   var t; $("#q").addEventListener("input", function () { clearTimeout(t); t = setTimeout(list, 300); });
