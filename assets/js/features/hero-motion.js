@@ -28,7 +28,7 @@
     let i=0;const h=()=>win.clientHeight-4||30;
     // Only short names fit the ticker cleanly: every streaming, music, AI, learning, productivity and VPN service up to 9 letters
     const OKC=["Streaming","Music & Audio","AI Tools","Productivity","Learning","VPN"];
-    const TK=(typeof PRODUCTS!=="undefined"?PRODUCTS:[]).filter(p=>OKC.includes(p.cat)&&p.name.length<=9&&!["HBO Max","Grammarly","Gamma AI"].includes(p.name)&&LOGO_OF[p.name]&&LOGOS[LOGO_OF[p.name]]).map(p=>{
+    const TK=(typeof PRODUCTS!=="undefined"?PRODUCTS:[]).filter(p=>OKC.includes(p.cat)&&p.name.length<=9&&!["HBO Max","Grammarly","Gamma AI","Apple TV+"].includes(p.name)&&LOGO_OF[p.name]&&LOGOS[LOGO_OF[p.name]]).map(p=>{
       const L=LOGOS[LOGO_OF[p.name]];return{n:p.name,L,from:Math.min(...p.variants.flatMap(v=>v.plans.map(x=>x.p)))};
     }),TN=TK.length;
     list.innerHTML=TK.concat(TK[0]).map(s=>`<b style="--c:${col(s)}">${lg(s)}${s.n}</b>`).join("");
