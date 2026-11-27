@@ -14,19 +14,30 @@
   /* Drawer */
   var ov = document.createElement("div"); ov.className = "sc-ov";
   var dr = document.createElement("aside"); dr.className = "sc-dr"; dr.setAttribute("aria-label", "Cart"); dr.setAttribute("aria-hidden", "true");
-  dr.innerHTML = '<div class="sc-h"><h3>Your Cart <small id="sc-sub"></small></h3><button type="button" class="sc-x" aria-label="Close cart">✕</button></div><div class="sc-items" id="sc-items"></div>' +
-    '<div class="sc-f"><div class="sc-t"><span>Total</span><b id="sc-tot">৳0</b></div><button type="button" class="sc-pay" id="sc-pay">Pay online</button><a class="sc-wa" id="sc-wa" target="_blank" rel="noopener" href="#">Order on WhatsApp instead ↗</a><button type="button" class="sc-clr" id="sc-clr">Clear cart</button></div>';
+  var TRASH = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg>';
+  dr.innerHTML = '<div class="sc-h"><h3>' + CART + ' Your Cart <small id="sc-sub"></small></h3><span class="sc-act"><button type="button" class="sc-clr" id="sc-clr" aria-label="Clear cart" title="Clear cart" hidden>' + TRASH + '</button><button type="button" class="sc-x" aria-label="Close cart">✕</button></span></div><div class="sc-items" id="sc-items"></div>' +
+    '<div class="sc-f"><div class="sc-pr"><div class="sc-t"><span>Total</span><b id="sc-tot">৳0</b></div><button type="button" class="sc-pay" id="sc-pay"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="3"/><path d="M2 10h20"/></svg><span>Pay online</span></button></div><a class="sc-wa" id="sc-wa" target="_blank" rel="noopener" href="#">Order on WhatsApp instead ↗</a><p class="sc-tr"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 5-3.4 8-8 9-4.6-1-8-4-8-9V6z"/><path d="m9 12 2 2 4-4"/></svg>Secure checkout · Delivery right after payment</p></div>';
   document.body.appendChild(ov); document.body.appendChild(dr);
+  /* Product logos in the cart (logos.js is already loaded on service pages) */
+  function logoOf(c) {
+    try {
+      var L = typeof LOGOS !== "undefined" && typeof LOGO_OF !== "undefined" ? LOGOS[LOGO_OF[c.name]] : null;
+      if (L) return '<span class="sc-lg" style="background:' + L.bg + '"><svg viewBox="' + L.vb + '" fill="' + L.fg + '" aria-hidden="true"><path d="' + L.p + '"/></svg></span>';
+      var h = document.querySelector(".sp-hcard .sp-logo"), t = document.querySelector(".sp-hcard .sp-hc-top b");
+      if (h && t && t.textContent === c.name) return '<span class="sc-lg">' + h.outerHTML + "</span>";
+    } catch (e) {}
+    return '<span class="sc-lg" style="background:#1e2545"><b>' + esc(c.name.charAt(0)) + "</b></span>";
+  }
   function openD(o) { dr.classList.toggle("on", o); ov.classList.toggle("on", o); dr.setAttribute("aria-hidden", o ? "false" : "true"); document.documentElement.style.overflow = o ? "hidden" : ""; }
 
   function render() {
     var n = cart.reduce(function (s, c) { return s + c.q; }, 0), total = cart.reduce(function (s, c) { return s + c.q * c.p; }, 0);
     var b = $("#spCartN"); if (b) { b.textContent = n; b.hidden = !n; }
     var cb = $("#spCart"); if (cb && document.querySelector(".hb-hero")) cb.hidden = !n;   // All services page: nothing to add here, so the cart button only shows when the cart has items
-    $("#sc-sub").textContent = n ? "· " + n + " item" + (n > 1 ? "s" : "") : "";
+    $("#sc-sub").textContent = n ? "· " + n + " item" + (n > 1 ? "s" : "") : ""; $("#sc-clr").hidden = !n;
     $("#sc-items").innerHTML = cart.length ? cart.map(function (c, j) {
-      return '<div class="sc-i"><div class="sc-n"><b>' + esc(c.name) + '</b><small>' + (c.vr ? esc(c.vr) + " · " : "") + esc(c.v) + " · " + taka(c.p) + '</small></div><div class="sc-q"><button type="button" data-q="' + j + '" data-d="-1" aria-label="Decrease">−</button><span>' + c.q + '</span><button type="button" data-q="' + j + '" data-d="1" aria-label="Increase">+</button></div><button type="button" class="sc-rm" data-rm="' + j + '" aria-label="Remove ' + esc(c.name) + '">✕</button></div>';
-    }).join("") : '<div class="sc-e">' + CART + '<p>Your cart is empty.<br>Add a plan to get started.</p></div>';
+      return '<div class="sc-i">' + logoOf(c) + '<div class="sc-n"><b>' + esc(c.name) + '</b><small>' + (c.vr ? esc(c.vr) + " · " : "") + esc(c.v) + " · " + taka(c.p) + '</small></div><div class="sc-q"><button type="button" data-q="' + j + '" data-d="-1" aria-label="Decrease">−</button><span>' + c.q + '</span><button type="button" data-q="' + j + '" data-d="1" aria-label="Increase">+</button></div><button type="button" class="sc-rm" data-rm="' + j + '" aria-label="Remove ' + esc(c.name) + '">✕</button></div>';
+    }).join("") : '<div class="sc-e"><span class="sc-eb">' + CART + '</span><p>Your cart is empty.<br>Add a plan to get started.</p></div>';
     $("#sc-tot").textContent = taka(total);
     $("#sc-pay").disabled = !cart.length;
     var wa = $("#sc-wa"); wa.classList.toggle("off", !cart.length);
