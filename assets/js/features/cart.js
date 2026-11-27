@@ -7,7 +7,7 @@ function openCart(o=true){const d=$("#drawer");d.classList.toggle("open",o);$("#
 function addToCart(i,v,k){
   const p=PRODUCTS[i],vr=p.variants[v],pl=vr.plans[k],vn=p.variants.length>1?vr.n:"",id=[p.name,vr.n,pl.v].join("|"),x=cart.find(c=>c.id===id);
   x?x.q++:cart.push({id,name:p.name,vr:vn,v:pl.v,p:pl.p,q:1,fresh:true});
-  renderCart();toast(`✓ ${p.name}${vn?" – "+vn:""} (${pl.v}) added to cart`);
+  renderCart();window.sxCartPop?sxCartPop(p.name+(vn?" – "+vn:""),pl.v,p.name):toast(`✓ ${p.name}${vn?" – "+vn:""} (${pl.v}) added to cart`);
   const b=$("#cartBtn");b.classList.remove("bump");void b.offsetWidth;b.classList.add("bump");
 }
 // "Buy Now": put the plan in the cart (once) and go straight to the secure payment form.

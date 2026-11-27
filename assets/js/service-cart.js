@@ -37,7 +37,7 @@
     load();
     var x = cart.find(function (c) { return c.id === d.i; });
     if (x) x.q++; else cart.push({ id: d.i, name: d.n, vr: d.vr || "", v: d.v, p: d.p, q: 1 });
-    render(); toast("✓ " + d.n + (d.vr ? " – " + d.vr : "") + " (" + d.v + ") added to cart");
+    render(); if (window.sxCartPop) sxCartPop(d.n + (d.vr ? " – " + d.vr : ""), d.v, d.n); else toast("✓ " + d.n + (d.vr ? " – " + d.vr : "") + " (" + d.v + ") added to cart");
     var c = $("#spCart"); if (c) { c.classList.remove("sp-bump"); void c.offsetWidth; c.classList.add("sp-bump"); }
   }
 
