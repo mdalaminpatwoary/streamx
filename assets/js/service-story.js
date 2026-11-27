@@ -36,21 +36,22 @@
   function size() { W = stage.clientWidth; U = W / 100; stage.style.setProperty("--u", U.toFixed(3) + "px"); place(); paint(); }
   function prog() {
     var r = sec.getBoundingClientRect(), h = r.height - NV; if (h <= 0) return 0;
-    var p = Math.min(1, Math.max(0, -r.top / h)); return Math.min(1, Math.max(0, (p - .05) / .9)) * (N - 1);
+    var p = Math.min(1, Math.max(0, -r.top / h)); return Math.min(1, Math.max(0, (p - .04) / .78)) * (N - 1) + Math.min(1, Math.max(0, (p - .82) / .18));
   }
   function lerpX(c) { var a = Math.max(0, Math.min(N - 1, c)), i = Math.floor(a), k = Math.min(N - 1, i + 1), t = a - i, e = t * t * (3 - 2 * t); return XS[i] + (XS[k] - XS[i]) * e; }
   function dwell(c) { var i = Math.floor(c), f = c - i, g = f < .34 ? 0 : f > .66 ? 1 : (f - .34) / .32; g = g * g * (3 - 2 * g); return Math.min(N - 1, i + g); }
   function paint() {
-    var cam = dwell(cur), cx = lerpX(cam), sway = (lerpX(cam + .02) - lerpX(cam - .02)) * 6;
-    track.style.transform = "rotateX(-7deg) rotateY(" + (sway * -.6).toFixed(2) + "deg) translate3d(" + (-cx * U).toFixed(1) + "px," + (-4 * U).toFixed(1) + "px," + (cam * D * U).toFixed(1) + "px)";
+    var ex = Math.max(0, cur - (N - 1)), cb = dwell(Math.min(cur, N - 1)), cam = cb + ex * 1.3, cx = lerpX(cb), sway = (lerpX(cb + .02) - lerpX(cb - .02)) * 6;
+    track.style.transform = "rotateX(-7deg) rotateY(" + (sway * -.6).toFixed(2) + "deg) translate3d(" + (-cx * U).toFixed(1) + "px," + (-(4 + ex * 6) * U).toFixed(1) + "px," + (cam * D * U).toFixed(1) + "px)";
     slots.forEach(function (s, i) {
-      var d = cam - i, a = -d, f = Math.max(0, 1 - Math.abs(d)), t = Math.min(1, Math.max(0, cur - i + .5));
+      var d = cb - i, a = -d, f = Math.max(0, 1 - Math.abs(d)), t = Math.min(1, Math.max(0, cur - i + .5));
       var o = a >= 0 ? Math.max(0, 1 - a * .52) : Math.max(0, 1 - d / .45);
       s.style.setProperty("--d", Math.max(-1, Math.min(1, d)).toFixed(3)); s.style.setProperty("--f", f.toFixed(3)); s.style.setProperty("--t", t.toFixed(3)); s.style.setProperty("--o", o.toFixed(3)); s.style.setProperty("--bl", (Math.max(0, a) * 1.1).toFixed(2) + "px");
       s.style.setProperty("--ry", ((XS[i] > 0 ? -1 : 1) * 14 * Math.min(1, Math.abs(d) + .35)).toFixed(2) + "deg");
       rings[i].style.setProperty("--f", f.toFixed(3));
       if (segs[i]) segs[i].style.setProperty("--lit", Math.min(1, Math.max(0, cur - i)).toFixed(3));
     });
+    sec.style.setProperty("--ex", ex.toFixed(3));
     dockPaint();
     var a2 = Math.min(N - 1, Math.max(0, Math.round(cur)));
     if (a2 !== act) { act = a2; dn.textContent = a2 + 1; dt.textContent = labels[a2]; dg.textContent = CTA[a2]; steps.forEach(function (li, i) { li.classList.toggle("on", i === a2); }); }
