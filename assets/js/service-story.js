@@ -15,6 +15,7 @@
   })();
   var sec = document.getElementById("journey"); if (!sec) return;
   var stage = sec.querySelector(".nj-stage"), track = sec.querySelector(".nj-track"), slots = [].slice.call(sec.querySelectorAll(".ns")), steps = [].slice.call(sec.querySelectorAll(".nj-copy li"));
+  var copyOl = sec.querySelector(".nj-copy");
   var N = slots.length, labels = ["Choose", "Pay", "Confirm", "Prepare", "Deliver", "Watch"];
   if (matchMedia("(prefers-reduced-motion:reduce)").matches || !("IntersectionObserver" in window) || !N) return;
   sec.classList.add("nj-on");
@@ -66,7 +67,7 @@
     sec.style.setProperty("--ex", ex.toFixed(3));
     dockPaint();
     var a2 = Math.min(N - 1, Math.max(0, Math.round(cur)));
-    if (a2 !== act) { act = a2; dn.textContent = a2 + 1; dt.textContent = labels[a2]; dg.textContent = CTA[a2]; steps.forEach(function (li, i) { li.classList.toggle("on", i === a2); }); }
+    if (a2 !== act) { act = a2; dn.textContent = a2 + 1; dt.textContent = labels[a2]; dg.textContent = CTA[a2]; steps.forEach(function (li, i) { li.classList.toggle("on", i === a2); li.classList.toggle("done", i < a2); }); if (copyOl) copyOl.style.setProperty("--p", N > 1 ? a2 / (N - 1) : 0); }
   }
   function loop() { cur += (tgt - cur) * .16; if (Math.abs(tgt - cur) < .0007) { cur = tgt; paint(); raf = 0; return; } paint(); raf = requestAnimationFrame(loop); }
   function onScroll() { if (!near) return; tgt = prog(); if (!raf) raf = requestAnimationFrame(loop); }

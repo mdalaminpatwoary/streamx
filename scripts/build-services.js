@@ -142,7 +142,7 @@ function servicePage(p) {
   const mn = v => { const b = v.plans.filter(x => x.p > 0).map(x => x.p); return b.length ? Math.min(...b) : 0; };
   const qp = (p.gift ? [5, 10, 25, 50].map(a => ["$" + a + " card", a * 130]) : p.packs ? p.packs.map(k => [k.n, k.p]) : p.variants.length === 1 && p.variants[0].plans.filter(x => !x.u).length > 1 ? p.variants[0].plans.filter(x => !x.u).map(x => [x.v, x.ask ? 0 : x.p]) : p.variants.map(v => [v.n, mn(v)])).slice(0, 5);
   const orderMsg = `Hi StreamX! I want to buy ${p.name}.`;
-  return head({ title, desc, url, img, noindex: isAdult(p), extra: (isAdult(p) ? "" : `<script type="application/ld+json">${JSON.stringify(ld)}</script>`) + (STORY.has(p.name) ? '<link rel="stylesheet" href="/assets/css/service-story.css?v=58">' : "") }) + `
+  return head({ title, desc, url, img, noindex: isAdult(p), extra: (isAdult(p) ? "" : `<script type="application/ld+json">${JSON.stringify(ld)}</script>`) + (STORY.has(p.name) ? '<link rel="stylesheet" href="/assets/css/service-story.css?v=59">' : "") }) + `
 <body style="--c:${GLOW[p.name] || p.color}"${isAdult(p) ? ' class="sp-adult"' : STORY.has(p.name) ? ' class="nf"' : ""}>${isAdult(p) ? AGE : ""}
 ${nav([["Home", "/"], ["Pricing", "#plans"], ...(combo ? [["Combo", "#combo"]] : []), ...(TREND[p.name] ? [["Trending", "#trending"]] : []), ["About", "#about"], ["Reviews", "#reviews"], ["FAQ", "#faq"], ["Contact", "#contact"]])}
 <main>
@@ -189,7 +189,7 @@ ${reviewsHtml(p)}
 </main>
 ${STORY.has(p.name) ? "" : `<div class="sp-buybar" id="spBuy" hidden><div><small>${p.ask ? "Price" : "From"}</small><b>${p.ask ? "On request" : taka(from)}</b></div><a class="sp-btn" href="${p.ask ? wa(orderMsg) : "#plans"}"${p.ask ? ' rel="noopener"' : ""}>${p.ask ? "Ask on WhatsApp" : "Choose plan"}</a></div>`}
 ${foot}
-${script}${STORY.has(p.name) ? '<script src="/assets/js/service-story.js?v=16" defer></script>' : ""}
+${script}${STORY.has(p.name) ? '<script src="/assets/js/service-story.js?v=17" defer></script>' : ""}
 </body></html>`;
 }
 

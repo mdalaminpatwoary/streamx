@@ -350,3 +350,21 @@
 .s4 .c3::after{opacity:calc(clamp(0,(var(--t) - .5)*1000,1)*clamp(0,(.7 - var(--t))*1000,1))}
 .s4 .c4::after{opacity:clamp(0,(var(--t) - .7)*1000,1)}
 .s4 .pn{margin-top:calc(var(--u)*2.8)}
+
+/* ===== Step list (desktop): a quiet timeline, glass card for the active step ===== */
+@media(min-width:861px){
+.nj.nj-on .nj-copy{position:relative;gap:4px;--p:0}
+.nj.nj-on .nj-copy::before,.nj.nj-on .nj-copy::after{content:"";position:absolute;left:31px;top:40px;width:2px;border-radius:2px;pointer-events:none}
+.nj.nj-on .nj-copy::before{bottom:40px;background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.12),rgba(255,255,255,.04))}
+.nj.nj-on .nj-copy::after{height:calc((100% - 80px)*var(--p));background:linear-gradient(180deg,#ed3124,#ff7a4d);box-shadow:0 0 12px rgba(237,49,36,.7);transition:height .6s cubic-bezier(.22,1,.36,1)}
+.nj.nj-on .nj-copy li{position:relative;z-index:1;opacity:.5;padding:14px 18px 14px 14px;border-radius:20px}
+.nj.nj-on .nj-copy li:hover{opacity:.8}
+.nj.nj-on .nj-copy li b{background:#0b0e1e;border-color:rgba(255,255,255,.16);color:#8f99bb;font-weight:700}
+.nj.nj-on .nj-copy li.done{opacity:.72}
+.nj.nj-on .nj-copy li.done b{border-color:rgba(237,49,36,.6);color:#ff8f80;background:#1a0f1c}
+.nj.nj-on .nj-copy li.on{opacity:1;background:linear-gradient(135deg,rgba(255,255,255,.075),rgba(255,255,255,.02));border-color:rgba(255,255,255,.12);box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 24px 44px -26px rgba(0,0,0,.9),-14px 0 40px -26px rgba(237,49,36,.55);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.nj.nj-on .nj-copy li.on b{background:linear-gradient(135deg,#ed3124,#ff6a3d);border-color:transparent;color:#fff;box-shadow:0 0 0 5px rgba(237,49,36,.14),0 8px 22px -6px rgba(237,49,36,.8)}
+.nj.nj-on .nj-copy h3{font-size:17.5px;font-weight:650;letter-spacing:-.01em}
+.nj.nj-on .nj-copy li.on h3{color:#fff}
+.nj.nj-on .nj-copy li.on p{color:#b3bcd8}
+}
