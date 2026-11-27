@@ -36,6 +36,7 @@
    "html.sx-tb-on .sp-nav nav{display:none!important}"+
    "html.sx-tb-on .sp-nav .sp-navin{flex-wrap:nowrap}"+
    "html.sx-tb-on #burger{order:9}"+
+   "html.sx-tb-on .nav.pill .navbar{width:max(168px,calc(var(--pw,168px) + var(--hiw,0px)))}"+
    ".sx-mb{display:none}"+
    "html.sx-tb-on .sx-mb{display:grid;place-items:center;width:40px;height:40px;padding:0;margin:0;border-radius:99px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#fff;cursor:pointer}"+
    ".sx-mp{position:fixed;left:12px;right:12px;top:calc(68px + env(safe-area-inset-top,0px));z-index:49;display:none;flex-direction:column;gap:2px;padding:10px;border-radius:24px;background:linear-gradient(180deg,#151a3a,#090c1a);box-shadow:0 30px 70px -20px rgba(0,0,0,.85),inset 0 0 0 1px rgba(255,255,255,.1);max-height:calc(100dvh - 160px);overflow-y:auto}"+
