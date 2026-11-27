@@ -1,0 +1,58 @@
+/* Services hub: premium hero (animated aurora, floating logos, shimmering headline, glass stat tiles) and staggered card reveal.
+   Only transform/opacity animate, and everything stops for prefers-reduced-motion. */
+.hb-hero{position:relative;overflow:hidden;isolation:isolate}
+.hb-hero>.sp-wrap{position:relative;z-index:2}
+.hx-fx{position:absolute;inset:0;z-index:0;pointer-events:none;will-change:transform;transform:translate3d(0,calc(var(--hy,0)*1px),0)}
+.hx-fx i{position:absolute;border-radius:50%;opacity:.9;will-change:transform}
+.hx-b1{width:70vmax;height:70vmax;left:-28vmax;top:-30vmax;background:radial-gradient(closest-side,rgba(237,49,36,.46),transparent);animation:hxA 16s ease-in-out infinite alternate}
+.hx-b2{width:62vmax;height:62vmax;right:-30vmax;top:-12vmax;background:radial-gradient(closest-side,rgba(79,107,255,.42),transparent);animation:hxB 19s ease-in-out infinite alternate}
+.hx-b3{width:44vmax;height:44vmax;left:18%;bottom:-24vmax;background:radial-gradient(closest-side,rgba(255,150,70,.26),transparent);animation:hxC 22s ease-in-out infinite alternate}
+@keyframes hxA{to{transform:translate3d(14vmax,9vmax,0) scale(1.15)}}
+@keyframes hxB{to{transform:translate3d(-12vmax,12vmax,0) scale(.92)}}
+@keyframes hxC{to{transform:translate3d(10vmax,-6vmax,0) scale(1.2)}}
+/* floating brand tiles */
+.hx-ch{position:absolute;width:var(--s,54px);height:var(--s,54px);border-radius:calc(var(--s,54px)*.3);overflow:hidden;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);box-shadow:0 14px 34px -12px rgba(0,0,0,.65),inset 0 1px 0 rgba(255,255,255,.18);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);animation:hxF var(--d,7s) ease-in-out var(--l,0s) infinite alternate;opacity:0;animation-fill-mode:both}
+.hx-ch img{display:block;width:100%;height:100%;object-fit:cover}
+@keyframes hxF{0%{opacity:.95;transform:translate3d(0,0,0) rotate(-3deg)}100%{opacity:.95;transform:translate3d(var(--x,0px),var(--y,-16px),0) rotate(4deg)}}
+.hx-c1{--s:64px;right:6%;top:24%;--d:6.5s}
+.hx-c2{--s:50px;right:20%;top:56%;--d:8s;--l:-2s;--x:10px}
+.hx-c3{--s:58px;right:31%;top:20%;--d:7.5s;--l:-4s;--y:-20px}
+.hx-c4{--s:46px;right:11%;top:66%;--d:9s;--l:-1s;--x:-12px}
+.hx-c5{--s:52px;right:42%;top:60%;--d:7s;--l:-3s}
+.hx-c6{--s:44px;right:3%;top:46%;--d:8.5s;--l:-5s;--y:-12px}
+.hx-c7,.hx-c8{display:none}
+@media(min-width:900px){.hx-c7,.hx-c8{display:block}.hx-c7{--s:48px;right:52%;top:26%;--d:9s;--l:-6s}.hx-c8{--s:42px;right:26%;top:74%;--d:8s;--l:-2.5s}.hx-c1{--s:78px}.hx-c3{--s:66px}}
+/* headline */
+.hb-hero .sp-eyebrow{position:relative;padding-left:0}
+.hb-hero h1{animation:hxUp .9s cubic-bezier(.2,.8,.2,1) both}
+.hb-hero h1 span{background-size:220% 100%;animation:hxShine 5.5s linear infinite;background-image:linear-gradient(100deg,#ed3124 0%,#ff9a6b 25%,#ffd2b8 38%,#ff7a59 52%,#ed3124 75%,#ff4f3f 100%)}
+@keyframes hxShine{to{background-position:-220% 0}}
+.hb-hero .sp-eyebrow{animation:hxUp .7s cubic-bezier(.2,.8,.2,1) both}
+.hb-hero .sp-lead{animation:hxUp .9s cubic-bezier(.2,.8,.2,1) .12s both}
+@keyframes hxUp{from{opacity:0;transform:translate3d(0,18px,0);filter:blur(6px)}to{opacity:1;transform:none;filter:none}}
+/* stat tiles */
+.hb-stats{gap:10px!important;animation:hxUp .9s cubic-bezier(.2,.8,.2,1) .24s both}
+.hb-stats li{position:relative;overflow:hidden;padding:12px 14px;border-radius:16px;background:linear-gradient(160deg,rgba(255,255,255,.1),rgba(255,255,255,.03));border:1px solid rgba(255,255,255,.12);box-shadow:inset 0 1px 0 rgba(255,255,255,.16),0 14px 30px -18px rgba(0,0,0,.7);-webkit-backdrop-filter:blur(14px) saturate(1.4);backdrop-filter:blur(14px) saturate(1.4)}
+.hb-stats li::after{content:"";position:absolute;top:0;bottom:0;left:-60%;width:40%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.22),transparent);transform:skewX(-18deg) translate3d(0,0,0);animation:hxSweep 6s ease-in-out 1.2s infinite}
+.hb-stats li:nth-child(2)::after{animation-delay:1.7s}.hb-stats li:nth-child(3)::after{animation-delay:2.2s}.hb-stats li:nth-child(4)::after{animation-delay:2.7s}
+@keyframes hxSweep{0%,70%{transform:skewX(-18deg) translate3d(0,0,0)}100%{transform:skewX(-18deg) translate3d(520%,0,0)}}
+.hb-stats b{font-variant-numeric:tabular-nums}
+@media(max-width:620px){.hb-stats{white-space:normal!important}.hb-stats li{padding:9px 4px;border-radius:14px;font-size:10.5px!important;min-width:0}.hb-stats b{font-size:16px!important}
+  .hx-c1{--s:46px;right:6%;top:26%}.hx-c3{--s:40px;right:13%;top:46%}.hx-c2,.hx-c4,.hx-c5,.hx-c6{display:none}}
+/* cards and section heads reveal as they scroll in */
+html.hx-js .hb-card,html.hx-js .hb-sh{opacity:0;transform:translate3d(0,26px,0) scale(.97);transition:opacity .6s cubic-bezier(.2,.8,.2,1),transform .7s cubic-bezier(.2,.8,.2,1),border-color .25s,box-shadow .25s}
+html.hx-js .hb-card.in,html.hx-js .hb-sh.in{opacity:1;transform:none}
+.hb-card{transition:border-color .25s,box-shadow .25s}
+.hb-card .sp-logo{transition:transform .45s cubic-bezier(.2,.8,.2,1),box-shadow .3s}
+.hb-card:hover .sp-logo,.hb-card:focus-visible .sp-logo{transform:translate3d(0,-3px,0) rotate(-4deg) scale(1.07)}
+.hb-card .hb-go{transition:transform .35s cubic-bezier(.2,.8,.2,1),background .25s}
+.hb-card:hover .hb-go{transform:translate3d(5px,0,0)}
+.hb-card:active{transform:scale(.985)!important;transition-duration:.12s}
+.hb-chips button{transition:background .25s,border-color .25s,transform .25s}
+.hb-chips button:active{transform:scale(.94)}
+.hb-chips{animation:hxUp .8s cubic-bezier(.2,.8,.2,1) .35s both}
+@media(prefers-reduced-motion:reduce){
+  .hx-fx i,.hx-ch,.hb-hero h1,.hb-hero h1 span,.hb-hero .sp-eyebrow,.hb-hero .sp-lead,.hb-stats,.hb-stats li::after,.hb-chips{animation:none!important}
+  .hx-ch{opacity:.9}
+  html.hx-js .hb-card,html.hx-js .hb-sh{opacity:1;transform:none;transition:none}
+}
