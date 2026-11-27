@@ -264,7 +264,7 @@
 .nj .s6 .sc{background:radial-gradient(ellipse 60% 60% at 50% 50%,rgba(60,18,28,.5),transparent 72%);border-color:transparent;box-shadow:none}
 
 /* ===== Hero card, lower half: quieter, more refined ===== */
-.nf .nfc-price{margin-top:6px;padding:20px 8px 4px;border-top:1px solid rgba(255,255,255,.07)}
+.nf .nfc-price{margin-top:6px;padding:20px 8px 4px;border-top:0}
 .nf .nfc-price small{font-size:11.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#8e99bd;margin-bottom:8px}
 .nf .nfc-price b{background:linear-gradient(180deg,#fff 30%,#c9d0ea);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;font-weight:600;letter-spacing:-.05em}
 .nf .nfc-price span{color:#7f8aae;font-size:13.5px;font-weight:500}
