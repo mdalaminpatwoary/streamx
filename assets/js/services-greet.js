@@ -1,5 +1,5 @@
 /* Nav pop-ups (front page + All services). Once the nav has melted into its pill, the pill flips open to the left with a message, holds a moment, then flips shut.
-   Messages wait in a queue (window.sxPopQ): the greeting for a signed-in customer first, then a "new announcement" notice. Each one shows once. */
+   Messages wait in a queue (window.sxPopQ); the add-to-cart message uses it. */
 (function () {
   var home = !document.getElementById("spNav") && document.getElementById("nav");
   var nav = document.getElementById("spNav") || home, nr = home ? home.querySelector(".navbar>.nr") : document.querySelector(".sp-nr"), ON = home ? "pill" : "sp-compact", AWAY = home ? "away" : "sp-away";
@@ -85,24 +85,6 @@
     if (busy && curClose) curClose(); else pump(0);
   };
 
-  /* Greeting for a signed-in customer (once per visit) */
-  var tok, nm;
-  try { tok = localStorage.getItem("sx_session"); if (tok && !sessionStorage.getItem("sx_hi")) nm = localStorage.getItem("sx_nm") || ""; else tok = null; } catch (e) { tok = null; }
-  function greet(full) {
-    var first = String(full || "").trim().replace(/\s+/g, " ");
-    if (!first) return;
-    if (first.length > 80) first = first.slice(0, 79) + "…";
-    var hr = new Date().getHours(), g = hr >= 5 && hr < 12 ? "Good morning" : hr >= 12 && hr < 17 ? "Good afternoon" : hr >= 17 && hr < 21 ? "Good evening" : "Hello";
-    Q.push({ k: "greet", pri: 0, small: g, big: first, hold: 6500, onShow: function () { try { sessionStorage.setItem("sx_hi", "1"); } catch (e) {} } });
-    pump();
-  }
-  if (tok) {
-    if (nm) greet(nm);
-    else fetch("/api/account?a=me", { headers: { Authorization: "Bearer " + tok } })
-      .then(function (r) { return r.ok ? r.json() : null; })
-      .then(function (d) { var n = d && d.profile && d.profile.name; if (n) { try { localStorage.setItem("sx_nm", n); } catch (e) {} greet(n); } })
-      .catch(function () {});
-  }
   new MutationObserver(function () { if (curClose && !active()) curClose(); pump(); }).observe(nav, { attributes: true, attributeFilter: ["class"] });
   setInterval(function () { if (Q.length && !busy) pump(); }, 700);
 })();
