@@ -27,6 +27,14 @@ const trackOn = () => !!process.env.TRACK_SHEET_WEBHOOK_URL;
 /* Netflix profile slots in the Track Accounts sheet: each account has 1 Signature, 3 Private and 6 Shared profiles.
    Entertainment Combo packs 1, 2 and 4 use a Shared, Private and Signature Netflix profile. Other plans (for example Single Slot) are not tracked there. */
 const COMBO_TYPE = { 1: "Shared", 2: "Private", 4: "Signature" };
+const DEV_LABEL = { web: "Web", ios: "iOS", android: "Android", tablet: "Tablet", tv: "TV" };
+/* "iOS: iPhone 13 · Web: Chrome" from the account's device list (up to 3). */
+function devicesText(d) {
+  if (typeof d === "string") { try { d = JSON.parse(d); } catch (e) { d = null; } }
+  const items = d && Array.isArray(d.items) ? d.items : [];
+  return items.slice(0, 3).map((x) => { const t = DEV_LABEL[x && x.type] || "", n = safe((x && x.name) || ""); return t && n ? t + ": " + n : t || n; }).filter(Boolean).join(" · ");
+}
+
 function trackRow(r) {
   const svc = String(r.service || "").trim().toLowerCase(), plan = String(r.plan || "").trim().toLowerCase();
   let type = "", label = "";
@@ -40,7 +48,7 @@ function trackRow(r) {
   }
   if (!type) return null;
   const v = (k) => (r[k] == null ? "" : safe(r[k]));
-  return { id: r.id, type, plan: label, name: v("name"), phone: safe(intl(r.phone)), email: v("email"), acct_email: v("acct_email"), acct_profile: v("acct_profile"), start_date: v("start_date"), end_date: v("end_date"), channel: v("channel") };
+  return { id: r.id, type, plan: label, name: v("name"), phone: safe(intl(r.phone)), email: v("email"), acct_email: v("acct_email"), acct_profile: v("acct_profile"), start_date: v("start_date"), end_date: v("end_date"), channel: v("channel"), devices: devicesText(r.acct_devices) };
 }
 
 /* Returns "" when the sheet accepted the data, otherwise a short reason. */
