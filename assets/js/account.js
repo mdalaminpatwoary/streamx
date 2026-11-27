@@ -35,6 +35,8 @@
   var LG = typeof LOGOS !== "undefined" ? LOGOS : {}, LO = typeof LOGO_OF !== "undefined" ? LOGO_OF : {};
   function tile(s) {
     var p = PROD.filter(function (x) { return x.name === s.service; })[0], L = LG[LO[s.service]];
+    var PT = typeof PARTS !== "undefined" && PARTS[s.service];   /* Entertainment Combo: Netflix and Prime Video logos together, like the Save more card on the home page */
+    if (PT && PT.length === 2 && LG[PT[0]] && LG[PT[1]]) return '<span class="ac-tile ac-stk" aria-hidden="true">' + PT.map(function (k) { var Q = LG[k]; return '<i style="--c:' + esc(Q.bg) + ';--f:' + esc(Q.fg || "#fff") + '"><svg viewBox="' + esc(Q.vb) + '"><path d="' + Q.p + '"/></svg></i>'; }).join("") + "</span>";
     if (L && L.p) return '<span class="ac-tile ac-logo" style="--c:' + esc(L.bg) + ';--f:' + esc(L.fg || "#fff") + '" aria-hidden="true"><svg viewBox="' + esc(L.vb) + '"><path d="' + L.p + '"/></svg></span>';
     return '<span class="ac-tile" style="--c:' + esc((p && p.color) || "#444") + '" aria-hidden="true">' + esc(((p && p.icon) || s.service[0] || "?").toString().slice(0, 2)) + "</span>";
   }
