@@ -51,7 +51,8 @@ module.exports.card = function card({ p, qp, esc, taka, logo, ic }) {
   return `<aside class="sp-hcard nf-card sp-rv" aria-label="${esc(p.name)} pricing summary">
    <div class="nfc-art" aria-hidden="true"><div class="nfc-posters"><i></i><i></i><i></i><i></i></div><span class="nfc-logo">${logo(p)}</span><span class="nfc-tag">${esc(p.name)}</span></div>
    <div class="nfc-price"><small>Starting from</small><div><b data-nfp>${pr(first[1])}</b><span>for 1 Month</span></div></div>
-   <div class="nfc-seg" role="group" aria-label="Plan types">${tiles.map((t, i) => `<button type="button" class="${i ? "" : "on"}" data-p="${pr(t[1])}" aria-pressed="${i ? "false" : "true"}">${esc(String(t[0]).replace(/\s+Edition$/i, ""))}${/\s+Edition$/i.test(String(t[0])) ? '<span class="ed"> Edition</span>' : ""}</button>`).join("")}</div>
+   <div class="nfc-seg" role="group" aria-label="Plan types">${tiles.map((t, i) => `<button type="button" class="${i ? "" : "on"}" data-tv="${/single\s*slot|signature/i.test(String(t[0])) ? 1 : 0}" data-p="${pr(t[1])}" aria-pressed="${i ? "false" : "true"}">${esc(String(t[0]).replace(/\s+Edition$/i, ""))}${/\s+Edition$/i.test(String(t[0])) ? '<span class="ed"> Edition</span>' : ""}</button>`).join("")}</div>
+   <div class="nfc-dev" data-tv="0" aria-label="Where you can watch"><span class="dv"><i><svg viewBox="0 0 24 24"><rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/></svg></i>Phone</span><span class="dv"><i><svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="12" rx="2"/><path d="M8 20h8M12 16.5V20"/></svg></i>Web</span><span class="dv dv-tv"><i><svg viewBox="0 0 24 24"><rect x="2.5" y="4" width="19" height="13" rx="2.5"/><path d="M8 21h8M12 17v4"/></svg></i>TV</span></div>
    <a class="sp-btn nfc-go" href="#plans">Choose this plan <span aria-hidden="true">→</span></a>
    <div class="sp-meta"><span>${tiles.length} plan types</span><span>Fixed BDT price</span></div></aside>`;
 };
