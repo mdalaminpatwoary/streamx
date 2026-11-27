@@ -82,15 +82,19 @@ async function removeSub(id) {
 }
 
 /* Sends every subscription (used by the "Send all to Google Sheet" button). */
-async function syncAll() {
-  if (!enabled() && !trackOn()) return { ok: false, count: 0, error: "The Google Sheet link is not set up yet." };
-  const rows = (await db.rest("GET", "subscriptions?select=*&order=created_at.asc&limit=2000")) || [];
-  let err = "";
-  if (enabled()) for (let i = 0; i < rows.length && !err; i += 100) err = await post({ event: "upsert", rows: rows.slice(i, i + 100).map(slim) });
-  if (trackOn() && !err) {
-    const t = rows.map(trackRow).filter(Boolean);
-    for (let i = 0; i < t.length && !err; i += 40) err = await post({ event: "upsert", rows: t.slice(i, i + 40) }, true);
-  }
-  return err ? { ok: false, count: rows.length, error: "Could not reach the sheet: " + err } : { ok: true, count: rows.length };
+/* Sends one page of subscriptions to the sheet(s) and says where the next page starts (null when finished).
+   The admin button repeats the call, so no single request can run past the time limit however many purchases there are. */
+async function syncAll(offset, size) {
+  if (!enabled() && !trackOn()) return { ok: false, count: 0, next: null, error: "The Google Sheet link is not set up yet." };
+  const off = Math.max(0, parseInt(offset, 10) || 0), n = Math.min(50, Math.max(5, parseInt(size, 10) || 15));
+  const rows = (await db.rest("GET", `subscriptions?select=*&order=id.asc&offset=${off}&limit=${n}`)) || [];
+  if (!rows.length) return { ok: true, count: 0, next: null };
+  const t = rows.map(trackRow).filter(Boolean);
+  const [e1, e2] = await Promise.all([
+    enabled() ? post({ event: "upsert", rows: rows.map(slim) }) : "",
+    trackOn() && t.length ? post({ event: "upsert", rows: t }, true).then((e) => (e ? "Track Accounts sheet: " + e : "")) : "",
+  ]);
+  const err = e1 ? "Active Users sheet: " + e1 : e2;
+  return err ? { ok: false, count: rows.length, next: null, error: "Could not update the sheet: " + err } : { ok: true, count: rows.length, next: rows.length === n ? off + n : null };
 }
 module.exports = { enabled, trackOn, syncSub, removeSub, syncAll };

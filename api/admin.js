@@ -76,7 +76,7 @@ module.exports = async (req, res) => {
     // Send every hand-added purchase to the Google Sheet (button on the Active Users tab)
     if (req.query && req.query.sheetsync && req.method === "POST") {
       if (!sheet.enabled() && !sheet.trackOn()) return res.status(200).json({ ok: false, error: "The Google Sheet link is not set up yet (SHEETS_WEBHOOK_URL)." });
-      const r = await sheet.syncAll();
+      const r = await sheet.syncAll(req.query.offset, req.query.size);
       return res.status(200).json(r);
     }
 

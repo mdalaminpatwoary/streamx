@@ -34,22 +34,24 @@ function date_(s) { var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(s || "")); re
 function read_(sh) { return sh.getRange(FIRST_ROW, 1, BLOCKS * BLOCK_SIZE, COLS).getValues(); }
 function findId_(data, id) { for (var i = 0; i < data.length; i++) if (String(data[i][13]) === String(id)) return i; return -1; }
 
-function clearRow_(sh, data, i) {
-  var row = FIRST_ROW + i;
-  sh.getRange(row, 4, 1, 8).clearContent();   // profile name .. device (D:K). The account email in column A stays.
-  sh.getRange(row, 14).clearContent();        // subscription id
-  for (var c = 3; c <= 10; c++) data[i][c] = "";
-  data[i][13] = "";
+/* Changes are made in memory ("data") and written back once at the end, which keeps a batch of 100 rows to a few seconds. */
+function clearRow_(data, i) {
+  for (var c = 3; c <= 10; c++) data[i][c] = "";   // profile name .. device (D:K). The account email in column A stays.
+  data[i][13] = "";                                // subscription id
 }
 
-function fill_(sh, data, i, r) {
-  var row = FIRST_ROW + i, device = data[i][10];
-  sh.getRange(row, 5).setNumberFormat("@");
+function fill_(data, i, r) {
+  var device = data[i][10];
   var vals = [plain_(r.acct_profile), plain_(r.phone), plain_(r.channel) || "StreamX", r.plan, date_(r.start_date), date_(r.end_date), plain_(r.email), device];
-  sh.getRange(row, 4, 1, 8).setValues([vals]);
-  sh.getRange(row, 14).setValue(String(r.id));
   for (var c = 0; c < 8; c++) data[i][3 + c] = vals[c];
   data[i][13] = String(r.id);
+}
+
+function save_(sh, data) {
+  var d = [], n = [];
+  for (var i = 0; i < data.length; i++) { d.push(data[i].slice(3, 11)); n.push([data[i][13]]); }
+  sh.getRange(FIRST_ROW, 4, data.length, 8).setValues(d);
+  sh.getRange(FIRST_ROW, 14, data.length, 1).setValues(n);
 }
 
 function upsert_(sh, rows) {
@@ -59,9 +61,9 @@ function upsert_(sh, rows) {
     var at = findId_(data, r.id);
     if (at >= 0) {
       var bs = at - (at % BLOCK_SIZE);
-      if ((!acct || norm_(data[bs][0]) === norm_(acct)) && data[at][2] === r.type) { fill_(sh, data, at, r); done++; return; }
-      if (!acct) { fill_(sh, data, at, r); done++; return; }
-      clearRow_(sh, data, at);   // the account or the plan type changed: free the old slot and place it again
+      if ((!acct || norm_(data[bs][0]) === norm_(acct)) && data[at][2] === r.type) { fill_(data, at, r); done++; return; }
+      if (!acct) { fill_(data, at, r); done++; return; }
+      clearRow_(data, at);   // the account or the plan type changed: free the old slot and place it again
     }
     if (!acct) { skipped++; return; }   // no Netflix account assigned yet; it is placed when the account email is saved
     var block = -1, b;
@@ -78,8 +80,9 @@ function upsert_(sh, rows) {
       if (data[j][2] === r.type && !String(data[j][13])) { slot = j; break; }
     }
     if (slot < 0) { errors.push(acct + " has no free " + r.type + " slot (id " + r.id + ")"); return; }
-    fill_(sh, data, slot, r); done++;
+    fill_(data, slot, r); done++;
   });
+  save_(sh, data);
   return errors.length ? { ok: false, error: errors.join("; "), done: done } : { ok: true, done: done, skipped: skipped };
 }
 
@@ -87,7 +90,8 @@ function remove_(sh, ids) {
   var data = read_(sh), n = 0;
   ids.forEach(function (id) {
     var i;
-    while ((i = findId_(data, id)) >= 0) { clearRow_(sh, data, i); n++; }
+    while ((i = findId_(data, id)) >= 0) { clearRow_(data, i); n++; }
   });
+  if (n) save_(sh, data);
   return { ok: true, cleared: n };
 }
