@@ -59,25 +59,6 @@
    ".sx-mp a[aria-current]{color:#fff;background:linear-gradient(135deg,rgba(237,49,36,.24),rgba(237,49,36,.05));box-shadow:inset 0 0 0 1px rgba(237,49,36,.4)}"+
    ".sx-mp a[aria-current] .mi{color:#fff;background:linear-gradient(135deg,#ed3124,#ff6a3d);border-color:transparent;box-shadow:0 8px 20px -6px rgba(237,49,36,.7),inset 0 1px 0 rgba(255,255,255,.35)}"+
    ".sx-mp a[aria-current]::after{opacity:.8}"+
-   ".sx-mp .mi *{transform-box:fill-box;transform-origin:center}"+
-   ".sx-mp.on .i-play .pl{animation:iP 2.2s ease-in-out infinite}@keyframes iP{50%{transform:scale(1.25)}}"+
-   ".sx-mp.on .i-music path{transform-origin:50% 100%;animation:iM 1.1s ease-in-out infinite}.sx-mp.on .i-music .b2{animation-delay:-.4s}.sx-mp.on .i-music .b3{animation-delay:-.8s}@keyframes iM{50%{transform:scaleY(.45)}}"+
-   ".sx-mp.on .i-ai .sp{animation:iA 2.6s ease-in-out infinite}.sx-mp.on .i-ai .sm{animation:iA 2.6s ease-in-out -1.2s infinite}@keyframes iA{0%,100%{transform:scale(1) rotate(0)}50%{transform:scale(1.18) rotate(14deg)}}"+
-   ".sx-mp.on .i-check .ck{stroke-dasharray:16;animation:iC 2.6s ease-in-out infinite}@keyframes iC{0%{stroke-dashoffset:16}35%,80%{stroke-dashoffset:0}100%{stroke-dashoffset:16}}"+
-   ".sx-mp.on .i-gift .bow{animation:iG 2s ease-in-out infinite}@keyframes iG{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-2.5px) rotate(-6deg)}}"+
-   ".sx-mp.on .i-book .pg{animation:iB 2.8s ease-in-out infinite}@keyframes iB{50%{transform:scaleX(.82)}}"+
-   ".sx-mp.on .i-card .cd{animation:iD 3s ease-in-out infinite}@keyframes iD{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg) translateY(-1px)}}"+
-   ".sx-mp.on .i-shield .sh{animation:iS 2.4s ease-in-out infinite}@keyframes iS{50%{transform:scale(1.1)}}"+
-   ".sx-mp.on .i-heart .ht{animation:iH 1.4s ease-in-out infinite}@keyframes iH{0%,100%{transform:scale(1)}15%{transform:scale(1.2)}30%{transform:scale(1)}45%{transform:scale(1.14)}}"+
-   ".sx-mp.on .i-thumb .th{transform-origin:20% 90%;animation:iT 2.2s ease-in-out infinite}@keyframes iT{0%,60%,100%{transform:rotate(0)}30%{transform:rotate(-14deg)}}"+
-   ".sx-mp.on .i-layers .l0{animation:iL 2.4s ease-in-out infinite}@keyframes iL{50%{transform:translateY(-2.5px)}}"+
-   ".sx-mp.on .i-help{animation:iHp 2.6s ease-in-out infinite}@keyframes iHp{50%{transform:translateY(-1.5px)}}"+
-   ".sx-mp.on .i-tag .tg{transform-origin:20% 15%;animation:iTg 2.6s ease-in-out infinite}@keyframes iTg{50%{transform:rotate(8deg)}}"+
-   ".sx-mp.on .i-star .st{animation:iSt 3s ease-in-out infinite}@keyframes iSt{50%{transform:scale(1.15) rotate(18deg)}}"+
-   ".sx-mp.on .i-trend .tr{stroke-dasharray:30;animation:iTr 2.6s ease-in-out infinite}@keyframes iTr{0%{stroke-dashoffset:30}40%,85%{stroke-dashoffset:0}100%{stroke-dashoffset:30}}"+
-   ".sx-mp.on .i-home .rf{animation:iHm 2.6s ease-in-out infinite}@keyframes iHm{50%{transform:translateY(-1.5px)}}"+
-   ".sx-mp.on .i-q .qq{animation:iQ 2.2s ease-in-out infinite}@keyframes iQ{50%{transform:translateY(-1.5px) rotate(-8deg)}}"+
-   "@media(prefers-reduced-motion:reduce){.sx-mp.on,.sx-mp.on a,.sx-mp.on .mi *,.sx-mp.on .mi{animation:none!important}}"+
 
    "html.sx-tb-on .sp-buybar{bottom:var(--tbh);padding-bottom:10px}"+
    "html.sx-tb-on .hs-fab{display:none!important}"+
