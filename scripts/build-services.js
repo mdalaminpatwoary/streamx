@@ -160,8 +160,8 @@ ${nav([["Home", "/"], ["Pricing", "#plans"], ...(combo ? [["Combo", "#combo"]] :
    <div class="sp-meta"><span>${p.variants.length > 1 || p.packs ? (p.packs ? p.packs.length : p.variants.length) + " plan types" : "1 plan type"}</span><span>Fixed BDT price</span></div></aside>
  </div></section>
 
-${STORY.has(p.name) ? story({ p, qp, esc, taka, logo, ic }) + "\n\n" : ""}<section class="sp-sec" id="plans"><div class="sp-wrap"><h2 class="sp-rv">${esc(p.name)} plans and prices</h2><p class="sp-sub sp-rv">Every price is fixed in BDT. Choose a plan type, then the duration. Longer plans cost less per month.</p><div class="sp-vgrid">${plansHtml(p).replace(/<div class="sp-vcard">/g, '<div class="sp-vcard sp-rv">')}</div></div></section>
-
+<section class="sp-sec" id="plans"><div class="sp-wrap"><h2 class="sp-rv">${esc(p.name)} plans and prices</h2><p class="sp-sub sp-rv">Every price is fixed in BDT. Choose a plan type, then the duration. Longer plans cost less per month.</p><div class="sp-vgrid">${plansHtml(p).replace(/<div class="sp-vcard">/g, '<div class="sp-vcard sp-rv">')}</div></div></section>
+${STORY.has(p.name) ? "\n" + story({ p, qp, esc, taka, logo, ic }) : ""}
 ${comboHtml(p)}
 ${trendHtml(p)}
 <section class="sp-sec sp-alt sp-ab" id="about"><div class="sp-wrap sp-abgrid">
