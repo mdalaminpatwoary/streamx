@@ -284,3 +284,4 @@
 .nf .sp-hcard .sp-meta span::before{content:"";width:5px;height:5px;border-radius:50%;background:#e5322a;box-shadow:0 0 8px rgba(229,50,42,.7)}
 @media(max-width:520px){.nf .nfc-seg{gap:8px}.nf .nfc-seg button{padding:13px 6px 13px 28px;font-size:12.5px;letter-spacing:0;white-space:nowrap}.nf .nfc-seg button::before{left:10px;width:11px;height:11px;margin-top:-5.5px}}
 .nf .nfc-seg button{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media(max-width:640px){.nf .nfc-seg .ed{display:none}}

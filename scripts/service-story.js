@@ -51,7 +51,7 @@ module.exports.card = function card({ p, qp, esc, taka, logo, ic }) {
   return `<aside class="sp-hcard nf-card sp-rv" aria-label="${esc(p.name)} pricing summary">
    <div class="nfc-art" aria-hidden="true"><div class="nfc-posters"><i></i><i></i><i></i><i></i></div><span class="nfc-logo">${logo(p)}</span><span class="nfc-tag">${esc(p.name)}</span></div>
    <div class="nfc-price"><small>Starting from</small><div><b data-nfp>${pr(first[1])}</b><span>for 1 Month</span></div></div>
-   <div class="nfc-seg" role="group" aria-label="Plan types">${tiles.map((t, i) => `<button type="button" class="${i ? "" : "on"}" data-p="${pr(t[1])}" aria-pressed="${i ? "false" : "true"}">${esc(String(t[0]).replace(/\s+Edition$/i, ""))}</button>`).join("")}</div>
+   <div class="nfc-seg" role="group" aria-label="Plan types">${tiles.map((t, i) => `<button type="button" class="${i ? "" : "on"}" data-p="${pr(t[1])}" aria-pressed="${i ? "false" : "true"}">${esc(String(t[0]).replace(/\s+Edition$/i, ""))}${/\s+Edition$/i.test(String(t[0])) ? '<span class="ed"> Edition</span>' : ""}</button>`).join("")}</div>
    <a class="sp-btn nfc-go" href="#plans">Choose this plan <span aria-hidden="true">→</span></a>
    <div class="sp-meta"><span>${tiles.length} plan types</span><span>Fixed BDT price</span></div></aside>`;
 };
