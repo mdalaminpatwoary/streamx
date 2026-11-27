@@ -22,5 +22,7 @@
   btn && btn.addEventListener("click", early, true); bubble && bubble.addEventListener("click", early, true);
   ["pointerdown", "keydown", "scroll", "touchstart"].forEach(function (t) { addEventListener(t, load, { capture: true, once: true, passive: true }); });
   function later() { (window.requestIdleCallback || function (f) { setTimeout(f, 800); })(load, { timeout: 3000 }); }
+  /* weak phones (lite mode): wait for the first touch instead of loading the chat on idle */
+  if (document.documentElement.classList.contains("lite")) return;
   if (document.readyState === "complete") later(); else addEventListener("load", later);
 })();
