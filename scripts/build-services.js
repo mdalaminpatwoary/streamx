@@ -26,6 +26,7 @@ const open18 = pages.filter(p => !isAdult(p));   // pages shown in the hub, site
 const allPrices = p => { const a = p.variants.flatMap(v => v.plans.map(x => x.p)), b = a.filter(x => x > 0); return b.length ? b : [0]; };
 const lo = p => Math.min(...allPrices(p)), hi = p => Math.max(...allPrices(p));
 const logo = p => {
+  if (typeof PARTS !== "undefined" && PARTS[p.name] && fs.existsSync(path.join(ROOT, "assets/img/logos", slug(p.name) + ".svg"))) return `<span class="sp-logo img" style="background:#14172b"><img src="/assets/img/logos/${slug(p.name)}.svg" alt="" width="104" height="104"></span>`;   // bundle: its parts' logos together
   if (fs.existsSync(path.join(ROOT, "assets/img/logos", slug(p.name) + ".png"))) return `<span class="sp-logo img" style="background:${p.color}"><img src="/assets/img/logos/${slug(p.name)}.png?v=2" alt="" width="104" height="104"></span>`;
   const L = LOGOS[LOGO_OF[p.name]];
   if (!L) return `<span class="sp-logo" style="background:${p.color}"><b>${esc(p.name[0])}</b></span>`;
