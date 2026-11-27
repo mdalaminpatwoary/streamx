@@ -42,7 +42,7 @@ function clearRow_(data, i) {
 
 function fill_(data, i, r) {
   var device = r.devices === undefined ? data[i][10] : plain_(r.devices);   // the panel's devices; kept as typed if the panel sends none
-  var vals = [plain_(r.acct_profile), plain_(r.phone), plain_(r.channel) || "StreamX", r.plan, date_(r.start_date), date_(r.end_date), plain_(r.email), device];
+  var vals = [plain_(r.acct_profile), plain_(r.phone), plain_(r.channel) || "Website", r.plan, date_(r.start_date), date_(r.end_date), plain_(r.email), device];
   for (var c = 0; c < 8; c++) data[i][3 + c] = vals[c];
   data[i][13] = String(r.id);
 }
