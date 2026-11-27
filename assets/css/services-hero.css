@@ -56,3 +56,16 @@ html.hx-js .hb-card.in,html.hx-js .hb-sh.in{opacity:1;transform:none}
   .hx-ch{opacity:.9}
   html.hx-js .hb-card,html.hx-js .hb-sh{opacity:1;transform:none;transition:none}
 }
+/* spacing rhythm: eyebrow 14 > headline 14 > lead 22 > stats 24 > actions */
+.hb-hero .sp-eyebrow{margin-bottom:14px}
+.hb-hero h1{margin:0 0 14px}
+.hb-hero .sp-lead{margin:0 0 22px}
+.hb-hero .hb-stats{margin:0 0 24px}
+@media(max-width:620px){
+  .hb-hero.sp-hero{padding-top:104px;padding-bottom:72px}
+  .hb-hero .sp-eyebrow{margin-bottom:12px}
+  .hb-hero h1{margin:0 0 12px}
+  .hb-hero .sp-lead{margin:0 0 20px}
+  .hb-hero .hb-stats{margin:0;gap:8px!important}
+  .hb-bar{padding:6px 0 10px}
+}
