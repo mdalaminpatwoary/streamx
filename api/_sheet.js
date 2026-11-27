@@ -1,5 +1,7 @@
 /* Sends every subscription (hand-added and paid online) to the Google Sheet: the "Active Users" tab, the Customers tab and, for hand-added ones, the "Manual sales" tab.
    Needs env SHEETS_WEBHOOK_URL (the Apps Script web app URL) and SHEETS_WEBHOOK_SECRET. Without them it quietly does nothing.
+   A second, optional sheet ("Track Accounts", Netflix tab) gets the Netflix rows with the account email and profile name, so each Netflix account shows its 10 profile slots.
+   It needs TRACK_SHEET_WEBHOOK_URL and TRACK_SHEET_WEBHOOK_SECRET. Deleting a user in the admin panel clears that slot there and keeps the account email. Passwords, PINs and codes are never sent.
    Only plain purchase details are sent: never login details, passwords, PINs or gift card codes. */
 const db = require("./_db");
 
@@ -20,14 +22,35 @@ const intl = (v) => {
 };
 const slim = (r) => { const o = {}; FIELDS.forEach((k) => { o[k] = r[k] == null ? "" : safe(k === "phone" ? intl(r[k]) : r[k]); }); return o; };
 const enabled = () => !!process.env.SHEETS_WEBHOOK_URL;
+const trackOn = () => !!process.env.TRACK_SHEET_WEBHOOK_URL;
+
+/* Netflix profile slots in the Track Accounts sheet: each account has 1 Signature, 3 Private and 6 Shared profiles.
+   Entertainment Combo packs 1, 2 and 4 use a Shared, Private and Signature Netflix profile. Other plans (for example Single Slot) are not tracked there. */
+const COMBO_TYPE = { 1: "Shared", 2: "Private", 4: "Signature" };
+function trackRow(r) {
+  const svc = String(r.service || "").trim().toLowerCase(), plan = String(r.plan || "").trim().toLowerCase();
+  let type = "", label = "";
+  if (svc === "netflix") {
+    if (/signature/.test(plan)) { type = "Signature"; label = "Netflix Signature"; }
+    else if (/private/.test(plan)) { type = "Private"; label = "Netflix Private"; }
+    else if (/share/.test(plan)) { type = "Shared"; label = "Netflix Shared"; }
+  } else if (svc === "entertainment combo" && !/prime/.test(plan)) {
+    const m = /pack\s*(\d)/.exec(plan);
+    if (m && COMBO_TYPE[m[1]]) { type = COMBO_TYPE[m[1]]; label = "Entertainment Combo " + m[1]; }
+  }
+  if (!type) return null;
+  const v = (k) => (r[k] == null ? "" : safe(r[k]));
+  return { id: r.id, type, plan: label, name: v("name"), phone: safe(intl(r.phone)), email: v("email"), acct_email: v("acct_email"), acct_profile: v("acct_profile"), start_date: v("start_date"), end_date: v("end_date"), channel: v("channel") };
+}
 
 /* Returns "" when the sheet accepted the data, otherwise a short reason. */
-async function post(payload) {
-  const url = process.env.SHEETS_WEBHOOK_URL;
+async function post(payload, track) {
+  const url = track ? process.env.TRACK_SHEET_WEBHOOK_URL : process.env.SHEETS_WEBHOOK_URL;
+  const secret = (track ? process.env.TRACK_SHEET_WEBHOOK_SECRET : process.env.SHEETS_WEBHOOK_SECRET) || "";
   if (!url) return "not set up";
   const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), 9000);
   try {
-    const r = await fetch(url, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(Object.assign({ secret: process.env.SHEETS_WEBHOOK_SECRET || "" }, payload)), redirect: "follow", signal: ctl.signal });
+    const r = await fetch(url, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(Object.assign({ secret }, payload)), redirect: "follow", signal: ctl.signal });
     const txt = await r.text();
     let j = null; try { j = JSON.parse(txt); } catch (e) { /* not JSON */ }
     if (r.ok && j && j.ok) return "";
@@ -40,21 +63,34 @@ async function post(payload) {
 
 /* Re-reads the saved row (so price and payment details are included) and sends it. */
 async function syncSub(id) {
-  if (!enabled() || !(id > 0)) return false;
+  if ((!enabled() && !trackOn()) || !(id > 0)) return false;
   try {
     const r = ((await db.rest("GET", `subscriptions?id=eq.${id}&select=*`)) || [])[0];
     if (!r) return false;
-    return (await post({ event: "upsert", rows: [slim(r)] })) === "";
+    const jobs = [];
+    if (enabled()) jobs.push(post({ event: "upsert", rows: [slim(r)] }));
+    if (trackOn()) { const t = trackRow(r); jobs.push(post(t ? { event: "upsert", rows: [t] } : { event: "delete", ids: [id] }, true)); }
+    return (await Promise.all(jobs)).every((x) => x === "");
   } catch (e) { console.error("sheet sync skipped", e && e.message); return false; }
 }
-const removeSub = async (id) => (enabled() && id > 0 ? (await post({ event: "delete", ids: [id] })) === "" : false);
+async function removeSub(id) {
+  if (!(id > 0)) return false;
+  const jobs = [];
+  if (enabled()) jobs.push(post({ event: "delete", ids: [id] }));
+  if (trackOn()) jobs.push(post({ event: "delete", ids: [id] }, true));
+  return jobs.length ? (await Promise.all(jobs)).every((x) => x === "") : false;
+}
 
 /* Sends every subscription (used by the "Send all to Google Sheet" button). */
 async function syncAll() {
-  if (!enabled()) return { ok: false, count: 0, error: "The Google Sheet link is not set up yet." };
+  if (!enabled() && !trackOn()) return { ok: false, count: 0, error: "The Google Sheet link is not set up yet." };
   const rows = (await db.rest("GET", "subscriptions?select=*&order=created_at.asc&limit=2000")) || [];
   let err = "";
-  for (let i = 0; i < rows.length && !err; i += 100) err = await post({ event: "upsert", rows: rows.slice(i, i + 100).map(slim) });
+  if (enabled()) for (let i = 0; i < rows.length && !err; i += 100) err = await post({ event: "upsert", rows: rows.slice(i, i + 100).map(slim) });
+  if (trackOn() && !err) {
+    const t = rows.map(trackRow).filter(Boolean);
+    for (let i = 0; i < t.length && !err; i += 40) err = await post({ event: "upsert", rows: t.slice(i, i + 40) }, true);
+  }
   return err ? { ok: false, count: rows.length, error: "Could not reach the sheet: " + err } : { ok: true, count: rows.length };
 }
-module.exports = { enabled, syncSub, removeSub, syncAll };
+module.exports = { enabled, trackOn, syncSub, removeSub, syncAll };
