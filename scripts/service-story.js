@@ -30,9 +30,10 @@ module.exports = function story({ p, qp, esc, taka, logo, ic }) {
      <div class="ln l1"><i></i></div><div class="ln l2"><i></i></div></div></div>
      <div class="pn"><span>PIN</span><i style="--k:0"></i><i style="--k:1"></i><i style="--k:2"></i><i style="--k:3"></i><em>Secure OTP login</em></div>`,
     /* 5 deliver */
-    `<div class="hd"><i>5</i>Deliver</div><div class="ch"><div class="chh"><img src="/assets/img/brand/logo-128.png" alt="" width="64" height="64"><span><b>StreamX</b><small>online</small></span></div>
-     <div class="ty"><u></u><u></u><u></u></div>
-     <div class="bb"><b>Your ${name} is ready</b><span>Email, profile and PIN are inside</span><div class="bx"><i></i><i></i><i></i></div><em>✓✓</em></div></div>`,
+    `<div class="hd"><i>5</i>Deliver</div><div class="em"><div class="emm"><img src="/assets/img/brand/logo-128.png" alt="" width="64" height="64"><span><b>StreamX</b><small>no-reply@streamx.bd</small></span><time>Just now</time></div>
+     <div class="emc"><i class="emg"></i><div class="emi"><span class="eme">Order delivered</span><b class="emh">Your ${name} is ready</b>
+      <div class="emr"><div><small>Login email</small><b>name@example.com</b></div><div><small>Password</small><b>••••••••••</b></div><div><small>Plan</small><b>${esc(first[0])} · 1 month</b></div></div>
+      <span class="emb">View my subscriptions</span></div></div></div>`,
     /* 6 watch */
     `<div class="hd"><i>6</i>Watch</div><div class="tv"><div class="sp1">${tile}</div><div class="ps"><i></i><i></i><i></i><i></i></div></div>
      <div class="bd"><span><svg viewBox="0 0 24 24"><path d="m6 12.5 4 4 8-9"/></svg>Replacement warranty</span><span><svg viewBox="0 0 24 24"><path d="m6 12.5 4 4 8-9"/></svg>24/7 support</span></div>`
