@@ -11,7 +11,7 @@
   dock.innerHTML = '<div class="dk-seg">' + steps.map(function () { return "<i><u></u></i>"; }).join("") + '</div><div class="dk-row"><span class="dk-n"><b>1</b><small>/ ' + N + '</small></span><span class="dk-t"></span><a class="dk-go" href="#plans"></a></div>';
   var dn = dock.querySelector(".dk-n b"), dt = dock.querySelector(".dk-t"), dg = dock.querySelector(".dk-go"), dsegs = [].slice.call(dock.querySelectorAll(".dk-seg u")), pinned = false;
   function dockPaint() {
-    var r = sec.getBoundingClientRect(), on = r.top <= 8 && r.bottom >= innerHeight - 8;
+    var r = sec.getBoundingClientRect(), on = r.top <= 8 && r.bottom >= NV - 8;
     if (on !== pinned) { pinned = on; dock.classList.toggle("on", on); document.documentElement.classList.toggle("nj-dock-on", on); }
     dsegs.forEach(function (u, i) { u.style.transform = "scaleX(" + Math.min(1, Math.max(0, cur - i + .5)).toFixed(3) + ")"; });
   }
@@ -30,9 +30,12 @@
       g.style.width = len.toFixed(1) + "px"; g.style.transform = "translate3d(" + (XS[i] * u).toFixed(1) + "px," + (FY * u).toFixed(1) + "px," + (-i * D * u).toFixed(1) + "px) rotateY(" + a.toFixed(2) + "deg) rotateX(90deg)";
     });
   }
+  var NV = innerHeight, LW = innerWidth;
+  function lock() { NV = innerHeight; LW = innerWidth; sec.style.setProperty("--nvh", NV + "px"); }
+  lock();
   function size() { W = stage.clientWidth; U = W / 100; stage.style.setProperty("--u", U.toFixed(3) + "px"); place(); paint(); }
   function prog() {
-    var r = sec.getBoundingClientRect(), h = r.height - innerHeight; if (h <= 0) return 0;
+    var r = sec.getBoundingClientRect(), h = r.height - NV; if (h <= 0) return 0;
     var p = Math.min(1, Math.max(0, -r.top / h)); return Math.min(1, Math.max(0, (p - .05) / .9)) * (N - 1);
   }
   function lerpX(c) { var a = Math.max(0, Math.min(N - 1, c)), i = Math.floor(a), k = Math.min(N - 1, i + 1), t = a - i, e = t * t * (3 - 2 * t); return XS[i] + (XS[k] - XS[i]) * e; }
@@ -55,10 +58,10 @@
   function loop() { cur += (tgt - cur) * .16; if (Math.abs(tgt - cur) < .0007) { cur = tgt; paint(); raf = 0; return; } paint(); raf = requestAnimationFrame(loop); }
   function onScroll() { if (!near) return; tgt = prog(); if (!raf) raf = requestAnimationFrame(loop); }
   new IntersectionObserver(function (es) { near = es[0].isIntersecting; if (!near) dockPaint(); if (near) { tgt = prog(); cur = tgt; paint(); } }, { rootMargin: "20% 0px 20% 0px" }).observe(sec);
-  addEventListener("scroll", onScroll, { passive: true }); addEventListener("resize", function () { size(); onScroll(); });
+  addEventListener("scroll", onScroll, { passive: true }); addEventListener("resize", function () { if (innerWidth === LW) return; lock(); size(); onScroll(); });
   steps.forEach(function (li, i) {
     li.addEventListener("click", function () {
-      var top = sec.getBoundingClientRect().top + scrollY, h = sec.offsetHeight - innerHeight;
+      var top = sec.getBoundingClientRect().top + scrollY, h = sec.offsetHeight - NV;
       scrollTo({ top: top + ((i / (N - 1)) * .9 + .05) * h, behavior: "smooth" });
     });
   });

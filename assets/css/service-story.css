@@ -13,8 +13,8 @@
 .nj.nj-on .nj-copy li.on{opacity:1;background:linear-gradient(135deg,rgba(237,49,36,.16),rgba(237,49,36,.03));border-color:rgba(237,49,36,.35)}
 .nj.nj-on .nj-copy li.on b{background:linear-gradient(135deg,#ed3124,#ff6a3d);border-color:transparent;color:#fff;box-shadow:0 8px 20px -6px rgba(237,49,36,.7)}
 .nj.nj-on .nj-stage{display:block}
-.nj.nj-on{height:calc(100vh + 420vh);height:calc(100svh + 420svh)}
-.nj.nj-on .nj-pin{position:sticky;top:0;height:100vh;height:100svh;display:flex;align-items:center;padding:82px 0 24px;box-sizing:border-box;overflow:hidden}
+.nj.nj-on{height:calc(var(--nvh,100svh)*5.2)}
+.nj.nj-on .nj-pin{position:sticky;top:0;height:var(--nvh,100svh);display:flex;align-items:center;padding:82px 0 24px;box-sizing:border-box;overflow:hidden}
 .nj.nj-on .nj-in{width:min(1140px,100% - 28px)}
 .nj-stage{perspective:calc(var(--u)*150);--u:4.6px;position:relative;width:100%;max-width:600px;height:calc(var(--u)*74);justify-self:center;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 9%,#000 91%,transparent);mask-image:linear-gradient(90deg,transparent,#000 9%,#000 91%,transparent)}
 .nj-track{position:absolute;left:0;top:0;height:100%;width:calc(var(--u)*480);will-change:transform}
@@ -138,3 +138,17 @@
 .w-ring{position:absolute;left:calc(var(--u)*-3);top:calc(var(--u)*-3);width:calc(var(--u)*6);height:calc(var(--u)*6);border-radius:50%;border:2px solid rgba(255,255,255,.25);background:radial-gradient(circle,rgba(237,49,36,calc(var(--f,0)*.9)),transparent 70%);box-shadow:0 0 calc(var(--f,0)*var(--u)*5) rgba(237,49,36,calc(var(--f,0)*.9))}
 .w-dot{position:absolute;left:0;top:0;width:calc(var(--u)*var(--s)*.9);height:calc(var(--u)*var(--s)*.9);border-radius:50%;background:#ffb7a6;opacity:.55;box-shadow:0 0 calc(var(--u)*1.4) rgba(255,120,90,.8);transform:translate3d(calc(var(--u)*var(--x)),calc(var(--u)*var(--y)),calc(var(--u)*var(--z)))}
 @media(max-width:860px){.nj.nj-on .nj-stage{height:calc(var(--u)*84)}}
+
+/* soft edges done with overlays (masks on 3D layers are unreliable on some phones) */
+.nj.nj-on .nj-stage{-webkit-mask-image:none;mask-image:none}
+.nj.nj-on .nj-stage::after{content:"";position:absolute;inset:-1px;z-index:9;pointer-events:none;background:linear-gradient(to bottom,var(--bg,#0a0d1a) 0,rgba(10,13,26,0) 16%,rgba(10,13,26,0) 56%,rgba(10,13,26,.75) 80%,var(--bg,#0a0d1a) 100%),linear-gradient(to right,var(--bg,#0a0d1a) 0,rgba(10,13,26,0) 12%,rgba(10,13,26,0) 88%,var(--bg,#0a0d1a) 100%)}
+
+/* cinematic reveal of the step text each time the step changes */
+@keyframes njb{0%{transform:scale(.2) rotate(-120deg);opacity:0}60%{transform:scale(1.18) rotate(8deg);opacity:1}100%{transform:none}}
+@keyframes njt{0%{opacity:0;transform:translateY(22px) scale(.98);filter:blur(10px);letter-spacing:.05em}100%{opacity:1;transform:none;filter:blur(0);letter-spacing:0}}
+@keyframes njl{0%{width:0;opacity:1}70%{width:64px;opacity:1}100%{width:64px;opacity:.0}}
+.nj.nj-on .nj-copy li.on b{animation:njb .7s cubic-bezier(.16,1,.3,1) both}
+.nj.nj-on .nj-copy li.on h3{animation:njt .75s cubic-bezier(.16,1,.3,1) .05s both;position:relative}
+.nj.nj-on .nj-copy li.on h3::after{content:"";position:absolute;left:0;bottom:-5px;height:2px;border-radius:2px;background:linear-gradient(90deg,#ed3124,#ffa07a);box-shadow:0 0 10px rgba(237,49,36,.8);animation:njl 1.3s cubic-bezier(.16,1,.3,1) .1s both}
+.nj.nj-on .nj-copy li.on p{animation:njt .9s cubic-bezier(.16,1,.3,1) .22s both}
+@media(prefers-reduced-motion:reduce){.nj.nj-on .nj-copy li.on b,.nj.nj-on .nj-copy li.on h3,.nj.nj-on .nj-copy li.on p,.nj.nj-on .nj-copy li.on h3::after{animation:none}}
