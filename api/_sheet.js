@@ -47,7 +47,7 @@ function trackRow(r) {
   }
   if (!type) return null;
   const v = (k) => (r[k] == null ? "" : safe(r[k]));
-  return { id: r.id, type, plan: label, name: v("name"), phone: safe(intl(r.phone)), email: v("email"), acct_email: v("acct_email"), acct_profile: v("acct_profile"), start_date: v("start_date"), end_date: v("end_date"), channel: v("channel"), devices: devicesText(r.acct_devices) };
+  return { id: r.id, type, plan: label, name: v("name"), phone: safe(intl(r.phone)), email: v("email"), acct_email: v("acct_email"), acct_profile: v("acct_profile"), pin: v("acct_pin"), start_date: v("start_date"), end_date: v("end_date"), channel: v("channel"), devices: devicesText(r.acct_devices) };
 }
 
 /* Returns "" when the sheet accepted the data, otherwise a short reason. */
