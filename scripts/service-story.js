@@ -43,3 +43,15 @@ module.exports = function story({ p, qp, esc, taka, logo, ic }) {
  <div class="nj-stage" aria-hidden="true"><div class="nj-track">${S.map((h, i) => `<div class="ns s${i + 1}" style="--i:${i}"><div class="sc">${h}</div><i class="nd"></i><span class="lb">${labels[i]}</span></div>`).join("")}</div><i class="nj-orb"></i></div></div>
  </div></div></section>`;
 };
+
+/* The price card in the hero of a story page: a poster banner and a plan selector that updates the price. */
+module.exports.card = function card({ p, qp, esc, taka, logo, ic }) {
+  const tiles = (qp || []).slice(0, 4), first = tiles[0] || [p.name, 0];
+  const pr = v => (v > 0 ? taka(v) : "Ask");
+  return `<aside class="sp-hcard nf-card sp-rv" aria-label="${esc(p.name)} pricing summary">
+   <div class="nfc-art" aria-hidden="true"><div class="nfc-posters"><i></i><i></i><i></i><i></i></div><span class="nfc-logo">${logo(p)}</span><span class="nfc-tag">${esc(p.name)}</span></div>
+   <div class="nfc-price"><small>Starting from</small><div><b data-nfp>${pr(first[1])}</b><span>for 1 Month</span></div></div>
+   <div class="nfc-seg" role="group" aria-label="Plan types">${tiles.map((t, i) => `<button type="button" class="${i ? "" : "on"}" data-p="${pr(t[1])}" aria-pressed="${i ? "false" : "true"}">${esc(t[0])}</button>`).join("")}</div>
+   <a class="sp-btn nfc-go" href="#plans">Choose this plan <span aria-hidden="true">→</span></a>
+   <div class="sp-meta"><span>${tiles.length} plan types</span><span>Fixed BDT price</span></div></aside>`;
+};

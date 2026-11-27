@@ -142,7 +142,7 @@ function servicePage(p) {
   const mn = v => { const b = v.plans.filter(x => x.p > 0).map(x => x.p); return b.length ? Math.min(...b) : 0; };
   const qp = (p.gift ? [5, 10, 25, 50].map(a => ["$" + a + " card", a * 130]) : p.packs ? p.packs.map(k => [k.n, k.p]) : p.variants.length === 1 && p.variants[0].plans.filter(x => !x.u).length > 1 ? p.variants[0].plans.filter(x => !x.u).map(x => [x.v, x.ask ? 0 : x.p]) : p.variants.map(v => [v.n, mn(v)])).slice(0, 5);
   const orderMsg = `Hi StreamX! I want to buy ${p.name}.`;
-  return head({ title, desc, url, img, noindex: isAdult(p), extra: (isAdult(p) ? "" : `<script type="application/ld+json">${JSON.stringify(ld)}</script>`) + (STORY.has(p.name) ? '<link rel="stylesheet" href="/assets/css/service-story.css?v=12">' : "") }) + `
+  return head({ title, desc, url, img, noindex: isAdult(p), extra: (isAdult(p) ? "" : `<script type="application/ld+json">${JSON.stringify(ld)}</script>`) + (STORY.has(p.name) ? '<link rel="stylesheet" href="/assets/css/service-story.css?v=23">' : "") }) + `
 <body style="--c:${GLOW[p.name] || p.color}"${isAdult(p) ? ' class="sp-adult"' : STORY.has(p.name) ? ' class="nf"' : ""}>${isAdult(p) ? AGE : ""}
 ${nav([["Home", "/"], ["Pricing", "#plans"], ...(combo ? [["Combo", "#combo"]] : []), ...(TREND[p.name] ? [["Trending", "#trending"]] : []), ["About", "#about"], ["Reviews", "#reviews"], ["FAQ", "#faq"], ["Contact", "#contact"]])}
 <main>
@@ -155,9 +155,9 @@ ${nav([["Home", "/"], ["Pricing", "#plans"], ...(combo ? [["Combo", "#combo"]] :
    <div class="sp-cta"><a class="sp-btn" href="#plans">See plans and prices</a><a class="sp-btn sp-ghost" href="${wa(orderMsg)}" rel="noopener">Order on WhatsApp</a><button type="button" class="sp-btn sp-ghost sp-share" data-name="${esc(p.name)}" data-text="${esc(p.name)} in Bangladesh on StreamX. Fixed prices in BDT, fast delivery. See plans:" ${isAdult(p) ? "" : `data-img="/assets/img/og/${s}.jpg"`}><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.5l6.8-4M8.6 13.5l6.8 4"/></svg><span>Share</span></button></div>
    <ul class="sp-trust"><li>${ic("bolt")}<span><b>Fast delivery</b><small>Minutes after payment</small></span></li><li>${ic("card")}<span><b>Local payments</b><small>bKash, Nagad, Rocket</small></span></li><li>${ic("shield")}<span><b>Warranty</b><small>Replacement included</small></span></li><li>${ic("chat")}<span><b>24/7 support</b><small>Real people, WhatsApp</small></span></li></ul>
   </div>
-  <aside class="sp-hcard sp-rv" aria-label="${esc(p.name)} pricing summary"><div class="sp-hc-top">${logo(p)}<div><b>${esc(p.name)}</b><small>${esc(p.cat === "Bundle" ? "Bundle" : p.cat)}</small></div></div><div class="sp-from">${p.ask ? "<small>Price</small><b>On request</b>" : `<small>Starting from</small><b>${taka(from)}</b>`}<small>${p.gift ? "for a $5 card" : cheap && cheap.m ? `for ${esc(cheap.v)}` : ""}</small></div>
+  ${STORY.has(p.name) ? story.card({ p, qp, esc, taka, logo, ic }) : `<aside class="sp-hcard sp-rv" aria-label="${esc(p.name)} pricing summary"><div class="sp-hc-top">${logo(p)}<div><b>${esc(p.name)}</b><small>${esc(p.cat === "Bundle" ? "Bundle" : p.cat)}</small></div></div><div class="sp-from">${p.ask ? "<small>Price</small><b>On request</b>" : `<small>Starting from</small><b>${taka(from)}</b>`}<small>${p.gift ? "for a $5 card" : cheap && cheap.m ? `for ${esc(cheap.v)}` : ""}</small></div>
    <ul class="sp-qp">${qp.map(([n, v]) => `<li><a href="#plans"><span>${esc(n)}</span><b>${v > 0 ? taka(v) : "Ask"}</b></a></li>`).join("")}</ul>
-   <div class="sp-meta"><span>${p.variants.length > 1 || p.packs ? (p.packs ? p.packs.length : p.variants.length) + " plan types" : "1 plan type"}</span><span>Fixed BDT price</span></div></aside>
+   <div class="sp-meta"><span>${p.variants.length > 1 || p.packs ? (p.packs ? p.packs.length : p.variants.length) + " plan types" : "1 plan type"}</span><span>Fixed BDT price</span></div></aside>`}
  </div></section>
 
 <section class="sp-sec" id="plans"><div class="sp-wrap"><h2 class="sp-rv">${esc(p.name)} plans and prices</h2><p class="sp-sub sp-rv">Every price is fixed in BDT. Choose a plan type, then the duration. Longer plans cost less per month.</p><div class="sp-vgrid">${plansHtml(p).replace(/<div class="sp-vcard">/g, '<div class="sp-vcard sp-rv">')}</div></div></section>
@@ -189,7 +189,7 @@ ${reviewsHtml(p)}
 </main>
 ${STORY.has(p.name) ? "" : `<div class="sp-buybar" id="spBuy" hidden><div><small>${p.ask ? "Price" : "From"}</small><b>${p.ask ? "On request" : taka(from)}</b></div><a class="sp-btn" href="${p.ask ? wa(orderMsg) : "#plans"}"${p.ask ? ' rel="noopener"' : ""}>${p.ask ? "Ask on WhatsApp" : "Choose plan"}</a></div>`}
 ${foot}
-${script}${STORY.has(p.name) ? '<script src="/assets/js/service-story.js?v=12" defer></script>' : ""}
+${script}${STORY.has(p.name) ? '<script src="/assets/js/service-story.js?v=14" defer></script>' : ""}
 </body></html>`;
 }
 

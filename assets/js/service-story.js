@@ -1,6 +1,14 @@
 /* Scroll story: scrolling the tall section pans a stage of six chained scenes. Without this script, or with reduced motion, the page just shows the list of steps. */
 (function () {
   "use strict";
+  (function () {
+    var card = document.querySelector(".nf-card"); if (!card) return;
+    var lab = card.querySelector(".nfc-price small"), out = card.querySelector("[data-nfp]"), bs = [].slice.call(card.querySelectorAll(".nfc-seg button"));
+    bs.forEach(function (b) { b.addEventListener("click", function () {
+      bs.forEach(function (x) { var on = x === b; x.classList.toggle("on", on); x.setAttribute("aria-pressed", on ? "true" : "false"); });
+      out.textContent = b.getAttribute("data-p"); lab.textContent = bs.indexOf(b) ? "Price" : "Starting from"; out.classList.remove("pop"); void out.offsetWidth; out.classList.add("pop");
+    }); });
+  })();
   var sec = document.getElementById("journey"); if (!sec) return;
   var stage = sec.querySelector(".nj-stage"), track = sec.querySelector(".nj-track"), slots = [].slice.call(sec.querySelectorAll(".ns")), steps = [].slice.call(sec.querySelectorAll(".nj-copy li"));
   var N = slots.length, labels = ["Choose", "Pay", "Confirm", "Prepare", "Deliver", "Watch"];
