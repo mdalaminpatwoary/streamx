@@ -1,12 +1,14 @@
 /* Header: smooth scroll-spy and progress rail. */
 // ===== Header: light and smooth (rAF + IntersectionObserver scroll-spy) =====
 const nav=$("#nav"),ind=$("#ind"),links=[...document.querySelectorAll("#menu>a")];let lastY=0,ticking=false,curLink=links[0];
+/* phones: the bar is the small pill from the very first paint; the links open from the menu button */
+const PH=matchMedia("(max-width:640px)");if(PH.matches)nav.classList.add("pill");
 function setActive(a){if(!a)return;curLink=a;links.forEach(l=>l.classList.toggle("on",l===a));if(innerWidth>860){ind.style.width=a.offsetWidth+"px";ind.style.transform=`translateX(${a.offsetLeft}px)`}}
 function frame(){
   ticking=false;const y=scrollY,dy=y-lastY,max=Math.max(1,document.documentElement.scrollHeight-innerHeight);
   nav.classList.toggle("scrolled",y>30);
   const menu=$("#menu");
-  if(!(menu&&menu.classList.contains("open"))){if(y>140&&dy>4)nav.classList.add("pill");else if((dy<-4||y<60)&&!window.sxHold)nav.classList.remove("pill")}
+  if(PH.matches)nav.classList.add("pill");else if(!(menu&&menu.classList.contains("open"))){if(y>140&&dy>4)nav.classList.add("pill");else if((dy<-4||y<60)&&!window.sxHold)nav.classList.remove("pill")}
   nav.classList.remove("hide");lastY=y;
   const sp=Math.min(1,y/max);document.documentElement.style.setProperty("--sp",sp.toFixed(4));
   if(y>=max-4)setActive(links[links.length-1]);

@@ -164,7 +164,7 @@
     lock(); addEventListener("load", lock); addEventListener("resize", function () { clearTimeout(lock.t); lock.t = setTimeout(lock, 150); });
     function run() {
       tk = false; var y = scrollY;
-      if (nv) { nv.classList.toggle("sp-scrolled", y > 30); if (y > 140 && y > last + 4) nv.classList.add("sp-compact"); else if ((y < last - 4 || y < 60) && !window.sxHold) nv.classList.remove("sp-compact"); }
+      if (nv) { nv.classList.toggle("sp-scrolled", y > 30); if (matchMedia("(max-width:640px)").matches) nv.classList.add("sp-compact"); else if (y > 140 && y > last + 4) nv.classList.add("sp-compact"); else if ((y < last - 4 || y < 60) && !window.sxHold) nv.classList.remove("sp-compact"); }
       last = y; upd();
     }
     addEventListener("scroll", function () { if (!tk) { tk = true; requestAnimationFrame(run); } }, { passive: true }); run();
