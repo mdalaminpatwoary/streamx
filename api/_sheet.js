@@ -4,6 +4,7 @@
    It needs TRACK_SHEET_WEBHOOK_URL and TRACK_SHEET_WEBHOOK_SECRET. Deleting a user in the admin panel clears that slot there and keeps the account email. Passwords, PINs and codes are never sent.
    Only plain purchase details are sent: never login details, passwords, PINs or gift card codes. */
 const db = require("./_db");
+const cred = require("./_cred");
 
 const FIELDS = ["id", "created_at", "name", "email", "phone", "service", "plan", "months", "start_date", "end_date", "price", "pay_method", "txn_id", "channel", "notes", "source", "order_ref", "manual_id"];
 /* A value that starts with = + - or @ would be read by Google Sheets as a formula (for example +44 phone numbers), so it is stored as plain text. */
@@ -47,7 +48,7 @@ function trackRow(r) {
   }
   if (!type) return null;
   const v = (k) => (r[k] == null ? "" : safe(r[k]));
-  return { id: r.id, type, plan: label, name: v("name"), phone: safe(intl(r.phone)), email: v("email"), acct_email: v("acct_email"), acct_profile: v("acct_profile"), pin: v("acct_pin"), start_date: v("start_date"), end_date: v("end_date"), channel: v("channel"), devices: devicesText(r.acct_devices) };
+  return { id: r.id, type, plan: label, name: v("name"), phone: safe(intl(r.phone)), email: v("email"), acct_email: v("acct_email"), acct_profile: v("acct_profile"), pin: safe(String(cred.dec(r.acct_pin) || "")), start_date: v("start_date"), end_date: v("end_date"), channel: v("channel"), devices: devicesText(r.acct_devices) };
 }
 
 /* Returns "" when the sheet accepted the data, otherwise a short reason. */
