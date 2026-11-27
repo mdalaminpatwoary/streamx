@@ -88,7 +88,7 @@
 .s5 .bx{display:flex;gap:calc(var(--u)*1);margin-top:calc(var(--u)*.6)}.s5 .bx i{height:calc(var(--u)*1.6);flex:1;border-radius:99px;background:rgba(255,255,255,.18)}.s5 .bx i:first-child{flex:1.6}
 .s5 .bb em{--k:clamp(0,(var(--t) - .78)*8,1);position:absolute;right:calc(var(--u)*2);bottom:calc(var(--u)*1);font-style:normal;font-size:calc(var(--u)*2);letter-spacing:-.15em;color:rgb(calc(170 - var(--k)*130),calc(180 + var(--k)*10),calc(185 + var(--k)*60))}
 /* 6 watch */
-.s6 .tv{position:relative;width:calc(var(--u)*50);height:calc(var(--u)*28);margin:calc(var(--u)*3) auto 0;border-radius:calc(var(--u)*2);border:calc(var(--u)*.7) solid #2b3158;background:#080a16;overflow:hidden;box-shadow:0 0 calc(var(--u)*5) rgba(237,49,36,calc(var(--t)*.35))}
+.s6 .tv{position:relative;width:calc(var(--u)*50);height:calc(var(--u)*28);margin:calc(var(--u)*3) auto 0;border-radius:calc(var(--u)*2);border:0;background:radial-gradient(ellipse 70% 80% at 50% 50%,#1a0d16,#0a0d1a 78%);overflow:hidden;box-shadow:inset 0 0 calc(var(--u)*7) calc(var(--u)*3) #0a0d1a,0 0 calc(var(--u)*9) calc(var(--u)*1) rgba(237,49,36,calc(var(--t)*.22))}
 .s6 .sp1{--s:clamp(0,(var(--t) - .15)*3,1);position:absolute;left:50%;top:50%;width:calc(var(--u)*11);height:calc(var(--u)*11);margin:calc(var(--u)*-5.5) 0 0 calc(var(--u)*-5.5);transform:scale(calc(.6 + var(--s)*.9));opacity:calc(1 - clamp(0,(var(--t) - .55)*6,1))}
 .s6 .sp1 .sp-logo{width:100%;height:100%;border-radius:calc(var(--u)*2.6)}.s6 .sp1 .sp-logo svg{max-width:60%;max-height:60%}
 .s6 .ps{--a:clamp(0,(var(--t) - .55)*4,1);position:absolute;left:calc(var(--u)*2);right:calc(var(--u)*2);bottom:calc(var(--u)*2.4);display:flex;gap:calc(var(--u)*1.4);opacity:var(--a);transform:translateY(calc((1 - var(--a))*var(--u)*3))}
@@ -261,3 +261,4 @@
 .nf .sp-hero{--c:#e50914;--mx:-6%;--my:40%}
 .nf .sp-hcard{box-shadow:inset 0 1px 0 rgba(255,255,255,.22),0 50px 90px -40px rgba(0,0,0,.95),0 0 90px -34px rgba(229,9,20,.32)}
 .nf .sp-hero .hx-b2{background:radial-gradient(closest-side,rgba(180,10,20,.2),transparent)}
+.nj .s6 .sc{background:radial-gradient(ellipse 60% 60% at 50% 50%,rgba(60,18,28,.5),transparent 72%);border-color:transparent;box-shadow:none}
