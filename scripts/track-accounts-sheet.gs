@@ -20,7 +20,7 @@ function doPost(e) {
     try {
       var sh = SpreadsheetApp.getActive().getSheetByName(SHEET_NAME);
       if (!sh) return out_({ ok: false, error: "tab '" + SHEET_NAME + "' not found" });
-      var res = p.event === "delete" ? remove_(sh, p.ids || []) : upsert_(sh, p.rows || []);
+      var res = p.event === "delete" ? remove_(sh, p.ids || []) : p.event === "sort" ? { ok: true, sorted: sortBlocks_(sh) } : upsert_(sh, p.rows || []);
       SpreadsheetApp.flush();
       return out_(res);
     } finally { lock.releaseLock(); }
@@ -55,7 +55,7 @@ function save_(sh, data) {
 }
 
 function upsert_(sh, rows) {
-  var data = read_(sh), done = 0, skipped = 0, errors = [];
+  var data = read_(sh), done = 0, skipped = 0, errors = [], created = false;
   rows.forEach(function (r) {
     var acct = String(r.acct_email || "").trim();
     var at = findId_(data, r.id);
@@ -73,6 +73,7 @@ function upsert_(sh, rows) {
       if (block < 0) { errors.push("no free account block for " + acct); return; }
       sh.getRange(FIRST_ROW + block * BLOCK_SIZE, 1).setValue(acct);
       data[block * BLOCK_SIZE][0] = acct;
+      created = true;
     }
     var slot = -1;
     for (var k = 0; k < BLOCK_SIZE; k++) {
@@ -83,6 +84,7 @@ function upsert_(sh, rows) {
     fill_(data, slot, r); done++;
   });
   save_(sh, data);
+  if (created) sortBlocks_(sh);   // a new account goes into its A-Z place
   return errors.length ? { ok: false, error: errors.join("; "), done: done } : { ok: true, done: done, skipped: skipped };
 }
 
@@ -94,4 +96,39 @@ function remove_(sh, ids) {
   });
   if (n) save_(sh, data);
   return { ok: true, cleared: n };
+}
+
+/* Puts the account blocks in A-Z order of the account email (case does not matter). Blocks without an email stay at the bottom.
+   A block moves as a whole: its slot-1 email, profile names, customers, dates, devices and subscription ids. */
+function sortBlocks_(sh) {
+  var data = read_(sh), items = [], b, k;
+  for (b = 0; b < BLOCKS; b++) items.push({ b: b, key: norm_(data[b * BLOCK_SIZE][0]) });
+  items.sort(function (x, y) {
+    if (!x.key && !y.key) return x.b - y.b;
+    if (!x.key) return 1;
+    if (!y.key) return -1;
+    return nat_(x.key, y.key) || x.b - y.b;
+  });
+  var moved = false;
+  items.forEach(function (it, i) { if (it.b !== i) moved = true; });
+  if (!moved) return false;
+  var out = [];
+  items.forEach(function (it) { for (k = 0; k < BLOCK_SIZE; k++) out.push(data[it.b * BLOCK_SIZE + k]); });
+  save_(sh, out);
+  items.forEach(function (it, i) {
+    if (it.b !== i) sh.getRange(FIRST_ROW + i * BLOCK_SIZE, 1).setValue(data[it.b * BLOCK_SIZE][0]);
+  });
+  return true;
+}
+
+/* A-Z compare where numbers inside the text count by value, so ...bd.6 comes before ...bd.12. */
+function nat_(a, b) {
+  var x = a.match(/\d+|\D+/g) || [], y = b.match(/\d+|\D+/g) || [], n = Math.min(x.length, y.length);
+  for (var i = 0; i < n; i++) {
+    if (x[i] === y[i]) continue;
+    var dx = /^\d/.test(x[i]), dy = /^\d/.test(y[i]);
+    if (dx && dy) { var d = +x[i] - +y[i]; if (d) return d < 0 ? -1 : 1; continue; }
+    return x[i] < y[i] ? -1 : 1;
+  }
+  return x.length - y.length;
 }
