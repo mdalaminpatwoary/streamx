@@ -162,3 +162,10 @@
 .s6 .sp1{opacity:clamp(0,calc(1 - clamp(0,(var(--t) - .55)*6,1) + clamp(0,var(--ex,0)*5,1)),1)}
 .s6 .ps{opacity:calc(var(--a)*(1 - clamp(0,var(--ex,0)*5,1)))}
 .s6 .bd{opacity:calc(var(--a)*(1 - clamp(0,var(--ex,0)*5,1)))}
+
+/* fixed caption height so the heading and the scene never shift between steps */
+@media(max-width:860px){
+  .nj.nj-on .nj-copy{height:132px;min-height:132px;overflow:visible;align-content:start}
+  .nj.nj-on .nj-copy li.on{align-items:flex-start}
+  .nj.nj-on .nj-grid{align-items:start}
+}
