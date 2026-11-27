@@ -50,7 +50,7 @@
     const half=Math.ceil(N/2),A=SV.slice(0,half),B=SV.slice(half).concat(SV.slice(0,Math.max(0,6-(N-half))));
     const row=(arr,cls)=>{const one=arr.concat(arr).map(tile).join("");return `<div class="hx-row ${cls}"><div class="hx-track">${one}${one}</div></div>`};
     orbit.classList.add("flat");stage.classList.add("flat-on");orbit.innerHTML=row(A,"l")+row(B,"r");
-    if(calm)orbit.classList.add("still");
+    if(matchMedia("(prefers-reduced-motion: reduce)").matches)orbit.classList.add("still");
     new IntersectionObserver(e=>orbit.classList.toggle("off",!e[0].isIntersecting)).observe(stage);
   }else if(orbit&&N){
     const mobile=()=>innerWidth<=520;

@@ -3,7 +3,10 @@
 html.lite *,html.lite *::before,html.lite *::after{scroll-behavior:auto!important}
 html.lite .hx-title .w,html.lite .hx-title .grad .w{animation:none!important;opacity:1!important;transform:none!important;filter:none!important;will-change:auto!important}
 html.lite .hero-text>*,html.lite .hx-stage{animation:none!important;opacity:1!important;transform:none;filter:none!important}
-html.lite .hx-track,html.lite .hx-row{animation:none!important;will-change:auto!important}
+html.lite .hx-row{animation:none!important;will-change:auto!important}
+/* the flat strip is one cheap transform, so it keeps moving on weak phones, just slower */
+html.lite .hx-track{animation-duration:90s!important}
+html.lite .hx-row.r .hx-track{animation-duration:100s!important}
 html.lite .hx-stage::before{display:none}
 html.lite .hx-orbit.flat .hx-t{box-shadow:0 0 0 1px rgba(255,255,255,.12) inset}
 html.lite .hx-flag,html.lite .hx-flag .hx-sun,html.lite .hx-chk,html.lite .hx-tag *,html.lite .hx-pulse{animation:none!important}
