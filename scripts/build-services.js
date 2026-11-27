@@ -12,6 +12,8 @@ const ctx = vm.createContext({});
 const run = s => vm.runInContext(s, ctx);
 const PRODUCTS = run("PRODUCTS"), LOGOS = run("LOGOS"), LOGO_OF = run("LOGO_OF"), WA = run("WA_NUMBER"), slug = run("slug"), PARTS = run("PARTS");
 const CONTENT = require("./service-content.js");
+const story = require("./service-story.js");
+const STORY = new Set(["Netflix"]);   // pages that get the scroll story
 const REVIEWS = run("REVIEWS");
 const TREND = { "Netflix": ["netflix"], "Amazon Prime Video": ["prime"], "Disney+": ["disney"], "HBO Max": ["hbomax"], "Hulu": ["hulu"], "Paramount+": ["paramount"], "Crunchyroll": ["crunchyroll"], "JioHotstar": ["hotstar"], "ZEE5": ["zee5"], "Entertainment Combo": ["netflix", "prime"] };
 const TNAME = { netflix: "Netflix", prime: "Prime Video", disney: "Disney+", hbomax: "HBO Max", hulu: "Hulu", paramount: "Paramount+", crunchyroll: "Crunchyroll", hotstar: "JioHotstar", zee5: "ZEE5" };
@@ -140,8 +142,8 @@ function servicePage(p) {
   const mn = v => { const b = v.plans.filter(x => x.p > 0).map(x => x.p); return b.length ? Math.min(...b) : 0; };
   const qp = (p.gift ? [5, 10, 25, 50].map(a => ["$" + a + " card", a * 130]) : p.packs ? p.packs.map(k => [k.n, k.p]) : p.variants.length === 1 && p.variants[0].plans.filter(x => !x.u).length > 1 ? p.variants[0].plans.filter(x => !x.u).map(x => [x.v, x.ask ? 0 : x.p]) : p.variants.map(v => [v.n, mn(v)])).slice(0, 5);
   const orderMsg = `Hi StreamX! I want to buy ${p.name}.`;
-  return head({ title, desc, url, img, noindex: isAdult(p), extra: isAdult(p) ? "" : `<script type="application/ld+json">${JSON.stringify(ld)}</script>` }) + `
-<body style="--c:${GLOW[p.name] || p.color}"${isAdult(p) ? ' class="sp-adult"' : ""}>${isAdult(p) ? AGE : ""}
+  return head({ title, desc, url, img, noindex: isAdult(p), extra: (isAdult(p) ? "" : `<script type="application/ld+json">${JSON.stringify(ld)}</script>`) + (STORY.has(p.name) ? '<link rel="stylesheet" href="/assets/css/service-story.css?v=1">' : "") }) + `
+<body style="--c:${GLOW[p.name] || p.color}"${isAdult(p) ? ' class="sp-adult"' : STORY.has(p.name) ? ' class="nf"' : ""}>${isAdult(p) ? AGE : ""}
 ${nav([["Home", "/"], ["Pricing", "#plans"], ...(combo ? [["Combo", "#combo"]] : []), ...(TREND[p.name] ? [["Trending", "#trending"]] : []), ["About", "#about"], ["Reviews", "#reviews"], ["FAQ", "#faq"], ["Contact", "#contact"]])}
 <main>
 <section class="sp-hero"><div class="sp-grid" aria-hidden="true"></div><div class="hx-fx" aria-hidden="true"><i class="hx-b1"></i><i class="hx-b2"></i></div>
@@ -158,7 +160,7 @@ ${nav([["Home", "/"], ["Pricing", "#plans"], ...(combo ? [["Combo", "#combo"]] :
    <div class="sp-meta"><span>${p.variants.length > 1 || p.packs ? (p.packs ? p.packs.length : p.variants.length) + " plan types" : "1 plan type"}</span><span>Fixed BDT price</span></div></aside>
  </div></section>
 
-<section class="sp-sec" id="plans"><div class="sp-wrap"><h2 class="sp-rv">${esc(p.name)} plans and prices</h2><p class="sp-sub sp-rv">Every price is fixed in BDT. Choose a plan type, then the duration. Longer plans cost less per month.</p><div class="sp-vgrid">${plansHtml(p).replace(/<div class="sp-vcard">/g, '<div class="sp-vcard sp-rv">')}</div></div></section>
+${STORY.has(p.name) ? story({ p, qp, esc, taka, logo, ic }) + "\n\n" : ""}<section class="sp-sec" id="plans"><div class="sp-wrap"><h2 class="sp-rv">${esc(p.name)} plans and prices</h2><p class="sp-sub sp-rv">Every price is fixed in BDT. Choose a plan type, then the duration. Longer plans cost less per month.</p><div class="sp-vgrid">${plansHtml(p).replace(/<div class="sp-vcard">/g, '<div class="sp-vcard sp-rv">')}</div></div></section>
 
 ${comboHtml(p)}
 ${trendHtml(p)}
@@ -187,7 +189,7 @@ ${reviewsHtml(p)}
 </main>
 <div class="sp-buybar" id="spBuy" hidden><div><small>${p.ask ? "Price" : "From"}</small><b>${p.ask ? "On request" : taka(from)}</b></div><a class="sp-btn" href="${p.ask ? wa(orderMsg) : "#plans"}"${p.ask ? ' rel="noopener"' : ""}>${p.ask ? "Ask on WhatsApp" : "Choose plan"}</a></div>
 ${foot}
-${script}
+${script}${STORY.has(p.name) ? '<script src="/assets/js/service-story.js?v=1" defer></script>' : ""}
 </body></html>`;
 }
 
