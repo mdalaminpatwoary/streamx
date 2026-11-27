@@ -7,3 +7,23 @@
   .sp-brand img{width:44px;height:44px;border-radius:12px}
   .sp-nav nav a{height:38px;padding:0 13px}
 }
+
+/* Service pages (phone): footer text sits where it does on the front page: everything starts at the same left edge, Help is two columns, the bottom lines are centred */
+@media(max-width:640px){
+  .sp-foot .sf-grid{grid-template-columns:1fr 1fr;column-gap:20px;row-gap:34px;padding:34px 0 30px}
+  .sp-foot .sf-grid>div{padding:0;border-left:0;min-width:0}
+  .sp-foot .sf-brand,.sp-foot .sf-ct{grid-column:1/-1}
+  .sp-foot .sf-brand p{max-width:none;margin:16px 0 18px;line-height:1.8;font-size:14px}
+  .sp-foot .sf-grid h4{margin:0 0 14px;gap:10px;font-size:11.5px}
+  .sp-foot .sf-grid h4::before{width:18px}
+  .sp-foot .sf-col a.fl{margin:0;padding:11px 0}
+  .sp-foot .sf-col a.fl b{font-size:13.5px;font-weight:700}
+  /* Help: its links run in two columns under one heading */
+  .sp-foot .sf-grid>.sf-col:nth-of-type(4){grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;column-gap:20px}
+  .sp-foot .sf-grid>.sf-col:nth-of-type(4) h4{grid-column:1/-1}
+  .sp-foot .sf-ct a.ctile{padding:9px 0}
+  .sp-foot .sf-hrs{grid-column:1/-1;justify-content:center;margin:0;padding:14px 4px 0;text-align:center}
+  .sp-foot .sf-bar{grid-template-columns:1fr;justify-items:center;text-align:center;gap:10px;padding:22px 0 10px;font-size:13px;line-height:1.5}
+  .sp-foot .sf-bar>span{display:block;text-align:center;max-width:32ch;margin:0 auto}
+  .sp-foot .sf-bar .sp-fdb{margin-top:4px;justify-self:center}
+}
