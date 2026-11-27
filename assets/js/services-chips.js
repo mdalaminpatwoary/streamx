@@ -35,7 +35,9 @@
     if (innerHeight + scrollY >= document.documentElement.scrollHeight - 4) { var ks = Object.keys(secs); if (ks.length) c = ks[ks.length - 1]; }
     set(c, first); first = false;
     if (nav) {
-      var on = phone.matches && bar.getBoundingClientRect().bottom < (navin ? navin.getBoundingClientRect().bottom : 0) + 6;
+      var nb = navin ? navin.getBoundingClientRect().bottom : 0, ks2 = Object.keys(secs), lastSec = ks2.length ? secs[ks2[ks2.length - 1]] : null;
+      // pills live in the nav pill only while the category list is on screen: back to the small pill once the last section (Bundles) is behind it
+      var on = phone.matches && bar.getBoundingClientRect().bottom < nb + 6 && (!lastSec || lastSec.getBoundingClientRect().bottom > nb + 24);
       if (on !== nav.classList.contains("sp-chipmode")) { nav.classList.toggle("sp-chipmode", on); if (on) { setTimeout(function () { placeAll(true); }, 90); setTimeout(function () { placeAll(true); }, 700); } }
     }
   }
