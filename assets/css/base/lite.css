@@ -13,3 +13,4 @@ html.lite .hx-orbit.flat .hx-t{box-shadow:0 0 0 1px rgba(255,255,255,.12) inset}
 html.lite .hero .btn,html.lite .hx-trust li,html.lite .hx-pay li{transition:none!important}
 html.lite .hero .btn:hover,html.lite .hx-trust li:hover{transform:none}
 html.lite .hx-title.hx-done .grad .w{background-position:30% 0}
+html.lite #cw,html.lite .cw{display:none!important}

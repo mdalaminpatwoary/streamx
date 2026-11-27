@@ -2,6 +2,8 @@
    Starts on the first touch / scroll / key press, or when the browser is idle after load, or at once if the chat button is tapped. */
 (function () {
   var root = document.getElementById("cw"); if (!root) return;
+  /* phones and weak devices: no floating chat bubble (the tab bar has a WhatsApp Help button) */
+  if (document.documentElement.classList.contains("lite") || matchMedia("(max-width:640px)").matches) { root.remove(); return; }
   var btn = document.getElementById("cwBtn"), bubble = document.getElementById("cwBubble");
   var started = false, ready = null, wantOpen = false;
   var CSS = "/assets/css/components/chatbot.css?v=44";
