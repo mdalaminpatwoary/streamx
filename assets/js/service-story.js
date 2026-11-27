@@ -9,7 +9,6 @@
   var CTA = ["Choose plan", "Pay now", "Order now", "Order now", "Order now", "Get started"], dock = document.createElement("div");
   dock.className = "nj-dock"; dock.setAttribute("aria-hidden", "true");
   dock.innerHTML = '<div class="dk-seg">' + steps.map(function () { return "<i><u></u></i>"; }).join("") + '</div><div class="dk-row"><span class="dk-n"><b>1</b><small>/ ' + N + '</small></span><span class="dk-t"></span><a class="dk-go" href="#plans"></a></div>';
-  document.body.appendChild(dock);
   var dn = dock.querySelector(".dk-n b"), dt = dock.querySelector(".dk-t"), dg = dock.querySelector(".dk-go"), dsegs = [].slice.call(dock.querySelectorAll(".dk-seg u")), pinned = false;
   function dockPaint() {
     var r = sec.getBoundingClientRect(), on = r.top <= 8 && r.bottom >= innerHeight - 8;
@@ -37,12 +36,13 @@
     var p = Math.min(1, Math.max(0, -r.top / h)); return Math.min(1, Math.max(0, (p - .05) / .9)) * (N - 1);
   }
   function lerpX(c) { var a = Math.max(0, Math.min(N - 1, c)), i = Math.floor(a), k = Math.min(N - 1, i + 1), t = a - i, e = t * t * (3 - 2 * t); return XS[i] + (XS[k] - XS[i]) * e; }
+  function dwell(c) { var i = Math.floor(c), f = c - i, g = f < .34 ? 0 : f > .66 ? 1 : (f - .34) / .32; g = g * g * (3 - 2 * g); return Math.min(N - 1, i + g); }
   function paint() {
-    var cx = lerpX(cur), sway = (lerpX(cur + .02) - lerpX(cur - .02)) * 6;
-    track.style.transform = "translate3d(" + (-cx * U).toFixed(1) + "px," + (-4 * U).toFixed(1) + "px," + (cur * D * U).toFixed(1) + "px) rotateX(-7deg) rotateY(" + (sway * -.6).toFixed(2) + "deg)";
+    var cam = dwell(cur), cx = lerpX(cam), sway = (lerpX(cam + .02) - lerpX(cam - .02)) * 6;
+    track.style.transform = "rotateX(-7deg) rotateY(" + (sway * -.6).toFixed(2) + "deg) translate3d(" + (-cx * U).toFixed(1) + "px," + (-4 * U).toFixed(1) + "px," + (cam * D * U).toFixed(1) + "px)";
     slots.forEach(function (s, i) {
-      var d = cur - i, a = -d, f = Math.max(0, 1 - Math.abs(d)), t = Math.min(1, Math.max(0, d + .5));
-      var o = a >= 0 ? Math.max(0, 1 - a * .52) : Math.max(0, 1 + d / .55);
+      var d = cam - i, a = -d, f = Math.max(0, 1 - Math.abs(d)), t = Math.min(1, Math.max(0, cur - i + .5));
+      var o = a >= 0 ? Math.max(0, 1 - a * .52) : Math.max(0, 1 - d / .45);
       s.style.setProperty("--d", Math.max(-1, Math.min(1, d)).toFixed(3)); s.style.setProperty("--f", f.toFixed(3)); s.style.setProperty("--t", t.toFixed(3)); s.style.setProperty("--o", o.toFixed(3)); s.style.setProperty("--bl", (Math.max(0, a) * 1.1).toFixed(2) + "px");
       s.style.setProperty("--ry", ((XS[i] > 0 ? -1 : 1) * 14 * Math.min(1, Math.abs(d) + .35)).toFixed(2) + "deg");
       rings[i].style.setProperty("--f", f.toFixed(3));

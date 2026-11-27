@@ -13,7 +13,7 @@
 .nj.nj-on .nj-copy li.on{opacity:1;background:linear-gradient(135deg,rgba(237,49,36,.16),rgba(237,49,36,.03));border-color:rgba(237,49,36,.35)}
 .nj.nj-on .nj-copy li.on b{background:linear-gradient(135deg,#ed3124,#ff6a3d);border-color:transparent;color:#fff;box-shadow:0 8px 20px -6px rgba(237,49,36,.7)}
 .nj.nj-on .nj-stage{display:block}
-.nj.nj-on{height:calc(100vh + 340vh);height:calc(100svh + 340svh)}
+.nj.nj-on{height:calc(100vh + 420vh);height:calc(100svh + 420svh)}
 .nj.nj-on .nj-pin{position:sticky;top:0;height:100vh;height:100svh;display:flex;align-items:center;padding:82px 0 24px;box-sizing:border-box;overflow:hidden}
 .nj.nj-on .nj-in{width:min(1140px,100% - 28px)}
 .nj-stage{perspective:calc(var(--u)*150);--u:4.6px;position:relative;width:100%;max-width:600px;height:calc(var(--u)*74);justify-self:center;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 9%,#000 91%,transparent);mask-image:linear-gradient(90deg,transparent,#000 9%,#000 91%,transparent)}
@@ -123,7 +123,7 @@
   .dk-go{position:relative;overflow:hidden;padding:12px 20px;border-radius:99px;font-weight:800;font-size:14px;color:#fff;text-decoration:none;white-space:nowrap;background:linear-gradient(90deg,#ed3124,#ff6a3d);box-shadow:0 10px 22px -8px rgba(237,49,36,.9)}
   .dk-go::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.5) 50%,transparent 70%);transform:translateX(-120%);animation:dks 2.6s ease-in-out infinite}
   @keyframes dks{60%,100%{transform:translateX(120%)}}
-  .nj.nj-on .nj-pin{padding-bottom:calc(var(--tbh,70px) + 92px)}
+  .nj.nj-on .nj-pin{padding-bottom:calc(var(--tbh,70px) + 16px)}
 }
 @media(prefers-reduced-motion:reduce){.dk-go::after{animation:none}}
 
