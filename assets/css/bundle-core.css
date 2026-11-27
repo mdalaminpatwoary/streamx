@@ -4568,10 +4568,15 @@ nav a:hover {
 }
 .hx-flag{display:block;width:30px;height:30px;border-radius:50%;overflow:hidden;box-shadow:0 0 0 2px rgba(255,255,255,.16)}
 
-/* Mobile: the trust tag sits right before the description */
+/* Mobile: slim trust tag above the headline (flag, label, shield) */
 @media(max-width:960px){
-  .hero-text>.hx-tag{order:4;margin-top:4px}
+  .hero-text>.hx-tag{order:0;align-self:flex-start;margin:0 0 -4px;gap:8px;padding:5px 11px 5px 5px}
+  .hero-text>.hx-title{order:1}
   .hero-text>.hx-lead{order:5}
+  .hx-tag .hx-flag{width:22px;height:22px}
+  .hx-tt>span{display:none}
+  .hx-tt small{font-size:10.5px;letter-spacing:.12em;color:#ffb0a6}
+  .hx-chk{width:15px;height:15px}
 }
 /* Flag: soft ripple ring, breathing sun, gentle sway */
 .hx-flag{animation:hxRip 3s ease-out infinite}
