@@ -6,6 +6,13 @@
   var N = slots.length;
   if (matchMedia("(prefers-reduced-motion:reduce)").matches || !("IntersectionObserver" in window) || !N) return;
   sec.classList.add("nj-on");
+  var bar = document.getElementById("spBuy"), bs = bar && bar.querySelector("small"), bb = bar && bar.querySelector("b"), ba = bar && bar.querySelector("a"), keep = bar ? [bs.textContent, bb.textContent, ba.textContent] : null;
+  var CTA = ["Choose plan", "Pay now", "Order now", "Order now", "Order now", "Get started"];
+  function bottom(i) {
+    if (!bar) return;
+    if (i < 0) { bs.textContent = keep[0]; bb.textContent = keep[1]; ba.textContent = keep[2]; return; }
+    bs.textContent = "Step " + (i + 1) + " of " + N; bb.textContent = steps[i].querySelector("h3").textContent; ba.textContent = CTA[i] || keep[2];
+  }
   var cur = 0, tgt = 0, raf = 0, W = 0, U = 4.6, near = false, act = -1;
   function size() { W = stage.clientWidth; U = W / 100; stage.style.setProperty("--u", U.toFixed(3) + "px"); paint(); }
   function prog() {
@@ -19,11 +26,11 @@
       s.style.setProperty("--f", f.toFixed(3)); s.style.setProperty("--t", t.toFixed(3)); s.style.setProperty("--lit", t.toFixed(3));
     });
     var a = Math.min(N - 1, Math.max(0, Math.round(cur)));
-    if (a !== act) { act = a; steps.forEach(function (li, i) { li.classList.toggle("on", i === a); }); }
+    if (a !== act) { act = a; if (near) bottom(a); steps.forEach(function (li, i) { li.classList.toggle("on", i === a); }); }
   }
   function loop() { cur += (tgt - cur) * .16; if (Math.abs(tgt - cur) < .0007) { cur = tgt; paint(); raf = 0; return; } paint(); raf = requestAnimationFrame(loop); }
   function onScroll() { if (!near) return; tgt = prog(); if (!raf) raf = requestAnimationFrame(loop); }
-  new IntersectionObserver(function (es) { near = es[0].isIntersecting; if (near) { tgt = prog(); cur = tgt; paint(); } }, { rootMargin: "20% 0px 20% 0px" }).observe(sec);
+  new IntersectionObserver(function (es) { near = es[0].isIntersecting; if (!near) bottom(-1); if (near) { tgt = prog(); cur = tgt; paint(); bottom(act); } }, { rootMargin: "20% 0px 20% 0px" }).observe(sec);
   addEventListener("scroll", onScroll, { passive: true }); addEventListener("resize", function () { size(); onScroll(); });
   steps.forEach(function (li, i) {
     li.addEventListener("click", function () {

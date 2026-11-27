@@ -161,8 +161,8 @@ ${nav([["Home", "/"], ["Pricing", "#plans"], ...(combo ? [["Combo", "#combo"]] :
  </div></section>
 
 <section class="sp-sec" id="plans"><div class="sp-wrap"><h2 class="sp-rv">${esc(p.name)} plans and prices</h2><p class="sp-sub sp-rv">Every price is fixed in BDT. Choose a plan type, then the duration. Longer plans cost less per month.</p><div class="sp-vgrid">${plansHtml(p).replace(/<div class="sp-vcard">/g, '<div class="sp-vcard sp-rv">')}</div></div></section>
-${STORY.has(p.name) ? "\n" + story({ p, qp, esc, taka, logo, ic }) : ""}
 ${comboHtml(p)}
+${STORY.has(p.name) ? story({ p, qp, esc, taka, logo, ic }) : ""}
 ${trendHtml(p)}
 <section class="sp-sec sp-alt sp-ab" id="about"><div class="sp-wrap sp-abgrid">
  <div class="sp-abvis sp-rv" aria-hidden="true"><i class="sp-abring"></i><i class="sp-abring r2"></i><i class="sp-abring r3"></i><div class="sp-ablogo">${logo(p)}</div><span class="sp-abb b1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg> Fast delivery</span><span class="sp-abb b2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18"/></svg> Pay in BDT</span><span class="sp-abb b3"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 6v6c0 4.5 3 7.5 7 9 4-1.5 7-4.5 7-9V6z"/><path d="m9 12 2 2 4-4"/></svg> Warranty</span></div>
@@ -189,7 +189,7 @@ ${reviewsHtml(p)}
 </main>
 <div class="sp-buybar" id="spBuy" hidden><div><small>${p.ask ? "Price" : "From"}</small><b>${p.ask ? "On request" : taka(from)}</b></div><a class="sp-btn" href="${p.ask ? wa(orderMsg) : "#plans"}"${p.ask ? ' rel="noopener"' : ""}>${p.ask ? "Ask on WhatsApp" : "Choose plan"}</a></div>
 ${foot}
-${script}${STORY.has(p.name) ? '<script src="/assets/js/service-story.js?v=1" defer></script>' : ""}
+${script}${STORY.has(p.name) ? '<script src="/assets/js/service-story.js?v=2" defer></script>' : ""}
 </body></html>`;
 }
 
