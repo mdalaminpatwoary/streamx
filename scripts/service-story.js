@@ -57,3 +57,22 @@ module.exports.card = function card({ p, qp, esc, taka, logo, ic }) {
    <div class="nfc-dev" data-tv="0" aria-label="Where you can watch"><span class="dv"><i><svg viewBox="0 0 24 24"><rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/></svg></i>Phone</span><span class="dv"><i><svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="12" rx="2"/><path d="M8 20h8M12 16.5V20"/></svg></i>Web</span><span class="dv dv-tv"><i><svg viewBox="0 0 24 24"><rect x="2.5" y="4" width="19" height="13" rx="2.5"/><path d="M8 21h8M12 17v4"/></svg></i>TV</span></div>
    <a class="sp-btn nfc-go" href="#plans">Choose this plan <span aria-hidden="true">→</span></a></aside>`;
 };
+
+
+/* The pricing section of a story page: one duration switch drives every plan card; each card keeps real buy links. */
+module.exports.plans = function plans({ p, esc, taka, slug, buy }) {
+  const vs = p.variants, mo = vs[0].plans.map(x => x.v), n = mo.length;
+  const save = k => Math.max(0, ...vs.map(v => { const a = v.plans[0], b = v.plans[k]; return a && b && a.p > 0 && b.m > 1 ? Math.round((1 - b.p / (a.p * b.m)) * 100) : 0; }));
+  const chk = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>';
+  const dur = `<div class="nfp-dur" role="group" aria-label="Choose duration">${mo.map((m, k) => `<button type="button" class="${k ? "" : "on"}" data-k="${k}" aria-pressed="${k ? "false" : "true"}">${esc(m)}${save(k) ? `<em>Save up to ${save(k)}%</em>` : ""}</button>`).join("")}</div>`;
+  const card = (v, vi) => {
+    const top = v.f.slice(0, 4), rest = v.f.slice(4);
+    return `<article class="nfp-card sp-rv"><header><h3>${esc(v.n)}</h3>${v.tag ? `<span class="nfp-tag">${esc(v.tag)}</span>` : ""}</header><p class="nfp-line">${esc(v.line)}</p>
+     <div class="nfp-price">${v.plans.map((pl, k) => `<div class="nfp-pr" data-k="${k}"><b>${taka(pl.p)}</b><span>${pl.m > 1 ? `${taka(Math.round(pl.p / pl.m))} / month` : "for 1 month"}</span></div>`).join("")}</div>
+     <ul class="nfp-ft">${top.map(x => `<li>${chk}${esc(x)}</li>`).join("")}</ul>
+     ${rest.length || v.notes.length ? `<details class="nfp-more"><summary>All features</summary><ul class="nfp-ft">${rest.map(x => `<li>${chk}${esc(x)}</li>`).join("")}</ul>${v.notes.length ? `<ul class="nfp-nt">${v.notes.map(x => `<li>${esc(x)}</li>`).join("")}</ul>` : ""}</details>` : ""}
+     <div class="nfp-acts">${v.plans.map((pl, k) => `<div class="nfp-act" data-k="${k}"><a class="sp-row" href="/#plan=${slug(p.name)}&v=${vi}&k=${k}"${buy(p.name, vs.length > 1 ? v.n : "", pl.v, v.n, pl.p)}><span>Buy now</span><i>${taka(pl.p)}</i></a></div>`).join("")}</div></article>`;
+  };
+  return `<div class="sp-wrap"><span class="sp-eyebrow sp-rv">Pricing</span><h2 class="sp-rv">${esc(p.name)} plans and prices</h2><p class="sp-sub sp-rv">Every price is fixed in BDT. Pick how long you want it and every plan updates. Longer plans cost less per month.</p>
+   ${dur}<div class="nfp-grid" data-d="0">${vs.map(card).join("")}</div></div>`;
+};

@@ -10,6 +10,13 @@
     }); });
   })();
   (function () {
+    var g = document.querySelector(".nfp-grid"), tabs = [].slice.call(document.querySelectorAll(".nfp-dur button")); if (!g || !tabs.length) return;
+    tabs.forEach(function (t) { t.addEventListener("click", function () {
+      tabs.forEach(function (x) { var on = x === t; x.classList.toggle("on", on); x.setAttribute("aria-pressed", on ? "true" : "false"); });
+      g.setAttribute("data-d", t.getAttribute("data-k"));
+    }); });
+  })();
+  (function () {
     var hero = document.querySelector(".nf .sp-hero"); if (!hero || !("IntersectionObserver" in window)) return;
     new IntersectionObserver(function (es) { document.body.classList.toggle("nf-hero", es[0].isIntersecting); }, { threshold: .2 }).observe(hero);
   })();
