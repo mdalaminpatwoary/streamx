@@ -299,3 +299,6 @@
 .nf .nfc-dev[data-tv="0"] .dv-tv i{background:rgba(255,255,255,.025);box-shadow:none;opacity:.55}
 .nf .nfc-dev[data-tv="0"] .dv-tv i::after{content:"";position:absolute;width:18px;height:1.5px;border-radius:2px;background:#6d7698;transform:rotate(-45deg)}
 @media(max-width:520px){.nf .nfc-dev .dv::after{font-size:8.5px;letter-spacing:.04em}.nf .nfc-dev .dv{padding:8px 3px 7px}}
+
+/* CTA a touch deeper and calmer: less glow, finer outline */
+.nf .nfc-go{background:linear-gradient(180deg,#d9261d 0%,#b01017 100%)!important;border:1px solid rgba(255,130,112,.22);box-shadow:inset 0 1px 0 rgba(255,255,255,.22),inset 0 -10px 18px -12px rgba(70,0,6,.5),0 12px 24px -16px rgba(229,9,20,.55)}
