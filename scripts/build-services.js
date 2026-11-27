@@ -21,7 +21,7 @@ const wa = t => `https://wa.me/${WA}?text=${encodeURIComponent(t)}`;
 const ADULT = run("ADULT_PAGES");
 const isAdult = p => p.cat === "18+";
 const OG_V = { chorki: 2, "entertainment-combo": 2 }; // bump when a share image is redrawn so WhatsApp refetches it
-const pages = PRODUCTS.filter(p => p.cat !== "18+" || ADULT.includes(p.name));
+const pages = PRODUCTS.filter(p => p.cat !== "18+");   // 18+ services are not part of /services/: see scripts/build-adults.js
 const open18 = pages.filter(p => !isAdult(p));   // pages shown in the hub, sitemap, share images and "related" lists
 const allPrices = p => { const a = p.variants.flatMap(v => v.plans.map(x => x.p)), b = a.filter(x => x > 0); return b.length ? b : [0]; };
 const lo = p => Math.min(...allPrices(p)), hi = p => Math.max(...allPrices(p));

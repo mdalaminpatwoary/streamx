@@ -20,7 +20,7 @@ const GEMV=()=>[
  V("Individual + Full warranty","Full warranty","Individual account activated with a redeem link, with a full 6-month warranty.",[...GEMI,"Full warranty"],[],{6:1000}),
  V("Individual + Activation warranty","Activation warranty","Individual account activated with a redeem link, with an activation warranty.",[...GEMI,"Activation warranty"],["Activation warranty only"],{6:500})];
 // 18+ services that also get their own (age-gated, not search-indexed) page under /services/.
-const ADULT_PAGES=["Ullu","ALTT","Atrangii"];
+const ADULT_PAGES=[]; // 18+ services have no pages under /services/: they are sold from their own separate page
 // [name, category, brand color, short description, [plan types]]
 const CATALOG=[
 ["Netflix","Streaming","#e50914","Blockbusters and binge-worthy series in FHD / 4K, with four plan types to choose from.",[
