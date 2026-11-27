@@ -287,18 +287,15 @@
 @media(max-width:640px){.nf .nfc-seg .ed{display:none}}
 .nf .sp-hero h1 span{padding-bottom:.16em;margin-bottom:-.16em}
 
-/* ===== Where you can watch: one glass strip; TV is dimmed on Share/Private and lit on Single Slot and Signature ===== */
-.nf .nfc-dev{display:grid;grid-template-columns:repeat(3,1fr);margin:0 0 16px;border-radius:18px;overflow:hidden;background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.015));border:1px solid rgba(255,255,255,.09);box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
-.nf .nfc-dev .dv{position:relative;display:flex;flex-direction:column;align-items:center;gap:3px;padding:13px 6px 12px;font-size:12.5px;font-weight:650;letter-spacing:.02em;color:#d3d9ee;transition:color .4s,background .4s}
-.nf .nfc-dev .dv+.dv::before{content:"";position:absolute;left:0;top:18%;bottom:18%;width:1px;background:linear-gradient(180deg,transparent,rgba(255,255,255,.12),transparent)}
-.nf .nfc-dev .dv::after{content:"Supported";font-size:10.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#7c87ab;transition:color .4s}
-.nf .nfc-dev .dv i{display:grid;place-items:center;width:34px;height:34px;margin-bottom:3px;border-radius:12px;background:rgba(255,255,255,.06);box-shadow:inset 0 1px 0 rgba(255,255,255,.1);transition:background .4s,box-shadow .4s,transform .4s}
-.nf .nfc-dev svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
-.nf .nfc-dev[data-tv="0"] .dv-tv{color:#6d7698}
+/* ===== Where you can watch: supported = lit (red tile + soft spotlight), not supported = dimmed ===== */
+.nf .nfc-dev{display:grid;grid-template-columns:repeat(3,1fr);margin:0 0 14px;border-radius:16px;overflow:hidden;background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.015));border:1px solid rgba(255,255,255,.09);box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+.nf .nfc-dev .dv{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;padding:9px 6px 8px;font-size:12px;font-weight:650;letter-spacing:.02em;color:#fff;background:radial-gradient(ellipse 90% 80% at 50% 0,rgba(229,9,20,.26),transparent 75%);transition:color .4s,background .4s}
+.nf .nfc-dev .dv+.dv::before{content:"";position:absolute;left:0;top:16%;bottom:16%;width:1px;background:linear-gradient(180deg,transparent,rgba(255,255,255,.12),transparent)}
+.nf .nfc-dev .dv::after{content:"Supported";font-size:9.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#ff8a80;transition:color .4s}
+.nf .nfc-dev .dv i{display:grid;place-items:center;width:28px;height:28px;margin-bottom:2px;border-radius:10px;background:linear-gradient(160deg,#f0291f,#b30f18);box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 6px 18px -6px rgba(229,9,20,.95),0 0 0 3px rgba(229,9,20,.12);transition:background .4s,box-shadow .4s}
+.nf .nfc-dev svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.nf .nfc-dev[data-tv="0"] .dv-tv{color:#6d7698;background:none}
 .nf .nfc-dev[data-tv="0"] .dv-tv::after{content:"Not supported";color:#5b6485}
 .nf .nfc-dev[data-tv="0"] .dv-tv i{background:rgba(255,255,255,.025);box-shadow:none;opacity:.55}
-.nf .nfc-dev[data-tv="0"] .dv-tv i::after{content:"";position:absolute;width:22px;height:1.5px;border-radius:2px;background:#6d7698;transform:translateY(-6px) rotate(-45deg);transform-origin:50% 50%;margin-top:12px}
-.nf .nfc-dev[data-tv="1"] .dv-tv{color:#fff;background:radial-gradient(ellipse 90% 80% at 50% 0,rgba(229,9,20,.28),transparent 75%)}
-.nf .nfc-dev[data-tv="1"] .dv-tv::after{content:"Supported";color:#ff8a80}
-.nf .nfc-dev[data-tv="1"] .dv-tv i{background:linear-gradient(160deg,#f0291f,#b30f18);box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 8px 22px -6px rgba(229,9,20,.95),0 0 0 4px rgba(229,9,20,.12);transform:translateY(-1px)}
-@media(max-width:520px){.nf .nfc-dev .dv::after{font-size:9.5px;letter-spacing:.05em}.nf .nfc-dev .dv{padding:12px 4px 11px}}
+.nf .nfc-dev[data-tv="0"] .dv-tv i::after{content:"";position:absolute;width:18px;height:1.5px;border-radius:2px;background:#6d7698;transform:rotate(-45deg)}
+@media(max-width:520px){.nf .nfc-dev .dv::after{font-size:8.5px;letter-spacing:.04em}.nf .nfc-dev .dv{padding:8px 3px 7px}}
