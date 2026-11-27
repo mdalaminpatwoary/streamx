@@ -41,6 +41,7 @@ module.exports = async (req, res) => {
     const stamp = Date.now().toString() + Math.floor(1000 + Math.random() * 9000);
     const mtid = stamp; // unique, 10+ digits
     const ret = (s) => `${site}/payment-result.html?s=${s}&t=${mtid}`;
+    const itemName = (l) => `${l.name} (${l.plan}) ×${l.q}`;
     const summary = lines.map((l) => `${l.name} (${l.plan}) x${l.q}`).join("; ") + (cp ? ` | Coupon ${cp.code} -৳${cp.discount}` : "");
     const ip = clean((req.headers["x-forwarded-for"] || "").split(",")[0], 45) || "0.0.0.0";
 
@@ -91,11 +92,11 @@ module.exports = async (req, res) => {
       valueD: cp ? "Coupon " + cp.code + " -" + cp.discount : "",
       shippingMethod: "NO",
       noOfItem: String(lines.reduce((s, l) => s + l.q, 0)),
-      productName: clean(lines.map((l) => l.name).join(", "), 100),
+      productName: clean(lines.map(itemName).join(", "), 100),
       productProfile: "digital-subscription",
       productCategory: "Subscription",
       ProductList: lines.map((l) => ({
-        ProductName: l.name,
+        ProductName: clean(itemName(l), 100),   // e.g. "Netflix (Share Profile · 1 Month) ×1": what the customer sees on the EPS receipt
         NoOfItem: String(l.q),
         ProductProfile: l.plan,
         ProductCategory: "Subscription",
