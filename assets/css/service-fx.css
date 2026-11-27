@@ -1,0 +1,22 @@
+/* Service pages: a soft, slow glow behind the hero in the service's own colour, and section pills that move into the nav pill on phones. Light on purpose: the plans stay the focus. */
+.sp-hero>.sp-wrap{position:relative;z-index:1}
+.sp-hero .hx-fx{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+.sp-hero .hx-fx i{position:absolute;border-radius:50%;will-change:transform}
+.sp-hero .hx-b1{width:64vmax;height:64vmax;left:-26vmax;top:-28vmax;background:radial-gradient(closest-side,rgba(237,49,36,.3),transparent);background:radial-gradient(closest-side,color-mix(in srgb,var(--c,#ed3124) 34%,transparent),transparent);animation:sxA 18s ease-in-out infinite alternate}
+.sp-hero .hx-b2{width:56vmax;height:56vmax;right:-28vmax;top:-10vmax;background:radial-gradient(closest-side,rgba(79,107,255,.28),transparent);animation:sxB 22s ease-in-out infinite alternate}
+.sp-hero .hx-b3{display:none}
+@keyframes sxA{to{transform:translate3d(12vmax,8vmax,0) scale(1.12)}}
+@keyframes sxB{to{transform:translate3d(-10vmax,10vmax,0) scale(.94)}}
+.sp-ind,.hb-ind{position:absolute;left:0;top:2px;bottom:2px;width:0;border-radius:99px;z-index:0;pointer-events:none;background:linear-gradient(100deg,#ed3124,#ff6a3d);box-shadow:0 8px 22px -6px rgba(237,49,36,.7),inset 0 1px 0 rgba(255,255,255,.3);transition:transform .5s cubic-bezier(.2,.9,.25,1),width .5s cubic-bezier(.2,.9,.25,1),opacity .3s}
+.hb-navchips{display:none}
+@media(max-width:640px){
+  .hb-navchips{display:flex;position:relative;gap:6px;flex:0 1 0;max-width:0;min-width:0;margin:0;padding:2px;opacity:0;visibility:hidden;overflow-x:auto;scrollbar-width:none;transition:max-width .6s cubic-bezier(.22,1,.36,1),opacity .3s,visibility 0s .6s;-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 var(--fl,0px),#000 calc(100% - var(--fr,0px)),transparent 100%);mask-image:linear-gradient(90deg,transparent 0,#000 var(--fl,0px),#000 calc(100% - var(--fr,0px)),transparent 100%)}
+  .hb-navchips::-webkit-scrollbar{display:none}
+  .hb-navchips button{position:relative;z-index:1;flex:none;display:inline-flex;align-items:center;padding:7px 13px;border:1px solid rgba(255,255,255,.12);border-radius:99px;background:rgba(255,255,255,.04);color:#c9d0e8;font:700 13px Manrope,sans-serif;white-space:nowrap;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:color .25s,border-color .25s,transform .2s}
+  .hb-navchips button:active{transform:scale(.94)}
+  .hb-navchips button.on{background:transparent;border-color:transparent;color:#fff}
+  .sp-nav.sp-chipmode .hb-navchips{flex:1 1 auto;max-width:100%;opacity:1;visibility:visible;transition:max-width .6s cubic-bezier(.22,1,.36,1) .1s,opacity .35s .22s,visibility 0s}
+  .sp-nav.sp-chipmode .sp-navin{width:min(1140px,100% - 28px)!important;padding-left:12px!important;gap:8px;background:rgba(10,13,28,.9)!important}
+  .sp-nav.sp-chipmode .sp-brand{flex:none}
+}
+@media(prefers-reduced-motion:reduce){.sp-hero .hx-fx i{animation:none}.sp-ind,.hb-ind,.hb-navchips{transition:none!important}}
