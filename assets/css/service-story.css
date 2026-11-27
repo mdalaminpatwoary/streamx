@@ -309,3 +309,10 @@
 .nf .nfc-price b{font-size:clamp(32px,4.2vw,42px)}
 .nf .nfc-price span{font-size:13px}
 .nf .nfc-seg{margin:14px 0 12px}
+
+/* Hero polish: no chat nudge over the card, tidy trust grid, balanced subtitle, clearer plan names */
+.nf.nf-hero #cwBubble{opacity:0!important;visibility:hidden!important;pointer-events:none!important}
+.nf .sp-hero .sp-lead{text-wrap:balance}
+@media(min-width:521px){.nf .sp-trust{display:grid;grid-template-columns:repeat(2,max-content);gap:16px 44px}.nf .sp-trust li{flex:none}}
+.nf .nfc-seg button{color:#c3cbe4}
+.nf .nfc-seg button.on{color:#fff}

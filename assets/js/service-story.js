@@ -9,6 +9,10 @@
       out.textContent = b.getAttribute("data-p"); var dv = card.querySelector(".nfc-dev"); if (dv) dv.setAttribute("data-tv", b.getAttribute("data-tv") || "0"); lab.textContent = bs.indexOf(b) ? "Price" : "Starting from"; out.classList.remove("pop"); void out.offsetWidth; out.classList.add("pop");
     }); });
   })();
+  (function () {
+    var hero = document.querySelector(".nf .sp-hero"); if (!hero || !("IntersectionObserver" in window)) return;
+    new IntersectionObserver(function (es) { document.body.classList.toggle("nf-hero", es[0].isIntersecting); }, { threshold: .2 }).observe(hero);
+  })();
   var sec = document.getElementById("journey"); if (!sec) return;
   var stage = sec.querySelector(".nj-stage"), track = sec.querySelector(".nj-track"), slots = [].slice.call(sec.querySelectorAll(".ns")), steps = [].slice.call(sec.querySelectorAll(".nj-copy li"));
   var N = slots.length, labels = ["Choose", "Pay", "Confirm", "Prepare", "Deliver", "Watch"];
