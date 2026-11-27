@@ -285,3 +285,4 @@
 @media(max-width:520px){.nf .nfc-seg{gap:8px}.nf .nfc-seg button{padding:13px 6px 13px 28px;font-size:12.5px;letter-spacing:0;white-space:nowrap}.nf .nfc-seg button::before{left:10px;width:11px;height:11px;margin-top:-5.5px}}
 .nf .nfc-seg button{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 @media(max-width:640px){.nf .nfc-seg .ed{display:none}}
+.nf .sp-hero h1 span{padding-bottom:.16em;margin-bottom:-.16em}
