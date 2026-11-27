@@ -36,6 +36,7 @@
    "html.sx-tb-on #acctBtn,html.sx-tb-on .sp-nr .sp-acct[href='/account/']{display:none!important}"+
    "html.sx-tb-on .sp-nav nav{display:none!important}"+
    "html.sx-tb-on .sp-nav .sp-navin{flex-wrap:nowrap}"+
+   "html.sx-tb-on #burger{order:9}"+
    ".sx-mb{display:none}"+
    "html.sx-tb-on .sx-mb{display:grid;place-items:center;width:40px;height:40px;padding:0;margin:0;border-radius:99px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#fff;cursor:pointer}"+
    ".sx-mp{position:fixed;left:12px;right:12px;top:calc(68px + env(safe-area-inset-top,0px));z-index:49;display:none;flex-direction:column;gap:2px;padding:10px;border-radius:24px;background:linear-gradient(180deg,#151a3a,#090c1a);box-shadow:0 30px 70px -20px rgba(0,0,0,.85),inset 0 0 0 1px rgba(255,255,255,.1);max-height:calc(100dvh - 160px);overflow-y:auto}"+
@@ -59,7 +60,7 @@
   if(spNr&&spNav){
     var mb=document.createElement("button");mb.type="button";mb.className="sx-mb";mb.setAttribute("aria-label","Menu");mb.setAttribute("aria-expanded","false");
     mb.innerHTML='<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h10"/></svg>';
-    spNr.insertBefore(mb,spNr.firstChild);
+    spNr.appendChild(mb);
     var mp=document.createElement("div");mp.className="sx-mp";document.body.appendChild(mp);
     var shut=function(){mp.classList.remove("on");mb.setAttribute("aria-expanded","false")};
     mb.addEventListener("click",function(e){e.stopPropagation();if(mp.classList.contains("on"))return shut();
