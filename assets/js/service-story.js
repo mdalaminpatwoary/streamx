@@ -17,20 +17,40 @@
     dsegs.forEach(function (u, i) { u.style.transform = "scaleX(" + Math.min(1, Math.max(0, cur - i + .5)).toFixed(3) + ")"; });
   }
   var cur = 0, tgt = 0, raf = 0, W = 0, U = 4.6, near = false, act = -1;
-  function size() { W = stage.clientWidth; U = W / 100; stage.style.setProperty("--u", U.toFixed(3) + "px"); paint(); }
+  var D = 70, XS = [0, 1, 2, 3, 4, 5].map(function (i) { return (i % 2 ? 1 : -1) * 17; }), FY = 62, segs = [], rings = [];
+  (function build() {
+    var f = document.createElement("i"); f.className = "w-floor"; track.appendChild(f);
+    for (var i = 0; i < N - 1; i++) { var g = document.createElement("i"); g.className = "w-seg"; track.appendChild(g); segs.push(g); }
+    slots.forEach(function (sl) { var r = document.createElement("i"); r.className = "w-ring"; track.appendChild(r); rings.push(r); });
+    for (var k = 0; k < 46; k++) { var d = document.createElement("i"); d.className = "w-dot"; d.style.setProperty("--x", ((Math.random() - .5) * 190).toFixed(1)); d.style.setProperty("--y", (Math.random() * 78 - 22).toFixed(1)); d.style.setProperty("--z", (-Math.random() * D * (N + .5) + 40).toFixed(1)); d.style.setProperty("--s", (.5 + Math.random() * 1.1).toFixed(2)); track.appendChild(d); }
+  })();
+  function place() {
+    var u = U; slots.forEach(function (sl, i) { sl.style.transform = "translate3d(" + (XS[i] * u).toFixed(1) + "px,0," + (-i * D * u).toFixed(1) + "px)"; rings[i].style.transform = "translate3d(" + (XS[i] * u).toFixed(1) + "px," + (FY * u).toFixed(1) + "px," + (-i * D * u).toFixed(1) + "px) rotateX(90deg)"; });
+    segs.forEach(function (g, i) {
+      var dx = (XS[i + 1] - XS[i]) * u, dz = -D * u, len = Math.sqrt(dx * dx + dz * dz), a = Math.atan2(-dz, dx) * 180 / Math.PI;
+      g.style.width = len.toFixed(1) + "px"; g.style.transform = "translate3d(" + (XS[i] * u).toFixed(1) + "px," + (FY * u).toFixed(1) + "px," + (-i * D * u).toFixed(1) + "px) rotateY(" + a.toFixed(2) + "deg) rotateX(90deg)";
+    });
+  }
+  function size() { W = stage.clientWidth; U = W / 100; stage.style.setProperty("--u", U.toFixed(3) + "px"); place(); paint(); }
   function prog() {
     var r = sec.getBoundingClientRect(), h = r.height - innerHeight; if (h <= 0) return 0;
     var p = Math.min(1, Math.max(0, -r.top / h)); return Math.min(1, Math.max(0, (p - .05) / .9)) * (N - 1);
   }
+  function lerpX(c) { var a = Math.max(0, Math.min(N - 1, c)), i = Math.floor(a), k = Math.min(N - 1, i + 1), t = a - i, e = t * t * (3 - 2 * t); return XS[i] + (XS[k] - XS[i]) * e; }
   function paint() {
-    track.style.transform = "translate3d(" + (W / 2 - (cur + .5) * 80 * U).toFixed(1) + "px,0,0)";
+    var cx = lerpX(cur), sway = (lerpX(cur + .02) - lerpX(cur - .02)) * 6;
+    track.style.transform = "translate3d(" + (-cx * U).toFixed(1) + "px," + (-4 * U).toFixed(1) + "px," + (cur * D * U).toFixed(1) + "px) rotateX(-7deg) rotateY(" + (sway * -.6).toFixed(2) + "deg)";
     slots.forEach(function (s, i) {
-      var d = cur - i, f = Math.max(0, 1 - Math.abs(d)), t = Math.min(1, Math.max(0, d + .5));
-      s.style.setProperty("--d", Math.max(-1, Math.min(1, d)).toFixed(3)); s.style.setProperty("--f", f.toFixed(3)); s.style.setProperty("--t", t.toFixed(3)); s.style.setProperty("--lit", t.toFixed(3));
+      var d = cur - i, a = -d, f = Math.max(0, 1 - Math.abs(d)), t = Math.min(1, Math.max(0, d + .5));
+      var o = a >= 0 ? Math.max(0, 1 - a * .52) : Math.max(0, 1 + d / .55);
+      s.style.setProperty("--d", Math.max(-1, Math.min(1, d)).toFixed(3)); s.style.setProperty("--f", f.toFixed(3)); s.style.setProperty("--t", t.toFixed(3)); s.style.setProperty("--o", o.toFixed(3)); s.style.setProperty("--bl", (Math.max(0, a) * 1.1).toFixed(2) + "px");
+      s.style.setProperty("--ry", ((XS[i] > 0 ? -1 : 1) * 14 * Math.min(1, Math.abs(d) + .35)).toFixed(2) + "deg");
+      rings[i].style.setProperty("--f", f.toFixed(3));
+      if (segs[i]) segs[i].style.setProperty("--lit", Math.min(1, Math.max(0, cur - i)).toFixed(3));
     });
     dockPaint();
-    var a = Math.min(N - 1, Math.max(0, Math.round(cur)));
-    if (a !== act) { act = a; dn.textContent = a + 1; dt.textContent = labels[a]; dg.textContent = CTA[a]; steps.forEach(function (li, i) { li.classList.toggle("on", i === a); }); }
+    var a2 = Math.min(N - 1, Math.max(0, Math.round(cur)));
+    if (a2 !== act) { act = a2; dn.textContent = a2 + 1; dt.textContent = labels[a2]; dg.textContent = CTA[a2]; steps.forEach(function (li, i) { li.classList.toggle("on", i === a2); }); }
   }
   function loop() { cur += (tgt - cur) * .16; if (Math.abs(tgt - cur) < .0007) { cur = tgt; paint(); raf = 0; return; } paint(); raf = requestAnimationFrame(loop); }
   function onScroll() { if (!near) return; tgt = prog(); if (!raf) raf = requestAnimationFrame(loop); }
