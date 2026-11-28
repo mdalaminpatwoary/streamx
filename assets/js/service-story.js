@@ -1,19 +1,36 @@
 /* Scroll story: scrolling the tall section pans a stage of six chained scenes. Without this script, or with reduced motion, the page just shows the list of steps. */
 (function () {
   "use strict";
+  /* Prices roll from the old number to the new one (only the text changes; honours reduced motion) */
+  var calm = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function num(x) { return parseInt(String(x).replace(/[^\d]/g, ""), 10) || 0; }
+  function countTo(el, from, text) {
+    var to = num(text), pre = String(text).replace(/[\d,\s].*$/, "");
+    if (el._cu) cancelAnimationFrame(el._cu);
+    if (calm || from === to || !from) { el.textContent = text; return; }
+    var t0 = null, D = 520;
+    (function step(ts) {
+      if (t0 === null) t0 = ts;
+      var k = Math.min(1, (ts - t0) / D), e = 1 - Math.pow(1 - k, 3), v = Math.round(from + (to - from) * e);
+      el.textContent = k >= 1 ? text : pre + v.toLocaleString("en-US");
+      if (k < 1) el._cu = requestAnimationFrame(step); else el._cu = 0;
+    })(performance.now());
+  }
   (function () {
     var card = document.querySelector(".nf-card"); if (!card) return;
     var lab = card.querySelector(".nfc-price small"), out = card.querySelector("[data-nfp]"), bs = [].slice.call(card.querySelectorAll(".nfc-seg button"));
     bs.forEach(function (b) { b.addEventListener("click", function () {
       bs.forEach(function (x) { var on = x === b; x.classList.toggle("on", on); x.setAttribute("aria-pressed", on ? "true" : "false"); });
-      out.textContent = b.getAttribute("data-p"); var dv = card.querySelector(".nfc-dev"); if (dv) dv.setAttribute("data-tv", b.getAttribute("data-tv") || "0"); lab.textContent = bs.indexOf(b) ? "Price" : "Starting from"; var bl = document.getElementById("spBuyL"), bp = document.getElementById("spBuyP"); if (bl && bp) { bl.textContent = b.firstChild.textContent.trim() + (b.querySelector(".ed") ? " Edition" : "") + " · " + (bs.indexOf(b) ? "price" : "from"); bp.textContent = b.getAttribute("data-p"); } out.classList.remove("pop"); void out.offsetWidth; out.classList.add("pop");
+      countTo(out, num(out.textContent), b.getAttribute("data-p")); var dv = card.querySelector(".nfc-dev"); if (dv) dv.setAttribute("data-tv", b.getAttribute("data-tv") || "0"); lab.textContent = bs.indexOf(b) ? "Price" : "Starting from"; var bl = document.getElementById("spBuyL"), bp = document.getElementById("spBuyP"); if (bl && bp) { bl.textContent = b.firstChild.textContent.trim() + (b.querySelector(".ed") ? " Edition" : "") + " · " + (bs.indexOf(b) ? "price" : "from"); bp.textContent = b.getAttribute("data-p"); } out.classList.remove("pop"); void out.offsetWidth; out.classList.add("pop");
     }); });
   })();
   (function () {
     var g = document.querySelector(".nfp-grid"), tabs = [].slice.call(document.querySelectorAll(".nfp-dur button")); if (!g || !tabs.length) return;
     tabs.forEach(function (t) { t.addEventListener("click", function () {
       tabs.forEach(function (x) { var on = x === t; x.classList.toggle("on", on); x.setAttribute("aria-pressed", on ? "true" : "false"); });
-      g.setAttribute("data-d", t.getAttribute("data-k"));
+      var oldK = g.getAttribute("data-d"), newK = t.getAttribute("data-k"), before = [].map.call(g.querySelectorAll(".nfp-card"), function (c) { var b = c.querySelector('.nfp-pr[data-k="' + oldK + '"] b'); return b ? num(b.getAttribute("data-t") || b.textContent) : 0; });
+      g.setAttribute("data-d", newK);
+      [].forEach.call(g.querySelectorAll(".nfp-card"), function (c, i) { var b = c.querySelector('.nfp-pr[data-k="' + newK + '"] b'); if (!b) return; if (!b.getAttribute("data-t")) b.setAttribute("data-t", b.textContent); countTo(b, before[i], b.getAttribute("data-t")); });
     }); });
   })();
   (function () {

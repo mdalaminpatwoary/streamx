@@ -100,3 +100,8 @@
 .rs-fb,.rs-fb:hover{padding:0;border-radius:0;background:none;box-shadow:none;color:#ff8a7c;font-size:14px;font-weight:650}
 .rs-fb i{width:auto;height:auto;margin-left:6px;background:none;font-size:15px}
 .rs-fb:hover{color:#fff}
+
+/* Stars fill in one by one */
+.rs-stars i{display:inline-block;font-style:normal;opacity:0;transform:scale(.3) rotate(-25deg);animation:rsStar .4s cubic-bezier(.2,.9,.3,1.4) calc(.55s + var(--s,0) * .1s) both}
+@keyframes rsStar{to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.rs-stars i{animation:none;opacity:1;transform:none}}

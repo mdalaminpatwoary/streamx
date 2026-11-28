@@ -14,6 +14,7 @@
   var QUOTE = '<svg class="rs-q" viewBox="0 0 48 36" aria-hidden="true"><path d="M0 36V20C0 8 6 1.5 18 0v7c-6 1.2-8.600 4.400-8.800 9H18v20zm27 0V20C27 8 33 1.500 45 0v7c-6 1.200-8.600 4.400-8.800 9H45v20z"/></svg>';
   var MS = 10000, L = [], pk = 0, el = 0, hover = false, seen = true, busy = false;
   var chips = function (r) { return (r.services && r.services.length ? r.services : [r.p]).slice(0, 3).map(function (s, x) { return '<span class="rs-chip c' + x + '"><img src="/assets/img/logos/' + slug(s) + '.svg" alt="" onerror="this.remove()"><em>' + esc(s) + "</em></span>"; }).join(""); };
+  var stars = function (n) { var h = ""; for (var i = 0; i < n; i++) h += '<i style="--s:' + i + '">\u2605</i>'; return h; };
   function set(n, instant) {
     if (busy) return;
     var prev = box.querySelector(".rs");
@@ -22,7 +23,7 @@
       var cc = r.cc ? '<span class="rs-cc">' + flag(r.cc) + (r.x ? "Expatriate · " : "") + esc(cname(r.cc)) + "</span>" : "";
       box.innerHTML = '<div class="rs" style="' + grad(pk) + '"><div class="rs-bg" aria-hidden="true"><i></i><i></i></div>' +
         '<div class="rs-portrait"><span class="rs-pring"></span><div class="rs-frame"><span class="rs-init">' + esc(ini(r.n)) + "</span>" + ph(r) + '<span class="rs-shine"></span></div>' +
-        '<span class="rs-badge"><span class="rs-stars">' + "★".repeat(r.s || 5) + "</span><b>" + (r.s || 5).toFixed(1) + "</b></span></div>" +
+        '<span class="rs-badge"><span class="rs-stars">' + stars(r.s || 5) + "</span><b>" + (r.s || 5).toFixed(1) + "</b></span></div>" +
         '<div class="rs-body"><span class="sp-eyebrow">Featured review</span>' + QUOTE +
         "<blockquote>" + String(r.t).split(" ").map(function (w, k) { return '<span class="rw" style="--k:' + k + '">' + esc(w) + "</span>"; }).join(" ") + "</blockquote>" +
         '<div class="rs-by"><b>' + esc(r.n) + "</b><span>" + esc([r.role, r.company].filter(Boolean).join(" · ")) + "</span>" + cc + "</div>" +

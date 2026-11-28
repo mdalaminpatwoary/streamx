@@ -90,7 +90,7 @@ module.exports.plans = function plans({ p, esc, taka, slug, buy }) {
     ["Customizable profile", v => /customizable/i.test(feat(v)) && !/no customization/i.test(feat(v))],
     ["Multi-device access", v => /multi-device/i.test(feat(v))],
     ["4K Ultra HD streaming", v => /4K/i.test(feat(v))],
-    ["Instant delivery", v => /instant delivery/i.test(feat(v)), v => /stock/i.test(feat(v)) ? "On stock" : null],
+    ["Instant delivery", v => /instant delivery/i.test(feat(v)), v => /within minutes to a few hours/i.test(feat(v)) ? "Minutes to hours" : null],
     ["Priority service", v => /priority/i.test(feat(v))]
   ].filter(r => vs.some(r[1]));
   const cmp = `<div class="nfp-cmp sp-rv"><h3>Compare plans</h3><div class="nfp-cmpw"><table><thead><tr><th scope="col"><span class="sr">Feature</span></th>${vs.map(v => `<th scope="col">${esc(v.n)}<small>from ${taka(v.plans[0].p)}</small></th>`).join("")}</tr></thead><tbody>${rows.map(r => `<tr><th scope="row">${esc(r[0])}</th>${vs.map(v => { const t = r[2] && r[2](v); return `<td>${t ? `<span class="t">${esc(t)}</span>` : r[1](v) ? yes : no}</td>`; }).join("")}</tr>`).join("")}</tbody></table></div></div>`;
