@@ -581,3 +581,20 @@ html.nfs-lock{overflow:hidden}
 /* Performance: skip drawing sections that are far below the screen, pause looping animations that are out of view */
 .nf #about,.nf #why,.nf #reviews,.nf #faq,.nf #related,.nf .nfe-sec{content-visibility:auto;contain-intrinsic-size:auto 720px}
 .nf .nfx-off,.nf .nfx-off *,.nf .nfx-off *::before,.nf .nfx-off *::after{animation-play-state:paused!important}
+
+/* FAQ: numbered editorial list, hairline rows, red wash on the open row */
+.nf #faq .sp-faqlist{counter-reset:q;border-top:1px solid rgba(255,255,255,.12)}
+.nf #faq .sp-faq{counter-increment:q;position:relative;margin:0;border:0;border-bottom:1px solid rgba(255,255,255,.12);border-radius:0;background:none;box-shadow:none;overflow:visible}
+.nf #faq .sp-faq::before{content:"";position:absolute;inset:0 -18px;z-index:-1;border-radius:18px;background:linear-gradient(90deg,rgba(237,49,36,.14),rgba(237,49,36,0) 70%);opacity:0;transition:opacity .35s}
+.nf #faq .sp-faq[open]::before,.nf #faq .sp-faq:hover::before{opacity:1}
+.nf #faq .sp-faq:not([open]):hover::before{opacity:.5}
+.nf #faq .sp-faq summary{display:flex;align-items:baseline;gap:22px;padding:26px 56px 26px 0;font-size:clamp(17px,1.5vw,21px);font-weight:600;letter-spacing:-.015em;color:#dfe3f2;transition:color .25s}
+.nf #faq .sp-faq summary::before{content:counter(q,decimal-leading-zero);flex:none;font-size:13px;font-weight:700;letter-spacing:.12em;color:#ed3124;opacity:.8;font-variant-numeric:tabular-nums}
+.nf #faq .sp-faq[open] summary,.nf #faq .sp-faq summary:hover{color:#fff}
+.nf #faq .sp-faq summary::after{content:"";right:2px;width:32px;height:32px;border-radius:50%;border:1px solid rgba(255,255,255,.22);background:
+ linear-gradient(#fff,#fff) center/12px 1.5px no-repeat,linear-gradient(#fff,#fff) center/1.5px 12px no-repeat;transition:rotate .4s cubic-bezier(.2,.8,.2,1),background-color .25s,border-color .25s}
+.nf #faq .sp-faq[open] summary::after{rotate:135deg;background-color:#ed3124;border-color:#ed3124}
+.nf #faq .sp-faq p{padding:0 56px 28px 41px;font-size:16px;line-height:1.7;color:#aab2cd;max-width:62ch}
+@media (max-width:600px){.nf #faq .sp-faq summary{gap:14px;padding-right:46px}.nf #faq .sp-faq p{padding:0 8px 24px 0}.nf #faq .sp-faq::before{inset:0 -10px}}
+@media (prefers-reduced-motion:reduce){.nf #faq .sp-faq::before,.nf #faq .sp-faq summary::after{transition:none}}
+.nf .sp-grid{display:none}

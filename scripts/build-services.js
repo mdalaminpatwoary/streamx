@@ -143,7 +143,7 @@ function servicePage(p) {
   const mn = v => { const b = v.plans.filter(x => x.p > 0).map(x => x.p); return b.length ? Math.min(...b) : 0; };
   const qp = (p.gift ? [5, 10, 25, 50].map(a => ["$" + a + " card", a * 130]) : p.packs ? p.packs.map(k => [k.n, k.p]) : p.variants.length === 1 && p.variants[0].plans.filter(x => !x.u).length > 1 ? p.variants[0].plans.filter(x => !x.u).map(x => [x.v, x.ask ? 0 : x.p]) : p.variants.map(v => [v.n, mn(v)])).slice(0, 5);
   const orderMsg = `Hi StreamX! I want to buy ${p.name}.`;
-  return head({ title, desc, url, img, noindex: isAdult(p), extra: (isAdult(p) ? "" : `<script type="application/ld+json">${JSON.stringify(ld)}</script>`) + (STORY.has(p.name) ? '<link rel="stylesheet" href="/assets/css/service-story.css?v=83"><link rel="stylesheet" href="/assets/css/service-reviews.css?v=3">' : "") }) + `
+  return head({ title, desc, url, img, noindex: isAdult(p), extra: (isAdult(p) ? "" : `<script type="application/ld+json">${JSON.stringify(ld)}</script>`) + (STORY.has(p.name) ? '<link rel="stylesheet" href="/assets/css/service-story.css?v=87"><link rel="stylesheet" href="/assets/css/service-reviews.css?v=3">' : "") }) + `
 <body style="--c:${GLOW[p.name] || p.color}"${isAdult(p) ? ' class="sp-adult"' : STORY.has(p.name) ? ' class="nf"' : ""}>${isAdult(p) ? AGE : ""}
 ${nav([["Home", "/"], ["Pricing", "#plans"], ...(combo ? [["Combo", "#combo"]] : []), ...(TREND[p.name] ? [["Trending", "#trending"]] : []), ["About", "#about"], ["Reviews", "#reviews"], ["FAQ", "#faq"], ["Contact", "#contact"]])}
 <main>
@@ -177,12 +177,12 @@ ${STORY.has(p.name) ? `<section class="sp-sec nfw" id="why">${story.why({ p, esc
  <div class="sp-rv">${ic("card")}<h3>Fixed prices in BDT</h3><p>The price you see is the price you pay, with no hidden charges and no foreign card needed.</p></div>
  <div class="sp-rv">${ic("bolt")}<h3>Fast delivery</h3><p>Many plans are delivered within minutes after payment is confirmed.</p></div>
  <div class="sp-rv">${ic("shield")}<h3>Replacement warranty</h3><p>If an eligible subscription has a problem during its stated period, we sort it out.</p></div>
- <div class="sp-rv">${ic("chat")}<h3>Real people on WhatsApp</h3><p>Questions about a plan, payment or delivery? We reply directly, any time.</p></div>
+ <div class="sp-rv">${ic("chat")}<h3>Real people on WhatsApp</h3><p>Questions about a plan, payment or delivery? A real person replies live, in real time.</p></div>
 </div></div></section>`}
 
 ${reviewsHtml(p)}
 
-<section class="sp-sec sp-alt" id="faq"><div class="sp-wrap sp-faqgrid"><div class="sp-faqhead sp-rv"><h2>${esc(p.name)} questions, answered</h2><p class="sp-sub">Price, payment, delivery and warranty. Need something else? We reply on WhatsApp any time.</p><a class="sp-btn sp-ghost sp-sm" href="${wa("Hi StreamX! I have a question about " + p.name + ".")}" rel="noopener">Ask on WhatsApp</a></div><div class="sp-faqlist">${faqs.map(([q, a]) => `<details class="sp-faq sp-rv"><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join("")}</div></div></section>
+<section class="sp-sec sp-alt" id="faq"><div class="sp-wrap sp-faqgrid"><div class="sp-faqhead sp-rv"><h2>${esc(p.name)} questions, answered</h2><p class="sp-sub">Price, payment, delivery and warranty. Need something else? A real person replies live on WhatsApp.</p><a class="sp-btn sp-ghost sp-sm" href="${wa("Hi StreamX! I have a question about " + p.name + ".")}" rel="noopener">Ask on WhatsApp</a></div><div class="sp-faqlist">${faqs.map(([q, a]) => `<details class="sp-faq sp-rv"><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join("")}</div></div></section>
 
 ${STORY.has(p.name) ? `<section class="sp-sec nfr" id="related">${story.related({ related, esc, taka, lo, logo, slug, GLOW })}</section>` : `<section class="sp-sec" id="related"><div class="sp-wrap"><h2 class="sp-rv">You may also like</h2><div class="sp-rel">${related.map(x => `<a class="sp-rc sp-rv" href="/services/${slug(x.name)}/" style="--c:${GLOW[x.name] || x.color}">${logo(x)}<span><b>${esc(x.name)}</b><small>From ${taka(lo(x))}</small></span></a>`).join("")}</div></div></section>`}
 
@@ -190,7 +190,7 @@ ${STORY.has(p.name) ? `<section class="sp-sec nfe-sec"><div class="sp-wrap">${st
 </main>
 ${STORY.has(p.name) ? "" : `<div class="sp-buybar" id="spBuy" hidden><div><small>${p.ask ? "Price" : "From"}</small><b>${p.ask ? "On request" : taka(from)}</b></div><a class="sp-btn" href="${p.ask ? wa(orderMsg) : "#plans"}"${p.ask ? ' rel="noopener"' : ""}>${p.ask ? "Ask on WhatsApp" : "Choose plan"}</a></div>`}
 ${foot}
-${STORY.has(p.name) ? `<script>window.spData=function(){if(window.__spd)return window.__spd;var one=function(s){return new Promise(function(ok){var e=document.createElement("script");e.src=s;e.onload=e.onerror=ok;document.head.appendChild(e)})};return window.__spd=(typeof LOGOS!=="undefined"?Promise.resolve():one("/assets/js/data/logos.js?v=20261127a")).then(function(){return typeof PRODUCTS!=="undefined"?0:one("/assets/js/data/catalog.js?v=20261127b")})};</script>${script.replace(/<script src="\/assets\/js\/data\/(logos|catalog)\.js[^>]*><\/script>/g, "")}` : script}${STORY.has(p.name) ? '<script src="/assets/js/service-story.js?v=19" defer></script><script src="/assets/js/service-reviews.js?v=4" defer></script>' : ""}
+${STORY.has(p.name) ? `<script>window.spData=function(){if(window.__spd)return window.__spd;var one=function(s){return new Promise(function(ok){var e=document.createElement("script");e.src=s;e.onload=e.onerror=ok;document.head.appendChild(e)})};return window.__spd=(typeof LOGOS!=="undefined"?Promise.resolve():one("/assets/js/data/logos.js?v=20261127a")).then(function(){return typeof PRODUCTS!=="undefined"?0:one("/assets/js/data/catalog.js?v=20261127b")})};</script>${script.replace(/<script src="\/assets\/js\/data\/(logos|catalog)\.js[^>]*><\/script>/g, "")}` : script}${STORY.has(p.name) ? '<script src="/assets/js/service-story.js?v=20" defer></script><script src="/assets/js/service-reviews.js?v=4" defer></script>' : ""}
 </body></html>`;
 }
 

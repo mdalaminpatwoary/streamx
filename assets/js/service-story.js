@@ -43,6 +43,26 @@
     });
   })();
   (function () {
+    /* FAQ: smooth open and close */
+    var calm = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+    [].forEach.call(document.querySelectorAll(".nf #faq .sp-faq"), function (d) {
+      var sm = d.querySelector("summary"), p = d.querySelector("p"), run = null;
+      if (!sm || !p || !d.animate) return;
+      sm.addEventListener("click", function (e) {
+        if (calm) return;
+        e.preventDefault();
+        if (run) run.cancel();
+        var opening = !d.open;
+        if (opening) d.open = true;
+        var h = p.offsetHeight;
+        var from = opening ? 0 : h, to = opening ? h : 0;
+        p.style.overflow = "hidden";
+        run = p.animate([{ height: from + "px", opacity: opening ? 0 : 1 }, { height: to + "px", opacity: opening ? 1 : 0 }], { duration: 320, easing: "cubic-bezier(.2,.8,.2,1)" });
+        run.onfinish = run.oncancel = function () { run = null; p.style.overflow = ""; if (!opening) d.open = false; };
+      });
+    });
+  })();
+  (function () {
     /* looping animations only run while their section is on (or just off) the screen */
     if (!("IntersectionObserver" in window)) return;
     var io = new IntersectionObserver(function (es) { es.forEach(function (e) { e.target.classList.toggle("nfx-off", !e.isIntersecting); }); }, { rootMargin: "160px 0px" });
