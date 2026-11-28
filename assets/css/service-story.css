@@ -282,7 +282,6 @@
 .nf .nfc-dev[data-tv="0"] .dv-tv{color:#6d7698;background:none}
 .nf .nfc-dev[data-tv="0"] .dv-tv::after{content:"Not supported";color:#5b6485}
 .nf .nfc-dev[data-tv="0"] .dv-tv i{background:rgba(255,255,255,.025);box-shadow:none;opacity:.55}
-.nf .nfc-dev[data-tv="0"] .dv-tv i::after{content:"";position:absolute;width:18px;height:1.5px;border-radius:2px;background:#6d7698;transform:rotate(-45deg)}
 @media(max-width:520px){.nf .nfc-dev .dv::after{font-size:8.5px;letter-spacing:.04em}.nf .nfc-dev .dv{padding:8px 3px 7px}}
 
 /* CTA a touch deeper and calmer: less glow, finer outline */
