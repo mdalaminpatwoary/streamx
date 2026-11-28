@@ -3,7 +3,7 @@
   var b=document.querySelectorAll(".sp-share");if(!b.length)return;
   function toast(m){var t=document.createElement("div");t.className="sp-toast";t.textContent=m;document.body.appendChild(t);requestAnimationFrame(function(){t.classList.add("on")});setTimeout(function(){t.classList.remove("on");setTimeout(function(){t.remove()},300)},2200)}
   var cache={};
-  /* Desktop: the card share icon opens a small menu (WhatsApp, Facebook, Telegram, Copy link). Phones keep the native share sheet. */
+  /* Desktop: the card share icon opens the system share window when the browser has one; otherwise a small menu (WhatsApp, Facebook, Telegram, Copy link). Phones keep the native share sheet. */
   var fine=window.matchMedia&&matchMedia("(hover:hover) and (pointer:fine)").matches,openM=null;
   var IC={wa:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l1.2-4A8 8 0 1 1 8.2 19z"/><path d="M9.5 9.5c.4 2 2 3.6 4 4.2l1.2-1.1 1.6.8c-.3 1.1-1.2 1.6-2.3 1.5-2.7-.4-5-2.7-5.4-5.4-.1-1.1.5-2 1.5-2.3l.8 1.6z"/></svg>',fb:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 8h2.5V4.5H14C11.8 4.5 10.5 6 10.5 8.2V10H8v3.5h2.5V21H14v-7.5h2.4l.6-3.5H14V8.6c0-.4.2-.6.6-.6z"/></svg>',tg:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 4 3 11l6 2.2L11 20l3-4.2 4.5 3.4z"/><path d="m9 13.2 9-7"/></svg>',cp:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1 1"/><path d="M14 10a4.5 4.5 0 0 0-6.4 0l-3 3a4.5 4.5 0 0 0 6.4 6.4l1-1"/></svg>',ok:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>'};
   function closeM(){if(openM){openM.classList.remove("on");var m=openM;openM=null;setTimeout(function(){m.remove()},180)}}
@@ -31,7 +31,7 @@
   b.forEach(function(el){
     var u=el.getAttribute("data-img");if(u)img(u);
     el.addEventListener("click",function(){
-      if(fine&&el.classList.contains("nfp-sh")){menu(el);return}
+      if(fine&&el.classList.contains("nfp-sh")&&!navigator.share){menu(el);return}
       var url=location.origin+location.pathname+(el.getAttribute("data-url")||""),name=el.getAttribute("data-name"),text=el.getAttribute("data-text"),title="StreamX · "+name;
       var done=function(){var l=el.querySelector("span");if(!l)return;var o=l.textContent;l.textContent="Shared";setTimeout(function(){l.textContent=o},1800)};
       var copy=function(){var full=text+" "+url;(navigator.clipboard?navigator.clipboard.writeText(full):Promise.reject()).then(function(){toast("Link copied. Paste it anywhere to share.");done()}).catch(function(){var t=document.createElement("textarea");t.value=full;document.body.appendChild(t);t.select();try{document.execCommand("copy");toast("Link copied. Paste it anywhere to share.")}catch(e){}t.remove()})};
