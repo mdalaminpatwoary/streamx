@@ -80,8 +80,23 @@ module.exports.plans = function plans({ p, esc, taka, slug, buy }) {
      ${moreBtn(v.f, v.notes, chk, esc)}
      <div class="nfp-acts">${v.plans.map((pl, k) => `<div class="nfp-act" data-k="${k}"><a class="sp-row" href="/#plan=${slug(p.name)}&v=${vi}&k=${k}"${buy(p.name, vs.length > 1 ? v.n : "", pl.v, v.n, pl.p)}><span>Buy now</span><i aria-hidden="true">→</i></a></div>`).join("")}</div></article>`;
   };
+  /* Side-by-side comparison, derived from each plan's own feature list */
+  const feat = v => v.f.concat(v.notes || []).join(" | ");
+  const yes = '<svg class="y" viewBox="0 0 24 24" aria-label="Included"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>', no = '<span class="n" aria-label="Not included">\u2013</span>';
+  const rows = [
+    ["Phone, tablet and web", v => /mobile/i.test(feat(v))],
+    ["TV", v => /\bTV\b/.test(feat(v)) && !/no TV/i.test(feat(v))],
+    ["PIN-protected profile", v => /PIN protected/i.test(feat(v))],
+    ["Customizable profile", v => /customizable/i.test(feat(v)) && !/no customization/i.test(feat(v))],
+    ["Multi-device access", v => /multi-device/i.test(feat(v))],
+    ["4K Ultra HD streaming", v => /4K/i.test(feat(v))],
+    ["Instant delivery", v => /instant delivery/i.test(feat(v)), v => /stock/i.test(feat(v)) ? "On stock" : null],
+    ["Priority service", v => /priority/i.test(feat(v))]
+  ].filter(r => vs.some(r[1]));
+  const cmp = `<div class="nfp-cmp sp-rv"><h3>Compare plans</h3><div class="nfp-cmpw"><table><thead><tr><th scope="col"><span class="sr">Feature</span></th>${vs.map(v => `<th scope="col">${esc(v.n)}<small>from ${taka(v.plans[0].p)}</small></th>`).join("")}</tr></thead><tbody>${rows.map(r => `<tr><th scope="row">${esc(r[0])}</th>${vs.map(v => { const t = r[2] && r[2](v); return `<td>${t ? `<span class="t">${esc(t)}</span>` : r[1](v) ? yes : no}</td>`; }).join("")}</tr>`).join("")}</tbody></table></div></div>`;
   return `<div class="sp-wrap"><span class="sp-eyebrow sp-rv">Pricing</span><h2 class="sp-rv">${esc(p.name)} plans and prices</h2><p class="sp-sub sp-rv">Every price is fixed in BDT. Pick how long you want it and every plan updates. Longer plans cost less per month.</p>
-   ${dur}<div class="nfp-grid" data-d="0">${vs.map(card).join("")}</div></div>`;
+   
+   ${dur}<div class="nfp-grid" data-d="0">${vs.map(card).join("")}</div>${cmp}</div>`;
 };
 
 
@@ -132,4 +147,11 @@ module.exports.end = function end({ p, esc, taka, from, plan, chat }) {
   return `<div class="sp-end nfe sp-rv"><div class="nfe-t"><span class="sp-eyebrow">Ready when you are</span><h2>Ready to get ${esc(p.name)}?</h2><p>Pick your plan, pay online in seconds or order on WhatsApp.</p>
    <div class="nfe-cta"><a class="nfe-go" href="${plan}"><span>Choose your plan</span><i aria-hidden="true">\u2192</i></a><a class="nfe-wa" href="${chat}" rel="noopener">Chat on WhatsApp</a></div></div>
    <div class="nfe-v" aria-hidden="true"><span class="nfe-from">Plans from</span><b>${taka(from)}</b><ul><li>Fixed prices in BDT</li><li>Fast delivery</li><li>Replacement warranty</li></ul></div></div>`;
+};
+
+
+/* Slim payment-and-trust strip under the hero */
+module.exports.pay = function pay() {
+  const lg = (f, n, w) => `<span class="nfy-c"><img src="/assets/img/pay/${f}" alt="${n}" width="${w}" height="26" loading="lazy" decoding="async"></span>`;
+  return `<div class="nfy"><div class="sp-wrap nfy-in"><span class="nfy-l">Pay the way you like</span><div class="nfy-logos">${lg("bkash.png", "bKash", 57)}${lg("nagad.png", "Nagad", 60)}${lg("rocket.png", "Rocket", 41)}${lg("upay.png", "Upay", 19)}${lg("visa.svg", "Visa", 71)}${lg("mastercard.svg", "Mastercard", 42)}</div><span class="nfy-w"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v5c0 4.4 2.9 8.2 7 10 4.1-1.8 7-5.6 7-10V6z"/><path d="m9 12 2.2 2.2L15.5 10"/></svg>Replacement warranty</span></div></div>`;
 };

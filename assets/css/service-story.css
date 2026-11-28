@@ -628,3 +628,31 @@ html.nfs-lock{overflow:hidden}
 .nfp-menu svg{flex:none;width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
 .nfp-menu .nfp-mc.ok{color:#4ade80}
 @media (prefers-reduced-motion:reduce){.nfp-menu{transition:none}}
+
+/* Payment strip under the hero */
+.nfy{padding:0 0 4px}
+.nfy-in{display:flex;align-items:center;gap:18px 26px;flex-wrap:wrap;padding-top:18px;padding-bottom:18px;border-top:1px solid rgba(255,255,255,.07);border-bottom:1px solid rgba(255,255,255,.07)}
+.nfy-l{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#8a93b0}
+.nfy-logos{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.nfy-c{display:grid;place-items:center;height:40px;padding:0 12px;border-radius:11px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12)}
+.nfy-c img{display:block;height:26px;width:auto}
+.nfy-t{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#c3cae3;font-size:12.5px;font-weight:700;letter-spacing:.02em}
+.nfy-w{display:inline-flex;align-items:center;gap:8px;margin-left:auto;padding:8px 14px;border-radius:99px;font-size:13px;font-weight:600;color:#7be0a1;background:rgba(74,222,128,.09);border:1px solid rgba(74,222,128,.28)}
+.nfy-w svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+@media(max-width:700px){.nfy-w{margin-left:0}.nfy-l{width:100%}}
+/* Plan comparison */
+.nfp-cmp{margin-top:56px}
+.nfp-cmp h3{margin:0 0 18px;font-size:clamp(22px,2.4vw,28px);letter-spacing:-.025em;color:#fff}
+.nfp-cmpw{overflow-x:auto;border-radius:22px;border:1px solid rgba(255,255,255,.11);background:linear-gradient(160deg,rgba(255,255,255,.06),rgba(255,255,255,.015));-webkit-overflow-scrolling:touch}
+.nfp-cmp table{width:100%;min-width:640px;border-collapse:collapse;font-size:14.5px}
+.nfp-cmp th,.nfp-cmp td{padding:15px 16px;text-align:center;border-bottom:1px solid rgba(255,255,255,.07)}
+.nfp-cmp tbody tr:last-child th,.nfp-cmp tbody tr:last-child td{border-bottom:0}
+.nfp-cmp thead th{font-size:15px;font-weight:700;color:#fff;vertical-align:bottom;padding-top:20px}
+.nfp-cmp thead small{display:block;margin-top:3px;font-size:12px;font-weight:600;color:#ff9a8f}
+.nfp-cmp tbody th{text-align:left;font-weight:600;color:#c3cae3;min-width:170px}
+@media(max-width:760px){.nfp-cmp tbody th{position:sticky;left:0;background:#0f1328;z-index:1;min-width:140px}}
+.nfp-cmp td svg.y{width:19px;height:19px;fill:none;stroke:#4ade80;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.nfp-cmp .n{color:#4b5478}
+.nfp-cmp .t{font-size:12.5px;font-weight:600;color:#f6b94c}
+.nfp-cmp .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.nfy-c img[src$=".svg"]{height:22px}
