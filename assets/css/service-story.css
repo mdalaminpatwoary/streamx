@@ -486,3 +486,42 @@ html.nfs-lock{overflow:hidden}
 @media(prefers-reduced-motion:reduce){.nfs-bg,.nfs-p{transition:none}}
 .nfc2-grid .nfc2-save{margin-top:10px}
 .nfc2-grid .nfp-price{margin-bottom:16px}
+
+/* Why buy from StreamX */
+.nfw{padding:84px 0}
+.nfw .sp-eyebrow{margin-bottom:10px}
+#why.nfw h2::before{display:none}
+.nfw-grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:16px;margin-top:34px}
+.nfw-c{position:relative;display:flex;flex-direction:column;min-width:0;padding:28px 28px 26px;border-radius:26px;overflow:hidden;background:radial-gradient(90% 70% at 100% 0,rgba(229,9,20,.12),transparent 60%),linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.09);box-shadow:inset 0 1px 0 rgba(255,255,255,.07)}
+.nfw-a,.nfw-d{grid-column:span 5}.nfw-b,.nfw-c3{grid-column:span 7}
+.nfw-i{display:grid;place-items:center;width:46px;height:46px;border-radius:15px;background:linear-gradient(160deg,#f0291f,#b30f18);box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 10px 24px -10px rgba(229,9,20,.8);color:#fff}
+.nfw-i svg{width:22px;height:22px}
+.nfw-c h3{margin:20px 0 8px;font-size:20px;font-weight:650;letter-spacing:-.015em;color:#fff}
+.nfw-c p{margin:0;max-width:44ch;font-size:14.5px;line-height:1.6;color:#97a1c2}
+.nfw-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:auto;padding-top:24px}
+.nfw-chips span{padding:7px 13px;border-radius:99px;font-size:13.5px;font-weight:650;color:#e6e9f5;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1)}
+.nfw-chips em{font-style:normal;padding:7px 13px;border-radius:99px;font-size:12px;font-weight:650;color:#6ee7a0;background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.28)}
+.nfw-flow{list-style:none;margin:auto 0 0;padding:26px 0 0;display:grid;grid-template-columns:repeat(3,1fr);position:relative}
+.nfw-flow::before{content:"";position:absolute;left:8%;right:8%;top:35px;height:2px;border-radius:2px;background:linear-gradient(90deg,rgba(255,255,255,.14),#e50914)}
+.nfw-flow li{position:relative;padding-top:24px;text-align:center;font-size:12.5px;font-weight:650;color:#7f8aae}
+.nfw-flow li::before{content:"";position:absolute;left:50%;top:3px;width:18px;height:18px;margin-left:-9px;border-radius:50%;background:#12162a;border:2px solid rgba(255,255,255,.22)}
+.nfw-flow li.on{color:#fff}
+.nfw-flow li.on::before{background:#e50914;border-color:#ff6b5e;box-shadow:0 0 0 5px rgba(229,9,20,.22),0 0 18px rgba(229,9,20,.7);animation:nfwPulse 2.4s ease-in-out infinite}
+@keyframes nfwPulse{50%{box-shadow:0 0 0 9px rgba(229,9,20,.08),0 0 24px rgba(229,9,20,.9)}}
+.nfw-seal{display:flex;align-items:center;gap:14px;margin-top:auto;margin-top:auto;padding:14px 16px;border-radius:18px;background:rgba(74,222,128,.07);border:1px solid rgba(74,222,128,.22)}
+.nfw-c3 .nfw-seal{margin-top:24px}
+.nfw-seal svg{flex:none;width:34px;height:34px;fill:rgba(74,222,128,.12);stroke:#4ade80;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.nfw-seal span{font-size:13.5px;font-weight:650;color:#c9f5da}
+.nfw-chat{display:flex;flex-direction:column;gap:8px;margin-top:auto;padding-top:24px}
+.nfw-chat span{max-width:88%;padding:10px 14px;border-radius:18px;font-size:13px;line-height:1.4}
+.nfw-chat .me{align-self:flex-end;color:#fff;border-bottom-right-radius:6px;background:linear-gradient(180deg,#d9261d,#b01017)}
+.nfw-chat .them{align-self:flex-start;color:#d3d9ee;border-bottom-left-radius:6px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.09)}
+@media(max-width:900px){.nfw{padding:56px 0}.nfw-grid{grid-template-columns:1fr;gap:14px;margin-top:26px}.nfw-a,.nfw-b,.nfw-c3,.nfw-d{grid-column:auto}.nfw-c{padding:24px 22px}}
+@media(prefers-reduced-motion:reduce){.nfw-flow li.on::before{animation:none}}
+/* a little tighter */
+.nfw-c{padding:24px 26px 22px}
+.nfw-c h3{margin:16px 0 6px}
+.nfw-chips,.nfw-chat{padding-top:18px}
+.nfw-flow{padding-top:20px}
+.nfw-c3 .nfw-seal{margin-top:18px}
+@media(max-width:900px){.nfw{padding:48px 0}.nfw-grid{gap:12px}.nfw-c{padding:20px 20px 18px}.nfw-i{width:40px;height:40px;border-radius:13px}.nfw-c h3{margin:14px 0 6px;font-size:18px}}

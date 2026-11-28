@@ -101,3 +101,20 @@ module.exports.combo = function combo({ p, combo, others, cs, esc, taka, buy, sl
   return `<section class="sp-sec nfp nfc2" id="combo"><div class="sp-wrap"><div class="nfc2-head"><div>${logos}<span class="sp-eyebrow sp-rv">Save more, together</span><h2 class="sp-rv">${esc(names.join(" + "))} combo packs</h2><p class="sp-sub sp-rv">${esc(names.join(" and "))} in one monthly price, and you save compared with buying each separately.</p></div><a class="nfc2-link sp-rv" href="/services/${cs}/">About the combo <span aria-hidden="true">→</span></a></div>
    <div class="nfp-grid nfc2-grid">${combo.packs.map(card).join("")}</div></div></section>`;
 };
+
+/* "Why buy from StreamX": four glass cards, each with a small picture of what it promises. */
+module.exports.why = function why({ p, esc, ic, taka }) {
+  const prices = Array.from(new Set(p.variants.map(v => v.plans[0] && v.plans[0].p).filter(Boolean))).sort((a, b) => a - b);
+  const i = k => `<i class="nfw-i">${ic(k)}</i>`;
+  return `<div class="sp-wrap"><span class="sp-eyebrow sp-rv">Why StreamX</span><h2 class="sp-rv">Why buy ${esc(p.name)} from StreamX</h2>
+  <div class="nfw-grid">
+   <article class="nfw-c nfw-a sp-rv">${i("card")}<h3>Fixed prices in BDT</h3><p>The price you see is the price you pay, with no hidden charges and no foreign card needed.</p>
+    <div class="nfw-chips" aria-hidden="true">${prices.map(x => `<span>${taka(x)}</span>`).join("")}<em>No hidden charges</em></div></article>
+   <article class="nfw-c nfw-b sp-rv">${i("bolt")}<h3>Fast delivery</h3><p>Many plans are delivered within minutes after payment is confirmed.</p>
+    <ol class="nfw-flow" aria-hidden="true"><li>Pay</li><li>Confirmed</li><li class="on">Delivered</li></ol></article>
+   <article class="nfw-c nfw-c3 sp-rv">${i("shield")}<h3>Replacement warranty</h3><p>If an eligible subscription has a problem during its stated period, we sort it out.</p>
+    <div class="nfw-seal" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3 4.5 6v5.5c0 4.6 3.1 8.1 7.5 9.5 4.4-1.4 7.5-4.9 7.5-9.5V6L12 3Z"/><path d="m8.8 12.2 2.4 2.4 4.2-4.6"/></svg><span>Covered for the stated period</span></div></article>
+   <article class="nfw-c nfw-d sp-rv">${i("chat")}<h3>Real people on WhatsApp</h3><p>Questions about a plan, payment or delivery? We reply directly, any time.</p>
+    <div class="nfw-chat" aria-hidden="true"><span class="me">Hi StreamX! I have a question about ${esc(p.name)}.</span><span class="them">Hi! Happy to help \u{1F44B}</span></div></article>
+  </div></div>`;
+};
