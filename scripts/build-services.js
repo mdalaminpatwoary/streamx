@@ -69,6 +69,7 @@ const head = ({ title, desc, url, img, extra = "", noindex = false, bundle = "" 
 <meta name="description" content="${esc(desc)}">
 <meta name="robots" content="${noindex ? "noindex,nofollow" : "index,follow,max-image-preview:large,max-snippet:-1"}">
 <link rel="canonical" href="${url}">
+<link rel="alternate" hreflang="en" href="${url}"><link rel="alternate" hreflang="x-default" href="${url}">
 <meta property="og:type" content="website"><meta property="og:site_name" content="StreamX"><meta property="og:locale" content="en_BD">
 <meta property="og:url" content="${url}"><meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(desc)}">
 <meta property="og:image" content="${img}"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="${esc(title)}">
@@ -148,7 +149,7 @@ function servicePage(p) {
   ];
   const ld = [
     { "@context": "https://schema.org", "@type": "Product", name: p.name, description: p.desc, image: img, brand: { "@type": "Brand", name: p.name }, category: p.cat, url,
-      ...(p.ask ? {} : { offers: { "@type": "AggregateOffer", priceCurrency: "BDT", lowPrice: lo(p), highPrice: hi(p), offerCount: p.variants.flatMap(v => v.plans).length, offers: p.variants.flatMap(v => v.plans.filter(x => x.p > 0).map(x => ({ "@type": "Offer", name: (p.variants.length > 1 ? v.n + " · " : "") + x.v, price: x.p, priceCurrency: "BDT", availability: "https://schema.org/InStock", url: url + "#plans" }))), availability: "https://schema.org/InStock", url, seller: { "@type": "Organization", name: "StreamX", url: SITE } } }) },
+      ...(p.ask ? {} : { offers: { "@type": "AggregateOffer", priceCurrency: "BDT", areaServed: "BD", lowPrice: lo(p), highPrice: hi(p), offerCount: p.variants.flatMap(v => v.plans).length, offers: p.variants.flatMap(v => v.plans.filter(x => x.p > 0).map(x => ({ "@type": "Offer", name: (p.variants.length > 1 ? v.n + " · " : "") + x.v, price: x.p, priceCurrency: "BDT", availability: "https://schema.org/InStock", url: url + "#plans" }))), availability: "https://schema.org/InStock", url, seller: { "@type": "Organization", name: "StreamX", url: SITE } } }) },
     { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [
       { "@type": "ListItem", position: 1, name: "Home", item: SITE + "/" }, { "@type": "ListItem", position: 2, name: "Services", item: SITE + "/services/" }, { "@type": "ListItem", position: 3, name: p.name, item: url }] },
     { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: faqs.map(([q, a]) => ({ "@type": "Question", name: q, acceptedAnswer: { "@type": "Answer", text: a } })) }
