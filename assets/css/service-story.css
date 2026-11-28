@@ -611,3 +611,20 @@ html.nfs-lock{overflow:hidden}
 
 /* Chat: quiet on the Netflix page (no greeting pop-up or unread badge); the avatar button stays */
 .nf .cw-bubble,.nf .cw-unread{display:none!important}
+
+/* Share icon on every plan and combo card */
+.nfp-card{position:relative}
+.nfp-card header{padding-right:44px}
+.nfp-sh{position:absolute;top:16px;right:16px;z-index:2;width:34px;height:34px;padding:0;display:grid;place-items:center;border-radius:50%;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.05);color:#c3cae3;cursor:pointer;transition:color .2s,border-color .2s,background .2s,transform .2s}
+.nfp-sh svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.nfp-sh:hover{color:#fff;border-color:rgba(237,49,36,.6);background:rgba(237,49,36,.16);transform:translateY(-1px)}
+.nfp-sh:focus-visible{outline:2px solid #ed3124;outline-offset:2px}
+
+.nfp-sh.ok{color:#4ade80;border-color:rgba(74,222,128,.5);background:rgba(74,222,128,.12)}
+.nfp-menu{position:absolute;top:58px;right:16px;z-index:6;min-width:182px;padding:6px;border-radius:16px;background:#12162b;border:1px solid rgba(255,255,255,.14);box-shadow:0 22px 50px -14px rgba(0,0,0,.8),inset 0 1px 0 rgba(255,255,255,.08);opacity:0;transform:translateY(-6px) scale(.97);transform-origin:top right;transition:opacity .18s,transform .22s cubic-bezier(.2,.8,.2,1)}
+.nfp-menu.on{opacity:1;transform:none}
+.nfp-menu a,.nfp-menu button{display:flex;align-items:center;gap:11px;width:100%;padding:10px 12px;border:0;border-radius:11px;background:none;color:#dfe3f2;font:600 14px Manrope,system-ui,sans-serif;text-align:left;text-decoration:none;cursor:pointer;transition:background .15s,color .15s}
+.nfp-menu a:hover,.nfp-menu button:hover{background:rgba(237,49,36,.16);color:#fff}
+.nfp-menu svg{flex:none;width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.nfp-menu .nfp-mc.ok{color:#4ade80}
+@media (prefers-reduced-motion:reduce){.nfp-menu{transition:none}}

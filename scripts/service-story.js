@@ -61,6 +61,7 @@ module.exports.card = function card({ p, qp, esc, taka, logo, ic }) {
 
 /* The pricing section of a story page: one duration switch drives every plan card; each card keeps real buy links. */
 /* "All features" opens a popup that service-story.js builds from this template. */
+const shareBtn = (esc, label, text, img, hash) => `<button type="button" class="sp-share nfp-sh" aria-label="Share ${esc(label)}" title="Share" data-name="${esc(label)}" data-text="${esc(text)}" data-url="${hash}" data-img="${img}"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.5l6.8-4M8.6 13.5l6.8 4"/></svg></button>`;
 const moreBtn = (all, notes, chk, esc) => `<button type="button" class="nfp-all" aria-haspopup="dialog">All features<i aria-hidden="true">+</i></button><template class="nfp-full"><ul class="nfp-ft">${all.map(x => `<li>${chk}${esc(x)}</li>`).join("")}</ul>${notes.length ? `<ul class="nfp-nt">${notes.map(x => `<li>${esc(x)}</li>`).join("")}</ul>` : ""}</template>`;
 /* device lines are already shown by the Phone / Web / TV strip, so cards skip them (the popup keeps them) */
 const notDev = x => !/^(watch on )?mobile, tablet/i.test(x);
@@ -72,7 +73,7 @@ module.exports.plans = function plans({ p, esc, taka, slug, buy }) {
   const dur = `<div class="nfp-dur" role="group" aria-label="Choose duration">${mo.map((m, k) => `<button type="button" class="${k ? "" : "on"}" data-k="${k}" aria-pressed="${k ? "false" : "true"}">${esc(m)}${save(k) ? `<em>Save up to ${save(k)}%</em>` : ""}</button>`).join("")}</div>`;
   const card = (v, vi) => {
     const top = v.f.filter(notDev).slice(0, 4);
-    return `<article class="nfp-card sp-rv"><header><h3>${esc(v.n)}</h3>${v.tag ? `<span class="nfp-tag">${esc(v.tag)}</span>` : ""}</header>
+    return `<article class="nfp-card sp-rv">${shareBtn(esc, p.name + " " + v.n, p.name + " " + v.n + " on StreamX, from " + taka(v.plans[0].p) + ". Fixed price in BDT:", "/assets/img/og/" + slug(p.name) + ".jpg", "#plans")}<header><h3>${esc(v.n)}</h3>${v.tag ? `<span class="nfp-tag">${esc(v.tag)}</span>` : ""}</header>
      <div class="nfp-price">${v.plans.map((pl, k) => `<div class="nfp-pr" data-k="${k}"><b>${taka(pl.p)}</b><span>${pl.m > 1 ? `${taka(Math.round(pl.p / pl.m))} / month` : "for 1 month"}</span></div>`).join("")}</div>
      ${devStrip(/\bTV\b/.test(v.f.join(" ")) && !/no TV/i.test(v.f.join(" ")))}
      <ul class="nfp-ft">${top.map(x => `<li>${chk}${esc(x)}</li>`).join("")}</ul>
@@ -91,7 +92,7 @@ module.exports.combo = function combo({ p, combo, others, cs, esc, taka, buy, sl
   const logos = `<span class="nfc2-logos" aria-hidden="true">${names.map(n => `<img src="/assets/img/logos/${slug(n)}.svg" alt="" width="40" height="40" loading="lazy">`).join("")}</span>`;
   const card = (k, i) => {
     const top = k.f.filter(notDev).slice(0, 4);
-    return `<article class="nfp-card nfc2-card sp-rv"><header><h3>${esc(k.n)}</h3><span class="nfp-tag">${esc(k.tag)}</span></header>
+    return `<article class="nfp-card nfc2-card sp-rv">${shareBtn(esc, k.n, k.n + " combo on StreamX, " + taka(k.p) + " per month. Fixed price in BDT:", "/assets/img/og/" + slug(p.name) + ".jpg", "#combo")}<header><h3>${esc(k.n)}</h3><span class="nfp-tag">${esc(k.tag)}</span></header>
      <div class="nfp-price"><div class="nfp-pr"><b>${taka(k.p)}</b><span>per month, both apps</span></div>${k.old ? `<div class="nfc2-save"><s>${taka(k.old)}</s><u>Save ${taka(k.old - k.p)}</u></div>` : ""}</div>
      ${devStrip(!/no TV/i.test([k.sub, k.tag].concat(k.f).join(" ")) && /\bTV\b/.test([k.sub, k.tag].concat(k.f).join(" ")))}
      <ul class="nfp-ft">${top.map(x => `<li>${chk}${esc(x)}</li>`).join("")}</ul>
