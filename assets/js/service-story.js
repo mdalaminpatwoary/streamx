@@ -43,6 +43,12 @@
     });
   })();
   (function () {
+    /* looping animations only run while their section is on (or just off) the screen */
+    if (!("IntersectionObserver" in window)) return;
+    var io = new IntersectionObserver(function (es) { es.forEach(function (e) { e.target.classList.toggle("nfx-off", !e.isIntersecting); }); }, { rootMargin: "160px 0px" });
+    [].forEach.call(document.querySelectorAll(".nf .sp-hero, .nf main > section, .nf main section.sp-sec"), function (s) { io.observe(s); });
+  })();
+  (function () {
     var hero = document.querySelector(".nf .sp-hero"); if (!hero || !("IntersectionObserver" in window)) return;
     new IntersectionObserver(function (es) { document.body.classList.toggle("nf-hero", es[0].isIntersecting); }, { threshold: .2 }).observe(hero);
   })();

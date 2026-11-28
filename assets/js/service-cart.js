@@ -63,7 +63,7 @@
 
   document.addEventListener("click", function (e) {
     var t = e.target;
-    if (t.closest && t.closest("#spCart")) { load(); render(); openD(true); return; }
+    if (t.closest && t.closest("#spCart")) { load(); render(); openD(true); if (window.spData && typeof LOGOS === "undefined") window.spData().then(render); return; }
     if (t === ov || (t.closest && t.closest(".sc-x"))) { openD(false); return; }
     var q = t.closest && t.closest("[data-q]"), r = t.closest && t.closest("[data-rm]");
     if (q) { var j = +q.dataset.q; load(); if (cart[j]) { cart[j].q += +q.dataset.d; if (cart[j].q < 1) cart.splice(j, 1); } render(); }

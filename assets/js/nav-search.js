@@ -44,7 +44,7 @@
     L.innerHTML=out.length?out.map(function(p,i){var s=sl(p.name);return'<a class="sxs-i'+(i?'':' on')+'" href="/services/'+s+'/"><span class="sxs-t" style="background:'+esc(p.color||"#333")+'">'+esc(p.icon||p.name[0])+'<img src="/assets/img/logos/'+s+(s==='entertainment-combo'?'.png':'.svg')+'" alt="" loading="lazy" onerror="if(!this.dataset.t){this.dataset.t=1;this.src=this.src.replace(/\\.svg$/,\'.png\')}else this.remove()"></span><span><div class="sxs-n">'+esc(p.name)+'</div><div class="sxs-c">'+esc(p.cat||"")+'</div></span></a>'}).join(""):'<div class="sxs-e">No service found for “'+esc(q.value)+'”</div>';
   }
   function mark(){var a=L.querySelectorAll(".sxs-i");a.forEach(function(e,i){e.classList.toggle("on",i===cur)});if(a[cur])a[cur].scrollIntoView({block:"nearest"})}
-  function open(){ov.classList.add("on");q.value="";render();setTimeout(function(){q.focus()},30)}
+  function open(){ov.classList.add("on");q.value="";render();if(window.spData&&typeof PRODUCTS==="undefined")window.spData().then(function(){if(ov.classList.contains("on"))render()});setTimeout(function(){q.focus()},30)}
   function close(){ov.classList.remove("on");q.blur()}
   b.addEventListener("click",open);
   ov.addEventListener("click",function(e){if(e.target===ov||e.target.closest(".sxs-x"))close()});

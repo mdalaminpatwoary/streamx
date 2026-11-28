@@ -7,12 +7,12 @@
   var btn = document.getElementById("cwBtn"), bubble = document.getElementById("cwBubble");
   var started = false, ready = null, wantOpen = false;
   var CSS = "/assets/css/components/chatbot.css?v=44";
-  var JS = ["/assets/js/features/chatbot.js?v=20261124r", "/assets/js/features/chat-avatar.js?v=20261121j"];
+  var JS = ["/assets/js/features/chatbot.js?v=20261128c", "/assets/js/features/chat-avatar.js?v=20261121j"];
   function load() {
     if (started) return ready; started = true;
     ["pointerdown", "keydown", "scroll", "touchstart"].forEach(function (t) { removeEventListener(t, load, true); });
     var css = new Promise(function (ok) { var l = document.createElement("link"); l.rel = "stylesheet"; l.href = CSS; l.onload = l.onerror = ok; document.head.appendChild(l); });
-    var js = JS.reduce(function (p, src) { return p.then(function () { return new Promise(function (ok) { var s = document.createElement("script"); s.src = src; s.onload = s.onerror = ok; document.body.appendChild(s); }); }); }, Promise.resolve());
+    var js = JS.reduce(function (p, src) { return p.then(function () { return new Promise(function (ok) { var s = document.createElement("script"); s.src = src; s.onload = s.onerror = ok; document.body.appendChild(s); }); }); }, window.spData ? window.spData() : Promise.resolve());
     ready = Promise.all([css, js]).then(function () {
       btn && btn.removeEventListener("click", early, true); bubble && bubble.removeEventListener("click", early, true);
       if (wantOpen && window.sxBot) window.sxBot.open();

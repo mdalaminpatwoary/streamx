@@ -8,7 +8,7 @@ module.exports = function story({ p, qp, esc, taka, logo, ic }) {
     ["We confirm it", "Your payment is checked and your order is locked in, usually within moments."],
     ["Your profile is prepared", "A profile on the plan you picked is set up for you, with a PIN where the plan includes one."],
     ["Delivered to you", "Your login details reach you on WhatsApp or email. Many plans are delivered within minutes."],
-    ["Start watching", "Sign in on your phone, tablet or web. Replacement warranty and 24/7 support if anything goes wrong."]
+    ["Start watching", "Sign in on your phone, tablet or web. Replacement warranty and live WhatsApp support if anything goes wrong."]
   ];
   const labels = ["Choose", "Pay", "Confirm", "Prepare", "Deliver", "Watch"];
   const tiles = (qp || []).slice(0, 4);
@@ -37,7 +37,7 @@ module.exports = function story({ p, qp, esc, taka, logo, ic }) {
       <span class="emb">View my subscriptions</span></div></div></div>`,
     /* 6 watch */
     `<div class="hd"><i>6</i>Watch</div><div class="tv"><div class="sp1">${tile}</div><div class="ps"><i></i><i></i><i></i><i></i></div></div>
-     <div class="bd"><span><svg viewBox="0 0 24 24"><path d="m6 12.5 4 4 8-9"/></svg>Replacement warranty</span><span><svg viewBox="0 0 24 24"><path d="m6 12.5 4 4 8-9"/></svg>24/7 support</span></div>`
+     <div class="bd"><span><svg viewBox="0 0 24 24"><path d="m6 12.5 4 4 8-9"/></svg>Replacement warranty</span><span><svg viewBox="0 0 24 24"><path d="m6 12.5 4 4 8-9"/></svg>Live WhatsApp support</span></div>`
   ];
   return `<section class="nj" id="journey" aria-labelledby="njT"><div class="nj-pin"><div class="sp-wrap nj-in">
  <div class="nj-hd"><span class="sp-eyebrow">How it works</span><h2 id="njT">From tap to ${name}, step by step</h2></div>
@@ -114,7 +114,7 @@ module.exports.why = function why({ p, esc, ic, taka }) {
     <ol class="nfw-flow" aria-hidden="true"><li>Pay</li><li>Confirmed</li><li class="on">Delivered</li></ol></article>
    <article class="nfw-c nfw-c3 sp-rv">${i("shield")}<h3>Replacement warranty</h3><p>If an eligible subscription has a problem during its stated period, we sort it out.</p>
     <div class="nfw-seal" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3 4.5 6v5.5c0 4.6 3.1 8.1 7.5 9.5 4.4-1.4 7.5-4.9 7.5-9.5V6L12 3Z"/><path d="m8.8 12.2 2.4 2.4 4.2-4.6"/></svg><span>Covered for the stated period</span></div></article>
-   <article class="nfw-c nfw-d sp-rv">${i("chat")}<h3>Real people on WhatsApp</h3><p>Questions about a plan, payment or delivery? We reply directly, any time.</p>
+   <article class="nfw-c nfw-d sp-rv">${i("chat")}<h3>Real people on WhatsApp</h3><p>Questions about a plan, payment or delivery? A real person replies live, in real time.</p>
     <div class="nfw-chat" aria-hidden="true"><span class="me">Hi StreamX! I have a question about ${esc(p.name)}.</span><span class="them">Hi! Happy to help \u{1F44B}</span></div></article>
   </div></div>`;
 };

@@ -380,7 +380,7 @@
 .nfp-dur button.on{color:#fff;background:linear-gradient(180deg,rgba(229,9,20,.28),rgba(229,9,20,.1));border-color:rgba(255,92,78,.5);box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 12px 26px -16px rgba(229,9,20,.8)}
 .nfp-dur button.on em{color:#ff9a8f}
 .nfp-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px;align-items:stretch}
-.nfp-card{position:relative;display:flex;flex-direction:column;padding:24px 22px 22px;border-radius:26px;background:linear-gradient(160deg,rgba(255,255,255,.075),rgba(255,255,255,.02) 55%,rgba(255,255,255,.04));border:1px solid rgba(255,255,255,.11);box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 40px 70px -44px rgba(0,0,0,.95);-webkit-backdrop-filter:blur(18px) saturate(1.4);backdrop-filter:blur(18px) saturate(1.4);transition:transform .35s cubic-bezier(.22,1,.36,1),border-color .35s,box-shadow .35s}
+.nfp-card{-webkit-backdrop-filter:blur(18px) saturate(1.4);backdrop-filter:blur(18px) saturate(1.4);position:relative;display:flex;flex-direction:column;padding:24px 22px 22px;border-radius:26px;background:linear-gradient(160deg,rgba(255,255,255,.075),rgba(255,255,255,.02) 55%,rgba(255,255,255,.04));border:1px solid rgba(255,255,255,.11);box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 40px 70px -44px rgba(0,0,0,.95);transition:transform .35s cubic-bezier(.22,1,.36,1),border-color .35s,box-shadow .35s}
 .nfp-card::before{content:"";position:absolute;left:22px;right:22px;top:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,96,80,.75),transparent)}
 .nfp-card:hover{transform:translateY(-4px);border-color:rgba(255,255,255,.2);box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 46px 80px -44px rgba(0,0,0,.95),0 0 60px -36px rgba(229,9,20,.55)}
 .nfp-card header{display:flex;align-items:center;justify-content:space-between;gap:10px}
@@ -577,3 +577,7 @@ html.nfs-lock{overflow:hidden}
 .nf .sp-ract small{order:-1;margin-right:auto;color:#7f8aae}
 .nf .sp-ract .sp-btn{padding:14px 28px;border-radius:99px;font-size:15px;font-weight:650;color:#fff;background:linear-gradient(180deg,#d9261d,#b01017);border:1px solid rgba(255,130,112,.25);box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 16px 32px -18px rgba(229,9,20,.9)}
 @media(max-width:860px){.nf .sp-rform{grid-template-columns:1fr;grid-template-areas:"h" "s" "p" "r" "x";padding:24px 20px;border-radius:24px}.nf .sp-rform .sp-pick{margin:14px 0 18px}.nf .sp-ract{flex-direction:column;align-items:stretch}.nf .sp-ract small{order:2;margin:0;text-align:center}.nf .sp-ract .sp-btn{width:100%;text-align:center}}
+
+/* Performance: skip drawing sections that are far below the screen, pause looping animations that are out of view */
+.nf #about,.nf #why,.nf #reviews,.nf #faq,.nf #related,.nf .nfe-sec{content-visibility:auto;contain-intrinsic-size:auto 720px}
+.nf .nfx-off,.nf .nfx-off *,.nf .nfx-off *::before,.nf .nfx-off *::after{animation-play-state:paused!important}
