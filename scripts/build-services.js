@@ -49,7 +49,20 @@ function plansHtml(p) {
   return p.variants.map((v, vi) => `<div class="sp-vcard"><div class="sp-vh"><h3>${esc(v.n)}</h3>${v.tag ? `<span class="sp-tag">${esc(v.tag)}</span>` : ""}</div><p>${esc(v.line)}</p><ul class="sp-ft">${v.f.map(x => `<li>${esc(x)}</li>`).join("")}</ul>${v.notes.length ? `<ul class="sp-nt">${v.notes.map(x => `<li>${esc(x)}</li>`).join("")}</ul>` : ""}<div class="sp-rows">${v.plans.map((pl, k) => pl.ask ? `<a class="sp-row" target="_blank" rel="noopener" href="${wa("Hi StreamX! I want a price for Facebook: " + v.n)}"><span>Price on request</span><b>Ask</b><i>WhatsApp</i></a>` : `<a class="sp-row" href="/#plan=${s}&v=${vi}&k=${k}"${buy(p.name, p.variants.length > 1 ? v.n : "", pl.v, v.n, pl.p)}><span>${esc(pl.v)}${pl.m > 1 ? `<small>${taka(Math.round(pl.p / pl.m))} / month</small>` : ""}</span><b>${taka(pl.p)}</b><i>Buy</i></a>`).join("")}</div></div>`).join("");
 }
 
-const head = ({ title, desc, url, img, extra = "", noindex = false }) => `<!DOCTYPE html>
+
+/* Netflix story pages: the ten stylesheets are merged and minified into one long-cached file (assets/dist/story.<hash>.css) */
+const STORY_CSS = (() => {
+  const cp = require("child_process"), crypto = require("crypto");
+  const list = ["base/glass.css", "service-page.css", "service-page-v2.css", "service-nav.css", "service-fx.css", "services-hero.css", "title-modal.css", "components/chat-widget.css", "service-story.css", "service-reviews.css"];
+  let css = list.map(f => fs.readFileSync(path.join(__dirname, "..", "assets/css", f), "utf8")).join("\n");
+  try { css = cp.execFileSync("npx", ["--yes", "esbuild", "--minify", "--loader=css"], { input: css, maxBuffer: 1 << 26 }).toString(); } catch (e) { console.warn("esbuild unavailable, bundle not minified"); }
+  const h = crypto.createHash("md5").update(css).digest("hex").slice(0, 10), dir = path.join(__dirname, "..", "assets/dist");
+  fs.mkdirSync(dir, { recursive: true });
+  fs.readdirSync(dir).filter(n => /^story\..*\.css$/.test(n)).forEach(n => fs.unlinkSync(path.join(dir, n)));
+  fs.writeFileSync(path.join(dir, "story." + h + ".css"), css);
+  return "/assets/dist/story." + h + ".css";
+})();
+const head = ({ title, desc, url, img, extra = "", noindex = false, bundle = "" }) => `<!DOCTYPE html>
 <html lang="en"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(title)}</title>
@@ -64,7 +77,7 @@ const head = ({ title, desc, url, img, extra = "", noindex = false }) => `<!DOCT
 <script>(function(){var n=navigator;if(/iP(hone|ad|od)/.test(n.userAgent)||(n.platform==="MacIntel"&&n.maxTouchPoints>1))document.documentElement.classList.add("ios");if(matchMedia("(max-width:640px)").matches)document.documentElement.classList.add("sx-ph");try{var d=document.documentElement,c=n.connection||{},m=n.deviceMemory,u=n.hardwareConcurrency||8,v=+localStorage.getItem("sx-lite");if(v>Date.now()||c.saveData||(m&&m<=2)||(m&&m<=3&&u<=4))d.classList.add("lite")}catch(e){}})()</script><style>html.lite #cw{display:none!important}html.sx-ph .sp-nr .sp-acct[href="/account/"]{display:none}html.sx-ph .sp-nav nav{display:none}</style>
 <link rel="icon" href="/favicon.ico" sizes="any"><link rel="apple-touch-icon" href="/assets/img/favicon/apple-touch-icon.png">
 <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/manrope-latin.woff2" crossorigin><style>@font-face{font-family:Manrope;font-style:normal;font-weight:200 800;font-display:swap;src:url(/assets/fonts/manrope-latin.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}</style>
-<link rel="stylesheet" href="/assets/css/base/glass.css?v=3"><link rel="stylesheet" href="/assets/css/service-page.css?v=20261127e"><link rel="stylesheet" href="/assets/css/service-page-v2.css?v=60"><link rel="stylesheet" href="/assets/css/service-nav.css?v=7"><link rel="stylesheet" href="/assets/css/service-fx.css?v=2"><link rel="stylesheet" href="/assets/css/services-hero.css?v=8"><link rel="stylesheet" href="/assets/css/title-modal.css?v=20261124g"><link rel="stylesheet" href="/assets/css/components/chat-widget.css?v=20261121c">${extra}
+${bundle ? `<link rel="stylesheet" href="${bundle}">` : `<link rel="stylesheet" href="/assets/css/base/glass.css?v=3"><link rel="stylesheet" href="/assets/css/service-page.css?v=20261127e"><link rel="stylesheet" href="/assets/css/service-page-v2.css?v=60"><link rel="stylesheet" href="/assets/css/service-nav.css?v=7"><link rel="stylesheet" href="/assets/css/service-fx.css?v=2"><link rel="stylesheet" href="/assets/css/services-hero.css?v=8"><link rel="stylesheet" href="/assets/css/title-modal.css?v=20261124g"><link rel="stylesheet" href="/assets/css/components/chat-widget.css?v=20261121c">`}${extra}
 </head>`;
 
 /* glow colour that matches the logo, where the brand colour in the catalog is a different hue */
@@ -151,7 +164,7 @@ function servicePage(p) {
 </div></div></section>`}
 
 ${reviewsHtml(p)}`;
-  return head({ title, desc, url, img, noindex: isAdult(p), extra: (isAdult(p) ? "" : `<script type="application/ld+json">${JSON.stringify(ld)}</script>`) + (STORY.has(p.name) ? '<link rel="stylesheet" href="/assets/css/service-story.css?v=90"><link rel="stylesheet" href="/assets/css/service-reviews.css?v=3">' : "") }) + `
+  return head({ title, desc, url, img, noindex: isAdult(p), bundle: STORY.has(p.name) ? STORY_CSS : "", extra: (isAdult(p) ? "" : `<script type="application/ld+json">${JSON.stringify(ld)}</script>`) + "" }) + `
 <body style="--c:${GLOW[p.name] || p.color}"${isAdult(p) ? ' class="sp-adult"' : STORY.has(p.name) ? ' class="nf"' : ""}>${isAdult(p) ? AGE : ""}
 ${nav([["Home", "/"], ["Pricing", "#plans"], ...(combo ? [["Combo", "#combo"]] : []), ...(TREND[p.name] ? [["Trending", "#trending"]] : []), ["About", "#about"], ["Reviews", "#reviews"], ["FAQ", "#faq"], ["Contact", "#contact"]])}
 <main>
