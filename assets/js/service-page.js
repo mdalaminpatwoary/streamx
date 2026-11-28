@@ -146,11 +146,25 @@
     var n = 5, pick = $(".sp-pick", f), btns = $$("button", pick);
     var setN = function (v) { n = v; btns.forEach(function (b) { var on = +b.dataset.n <= v; b.classList.toggle("on", on); b.setAttribute("aria-checked", +b.dataset.n === v); }); };
     setN(5); pick.addEventListener("click", function (e) { var b = e.target.closest("button"); if (b) setN(+b.dataset.n); });
-    f.addEventListener("submit", function (e) {
-      e.preventDefault(); var t = f.t.value.trim();
-      if (!t) { f.t.classList.add("bad"); f.t.focus(); setTimeout(function () { f.t.classList.remove("bad"); }, 700); return; }
-      var name = f.n.value.trim(), msg = "Hi StreamX! My review of " + f.dataset.svc + ":\n" + "★".repeat(n) + "☆".repeat(5 - n) + " (" + n + "/5)\n" + t + (name ? "\n- " + name : "");
+    var wa = function () {
+      var t = f.t.value.trim(), name = f.n.value.trim(), msg = "Hi StreamX! My review of " + f.dataset.svc + ":\n" + "\u2605".repeat(n) + "\u2606".repeat(5 - n) + " (" + n + "/5)\n" + t + (name ? "\n- " + name : "");
       window.open("https://wa.me/" + f.dataset.wa + "?text=" + encodeURIComponent(msg), "_blank", "noopener");
+    };
+    var say = function (m, bad) { var g = $(".sp-rmsg", f); if (!g) return; g.hidden = !m; g.textContent = m || ""; g.classList.toggle("bad", !!bad); };
+    var wl = $(".sp-rwa", f);
+    if (wl) wl.addEventListener("click", function (e) { e.preventDefault(); if (!f.t.value.trim()) { f.t.classList.add("bad"); f.t.focus(); setTimeout(function () { f.t.classList.remove("bad"); }, 700); return; } wa(); });
+    f.addEventListener("submit", function (e) {
+      e.preventDefault(); var t = f.t.value.trim(), name = f.n.value.trim(), btn = $("button[type=submit]", f);
+      var miss = !t ? f.t : !name ? f.n : null;
+      if (miss) { miss.classList.add("bad"); miss.focus(); setTimeout(function () { miss.classList.remove("bad"); }, 700); return; }
+      say(""); btn.disabled = true; var old = btn.textContent; btn.textContent = "Sending\u2026";
+      fetch("/api/catalog?a=review", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ service: f.dataset.svc, rating: n, name: name, body: t, contact: f.c ? f.c.value.trim() : "", website: f.website ? f.website.value : "" }) })
+        .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { return { ok: r.ok, status: r.status, j: j }; }); })
+        .then(function (o) {
+          if (o.ok) { f.reset(); setN(5); say("Thank you! We check each review against an order and publish it soon."); btn.textContent = "Sent"; setTimeout(function () { btn.disabled = false; btn.textContent = old; }, 4000); return; }
+          btn.disabled = false; btn.textContent = old;
+          if (o.status >= 500) { say("Our review box is busy, so we opened WhatsApp instead."); wa(); } else say((o.j && o.j.error) || "Please check your review and try again.", true);
+        }).catch(function () { btn.disabled = false; btn.textContent = old; say("Our review box is busy, so we opened WhatsApp instead."); wa(); });
     });
   }
 

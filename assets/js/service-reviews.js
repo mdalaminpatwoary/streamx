@@ -37,6 +37,25 @@
   }
   fetch("/api/catalog?a=reviews").then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
     if (!d || !d.list) return;
+    /* Star rating for search results: only reviews sent on this site and approved in Admin, about this service, and only from three upwards.
+       The same numbers are shown on the page, so what Google reads always matches what visitors see. */
+    try {
+      var own = d.list.filter(function (r) { return r.src === "site" && (r.services || []).indexOf(svc) > -1; });
+      if (own.length >= 3) {
+        var oa = (own.reduce(function (a, r) { return a + (r.s || 5); }, 0) / own.length).toFixed(1);
+        var isP = function (o) { return o && o["@type"] === "Product"; };
+        Array.prototype.forEach.call(document.querySelectorAll('script[type="application/ld+json"]'), function (x) {
+          try {
+            var ld = JSON.parse(x.textContent), arr = Array.isArray(ld) ? ld : [ld], hit = false;
+            arr.forEach(function (o) { if (isP(o)) { o.aggregateRating = { "@type": "AggregateRating", ratingValue: oa, reviewCount: own.length, bestRating: "5", worstRating: "1" }; hit = true; } });
+            if (hit) x.textContent = JSON.stringify(ld);
+          } catch (e) {}
+        });
+        var vr = document.createElement("p"); vr.className = "sp-sub sp-ver";
+        vr.innerHTML = '<span class="sp-avg">' + oa + "</span> \u2605 from " + own.length + " customer review" + (own.length > 1 ? "s" : "") + " of " + esc(svc) + " sent on this site.";
+        if (sub && sub.parentNode) sub.parentNode.insertBefore(vr, sub.nextSibling);
+      }
+    } catch (e) {}
     /* like the home page: the reviews marked Featured, from every service (all reviews if none are marked) */
     L = d.list.filter(function (r) { return r.popular; }); if (!L.length) L = d.list.slice();
     if (!L.length) return;

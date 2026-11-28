@@ -105,7 +105,11 @@ module.exports = async (req, res) => {
     // Reviews: post and delete customer reviews (shown on the site; proof = screenshot or link to the original review)
     if (req.query && (req.query.view === "reviews" || req.query.review)) {
       const RV = "id,name,role,company,loc,services,rating,body,photo,proof_kind,proof_url,has_img,popular,created_at,kind,institution,country,expat,has_photo";
-      if (req.method === "GET") return res.status(200).json({ rows: await db.rest("GET", `reviews?select=${RV}&order=created_at.desc&limit=200`) });
+      if (req.method === "GET") {
+        let rows; try { rows = await db.rest("GET", `reviews?select=${RV},source,approved,contact&order=created_at.desc&limit=200`); }
+        catch (e) { rows = await db.rest("GET", `reviews?select=${RV}&order=created_at.desc&limit=200`); } // new columns not added yet
+        return res.status(200).json({ rows });
+      }
       if (req.method === "POST") {
         const name = clean(body.name, 60), text = clean(body.body, 600);
         if (!name || !text) return res.status(400).json({ error: "Please add the customer's name and the review text." });
@@ -124,7 +128,7 @@ module.exports = async (req, res) => {
       if (req.method === "PATCH") {
         const rid = parseInt(req.query.review, 10);
         if (!(rid > 0)) return res.status(400).json({ error: "Invalid review." });
-        await db.rest("PATCH", `reviews?id=eq.${rid}`, { popular: !!body.popular });
+        await db.rest("PATCH", `reviews?id=eq.${rid}`, body.approved !== undefined ? { approved: !!body.approved } : { popular: !!body.popular });
         return res.status(200).json({ ok: true });
       }
       if (req.method === "DELETE") {

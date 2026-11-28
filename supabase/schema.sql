@@ -240,3 +240,9 @@ create table if not exists public.admin_attempts (
 );
 alter table public.admin_attempts enable row level security;
 grant select, insert, update, delete on public.admin_attempts to service_role;
+
+-- Reviews sent from the website: they wait for approval in Admin → Reviews and only then appear (and count toward the star rating).
+alter table public.reviews add column if not exists source   text    not null default 'admin';   -- 'admin' = posted by you | 'site' = sent by a visitor
+alter table public.reviews add column if not exists approved boolean not null default true;      -- visitor reviews are saved as false until you approve them
+alter table public.reviews add column if not exists contact  text    not null default '';        -- optional phone / email, private, only for you to check the purchase
+notify pgrst, 'reload schema';

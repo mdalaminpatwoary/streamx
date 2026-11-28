@@ -322,9 +322,34 @@ async function newsAll() {
   return newsCache.list;
 }
 
+/* Customer review sent from a service page: saved as PENDING (never shown or counted until approved in Admin).
+   Needs the review columns from supabase/schema.sql (source, approved, contact). */
+const rvHits = new Map();
+const rvClean = (v, n) => String(v == null ? "" : v).replace(/[\u0000-\u001f<>]/g, " ").replace(/\s+/g, " ").trim().slice(0, n);
+async function submitReview(req, res) {
+  if (!db.enabled()) return res.status(503).json({ error: "off" });
+  const b = typeof req.body === "string" ? (() => { try { return JSON.parse(req.body || "{}"); } catch (e) { return {}; } })() : req.body || {};
+  if (b.website) return res.status(200).json({ ok: true }); // hidden field filled in: a bot, pretend it worked
+  const ip = String(req.headers["x-real-ip"] || String(req.headers["x-forwarded-for"] || "").split(",")[0] || "unknown").trim().slice(0, 64), now = Date.now();
+  const hits = (rvHits.get(ip) || []).filter((t) => now - t < 3600e3);
+  if (hits.length >= 3) return res.status(429).json({ error: "You have sent a few reviews already. Please try again later." });
+  const name = rvClean(b.name, 60), text = rvClean(b.body, 600), service = rvClean(b.service, 60);
+  const contact = rvClean(b.contact, 80), rating = Math.min(5, Math.max(1, parseInt(b.rating, 10) || 0));
+  if (!name) return res.status(400).json({ error: "Please add your name." });
+  if (text.length < 15) return res.status(400).json({ error: "Please write a little more about your experience." });
+  if (!service || !(b.rating >= 1)) return res.status(400).json({ error: "Please choose a star rating." });
+  if (/https?:\/\/|www\./i.test(text + " " + name)) return res.status(400).json({ error: "Please leave out links." });
+  try {
+    await db.rest("POST", "reviews", { name, role: "", company: "", loc: "", services: [service], rating, body: text, source: "site", approved: false, contact, popular: false }, "return=minimal");
+  } catch (e) { return res.status(503).json({ error: "off" }); }
+  hits.push(now); rvHits.set(ip, hits);
+  return res.status(200).json({ ok: true });
+}
+
 module.exports = async (req, res) => {
   res.setHeader("Content-Type", "application/json; charset=utf-8");
   try {
+    if (req.method === "POST" && req.query.a === "review") return await submitReview(req, res);
     if (req.method !== "GET") return res.status(405).json({ error: "Method not allowed" });
     const k = req.query.k === "tv" ? "tv" : "movie";
     const cc = countryOf(req);
@@ -332,10 +357,14 @@ module.exports = async (req, res) => {
     if (req.query.a === "reviews") {
       if (!db.enabled()) return res.status(503).json({ error: "off" });
       const base = "id,name,role,company,loc,services,rating,body,photo,proof_kind,proof_url,has_img,popular,created_at";
-      let rows; try { rows = (await db.rest("GET", `reviews?select=${base},kind,institution,country,expat,has_photo&order=created_at.desc&limit=100`)) || []; }
-      catch (e) { rows = (await db.rest("GET", `reviews?select=${base}&order=created_at.desc&limit=100`)) || []; } // new columns not added yet
+      let rows;
+      try { rows = (await db.rest("GET", `reviews?select=${base},kind,institution,country,expat,has_photo,source&approved=eq.true&order=created_at.desc&limit=100`)) || []; }
+      catch (e0) {
+        try { rows = (await db.rest("GET", `reviews?select=${base},kind,institution,country,expat,has_photo&order=created_at.desc&limit=100`)) || []; }
+        catch (e) { rows = (await db.rest("GET", `reviews?select=${base}&order=created_at.desc&limit=100`)) || []; } // new columns not added yet
+      }
       res.setHeader("Cache-Control", "public, s-maxage=60, stale-while-revalidate=600");
-      return res.status(200).json({ list: rows.map((r) => { const cc = r.country || (BD_CITY.test(r.loc || "") ? "BD" : ""); return ({ id: r.id, n: r.name, role: r.role, company: r.company, loc: countryName(cc), services: r.services || [], s: r.rating, t: r.body, photo: r.has_photo ? "/api/catalog?a=rvimg&w=photo&id=" + r.id : r.photo, kind: r.kind || "pro", inst: r.institution || "", cc, x: !!r.expat, pk: r.proof_kind === "image" && !r.has_img ? "" : r.proof_kind, pu: r.proof_kind === "link" ? r.proof_url : "", popular: !!r.popular }); }) });
+      return res.status(200).json({ list: rows.map((r) => { const cc = r.country || (BD_CITY.test(r.loc || "") ? "BD" : ""); return ({ id: r.id, src: r.source === "site" ? "site" : "", n: r.name, role: r.role, company: r.company, loc: countryName(cc), services: r.services || [], s: r.rating, t: r.body, photo: r.has_photo ? "/api/catalog?a=rvimg&w=photo&id=" + r.id : r.photo, kind: r.kind || "pro", inst: r.institution || "", cc, x: !!r.expat, pk: r.proof_kind === "image" && !r.has_img ? "" : r.proof_kind, pu: r.proof_kind === "link" ? r.proof_url : "", popular: !!r.popular }); }) });
     }
     if (req.query.a === "rvimg") {
       const id = parseInt(req.query.id, 10);
