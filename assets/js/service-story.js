@@ -6,7 +6,7 @@
     var lab = card.querySelector(".nfc-price small"), out = card.querySelector("[data-nfp]"), bs = [].slice.call(card.querySelectorAll(".nfc-seg button"));
     bs.forEach(function (b) { b.addEventListener("click", function () {
       bs.forEach(function (x) { var on = x === b; x.classList.toggle("on", on); x.setAttribute("aria-pressed", on ? "true" : "false"); });
-      out.textContent = b.getAttribute("data-p"); var dv = card.querySelector(".nfc-dev"); if (dv) dv.setAttribute("data-tv", b.getAttribute("data-tv") || "0"); lab.textContent = bs.indexOf(b) ? "Price" : "Starting from"; out.classList.remove("pop"); void out.offsetWidth; out.classList.add("pop");
+      out.textContent = b.getAttribute("data-p"); var dv = card.querySelector(".nfc-dev"); if (dv) dv.setAttribute("data-tv", b.getAttribute("data-tv") || "0"); lab.textContent = bs.indexOf(b) ? "Price" : "Starting from"; var bl = document.getElementById("spBuyL"), bp = document.getElementById("spBuyP"); if (bl && bp) { bl.textContent = b.firstChild.textContent.trim() + (b.querySelector(".ed") ? " Edition" : "") + " · " + (bs.indexOf(b) ? "price" : "from"); bp.textContent = b.getAttribute("data-p"); } out.classList.remove("pop"); void out.offsetWidth; out.classList.add("pop");
     }); });
   })();
   (function () {
