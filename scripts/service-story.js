@@ -76,3 +76,21 @@ module.exports.plans = function plans({ p, esc, taka, slug, buy }) {
   return `<div class="sp-wrap"><span class="sp-eyebrow sp-rv">Pricing</span><h2 class="sp-rv">${esc(p.name)} plans and prices</h2><p class="sp-sub sp-rv">Every price is fixed in BDT. Pick how long you want it and every plan updates. Longer plans cost less per month.</p>
    ${dur}<div class="nfp-grid" data-d="0">${vs.map(card).join("")}</div></div>`;
 };
+
+
+/* The combo packs section of a story page, in the same glass-card style as the plans. */
+module.exports.combo = function combo({ p, combo, others, cs, esc, taka, buy, slug }) {
+  const chk = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>';
+  const names = [p.name].concat(others);
+  const logos = `<span class="nfc2-logos" aria-hidden="true">${names.map(n => `<img src="/assets/img/logos/${slug(n)}.svg" alt="" width="40" height="40" loading="lazy">`).join("")}</span>`;
+  const card = (k, i) => {
+    const top = k.f.slice(0, 3), rest = k.f.slice(3);
+    return `<article class="nfp-card nfc2-card sp-rv"><header><h3>${esc(k.n)}</h3><span class="nfp-tag">${esc(k.tag)}</span></header><p class="nfp-line">${esc(k.sub)}</p>
+     <div class="nfp-price"><div class="nfp-pr"><b>${taka(k.p)}</b><span>per month, both services</span></div>${k.old ? `<div class="nfc2-save"><s>${taka(k.old)}</s><u>Save ${taka(k.old - k.p)}</u></div>` : ""}</div>
+     <ul class="nfp-ft">${top.map(x => `<li>${chk}${esc(x)}</li>`).join("")}</ul>
+     ${rest.length ? `<details class="nfp-more"><summary>All features</summary><ul class="nfp-ft">${rest.map(x => `<li>${chk}${esc(x)}</li>`).join("")}</ul></details>` : ""}
+     <div class="nfp-acts"><div class="nfp-act"><a class="sp-row" href="/#plan=${cs}&v=0&k=${i}"${buy(combo.name, "", k.n, combo.variants[0].n, k.p)}><span>Buy now</span><i aria-hidden="true">→</i></a></div></div></article>`;
+  };
+  return `<section class="sp-sec nfp nfc2" id="combo"><div class="sp-wrap"><div class="nfc2-head"><div>${logos}<span class="sp-eyebrow sp-rv">Save more, together</span><h2 class="sp-rv">${esc(names.join(" + "))} combo packs</h2><p class="sp-sub sp-rv">${esc(names.join(" and "))} in one monthly price, and you save compared with buying each separately.</p></div><a class="nfc2-link sp-rv" href="/services/${cs}/">About the combo <span aria-hidden="true">→</span></a></div>
+   <div class="nfp-grid nfc2-grid">${combo.packs.map(card).join("")}</div></div></section>`;
+};

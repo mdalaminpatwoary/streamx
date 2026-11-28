@@ -103,6 +103,7 @@ function comboHtml(p) {
   const combo = PRODUCTS.find(x => x.packs && (PARTS[x.name] || []).includes(LOGO_OF[p.name]));
   if (!combo || combo === p) return "";
   const cs = slug(combo.name), others = (PARTS[combo.name] || []).filter(k => k !== LOGO_OF[p.name]).map(k => (PRODUCTS.find(x => LOGO_OF[x.name] === k) || {}).name).filter(Boolean);
+  if (STORY.has(p.name)) return story.combo({ p, combo, others, cs, esc, taka, buy, slug });
   return `<section class="sp-sec sp-combo" id="combo"><div class="sp-wrap"><div class="sp-thead"><div><span class="sp-eyebrow">Save more, together</span><h2>${esc(p.name)}${others.length ? " + " + esc(others.join(" + ")) : ""} combo packs</h2><p class="sp-sub">Get ${esc(p.name)} with ${esc(others.join(" and ") || "more")} in one monthly price, and save compared with buying each separately.</p></div><a class="sp-btn sp-ghost sp-sm" href="/services/${cs}/">About the combo</a></div>
 <div class="sp-vgrid">${combo.packs.map((k, i) => `<div class="sp-vcard sp-rv"><div class="sp-vh"><h3>${esc(k.n)}</h3><span class="sp-tag">${esc(k.tag)}</span></div><p>${esc(k.sub)}</p><ul class="sp-ft">${k.f.map(x => `<li>${esc(x)}</li>`).join("")}</ul><div class="sp-rows"><a class="sp-row pk" href="/#plan=${cs}&v=0&k=${i}"${buy(combo.name, "", k.n, combo.variants[0].n, k.p)}><b>${taka(k.p)}<em>/ month</em></b><i>Buy now</i><span><small>Regular <s>${taka(k.old)}</s></small><u>Save ${taka(k.old - k.p)}</u></span></a></div></div>`).join("")}</div></div></section>`;
 }
@@ -142,7 +143,7 @@ function servicePage(p) {
   const mn = v => { const b = v.plans.filter(x => x.p > 0).map(x => x.p); return b.length ? Math.min(...b) : 0; };
   const qp = (p.gift ? [5, 10, 25, 50].map(a => ["$" + a + " card", a * 130]) : p.packs ? p.packs.map(k => [k.n, k.p]) : p.variants.length === 1 && p.variants[0].plans.filter(x => !x.u).length > 1 ? p.variants[0].plans.filter(x => !x.u).map(x => [x.v, x.ask ? 0 : x.p]) : p.variants.map(v => [v.n, mn(v)])).slice(0, 5);
   const orderMsg = `Hi StreamX! I want to buy ${p.name}.`;
-  return head({ title, desc, url, img, noindex: isAdult(p), extra: (isAdult(p) ? "" : `<script type="application/ld+json">${JSON.stringify(ld)}</script>`) + (STORY.has(p.name) ? '<link rel="stylesheet" href="/assets/css/service-story.css?v=62">' : "") }) + `
+  return head({ title, desc, url, img, noindex: isAdult(p), extra: (isAdult(p) ? "" : `<script type="application/ld+json">${JSON.stringify(ld)}</script>`) + (STORY.has(p.name) ? '<link rel="stylesheet" href="/assets/css/service-story.css?v=64">' : "") }) + `
 <body style="--c:${GLOW[p.name] || p.color}"${isAdult(p) ? ' class="sp-adult"' : STORY.has(p.name) ? ' class="nf"' : ""}>${isAdult(p) ? AGE : ""}
 ${nav([["Home", "/"], ["Pricing", "#plans"], ...(combo ? [["Combo", "#combo"]] : []), ...(TREND[p.name] ? [["Trending", "#trending"]] : []), ["About", "#about"], ["Reviews", "#reviews"], ["FAQ", "#faq"], ["Contact", "#contact"]])}
 <main>
