@@ -71,7 +71,7 @@ module.exports.plans = function plans({ p, esc, taka, slug, buy }) {
      <div class="nfp-price">${v.plans.map((pl, k) => `<div class="nfp-pr" data-k="${k}"><b>${taka(pl.p)}</b><span>${pl.m > 1 ? `${taka(Math.round(pl.p / pl.m))} / month` : "for 1 month"}</span></div>`).join("")}</div>
      <ul class="nfp-ft">${top.map(x => `<li>${chk}${esc(x)}</li>`).join("")}</ul>
      ${rest.length || v.notes.length ? `<details class="nfp-more"><summary>All features</summary><ul class="nfp-ft">${rest.map(x => `<li>${chk}${esc(x)}</li>`).join("")}</ul>${v.notes.length ? `<ul class="nfp-nt">${v.notes.map(x => `<li>${esc(x)}</li>`).join("")}</ul>` : ""}</details>` : ""}
-     <div class="nfp-acts">${v.plans.map((pl, k) => `<div class="nfp-act" data-k="${k}"><a class="sp-row" href="/#plan=${slug(p.name)}&v=${vi}&k=${k}"${buy(p.name, vs.length > 1 ? v.n : "", pl.v, v.n, pl.p)}><span>Buy now</span><i>${taka(pl.p)}</i></a></div>`).join("")}</div></article>`;
+     <div class="nfp-acts">${v.plans.map((pl, k) => `<div class="nfp-act" data-k="${k}"><a class="sp-row" href="/#plan=${slug(p.name)}&v=${vi}&k=${k}"${buy(p.name, vs.length > 1 ? v.n : "", pl.v, v.n, pl.p)}><span>Buy now</span><i aria-hidden="true">→</i></a></div>`).join("")}</div></article>`;
   };
   return `<div class="sp-wrap"><span class="sp-eyebrow sp-rv">Pricing</span><h2 class="sp-rv">${esc(p.name)} plans and prices</h2><p class="sp-sub sp-rv">Every price is fixed in BDT. Pick how long you want it and every plan updates. Longer plans cost less per month.</p>
    ${dur}<div class="nfp-grid" data-d="0">${vs.map(card).join("")}</div></div>`;
