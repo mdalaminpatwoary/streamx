@@ -336,7 +336,7 @@
 .s4 .tx2{flex:1;min-width:0;display:grid;gap:calc(var(--u)*1)}
 .s4 .tx2 small,.s4 .cl small{font-size:calc(var(--u)*1.7);letter-spacing:.1em;text-transform:uppercase;color:#8f99bb}
 .s4 .nm{display:flex;align-items:center;padding:calc(var(--u)*1.3) calc(var(--u)*1.8);border-radius:calc(var(--u)*1.4);background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.16);font-size:calc(var(--u)*3);font-weight:700;color:#fff;white-space:nowrap}
-.s4 .ty{display:inline-block;overflow:hidden;width:calc(clamp(0,(var(--t) - .12)*1.5,1)*9.4ch);font-family:inherit}
+.s4 .ty{display:inline-block;overflow:hidden;width:calc(clamp(0,(var(--t) - .12)*1.5,1)*7.4ch);font-family:inherit}
 .s4 .cr{display:inline-block;width:calc(var(--u)*.35);height:calc(var(--u)*3);margin-left:calc(var(--u)*.4);background:#ff5a4e;animation:nfCaret 1s steps(2,jump-none) infinite}
 @keyframes nfCaret{to{opacity:0}}
 .s4 .pl{font-size:calc(var(--u)*1.9);color:#aab2cc}
