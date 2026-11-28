@@ -118,3 +118,17 @@ module.exports.why = function why({ p, esc, ic, taka }) {
     <div class="nfw-chat" aria-hidden="true"><span class="me">Hi StreamX! I have a question about ${esc(p.name)}.</span><span class="them">Hi! Happy to help \u{1F44B}</span></div></article>
   </div></div>`;
 };
+
+/* "You may also like": glass cards with a brand-coloured glow. */
+module.exports.related = function related({ related, esc, taka, lo, logo, slug, GLOW }) {
+  const arrow = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>';
+  return `<div class="sp-wrap"><span class="sp-eyebrow sp-rv">Keep exploring</span><h2 class="sp-rv">You may also like</h2>
+  <div class="nfr-grid">${related.map(x => `<a class="nfr-c sp-rv" href="/services/${slug(x.name)}/" style="--c:${GLOW[x.name] || x.color}"><span class="nfr-top">${logo(x)}<i class="nfr-go">${arrow}</i></span><b>${esc(x.name)}</b><small>${esc(x.cat || "")}</small><span class="nfr-pr">From <em>${taka(lo(x))}</em></span></a>`).join("")}</div></div>`;
+};
+
+/* The closing call to action. Keeps the sp-end class: the sticky buy bar hides when it is on screen. */
+module.exports.end = function end({ p, esc, taka, from, plan, chat }) {
+  return `<div class="sp-end nfe sp-rv"><div class="nfe-t"><span class="sp-eyebrow">Ready when you are</span><h2>Ready to get ${esc(p.name)}?</h2><p>Pick your plan, pay online in seconds or order on WhatsApp.</p>
+   <div class="nfe-cta"><a class="nfe-go" href="${plan}"><span>Choose your plan</span><i aria-hidden="true">\u2192</i></a><a class="nfe-wa" href="${chat}" rel="noopener">Chat on WhatsApp</a></div></div>
+   <div class="nfe-v" aria-hidden="true"><span class="nfe-from">Plans from</span><b>${taka(from)}</b><ul><li>Fixed prices in BDT</li><li>Fast delivery</li><li>Replacement warranty</li></ul></div></div>`;
+};
