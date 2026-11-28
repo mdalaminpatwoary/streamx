@@ -449,3 +449,9 @@
 .nf .nfp-card .nfc-dev{margin:2px 0 18px}
 .nf .nfp-card .nfc-dev .dv::after{font-size:8.5px;letter-spacing:.05em;white-space:nowrap}
 .nf .nfp-card .nfc-dev .dv{padding:9px 2px 8px}
+
+/* compact price row on plan cards: price and term on one line, no rules */
+.nfp-grid:not(.nfc2-grid) .nfp-price{margin:14px 0 16px;padding:0;border:0}
+.nfp-grid:not(.nfc2-grid) .nfp-pr{display:flex;align-items:baseline;flex-wrap:wrap;column-gap:10px}
+.nfp-grid:not(.nfc2-grid) .nfp-pr b{display:inline-block;font-size:34px}
+.nfp-grid:not(.nfc2-grid) .nfp-pr span{display:inline;margin:0}
