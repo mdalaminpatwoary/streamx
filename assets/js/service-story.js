@@ -17,6 +17,32 @@
     }); });
   })();
   (function () {
+    var sh, last;
+    function vis(root, sel) { var l = root.querySelectorAll(sel); for (var i = 0; i < l.length; i++) if (l[i].offsetParent !== null) return l[i]; return null; }
+    function make() {
+      sh = document.createElement("div"); sh.className = "nfs"; sh.hidden = true;
+      sh.innerHTML = '<div class="nfs-bg" data-c></div><div class="nfs-p" role="dialog" aria-modal="true" aria-label="Plan details"><button type="button" class="nfs-x" data-c aria-label="Close">\u2715</button><div class="nfs-b"></div></div>';
+      document.body.appendChild(sh);
+      sh.addEventListener("click", function (e) { var t = e.target; if (t.closest && (t.closest("[data-c]") || t.closest("[data-buy]"))) shut(); });
+    }
+    function shut() { if (!sh || sh.hidden) return; sh.classList.remove("on"); sh.hidden = true; document.documentElement.classList.remove("nfs-lock"); if (last) { try { last.focus(); } catch (e) {} } }
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape") shut(); });
+    document.addEventListener("click", function (e) {
+      var btn = e.target.closest && e.target.closest(".nfp-all"); if (!btn) return;
+      var card = btn.closest(".nfp-card"), tpl = card && card.querySelector("template.nfp-full"); if (!tpl) return;
+      if (!sh) make(); last = btn;
+      var tag = card.querySelector(".nfp-tag"), pr = vis(card, ".nfp-pr"), sv = card.querySelector(".nfc2-save"), dv = card.querySelector(".nfc-dev"), by = vis(card, ".nfp-act a[data-buy]");
+      sh.querySelector(".nfs-b").innerHTML =
+        '<div class="nfs-h">' + (tag ? '<span class="nfp-tag">' + tag.textContent + '</span>' : "") + '<h3>' + card.querySelector("h3").textContent + '</h3></div>' +
+        '<div class="nfs-pr">' + (pr ? pr.outerHTML : "") + (sv ? sv.outerHTML : "") + '</div>' +
+        (dv ? dv.outerHTML : "") +
+        '<span class="nfs-t">Everything included</span>' + tpl.innerHTML +
+        (by ? '<div class="nfp-acts"><div class="nfp-act">' + by.outerHTML + '</div></div>' : "");
+      sh.hidden = false; document.documentElement.classList.add("nfs-lock");
+      requestAnimationFrame(function () { sh.classList.add("on"); sh.querySelector(".nfs-x").focus(); });
+    });
+  })();
+  (function () {
     var hero = document.querySelector(".nf .sp-hero"); if (!hero || !("IntersectionObserver" in window)) return;
     new IntersectionObserver(function (es) { document.body.classList.toggle("nf-hero", es[0].isIntersecting); }, { threshold: .2 }).observe(hero);
   })();

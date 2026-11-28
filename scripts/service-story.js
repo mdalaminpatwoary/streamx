@@ -60,6 +60,8 @@ module.exports.card = function card({ p, qp, esc, taka, logo, ic }) {
 
 
 /* The pricing section of a story page: one duration switch drives every plan card; each card keeps real buy links. */
+/* "All features" opens a popup that service-story.js builds from this template. */
+const moreBtn = (all, notes, chk, esc) => `<button type="button" class="nfp-all" aria-haspopup="dialog">All features<i aria-hidden="true">+</i></button><template class="nfp-full"><ul class="nfp-ft">${all.map(x => `<li>${chk}${esc(x)}</li>`).join("")}</ul>${notes.length ? `<ul class="nfp-nt">${notes.map(x => `<li>${esc(x)}</li>`).join("")}</ul>` : ""}</template>`;
 const devStrip = tv => `<div class="nfc-dev" data-tv="${tv ? 1 : 0}" aria-label="Where you can watch"><span class="dv"><i><svg viewBox="0 0 24 24"><rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/></svg></i>Phone</span><span class="dv"><i><svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="12" rx="2"/><path d="M8 20h8M12 16.5V20"/></svg></i>Web</span><span class="dv dv-tv"><i><svg viewBox="0 0 24 24"><rect x="2.5" y="4" width="19" height="13" rx="2.5"/><path d="M8 21h8M12 17v4"/></svg></i>TV</span></div>`;
 module.exports.plans = function plans({ p, esc, taka, slug, buy }) {
   const vs = p.variants, mo = vs[0].plans.map(x => x.v), n = mo.length;
@@ -72,7 +74,7 @@ module.exports.plans = function plans({ p, esc, taka, slug, buy }) {
      <div class="nfp-price">${v.plans.map((pl, k) => `<div class="nfp-pr" data-k="${k}"><b>${taka(pl.p)}</b><span>${pl.m > 1 ? `${taka(Math.round(pl.p / pl.m))} / month` : "for 1 month"}</span></div>`).join("")}</div>
      ${devStrip(/\bTV\b/.test(v.f.join(" ")) && !/no TV/i.test(v.f.join(" ")))}
      <ul class="nfp-ft">${top.map(x => `<li>${chk}${esc(x)}</li>`).join("")}</ul>
-     ${rest.length || v.notes.length ? `<details class="nfp-more"><summary>All features</summary><ul class="nfp-ft">${rest.map(x => `<li>${chk}${esc(x)}</li>`).join("")}</ul>${v.notes.length ? `<ul class="nfp-nt">${v.notes.map(x => `<li>${esc(x)}</li>`).join("")}</ul>` : ""}</details>` : ""}
+     ${moreBtn(v.f, v.notes, chk, esc)}
      <div class="nfp-acts">${v.plans.map((pl, k) => `<div class="nfp-act" data-k="${k}"><a class="sp-row" href="/#plan=${slug(p.name)}&v=${vi}&k=${k}"${buy(p.name, vs.length > 1 ? v.n : "", pl.v, v.n, pl.p)}><span>Buy now</span><i aria-hidden="true">→</i></a></div>`).join("")}</div></article>`;
   };
   return `<div class="sp-wrap"><span class="sp-eyebrow sp-rv">Pricing</span><h2 class="sp-rv">${esc(p.name)} plans and prices</h2><p class="sp-sub sp-rv">Every price is fixed in BDT. Pick how long you want it and every plan updates. Longer plans cost less per month.</p>
@@ -86,12 +88,12 @@ module.exports.combo = function combo({ p, combo, others, cs, esc, taka, buy, sl
   const names = [p.name].concat(others);
   const logos = `<span class="nfc2-logos" aria-hidden="true">${names.map(n => `<img src="/assets/img/logos/${slug(n)}.svg" alt="" width="40" height="40" loading="lazy">`).join("")}</span>`;
   const card = (k, i) => {
-    const top = k.f.slice(0, 3), rest = k.f.slice(3);
-    return `<article class="nfp-card nfc2-card sp-rv"><header><h3>${esc(k.n)}</h3><span class="nfp-tag">${esc(k.tag)}</span></header><p class="nfp-line">${esc(k.sub)}</p>
-     <div class="nfp-price"><div class="nfp-pr"><b>${taka(k.p)}</b><span>per month, both services</span></div>${k.old ? `<div class="nfc2-save"><s>${taka(k.old)}</s><u>Save ${taka(k.old - k.p)}</u></div>` : ""}</div>
+    const top = k.f.slice(0, 4);
+    return `<article class="nfp-card nfc2-card sp-rv"><header><h3>${esc(k.n)}</h3><span class="nfp-tag">${esc(k.tag)}</span></header>
+     <div class="nfp-price"><div class="nfp-pr"><b>${taka(k.p)}</b><span>per month, both apps</span></div>${k.old ? `<div class="nfc2-save"><s>${taka(k.old)}</s><u>Save ${taka(k.old - k.p)}</u></div>` : ""}</div>
      ${devStrip(!/no TV/i.test([k.sub, k.tag].concat(k.f).join(" ")) && /\bTV\b/.test([k.sub, k.tag].concat(k.f).join(" ")))}
      <ul class="nfp-ft">${top.map(x => `<li>${chk}${esc(x)}</li>`).join("")}</ul>
-     ${rest.length ? `<details class="nfp-more"><summary>All features</summary><ul class="nfp-ft">${rest.map(x => `<li>${chk}${esc(x)}</li>`).join("")}</ul></details>` : ""}
+     ${moreBtn(k.f, [], chk, esc)}
      <div class="nfp-acts"><div class="nfp-act"><a class="sp-row" href="/#plan=${cs}&v=0&k=${i}"${buy(combo.name, "", k.n, combo.variants[0].n, k.p)}><span>Buy now</span><i aria-hidden="true">→</i></a></div></div></article>`;
   };
   return `<section class="sp-sec nfp nfc2" id="combo"><div class="sp-wrap"><div class="nfc2-head"><div>${logos}<span class="sp-eyebrow sp-rv">Save more, together</span><h2 class="sp-rv">${esc(names.join(" + "))} combo packs</h2><p class="sp-sub sp-rv">${esc(names.join(" and "))} in one monthly price, and you save compared with buying each separately.</p></div><a class="nfc2-link sp-rv" href="/services/${cs}/">About the combo <span aria-hidden="true">→</span></a></div>
