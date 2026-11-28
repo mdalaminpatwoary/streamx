@@ -93,3 +93,10 @@
 .rs-by .rs-cc .fl-i{width:20px;height:15px;border-radius:2px;margin-right:7px;vertical-align:-2px}
 .rs-wrap:empty{display:none}
 .rs-fb{display:inline-flex;align-items:center;gap:6px;padding:10px 18px;border-radius:99px;font-size:13.5px;font-weight:650;color:#fff;text-decoration:none;background:linear-gradient(90deg,#ed3124,#ff4f3f)}
+.rs-fb i{display:grid;place-items:center;width:22px;height:22px;margin-left:4px;border-radius:50%;background:rgba(255,255,255,.2);font-style:normal;font-size:13px;transition:transform .3s}
+.rs-fb:hover i{transform:translateX(3px)}
+.rs-fb{padding:11px 14px 11px 20px;box-shadow:0 14px 28px -16px rgba(237,49,36,.9)}
+/* plain text link, not a button */
+.rs-fb,.rs-fb:hover{padding:0;border-radius:0;background:none;box-shadow:none;color:#ff8a7c;font-size:14px;font-weight:650}
+.rs-fb i{width:auto;height:auto;margin-left:6px;background:none;font-size:15px}
+.rs-fb:hover{color:#fff}

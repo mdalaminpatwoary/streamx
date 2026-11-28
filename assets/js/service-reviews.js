@@ -26,7 +26,7 @@
         '<div class="rs-body"><span class="sp-eyebrow">Featured review</span>' + QUOTE +
         "<blockquote>" + String(r.t).split(" ").map(function (w, k) { return '<span class="rw" style="--k:' + k + '">' + esc(w) + "</span>"; }).join(" ") + "</blockquote>" +
         '<div class="rs-by"><b>' + esc(r.n) + "</b><span>" + esc([r.role, r.company].filter(Boolean).join(" · ")) + "</span>" + cc + "</div>" +
-        '<div class="rs-svcs" aria-label="Services bought">' + chips(r) + "</div></div>" +
+        '<div class="rs-svcs" aria-label="Services bought">' + chips(r) + '</div><div class="rs-act"><a class="rs-fb" href="/#reviews">See all customer reviews <i aria-hidden="true">\u2192</i></a></div></div>' +
         (L.length > 1 ? '<div class="rs-nav" role="tablist">' + L.map(function (j, x) { return '<button type="button" role="tab" aria-selected="' + (x === pk) + '" class="' + (x === pk ? "on" : "") + '" data-i="' + x + '" style="' + grad(x) + '"><span class="rs-mini"><i>' + esc(ini(j.n)) + "</i>" + ph(j) + '</span><span class="rs-nm"><b>' + esc(j.n) + "</b><small>" + esc(j.role || "Customer") + '</small></span><span class="rs-bar"><i></i></span></button>'; }).join("") + "</div>" : "") + "</div>";
       busy = false;
       var nv = box.querySelector(".rs-nav"), ab = nv && nv.querySelector("button.on");
@@ -36,10 +36,11 @@
   }
   fetch("/api/catalog?a=reviews").then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
     if (!d || !d.list) return;
-    L = d.list.filter(function (r) { return (r.services || [r.p]).indexOf(svc) > -1; });
+    /* like the home page: the reviews marked Featured, from every service (all reviews if none are marked) */
+    L = d.list.filter(function (r) { return r.popular; }); if (!L.length) L = d.list.slice();
     if (!L.length) return;
     var avg = (L.reduce(function (a, r) { return a + (r.s || 5); }, 0) / L.length).toFixed(1);
-    if (sub) sub.innerHTML = '<span class="sp-avg">' + avg + "</span> average from " + L.length + " " + esc(svc) + " review" + (L.length > 1 ? "s" : "") + ".";
+    if (sub) sub.innerHTML = '<span class="sp-avg">' + avg + "</span> average from " + L.length + " featured customer review" + (L.length > 1 ? "s" : "") + ".";
     set(0, true);
     box.addEventListener("click", function (e) { var b = e.target.closest && e.target.closest(".rs-nav button"); if (b) set(+b.getAttribute("data-i")); });
     box.addEventListener("pointerenter", function () { hover = true; }); box.addEventListener("pointerleave", function () { hover = false; });
